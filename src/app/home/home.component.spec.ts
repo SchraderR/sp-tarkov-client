@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HomeComponent } from './home.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslocoModule } from '@ngneat/transloco';
 import { RouterTestingModule } from '@angular/router/testing';
 
 describe('HomeComponent', () => {
@@ -11,7 +11,7 @@ describe('HomeComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [HomeComponent],
-      imports: [TranslateModule.forRoot(), RouterTestingModule]
+      imports: [TranslocoModule, RouterTestingModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);

@@ -4,20 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
-
 import { AppRoutingModule } from './app-routing.module';
-
-// NG Translate
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslocoModule } from '@ngneat/transloco';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
 import { HomeModule } from './home/home.module';
 import { DetailModule } from './detail/detail.module';
-
 import { AppComponent } from './app.component';
-
-// AoT requires an exported function for factories
-const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new TranslateHttpLoader(http, './assets/i18n/', '.json');
+import { TranslocoRootModule } from './transloco-root.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,15 +23,10 @@ const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new Transl
     HomeModule,
     DetailModule,
     AppRoutingModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: httpLoaderFactory,
-        deps: [HttpClient]
-      }
-    })
+    TranslocoModule,
+    TranslocoRootModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

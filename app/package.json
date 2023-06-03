@@ -1,13 +1,8 @@
 {
-  "name": "angular-electron",
-  "description": "Angular Electron sample",
-  "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
-  },
-  "version": "12.0.1",
+  "name": "sp-tarkov-client",
+  "description": "EFT-SP Management Tool",
+  "version": "0.0.1",
   "main": "main.js",
   "private": true,
-  "dependencies": {
-  }
+  "dependencies": {}
 }

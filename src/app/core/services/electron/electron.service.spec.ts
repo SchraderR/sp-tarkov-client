@@ -1,4 +1,4 @@
-import {TestBed, waitForAsync} from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ElectronService } from './electron.service';
 
