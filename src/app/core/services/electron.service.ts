@@ -24,15 +24,14 @@ export class ElectronService {
   }
 
   sendEvent<T>(eventName: applicationElectronEventNames, eventCompleteName: applicationElectronCompleteEventNames) {
-    return new Observable<null | { event: any; args: T }>((observer) => {
-      const handler = (event: IpcRendererEvent, args: T) => observer.next({ event, args });
+    return new Observable<null | { event: any; args: T }>(observer => {
+      const handler = (event: IpcRendererEvent, args: T) => {
+        observer.next({ event, args });
+        observer.complete();
+      };
 
       this.ipcRenderer.send(eventName);
       this.ipcRenderer.on(eventCompleteName, handler);
-
-      return () => {
-        observer.unsubscribe();
-      };
     });
   }
 

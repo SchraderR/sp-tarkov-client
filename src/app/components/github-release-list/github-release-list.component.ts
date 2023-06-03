@@ -18,12 +18,4 @@ export default class GithubReleaseListComponent {
 
   // TODO TEST DATA
   gitHubReleaseList$ = this.#githubService.getGitHubReleaseList('Amands2Mello', 'AmandsGraphics');
-
-  getRootEftSpDirectory() {
-    this.#electronService.sendEvent('open-directory', 'open-directory-complete').subscribe((value) => {
-      console.log(value);
-    });
-
-    console.log('getRootEftSpDirectory');
-  }
 }

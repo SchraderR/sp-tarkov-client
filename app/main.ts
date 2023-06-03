@@ -5,33 +5,32 @@ import * as Store from 'electron-store';
 
 let browserWindow: BrowserWindow | null = null;
 const args = process.argv.slice(1);
-const serve = args.some((val) => val === '--serve');
+const serve = args.some(val => val === '--serve');
 
 const stableAkiServerName = 'Aki.Server.exe';
 const storeAkiRootDirectoryKey = 'akiRootDirectory';
 const userSettingKey = 'userSetting';
-
 const store = new Store();
-store.set('userSetting', {});
 
-ipcMain.on('open-directory', (event) => {
+ipcMain.on('open-directory', event => {
   if (!browserWindow) {
     console.error('BrowserWindow not valid');
     return;
   }
   console.log(app.getPath('userData'));
 
-  dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then((selectedDirectoryValue) => {
+  dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then(selectedDirectoryValue => {
     const selectedPath = selectedDirectoryValue.filePaths[0];
 
     if (fs.existsSync(selectedPath)) {
       fs.readdir(selectedPath, (err, files) => {
-        const isAKiRootDirectorySoftCheck = files.some((f) => f === stableAkiServerName);
+        const isAKiRootDirectorySoftCheck = files.some(f => f === stableAkiServerName);
 
         if (isAKiRootDirectorySoftCheck) {
           store.set(`${userSettingKey}.${storeAkiRootDirectoryKey}`, selectedPath);
           event.sender.send('open-directory-complete', files);
         } else {
+          console.error('SOFT CHECK FALSE for eft sp directory');
           // TODO SOFT CHECK FALSE RE-EVALUATE
         }
       });
@@ -39,7 +38,7 @@ ipcMain.on('open-directory', (event) => {
   });
 });
 
-ipcMain.on('user-settings', (event) => event.sender.send('user-settings-complete', store.get(userSettingKey)));
+ipcMain.on('user-settings', event => event.sender.send('user-settings-complete', store.get(userSettingKey)));
 
 // main start
 try {
@@ -121,4 +120,4 @@ const createWindow = (): BrowserWindow => {
 
   return browserWindow;
 };
-const getExternalDisplay = () => screen.getAllDisplays().find((display) => display.bounds.x !== 0 || display.bounds.y !== 0);
+const getExternalDisplay = () => screen.getAllDisplays().find(display => display.bounds.x !== 0 || display.bounds.y !== 0);
