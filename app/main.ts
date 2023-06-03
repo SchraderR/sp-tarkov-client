@@ -1,58 +1,47 @@
-import {app, BrowserWindow, screen} from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, screen } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as Store from 'electron-store';
 
-let win: BrowserWindow = null;
-const args = process.argv.slice(1),
-  serve = args.some(val => val === '--serve');
+let browserWindow: BrowserWindow | null = null;
+const args = process.argv.slice(1);
+const serve = args.some((val) => val === '--serve');
 
-function createWindow(): BrowserWindow {
+const stableAkiServerName = 'Aki.Server.exe';
+const storeAkiRootDirectoryKey = 'akiRootDirectory';
+const userSettingKey = 'userSetting';
 
-  const size = screen.getPrimaryDisplay().workAreaSize;
+const store = new Store();
+store.set('userSetting', {});
 
-  // Create the browser window.
-  win = new BrowserWindow({
-    x: 0,
-    y: 0,
-    width: size.width,
-    height: size.height,
-    webPreferences: {
-      nodeIntegration: true,
-      allowRunningInsecureContent: (serve),
-      contextIsolation: false,  // false if you want to run e2e test with Spectron
-    },
-  });
-
-  if (serve) {
-    const debug = require('electron-debug');
-    debug();
-
-    require('electron-reloader')(module);
-    win.loadURL('http://localhost:4200');
-  } else {
-    // Path when running electron executable
-    let pathIndex = './index.html';
-
-    if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
-       // Path when running electron in local folder
-      pathIndex = '../dist/index.html';
-    }
-
-    const url = new URL(path.join('file:', __dirname, pathIndex));
-    win.loadURL(url.href);
+ipcMain.on('open-directory', (event) => {
+  if (!browserWindow) {
+    console.error('BrowserWindow not valid');
+    return;
   }
+  console.log(app.getPath('userData'));
 
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store window
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null;
+  dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then((selectedDirectoryValue) => {
+    const selectedPath = selectedDirectoryValue.filePaths[0];
+
+    if (fs.existsSync(selectedPath)) {
+      fs.readdir(selectedPath, (err, files) => {
+        const isAKiRootDirectorySoftCheck = files.some((f) => f === stableAkiServerName);
+
+        if (isAKiRootDirectorySoftCheck) {
+          store.set(`${userSettingKey}.${storeAkiRootDirectoryKey}`, selectedPath);
+          event.sender.send('open-directory-complete', files);
+        } else {
+          // TODO SOFT CHECK FALSE RE-EVALUATE
+        }
+      });
+    }
   });
+});
 
-  return win;
-}
+ipcMain.on('user-settings', (event) => event.sender.send('user-settings-complete', store.get(userSettingKey)));
 
+// main start
 try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
@@ -72,12 +61,64 @@ try {
   app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (win === null) {
+    if (browserWindow === null) {
       createWindow();
     }
   });
-
 } catch (e) {
   // Catch Error
   // throw e;
 }
+
+const createWindow = (): BrowserWindow => {
+  const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
+  const externalDisplay = getExternalDisplay();
+
+  // Create the browser window.
+  browserWindow = new BrowserWindow({
+    // main
+    // x: 0,
+    // y: 0,
+    // external
+    x: externalDisplay!.bounds.x + 500,
+    y: externalDisplay!.bounds.y + 250,
+    width: 1600,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true,
+      allowRunningInsecureContent: serve,
+      contextIsolation: false, // false if you want to run e2e test with Spectron
+    },
+  });
+
+  if (serve) {
+    browserWindow.webContents.openDevTools();
+    const debug = require('electron-debug');
+    debug();
+
+    require('electron-reloader')(module);
+    browserWindow.loadURL('http://localhost:4200');
+  } else {
+    // Path when running electron executable
+    let pathIndex = './index.html';
+
+    if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
+      // Path when running electron in local folder
+      pathIndex = '../dist/index.html';
+    }
+
+    const url = new URL(path.join('file:', __dirname, pathIndex));
+    browserWindow.loadURL(url.href);
+  }
+
+  // Emitted when the window is closed.
+  browserWindow.on('closed', () => {
+    // Dereference the window object, usually you would store window
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    browserWindow = null;
+  });
+
+  return browserWindow;
+};
+const getExternalDisplay = () => screen.getAllDisplays().find((display) => display.bounds.x !== 0 || display.bounds.y !== 0);

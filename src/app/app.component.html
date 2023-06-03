@@ -1,1 +1,20 @@
-<router-outlet></router-outlet>
+<mat-drawer-container autosize>
+  <mat-drawer class="sidenav" mode="side">
+    <mat-list (click)="toggleDrawer()">
+      <mat-list-item routerLink="github-release">GitHub-Release</mat-list-item>
+      <mat-list-item routerLink="setting">Setting</mat-list-item>
+    </mat-list>
+  </mat-drawer>
+
+  <mat-toolbar>
+    <button mat-icon-button (click)="toggleDrawer()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <h1>SP-Tarkov Management Tool</h1>
+  </mat-toolbar>
+
+  <div class="drawer-content">
+    <router-outlet />
+  </div>
+</mat-drawer-container>

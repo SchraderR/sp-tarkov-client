@@ -1,1 +1,13 @@
-@import "ng-zorro-antd/ng-zorro-antd.min.css";
+@use "@fontsource/roboto/300" as *;
+@use "@fontsource/roboto/400" as *;
+@use "@fontsource/roboto/500" as *;
+@use 'material-symbols/outlined';
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

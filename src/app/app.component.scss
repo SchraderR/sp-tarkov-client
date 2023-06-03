@@ -1,0 +1,18 @@
+$toolbar-height: 64px;
+
+.mat-drawer-container,
+.mat-drawer-content {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.drawer-content {
+  height: calc(100% - #{$toolbar-height});
+  overflow: auto;
+  padding: 16px;
+}
+
+.sidenav {
+  padding: 20px;
+}

@@ -1,15 +1,22 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { AppModule } from './app/app.module';
-import { APP_CONFIG } from './environments/environment';
+import { enableProdMode } from '@angular/core'
+import { APP_CONFIG } from './environments/environment'
+import { AppComponent } from './app/app.component'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
+import { bootstrapApplication } from '@angular/platform-browser'
+import { provideTransloco } from './app/transloco-root.module'
+import { provideRouter } from '@angular/router'
+import { appRoutes } from './app/app.routing'
+import { provideAnimations } from '@angular/platform-browser/animations'
 
 if (APP_CONFIG.production) {
-  enableProdMode();
+  enableProdMode()
 }
 
-platformBrowserDynamic()
-  .bootstrapModule(AppModule, {
-    preserveWhitespaces: false
-  })
-  .catch(err => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideHttpClient(withInterceptorsFromDi()),
+    provideRouter(appRoutes),
+    provideAnimations(),
+    provideTransloco(),
+  ],
+}).catch((err) => console.error(err))
