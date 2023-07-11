@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { PersonalSettingComponent } from './personal-setting.component';
+import PersonalSettingComponent from './personal-setting.component';
 
 describe('PersonalSettingComponent', () => {
   let component: PersonalSettingComponent;
@@ -8,7 +7,7 @@ describe('PersonalSettingComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [PersonalSettingComponent]
+      imports: [PersonalSettingComponent],
     });
     fixture = TestBed.createComponent(PersonalSettingComponent);
     component = fixture.componentInstance;

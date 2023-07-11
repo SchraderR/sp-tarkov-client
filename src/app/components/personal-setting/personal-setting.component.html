@@ -1,3 +1,10 @@
-<button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">OPEN AND SAFE EFT AKI SP DIRECTORY</button>
-<p></p>
-{{ personalSetting?.akiRootDirectory }}
+<div style="display: flex; flex-direction: column; gap: 8px">
+  <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Open and add new EFT Sp-Api Instance</button>
+
+  <mat-card *ngFor="let settingModel of userSetting">
+    <mat-card-content>
+      <div>Aki-SP Version: {{ settingModel.akiCore.akiVersion }}</div>
+      <div>Root-Path: {{ settingModel.akiRootDirectory }}</div>
+    </mat-card-content>
+  </mat-card>
+</div>

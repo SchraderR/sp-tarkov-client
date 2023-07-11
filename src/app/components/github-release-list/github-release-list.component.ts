@@ -1,8 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GithubService } from '../../core/services/github.service';
 import { MatButtonModule } from '@angular/material/button';
-import { ElectronService } from '../../core/services';
+import { ElectronService } from '../../core/services/electron.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   standalone: true,
@@ -13,9 +15,42 @@ import { ElectronService } from '../../core/services';
   providers: [GithubService],
 })
 export default class GithubReleaseListComponent {
-  #githubService = inject(GithubService);
+  #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);
+  #changeDetectorRef = inject(ChangeDetectorRef);
+  #ngZone = inject(NgZone);
+  #httpClient = inject(HttpClient);
 
-  // TODO TEST DATA
-  gitHubReleaseList$ = this.#githubService.getGitHubReleaseList('Amands2Mello', 'AmandsGraphics');
+  title = '';
+  downloadLink = '';
+
+  constructor() {
+    this.#electronService
+      .sendEvent<string>('download-link', 'download-link-complete')
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(res => {
+        this.#ngZone.run(() => {
+          this.downloadLink = res!.args;
+          this.#changeDetectorRef.detectChanges();
+        });
+      });
+
+    this.#httpClient
+      .get('https://hub.sp-tarkov.com/files/file/813', { responseType: 'text' })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(hubViewString => {
+        const hubViewHtml = this.parseStringAsHtml(hubViewString);
+        this.setModTitle(hubViewHtml);
+      });
+  }
+
+  private setModTitle(htmlDoc: Document) {
+    this.title = htmlDoc.head.getElementsByTagName('title')[0].innerHTML;
+
+    if (this.title.includes(' - AKI Mods Workshop')) {
+      this.title = this.title.replace(' - AKI Mods Workshop', '');
+    }
+  }
+
+  private parseStringAsHtml = (hubViewData: string) => new DOMParser().parseFromString(hubViewData, 'text/html');
 }

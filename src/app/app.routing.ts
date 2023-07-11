@@ -1,9 +1,9 @@
-import { Routes } from '@angular/router'
+import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'github-release',
+    redirectTo: 'setting',
     pathMatch: 'full',
   },
   {
@@ -14,4 +14,4 @@ export const appRoutes: Routes = [
     path: 'setting',
     loadComponent: () => import('./components/personal-setting/personal-setting.component'),
   },
-]
+];

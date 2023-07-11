@@ -1,6 +1,4 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { ElectronService } from './core/services';
-import { TranslocoService } from '@ngneat/transloco';
 import { APP_CONFIG } from '../environments/environment';
 import { RouterModule } from '@angular/router';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -9,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { ElectronService } from './core/services/electron.service';
 
 @Component({
   standalone: true,

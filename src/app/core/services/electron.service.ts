@@ -14,6 +14,7 @@ export class ElectronService {
   webFrame!: typeof webFrame;
   childProcess!: typeof childProcess;
   fs!: typeof fs;
+  shell!: Electron.Shell;
 
   get isElectron(): boolean {
     return !!(window && window.process && window.process.type);
@@ -23,10 +24,11 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
-  sendEvent<T>(eventName: applicationElectronEventNames, eventCompleteName: applicationElectronCompleteEventNames) {
+  sendEvent<T>(eventName: applicationElectronEventNames, eventCompleteName: applicationElectronCompleteEventNames, isTJson = false) {
     return new Observable<null | { event: any; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
-        observer.next({ event, args });
+        const argsParsed = isTJson ? (JSON.parse(args as string) as T) : args;
+        observer.next({ event, args: argsParsed });
         observer.complete();
       };
 
@@ -50,6 +52,7 @@ export class ElectronService {
     this.ipcRenderer = window.require('electron').ipcRenderer;
     this.webFrame = window.require('electron').webFrame;
     this.fs = window.require('fs');
+    this.shell = window.require('electron').shell;
 
     this.childProcess = window.require('child_process');
     this.childProcess.exec('node -v', (error, stdout, stderr) => {
