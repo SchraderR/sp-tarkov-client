@@ -18,16 +18,20 @@ export const handleUserSettingEvent = (store: Store<UserSettingStoreModel>) => {
     const userSettingModelResult: UserSettingModel[] = [];
 
     for (const akiInstance of akiInstances) {
-      const akiCoreJson = fs.readFileSync(path.join(akiInstance.akiRootDirectory, stableAkiCoreConfigPath), 'utf-8');
-      if (!akiCoreJson) {
-        // TODO ERROR HANDLING
-        console.error(akiCoreJson);
-        return;
+      try {
+        const akiCoreJson = fs.readFileSync(path.join(akiInstance.akiRootDirectory, stableAkiCoreConfigPath), 'utf-8');
+        if (!akiCoreJson) {
+          // TODO ERROR HANDLING
+          console.error(akiCoreJson);
+          return;
+        }
+        userSettingModelResult.push({
+          akiRootDirectory: akiInstance.akiRootDirectory,
+          akiCore: JSON.parse(akiCoreJson),
+        });
+      } catch (e) {
+        // add to object and return a missing path error message
       }
-      userSettingModelResult.push({
-        akiRootDirectory: akiInstance.akiRootDirectory,
-        akiCore: JSON.parse(akiCoreJson),
-      });
     }
 
     event.sender.send('user-settings-complete', userSettingModelResult);

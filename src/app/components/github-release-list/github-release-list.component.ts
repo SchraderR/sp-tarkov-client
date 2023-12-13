@@ -44,6 +44,14 @@ export default class GithubReleaseListComponent {
       });
   }
 
+  startDownload() {
+    this.#electronService.sendEvent<string>('download-mod', "download-mod-completed", false, this.downloadLink)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(res => {
+        console.log(res);
+      });
+  }
+
   private setModTitle(htmlDoc: Document) {
     this.title = htmlDoc.head.getElementsByTagName('title')[0].innerHTML;
 
@@ -53,4 +61,5 @@ export default class GithubReleaseListComponent {
   }
 
   private parseStringAsHtml = (hubViewData: string) => new DOMParser().parseFromString(hubViewData, 'text/html');
+  protected readonly onabort = onabort;
 }

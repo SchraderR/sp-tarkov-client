@@ -24,7 +24,7 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
-  sendEvent<T>(eventName: applicationElectronEventNames, eventCompleteName: applicationElectronCompleteEventNames, isTJson = false) {
+  sendEvent<T>(eventName: applicationElectronEventNames, eventCompleteName: applicationElectronCompleteEventNames, isTJson = false, ...args: any) {
     return new Observable<null | { event: any; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isTJson ? (JSON.parse(args as string) as T) : args;
@@ -32,7 +32,7 @@ export class ElectronService {
         observer.complete();
       };
 
-      this.ipcRenderer.send(eventName);
+      this.ipcRenderer.send(eventName, args);
       this.ipcRenderer.on(eventCompleteName, handler);
     });
   }

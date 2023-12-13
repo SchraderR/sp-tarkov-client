@@ -6,16 +6,12 @@ import puppeteer from 'puppeteer';
 
 export const createMainApiManagementWindow = (isServe: boolean): void => {
   console.log('createMainApiManagementWindow');
-  // const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
+  const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
   const externalDisplay = getExternalDisplay();
 
   let browserWindow: BrowserWindow | null = new BrowserWindow({
-    /// main
-    // x: 0,
-    // y: 0,
-    /// external
-    x: externalDisplay!.bounds.x + 500,
-    y: externalDisplay!.bounds.y + 250,
+    x: 0,
+    y: 0,
     width: 1600,
     height: 800,
 

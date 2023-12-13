@@ -4,16 +4,17 @@ import { Page, launch, Browser } from 'puppeteer';
 export const handleDownloadLinkEvent = () => {
   ipcMain.on('download-link', event => {
     let downloadLink = null;
+    const fileId = 813;
 
     (async () => {
       const browser = await launch({ headless: 'new' });
       const page = await browser.newPage();
 
-      await page.goto('https://hub.sp-tarkov.com/files/license/813-amands-s-graphics', { waitUntil: 'networkidle2' });
+      await page.goto(`https://hub.sp-tarkov.com/files/license/${fileId}`, { waitUntil: 'networkidle2' });
       await page.click('[name="confirm"]');
       await page.click('div.formSubmit input[type="submit"]');
 
-      await page.goto('https://hub.sp-tarkov.com/files/file/813', { waitUntil: 'networkidle2' });
+      await page.goto(`https://hub.sp-tarkov.com/files/file/${fileId}`, { waitUntil: 'networkidle2' });
       await page.click('a.button.buttonPrimary.externalURL');
 
       const newPagePromise = getNewPageWhenLoaded(browser);
