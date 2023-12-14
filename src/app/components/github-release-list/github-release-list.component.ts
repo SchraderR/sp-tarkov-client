@@ -5,6 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { ElectronService } from '../../core/services/electron.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
+import { UserSettingsService } from "../../core/services/user-settings.service";
+import {DownloadModel} from "../../../../shared/models/aki-core.model";
+
+
 
 @Component({
   standalone: true,
@@ -20,6 +24,7 @@ export default class GithubReleaseListComponent {
   #changeDetectorRef = inject(ChangeDetectorRef);
   #ngZone = inject(NgZone);
   #httpClient = inject(HttpClient);
+  #userSettingsService = inject(UserSettingsService);
 
   title = '';
   downloadLink = '';
@@ -45,7 +50,18 @@ export default class GithubReleaseListComponent {
   }
 
   startDownload() {
-    this.#electronService.sendEvent<string>('download-mod', "download-mod-completed", false, this.downloadLink)
+    const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    const downloadModel: DownloadModel = {
+      url: this.downloadLink,
+      akiInstancePath: activeInstance.akiRootDirectory,
+    };
+
+    this.#electronService
+      .sendEvent<string, DownloadModel>('download-mod', 'download-mod-completed', false, downloadModel)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(res => {
         console.log(res);
@@ -61,5 +77,4 @@ export default class GithubReleaseListComponent {
   }
 
   private parseStringAsHtml = (hubViewData: string) => new DOMParser().parseFromString(hubViewData, 'text/html');
-  protected readonly onabort = onabort;
 }

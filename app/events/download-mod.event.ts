@@ -1,29 +1,30 @@
-﻿import { BrowserWindow, ipcMain } from 'electron';
-import * as os from 'os';
+﻿import { ipcMain } from 'electron';
 import * as AdmZip from 'adm-zip';
-import * as path from 'path';
-import fetch from 'electron-fetch';
 import { download } from 'electron-dl';
 import { BrowserWindowSingleton } from '../browserWindow';
+import { DownloadModel } from '../../shared/models/aki-core.model';
+import * as path from 'node:path';
+import * as fs from 'fs';
 
 export const handleDownloadModEvent = () => {
-  ipcMain.on('download-mod', async (event, info) => {
-    const downloadFilePath = path.join(os.homedir(), 'Downloads', 'Test');
-    console.log(downloadFilePath);
-    console.log(info[0]);
+  ipcMain.on('download-mod', async (event, downloadModel: DownloadModel) => {
+    const ankiTempDownloadDir = path.join(downloadModel.akiInstancePath, '_temp');
+    if (!fs.existsSync(ankiTempDownloadDir)) {
+      fs.mkdirSync(ankiTempDownloadDir);
+    }
 
-    var ttt = await download(BrowserWindowSingleton.getInstance(), info[0], { directory: downloadFilePath });
-    console.log(ttt.getSavePath());
-    const zip = new AdmZip(ttt.getSavePath());
-
+    const downloadMod = await download(BrowserWindowSingleton.getInstance(), downloadModel.url, { directory: ankiTempDownloadDir });
+    const zip = new AdmZip(downloadMod.getSavePath());
     zip.getEntries().forEach(f => {
-      console.log(f.name);
-      console.log(f.isDirectory);
-      console.log(f.entryName);
+      if (f.entryName.indexOf('BepInEx/plugins/') === 0) {
+        zip.extractEntryTo(f.entryName, downloadModel.akiInstancePath, true, true);
+      }
     });
 
-    // zip.extractAllTo('C:\\Users\\heene\\Downloads\\Test', true);
-    console.log('Done!');
-    event.sender.send('download-moxd-complete', 'userSettingModelResult');
+    if (fs.existsSync(ankiTempDownloadDir)) {
+      fs.rmdirSync(ankiTempDownloadDir, { recursive: true });
+    }
+
+    event.sender.send('download-mod-complete', 'userSettingModelResult');
   });
 };

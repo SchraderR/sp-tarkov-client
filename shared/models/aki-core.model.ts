@@ -6,3 +6,8 @@
   profileSaveIntervalSeconds: number;
   commit: string;
 }
+
+export interface DownloadModel {
+  url: string;
+  akiInstancePath: string;
+}

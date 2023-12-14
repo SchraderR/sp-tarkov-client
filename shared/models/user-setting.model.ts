@@ -10,4 +10,6 @@ export interface AkiInstance {
 
 export interface UserSettingModel extends AkiInstance {
   akiCore: AkiCore;
+  isActive: boolean;
+  isValid: boolean;
 }

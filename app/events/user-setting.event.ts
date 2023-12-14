@@ -28,6 +28,8 @@ export const handleUserSettingEvent = (store: Store<UserSettingStoreModel>) => {
         userSettingModelResult.push({
           akiRootDirectory: akiInstance.akiRootDirectory,
           akiCore: JSON.parse(akiCoreJson),
+          isValid: true,
+          isActive: false
         });
       } catch (e) {
         // add to object and return a missing path error message
