@@ -4,11 +4,9 @@ import { GithubService } from '../../core/services/github.service';
 import { MatButtonModule } from '@angular/material/button';
 import { ElectronService } from '../../core/services/electron.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpClient } from '@angular/common/http';
-import { UserSettingsService } from "../../core/services/user-settings.service";
-import {DownloadModel} from "../../../../shared/models/aki-core.model";
-
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UserSettingsService } from '../../core/services/user-settings.service';
+import { DownloadModel } from '../../../../shared/models/aki-core.model';
 
 @Component({
   standalone: true,
