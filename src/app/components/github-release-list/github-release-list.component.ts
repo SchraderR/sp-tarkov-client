@@ -31,7 +31,7 @@ export default class GithubReleaseListComponent {
 
   constructor() {
     this.#electronService
-      .sendEvent<string>('download-link', 'download-link-complete')
+      .sendEvent<string>('download-link')
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(res => {
         this.#ngZone.run(() => {
@@ -61,7 +61,7 @@ export default class GithubReleaseListComponent {
     };
 
     this.#electronService
-      .sendEvent<string, DownloadModel>('download-mod', 'download-mod-completed', false, downloadModel)
+      .sendEvent<any, DownloadModel>('download-mod', downloadModel)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(res => {
         console.log(res);

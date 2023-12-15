@@ -1,4 +1,4 @@
-﻿import { app, BrowserWindow } from 'electron';
+﻿import { app } from 'electron';
 import { createMainApiManagementWindow } from './main-window';
 import { BrowserWindowSingleton } from './browserWindow';
 

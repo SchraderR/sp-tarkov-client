@@ -12,7 +12,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   let browserWindow: BrowserWindow | null = new BrowserWindow({
     x: 0,
     y: 0,
-    width: 1600,
+    width: 1200,
     height: 800,
 
     webPreferences: {
@@ -42,6 +42,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     });
   });
 
+  console.log ( isServe );
   if (isServe) {
     const debug = require('electron-debug');
     debug();

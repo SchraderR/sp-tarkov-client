@@ -4,7 +4,7 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { Observable } from 'rxjs';
 import IpcRendererEvent = Electron.IpcRendererEvent;
-import { applicationElectronCompleteEventNames, applicationElectronEventNames } from '../events/electron.events';
+import { applicationElectronEventNames } from '../events/electron.events';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +24,7 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
-  sendEvent<T, C = any>(eventName: applicationElectronEventNames, eventCompleteName: applicationElectronCompleteEventNames, isResponseJson = false, parameter?: C) {
+  sendEvent<T, C = any>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
     return new Observable<null | { event: any; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
@@ -33,7 +33,7 @@ export class ElectronService {
       };
 
       this.ipcRenderer.send(eventName, parameter);
-      this.ipcRenderer.on(eventCompleteName, handler);
+      this.ipcRenderer.on(`${eventName}-completed`, handler);
     });
   }
 

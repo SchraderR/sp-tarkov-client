@@ -6,10 +6,10 @@ export interface UserSettingStoreModel {
 
 export interface AkiInstance {
   akiRootDirectory: string;
+  isValid: boolean;
+  isActive: boolean;
 }
 
 export interface UserSettingModel extends AkiInstance {
   akiCore: AkiCore;
-  isActive: boolean;
-  isValid: boolean;
 }

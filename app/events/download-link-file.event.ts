@@ -21,7 +21,7 @@ export const handleDownloadLinkEvent = () => {
       const newPage: Page = await newPagePromise;
 
       downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
-      event.sender.send('download-link-complete', downloadLink);
+      event.sender.send('download-link-completed', downloadLink);
 
       await browser.close();
     })();

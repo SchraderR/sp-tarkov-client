@@ -18,7 +18,7 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
 
         if (isAKiRootDirectorySoftCheck) {
           store.set('akiInstances', [...store.get('akiInstances'), { akiRootDirectory: selectedPath }]);
-          event.sender.send('open-directory-complete', files);
+          event.sender.send('open-directory-completed', files);
         } else {
           // TODO ERROR HANDLING
           // TODO SOFT CHECK FALSE RE-EVALUATE

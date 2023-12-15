@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { UserSettingModel } from '../../../../shared/models/user-setting.model';
+import {AkiInstance , UserSettingModel} from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,14 +24,28 @@ export default class PersonalSettingComponent {
 
   getRootEftSpDirectory() {
     this.#electronService
-      .sendEvent('open-directory', 'open-directory-complete')
+      .sendEvent('open-directory')
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(value => console.log(value));
   }
 
+
   setActiveInstance(settingModel: UserSettingModel) {
     this.userSettings().forEach(us => us.isActive = false);
-
     settingModel.isActive = !settingModel.isActive;
+
+    const akiInstance: AkiInstance = {
+      isActive: settingModel.isActive,
+      akiRootDirectory: settingModel.akiRootDirectory,
+      isValid: settingModel.isValid
+    };
+
+    this.#electronService
+      .sendEvent('user-settings-update', akiInstance)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(value => {
+        console.log(value);
+      });
+
   }
 }

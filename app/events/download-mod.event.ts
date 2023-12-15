@@ -13,7 +13,11 @@ export const handleDownloadModEvent = () => {
       fs.mkdirSync(ankiTempDownloadDir);
     }
 
-    const downloadMod = await download(BrowserWindowSingleton.getInstance(), downloadModel.url, { directory: ankiTempDownloadDir });
+    const downloadMod = await download(BrowserWindowSingleton.getInstance(), downloadModel.url, {
+      directory: ankiTempDownloadDir,
+      onProgress: progress => event.sender.send('download-mod-completed', progress),
+    });
+
     const zip = new AdmZip(downloadMod.getSavePath());
     zip.getEntries().forEach(f => {
       if (f.entryName.indexOf('BepInEx/plugins/') === 0) {

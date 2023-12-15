@@ -40,8 +40,11 @@ export class AppComponent {
 
   private getCurrentPersonalSettings() {
     this.#electronService
-      .sendEvent<UserSettingModel[]>('user-settings', 'user-settings-complete')
+      .sendEvent<UserSettingModel[]>('user-settings')
       .pipe(takeUntilDestroyed())
-      .subscribe(res => this.#userSettingService.setUserSetting(res!.args));
+      .subscribe(res => {
+        console.log ( res!.args );
+        this.#userSettingService.setUserSetting(res!.args);
+      });
   }
 }
