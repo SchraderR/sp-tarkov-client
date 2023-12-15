@@ -1,12 +1,13 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import {AkiInstance , UserSettingModel} from '../../../../shared/models/user-setting.model';
+import { AkiInstance, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
+import { switchMap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -19,33 +20,51 @@ export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
+  #ngZone = inject(NgZone);
+  #changeDetectorRef = inject(ChangeDetectorRef);
 
   readonly userSettings = this.#userSettingsService.userSettingSignal;
 
   getRootEftSpDirectory() {
     this.#electronService
       .sendEvent('open-directory')
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(value => console.log(value));
+      .pipe(
+        switchMap(() => this.#electronService.sendEvent<UserSettingModel[]>('user-settings')),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe(result => this.updateUserSettingAndDetectChanges(result?.args || []));
   }
 
-
   setActiveInstance(settingModel: UserSettingModel) {
-    this.userSettings().forEach(us => us.isActive = false);
+    this.userSettings().forEach(us => (us.isActive = false));
     settingModel.isActive = !settingModel.isActive;
 
     const akiInstance: AkiInstance = {
       isActive: settingModel.isActive,
       akiRootDirectory: settingModel.akiRootDirectory,
-      isValid: settingModel.isValid
+      isValid: settingModel.isValid,
     };
 
     this.#electronService
       .sendEvent('user-settings-update', akiInstance)
       .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(value => {
-        console.log(value);
-      });
+      .subscribe(value => console.log(value));
+  }
 
+  removeInstance(settingModel: UserSettingModel) {
+    this.#electronService
+      .sendEvent('user-settings-remove', settingModel.akiRootDirectory)
+      .pipe(
+        switchMap(() => this.#electronService.sendEvent<UserSettingModel[]>('user-settings')),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe(result => this.updateUserSettingAndDetectChanges(result?.args || []));
+  }
+
+  private updateUserSettingAndDetectChanges(userSettings: UserSettingModel[]) {
+    this.#ngZone.run(() => {
+      this.#userSettingsService.setUserSetting(userSettings);
+      this.#changeDetectorRef.detectChanges();
+    });
   }
 }

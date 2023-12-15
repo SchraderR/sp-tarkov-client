@@ -11,10 +11,24 @@ export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>
   });
 
   ipcMain.on('user-settings-update', (event, akiInstance: AkiInstance) => {
-    console.log ( akiInstance );
     handleUpdateUserSettingStoreEvent(event, store, akiInstance);
   });
+
+  ipcMain.on('user-settings-remove', (event, akiRootDirectory: string) => {
+    handleRemoveUserSettingStoreEvent(event, store, akiRootDirectory);
+  });
 };
+
+function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiRootDirectory: string) {
+  const index = store.get('akiInstances').findIndex(i => i.akiRootDirectory === akiRootDirectory);
+  if (index === -1) {
+    // TODO Exception
+    return;
+  }
+
+  store.set(`akiInstances.${index}`, {});
+  event.sender.send('user-settings-remove-completed');
+}
 
 function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiInstance: AkiInstance) {
   const index = store.get('akiInstances').findIndex(i => i.akiRootDirectory === akiInstance.akiRootDirectory);

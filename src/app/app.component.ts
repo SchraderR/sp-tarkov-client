@@ -42,9 +42,6 @@ export class AppComponent {
     this.#electronService
       .sendEvent<UserSettingModel[]>('user-settings')
       .pipe(takeUntilDestroyed())
-      .subscribe(res => {
-        console.log ( res!.args );
-        this.#userSettingService.setUserSetting(res!.args);
-      });
+      .subscribe(res => this.#userSettingService.setUserSetting(res!.args));
   }
 }

@@ -7,7 +7,10 @@
       <div>Root-Path: {{ settingModel.akiRootDirectory }}</div>
       <div>Root-Path: {{ settingModel.isActive }}</div>
       <button mat-icon-button (click)="setActiveInstance(settingModel)">
-        <mat-icon>{{ settingModel.isActive ? 'star' : 'edit' }}</mat-icon>
+        <mat-icon [class.fill]="settingModel.isActive">{{ settingModel.isActive ? 'star' : 'edit' }}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="removeInstance(settingModel)">
+        <mat-icon>delete</mat-icon>
       </button>
     </mat-card-content>
   </mat-card>
