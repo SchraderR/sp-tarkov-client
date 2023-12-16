@@ -7,6 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { DownloadModel } from '../../../../shared/models/aki-core.model';
+import {HtmlHelper} from "../../core/helper/html-helper";
 
 @Component({
   standalone: true,
@@ -41,7 +42,7 @@ export default class GithubReleaseListComponent {
       .get('https://hub.sp-tarkov.com/files/file/813', { responseType: 'text' })
       .pipe(takeUntilDestroyed())
       .subscribe(hubViewString => {
-        const hubViewHtml = this.parseStringAsHtml(hubViewString);
+        const hubViewHtml = HtmlHelper.parseStringAsHtml(hubViewString);
         this.setModTitle(hubViewHtml);
       });
   }
@@ -60,9 +61,7 @@ export default class GithubReleaseListComponent {
     this.#electronService
       .sendEvent<any, DownloadModel>('download-mod', downloadModel)
       .pipe(takeUntilDestroyed())
-      .subscribe(res => {
-        console.log(res);
-      });
+      .subscribe(res => console.log(res));
   }
 
   private setModTitle(htmlDoc: Document) {
@@ -72,6 +71,4 @@ export default class GithubReleaseListComponent {
       this.title = this.title.replace(' - AKI Mods Workshop', '');
     }
   }
-
-  private parseStringAsHtml = (hubViewData: string) => new DOMParser().parseFromString(hubViewData, 'text/html');
 }

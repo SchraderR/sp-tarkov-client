@@ -13,7 +13,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     x: 0,
     y: 0,
     width: 1200,
-    height: 800,
+    height: 630,
 
     webPreferences: {
       nodeIntegration: true,

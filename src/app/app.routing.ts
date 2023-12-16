@@ -14,4 +14,8 @@ export const appRoutes: Routes = [
     path: 'setting',
     loadComponent: () => import('./components/personal-setting/personal-setting.component'),
   },
+  {
+    path: 'top-rated',
+    loadComponent: () => import('./components/top-rated/top-rated.component'),
+  },
 ];
