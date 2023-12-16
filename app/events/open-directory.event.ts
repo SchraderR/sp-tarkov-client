@@ -15,6 +15,11 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
       if (fs.existsSync(selectedPath)) {
         const files = fs.readdirSync(selectedPath);
         const isAKiRootDirectorySoftCheck = files.some(f => f === stableAkiServerName);
+        const isNewInstance = store.get('akiInstances').find(i => i.akiRootDirectory === selectedPath);
+        if (isNewInstance) {
+          // TODO Error handling and check invalid paths?
+          return;
+        }
 
         if (isAKiRootDirectorySoftCheck) {
           store.set('akiInstances', [...store.get('akiInstances'), { akiRootDirectory: selectedPath }]);

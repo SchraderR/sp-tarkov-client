@@ -4,7 +4,7 @@ import { GithubService } from '../../core/services/github.service';
 import { MatButtonModule } from '@angular/material/button';
 import { ElectronService } from '../../core/services/electron.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { DownloadModel } from '../../../../shared/models/aki-core.model';
 
@@ -17,11 +17,10 @@ import { DownloadModel } from '../../../../shared/models/aki-core.model';
   providers: [GithubService],
 })
 export default class GithubReleaseListComponent {
-  #destroyRef = inject(DestroyRef);
-  #electronService = inject(ElectronService);
-  #changeDetectorRef = inject(ChangeDetectorRef);
   #ngZone = inject(NgZone);
   #httpClient = inject(HttpClient);
+  #electronService = inject(ElectronService);
+  #changeDetectorRef = inject(ChangeDetectorRef);
   #userSettingsService = inject(UserSettingsService);
 
   title = '';
@@ -30,7 +29,7 @@ export default class GithubReleaseListComponent {
   constructor() {
     this.#electronService
       .sendEvent<string>('download-link')
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(res => {
         this.#ngZone.run(() => {
           this.downloadLink = res!.args;
@@ -40,7 +39,7 @@ export default class GithubReleaseListComponent {
 
     this.#httpClient
       .get('https://hub.sp-tarkov.com/files/file/813', { responseType: 'text' })
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(hubViewString => {
         const hubViewHtml = this.parseStringAsHtml(hubViewString);
         this.setModTitle(hubViewHtml);
@@ -60,7 +59,7 @@ export default class GithubReleaseListComponent {
 
     this.#electronService
       .sendEvent<any, DownloadModel>('download-mod', downloadModel)
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(takeUntilDestroyed())
       .subscribe(res => {
         console.log(res);
       });

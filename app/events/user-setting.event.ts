@@ -26,18 +26,22 @@ function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
     return;
   }
 
-  store.set(`akiInstances.${index}`, {});
+  const currentSetting = store.get('akiInstances').filter(i => i.akiRootDirectory !== akiRootDirectory);
+  store.set('akiInstances', currentSetting);
   event.sender.send('user-settings-remove-completed');
 }
 
 function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiInstance: AkiInstance) {
-  const index = store.get('akiInstances').findIndex(i => i.akiRootDirectory === akiInstance.akiRootDirectory);
-  if (index === -1) {
+  const currentIndex = store.get('akiInstances').findIndex(i => i.akiRootDirectory === akiInstance.akiRootDirectory);
+  if (currentIndex === -1) {
     // TODO Exception
     return;
   }
 
-  store.set(`akiInstances.${index}`, akiInstance);
+  const instances = store.get('akiInstances');
+  instances.forEach(i => i.isActive = i.akiRootDirectory === akiInstance.akiRootDirectory)
+  store.set('akiInstances', instances);
+
   event.sender.send('user-settings-update-completed');
 }
 
