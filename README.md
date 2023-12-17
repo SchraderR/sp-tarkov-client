@@ -2,7 +2,7 @@
 
 - Add strong caching to store request and the results
   - Caching in local storage
-  - caching in persistent storage?
+  - caching in  persistent storage?
     - time based automatic refresh? (fetchDate <= Date + 1) auto refetch
     - add manually refresh
 - Add download response and show current progress
