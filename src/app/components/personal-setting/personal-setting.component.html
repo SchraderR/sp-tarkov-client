@@ -5,9 +5,8 @@
     <mat-card-content>
       <div>Aki-SP Version: {{ settingModel.akiCore.akiVersion }}</div>
       <div>Root-Path: {{ settingModel.akiRootDirectory }}</div>
-      <div>Root-Path: {{ settingModel.isActive }}</div>
       <button mat-icon-button (click)="setActiveInstance(settingModel)">
-        <mat-icon [class.fill]="settingModel.isActive">{{ settingModel.isActive ? 'star' : 'edit' }}</mat-icon>
+        <mat-icon [class.fill]="settingModel.isActive">star</mat-icon>
       </button>
       <button mat-icon-button (click)="removeInstance(settingModel)">
         <mat-icon>delete</mat-icon>

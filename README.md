@@ -11,3 +11,6 @@
   - overview (cached) with names and action to download
 - Add "top reviewed" -> https://hub.sp-tarkov.com/files/?pageNo=1&sortField=cumulativeLikes&sortOrder=DESC
 - Add search for mods and jump to client mod download page
+- Release on GitHub
+- Instances with amount of client and server mods
+  - List of mods with version and more
