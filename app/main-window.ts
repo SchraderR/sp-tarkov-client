@@ -12,9 +12,11 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   let browserWindow: BrowserWindow | null = new BrowserWindow({
     x: 0,
     y: 0,
-    width: 1200,
-    height: 630,
-
+    width: 1345,
+    height: 590,
+    autoHideMenuBar: true,
+    frame: true,
+    titleBarStyle: "hidden",
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: isServe,
@@ -22,6 +24,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     },
   });
 
+  browserWindow.setMenu(null);
   browserWindow.webContents.openDevTools();
 
   // browserWindow.webContents.on('will-navigate', function (event, newUrl) {

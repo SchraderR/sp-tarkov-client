@@ -1,0 +1,15 @@
+mat-card {
+  max-height: 144px;
+
+  mat-card-content {
+    padding: unset;
+    > img {
+      border-bottom-left-radius: 4px;
+      border-top-left-radius: 4px;
+    }
+  }
+}
+
+.image-shadow {
+  box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3)
+}

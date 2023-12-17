@@ -17,3 +17,12 @@ $additionalPadding: 16px;
 .sidenav {
   padding: 20px;
 }
+
+.draggable-header {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  -webkit-app-region: drag;
+  cursor: grab
+}

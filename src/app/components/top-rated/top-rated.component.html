@@ -1,0 +1,20 @@
+<div style="display: flex; gap: 16px; flex-wrap: wrap;">
+  <mat-card style="flex: 0 0 calc(33.333% - 16px);" *ngFor="let modItem of accumulatedModList">
+    <mat-card-content style="display: flex; flex-direction: row">
+      <img class="image-shadow" [ngSrc]="modItem.modIcon" height="144" width="144" alt="">
+      <div style="display: flex; width: 100%; flex-direction: column">
+        <strong style="display: flex; justify-content: center; padding: 8px 8px">{{ modItem.modName }}</strong>
+        <span style="flex: 1 1 auto;"></span>
+        <div>
+          <button mat-icon-button matTooltip="Download and Install">
+            <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button (click)="openExternal(modItem.modFileUrl)" matTooltip="Open external">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
