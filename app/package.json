@@ -6,9 +6,15 @@
   "private": true,
   "dependencies": {
     "@types/adm-zip": "^0.5.5",
+    "@types/puppeteer": "7.0.4",
     "adm-zip": "^0.5.10",
     "electron-dl": "^3.5.1",
-    "electron-reload": "^2.0.0-alpha.1"
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-store": "8.1.0",
+    "node-powershell": "^5.0.1",
+    "puppeteer": "20.8.1",
+    "ts-node": "10.9.2",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@types/node": "^20.10.4"

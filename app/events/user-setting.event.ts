@@ -4,10 +4,12 @@ import * as Store from 'electron-store';
 import * as path from 'path';
 import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableAkiCoreConfigPath } from '../shared/constants';
+import { PowerShell } from 'node-powershell';
+import { spawn } from 'child_process';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('user-settings', event => {
-    handleUserSettingStoreEvent(event, store);
+  ipcMain.on('user-settings', async event => {
+    await handleUserSettingStoreEvent(event, store);
   });
 
   ipcMain.on('user-settings-update', (event, akiInstance: AkiInstance) => {
@@ -39,13 +41,13 @@ function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
   }
 
   const instances = store.get('akiInstances');
-  instances.forEach(i => i.isActive = i.akiRootDirectory === akiInstance.akiRootDirectory)
+  instances.forEach(i => (i.isActive = i.akiRootDirectory === akiInstance.akiRootDirectory));
   store.set('akiInstances', instances);
 
   event.sender.send('user-settings-update-completed');
 }
 
-function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>) {
+async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>) {
   const akiInstances = store.get('akiInstances');
   if (!akiInstances || akiInstances.length === 0) {
     // TODO ERROR HANDLING
@@ -73,7 +75,20 @@ function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<
       // add to object and return a missing path error message
     }
   }
-
   event.sender.send('user-settings-completed', userSettingModelResult);
+  const tttttt = await getVersion('F:\\EFT_SP_Playground\\BepInEx\\plugins\\spt\\AmandsGraphics.dll');
+  event.sender.send('user-settings-completed', tttttt.toString());
+
   return;
+}
+
+async function getVersion(dllFilePath: string) {
+  const exec = require('util').promisify(require('child_process').exec);
+  const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
+
+  if (stderr) {
+    return stderr;
+  }
+
+  return stdout;
 }

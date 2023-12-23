@@ -2,7 +2,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
-import puppeteer from 'puppeteer';
 
 export const createMainApiManagementWindow = (isServe: boolean): void => {
   console.log('createMainApiManagementWindow');
@@ -44,13 +43,13 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       },
     });
   });
+  require('electron-reload');
 
   console.log ( isServe );
   if (isServe) {
     const debug = require('electron-debug');
     debug();
 
-    require('electron-reloader')(module);
     browserWindow.loadURL('http://localhost:4200');
   } else {
     // Path when running electron executable

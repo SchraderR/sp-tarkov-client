@@ -41,7 +41,6 @@
     "@angular/router": "17.0.7",
     "@fontsource/roboto": "^4.5.8",
     "@ngneat/transloco": "4.2.2",
-    "electron-store": "8.1.0",
     "material-symbols": "^0.5.5",
     "rxjs": "7.8.1",
     "tslib": "^2.5.0",
@@ -63,14 +62,13 @@
     "@types/jasmine": "4.3.1",
     "@types/jasminewd2": "2.0.10",
     "@types/node": "18.16.9",
-    "@types/puppeteer": "7.0.4",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "conventional-changelog-cli": "2.2.2",
-    "electron": "24.3.0",
-    "electron-builder": "24.4.0",
+    "electron": "28.1.0",
+    "electron-builder": "24.9.1",
     "electron-debug": "3.2.0",
-    "electron-reloader": "1.2.3",
+    "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^8.53.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsdoc": "44.2.3",
@@ -84,18 +82,11 @@
     "karma-jasmine-html-reporter": "2.0.0",
     "node-polyfill-webpack-plugin": "2.0.1",
     "npm-run-all": "4.1.5",
-    "playwright": "1.33.0",
-    "prettier": "2.8.8",
-    "puppeteer": "20.8.1",
-    "ts-node": "10.9.1",
+    "playwright": "1.40.1",
+    "prettier": "3.1.1",
+    "ts-node": "10.9.2",
     "typescript": "~5.2.2",
     "wait-on": "7.0.1",
     "webdriver-manager": "12.1.9"
-  },
-  "engines": {
-    "node": ">= 14.20.0 || >= 16.13.0 || >= 18.10.0"
-  },
-  "browserslist": [
-    "chrome 112"
-  ]
+  }
 }

@@ -29,7 +29,8 @@ export class ElectronService {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
         observer.next({ event, args: argsParsed });
-        observer.complete();
+        // TODO Check if its save to remove -> Memory Leak?
+        // observer.complete();
       };
 
       this.ipcRenderer.send(eventName, parameter);
