@@ -2,7 +2,7 @@
   <mat-label>Search for SP Aki Mods</mat-label>
   <input matInput aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete">
-    @for (mod of filteredStates | async; track mod) {
+    @for (mod of filteredModItems | async; track mod) {
       <mat-option [value]="mod.modName">
         <div style="display: flex">
           <img alt="" class="example-option-img" [ngSrc]="mod.modImage" width="50" height="50" />
