@@ -21,11 +21,10 @@ export class ModListService {
     }
 
     this.modList().push(modItem);
-    console.log(this.modList());
   }
 
   deleteModToModList(modItem: ModItem) {
-    this.modList.set(this.modList().filter(m => m.modName !== modItem.modName));
-    console.log(this.modList());
+    const index = this.modList().findIndex(m => m === modItem);
+    this.modList().splice(index, 1);
   }
 }

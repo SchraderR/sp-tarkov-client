@@ -3,17 +3,22 @@
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete">
     @for (mod of filteredModItems | async; track mod) {
-      <mat-option [value]="mod.modName">
-        <div style="display: flex">
+      <mat-option [value]="mod.modName" [classList]="'full-width'">
+        <div style="display: flex; width: 100%;">
           <img alt="" class="example-option-img" [ngSrc]="mod.modImage" width="50" height="50" />
-          <div style="display: flex; flex-direction: column; padding-left: 8px">
-            <span class="one-line-clamp">{{ mod.modName }}</span>
+          <div style="display: flex; flex-direction: column; padding-left: 8px; overflow: auto">
+            <span class="text-ellipsis">{{ mod.modName }}</span>
             <span class="x-small">{{ mod.modKind }}</span>
           </div>
           <span class="spacer"></span>
-          <button style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
+
+          <button *ngIf="!isInModList(mod.modName)" style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
             <mat-icon>add</mat-icon>
           </button>
+          <button *ngIf="isInModList(mod.modName)" style="justify-content: center; align-items: end" mat-icon-button (click)="removeModFromModlist($event, mod)">
+            <mat-icon>delete</mat-icon>
+          </button>
+
         </div>
       </mat-option>
     }

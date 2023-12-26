@@ -46,7 +46,8 @@ export class AppComponent {
   #modListService = inject(ModListService);
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
-  modListSize = this.#modListService.modListSignal();
+
+  modListSignal = this.#modListService.modListSignal();
 
   constructor() {
     // TODO Maybe Routen End Event Close Dialog

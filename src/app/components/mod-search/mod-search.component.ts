@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe, NgOptimizedImage } from '@angular/common';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { AsyncPipe, NgIf, NgOptimizedImage } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -24,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
+    NgIf,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
@@ -34,6 +35,9 @@ export class ModSearchComponent {
 
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Observable<ModItem[]>;
+  modListSignal = this.#modListService.modListSignal();
+
+  isInModList = (modName: string) => this.modListSignal.some(m => m.modName === modName);
 
   constructor() {
     this.filteredModItems = this.searchControl.valueChanges.pipe(
@@ -48,5 +52,11 @@ export class ModSearchComponent {
     event.stopPropagation();
 
     this.#modListService.addModToModList(mod);
+  }
+
+  removeModFromModlist(event: MouseEvent, mod: ModItem) {
+    event.stopPropagation();
+
+    this.#modListService.deleteModToModList(mod);
   }
 }

@@ -28,12 +28,22 @@ body {
   }
 }
 
+.full-width {
+  width: 100%;
+}
+
 .spacer {
   flex: 1 1 auto;
 }
 
 .x-small {
   font-size: x-small;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .one-line-clamp {
