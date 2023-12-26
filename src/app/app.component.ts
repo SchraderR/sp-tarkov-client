@@ -16,6 +16,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { debounceTime, filter, Observable, startWith, switchMap } from 'rxjs';
 import { AkiSearchService } from './core/services/aki-search.service';
+import { ModSearchComponent } from './components/mod-search/mod-search.component';
 
 export interface ModSearchItem {
   modName: string;
@@ -41,18 +42,15 @@ export interface ModSearchItem {
     ReactiveFormsModule,
     MatAutocompleteModule,
     NgOptimizedImage,
+    ModSearchComponent,
   ],
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
   #electronService = inject(ElectronService);
   #userSettingService = inject(UserSettingsService);
-  #akiSearchService = inject(AkiSearchService);
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
-
-  searchControl = new FormControl('', [Validators.required]);
-  filteredStates: Observable<ModSearchItem[]>;
 
   constructor() {
     // TODO Maybe Routen End Event Close Dialog
@@ -60,13 +58,6 @@ export class AppComponent {
 
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
-
-    this.filteredStates = this.searchControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(500),
-      filter(value => !!value),
-      switchMap(searchArgument => this.#akiSearchService.searchMods(searchArgument!))
-    );
   }
 
   toggleDrawer() {
