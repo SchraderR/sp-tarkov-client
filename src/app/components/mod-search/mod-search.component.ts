@@ -20,10 +20,10 @@ export class ModSearchComponent {
   #akiSearchService = inject(AkiSearchService);
 
   searchControl = new FormControl('');
-  filteredStates: Observable<ModSearchItem[]>;
+  filteredModItems: Observable<ModSearchItem[]>;
 
   constructor() {
-    this.filteredStates = this.searchControl.valueChanges.pipe(
+    this.filteredModItems = this.searchControl.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
       filter(value => !!value),
