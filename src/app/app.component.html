@@ -14,6 +14,9 @@
     <h1 class="draggable-header">SP-Tarkov Management Tool</h1>
     <span class="spacer"> </span>
     <app-mod-search style="width: 65%" />
+    <button mat-icon-button routerLink="mod-list"  style="margin-left: 16px">
+      <mat-icon [matBadge]="modListSize.length" matBadgeColor="accent">list</mat-icon>
+    </button>
   </mat-toolbar>
 
   <div class="drawer-content">

@@ -1,6 +1,6 @@
 <mat-form-field color="accent" class="search-input" appearance="outline" subscriptSizing="dynamic">
   <mat-label>Search for SP Aki Mods</mat-label>
-  <input matInput aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
+  <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete">
     @for (mod of filteredModItems | async; track mod) {
       <mat-option [value]="mod.modName">
@@ -10,6 +10,10 @@
             <span class="one-line-clamp">{{ mod.modName }}</span>
             <span class="x-small">{{ mod.modKind }}</span>
           </div>
+          <span class="spacer"></span>
+          <button style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
       </mat-option>
     }

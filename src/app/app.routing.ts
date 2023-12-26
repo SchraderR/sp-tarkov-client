@@ -18,4 +18,8 @@ export const appRoutes: Routes = [
     path: 'top-rated',
     loadComponent: () => import('./components/top-rated/top-rated.component'),
   },
+  {
+    path: 'mod-list',
+    loadComponent: () => import('./components/mod-list/mod-list.component'),
+  },
 ];
