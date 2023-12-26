@@ -1,4 +1,4 @@
-import { Component , inject , OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { HtmlHelper } from '../../core/helper/html-helper';
@@ -36,8 +36,8 @@ export default class TopRatedComponent {
       .get('https://hub.sp-tarkov.com/files?pageNo=1&sortField=cumulativeLikes&sortOrder=DESC', { responseType: 'text' })
       .pipe(takeUntilDestroyed())
       .subscribe(pestRatedViewString => {
-        const pestRatedView = HtmlHelper.parseStringAsHtml(pestRatedViewString);
-        const modList = Array.from(pestRatedView.body.getElementsByClassName('filebaseFileCard'));
+        const topRatedView = HtmlHelper.parseStringAsHtml(pestRatedViewString);
+        const modList = topRatedView.body.getElementsByClassName('filebaseFileCard');
 
         this.accumulatedModList = Array.from(modList)
           .map(e => ({
@@ -50,8 +50,6 @@ export default class TopRatedComponent {
         console.log(this.accumulatedModList);
       });
   }
-
-  ngOnInit() {}
 
   openExternal(modFileUrl: string) {
     void this.#electronService.shell.openExternal(modFileUrl);

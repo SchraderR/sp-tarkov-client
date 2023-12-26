@@ -2,10 +2,6 @@
   "name": "sp-tarkov-client",
   "version": "0.0.1",
   "description": "EFT-SP Management Tool",
-  "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
-  },
   "main": "app/main.js",
   "private": true,
   "scripts": {

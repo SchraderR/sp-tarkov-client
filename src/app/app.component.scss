@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 $toolbar-height: 64px;
 $additionalPadding: 16px;
 
@@ -24,5 +26,14 @@ $additionalPadding: 16px;
   width: 100%;
   align-items: center;
   -webkit-app-region: drag;
-  cursor: grab
+  cursor: grab;
+}
+
+.mat-mdc-option {
+  padding: 8px;
+}
+
+.search-input::ng-deep {
+  width: 100%;
+  @include mat.form-field-density(-5);
 }

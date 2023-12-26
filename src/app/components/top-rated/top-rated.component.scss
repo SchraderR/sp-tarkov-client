@@ -1,4 +1,11 @@
+:host {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 mat-card {
+  flex: 0 0 calc(33.333% - 16px);
   max-height: 144px;
 
   mat-card-content {
@@ -11,5 +18,23 @@ mat-card {
 }
 
 .image-shadow {
-  box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3)
+  box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.mod-name {
+  justify-content: center;
+  padding-top: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.mod-list-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: row;
 }

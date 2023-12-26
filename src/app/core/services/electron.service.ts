@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ipcRenderer, webFrame } from 'electron';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import { Observable } from 'rxjs';
+import { EMPTY , Observable } from 'rxjs';
 import IpcRendererEvent = Electron.IpcRendererEvent;
 import { applicationElectronEventNames } from '../events/electron.events';
 

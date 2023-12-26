@@ -7,11 +7,32 @@
     </mat-list>
   </mat-drawer>
 
-  <mat-toolbar >
+  <mat-toolbar>
     <button mat-icon-button (click)="toggleDrawer()">
       <mat-icon>menu</mat-icon>
     </button>
     <h1 class="draggable-header">SP-Tarkov Management Tool</h1>
+    <span class="spacer"> </span>
+
+    <div style="justify-content: center; display: flex; width: 50%">
+      <mat-form-field color="accent" class="search-input" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>State</mat-label>
+        <input matInput aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
+        <mat-autocomplete #auto="matAutocomplete">
+          @for (mod of filteredStates | async; track mod) {
+            <mat-option [value]="mod.modName">
+              <div style="display: flex">
+                <img alt="" class="example-option-img" [ngSrc]="mod.modImage" width="50" height="50" />
+                <div style="display: flex; flex-direction: column; padding-left: 8px">
+                  <span class="one-line-clamp">{{ mod.modName }}</span>
+                  <span style="font-size: x-small">{{ mod.modKind }}</span>
+                </div>
+              </div>
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
   </mat-toolbar>
 
   <div class="drawer-content">

@@ -76,10 +76,10 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
     }
   }
   event.sender.send('user-settings-completed', userSettingModelResult);
-  const tttttt = await getVersion('F:\\EFT_SP_Playground\\BepInEx\\plugins\\spt\\AmandsGraphics.dll');
-  event.sender.send('user-settings-completed', tttttt.toString());
-
   return;
+
+  // const tttttt = await getVersion('F:\\EFT_SP_Playground\\BepInEx\\plugins\\spt\\AmandsGraphics.dll');
+  // event.sender.send('user-settings-completed', tttttt.toString());
 }
 
 async function getVersion(dllFilePath: string) {
