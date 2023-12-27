@@ -4,7 +4,11 @@
   padding: 8px;
 }
 
-.search-input::ng-deep {
+::ng-deep.search-input{
   width: 100%;
   @include mat.form-field-density(-5);
+}
+
+::ng-deep.mdc-list-item__primary-text {
+  width: 100%;
 }
