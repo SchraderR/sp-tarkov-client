@@ -1,0 +1,9 @@
+:host {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+app-mod-card {
+  width: 100%;
+}

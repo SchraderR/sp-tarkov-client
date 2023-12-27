@@ -1,1 +1,3 @@
-<p>mod-list works!</p>
+@for (mod of modListSignal; track mod.modName) {
+  <app-mod-card [modItem]="mod" />
+}
