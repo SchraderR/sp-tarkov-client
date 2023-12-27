@@ -8,8 +8,8 @@
 - Add download response and show current progress
 - Add "most loaded" -> https://hub.sp-tarkov.com/files/?pageNo=1&sortField=downloads&sortOrder=DESC
   - overview (cached) with names and action to download
-- Add "top reviewed" -> https://hub.sp-tarkov.com/files/?pageNo=1&sortField=cumulativeLikes&sortOrder=DESC
-- Add search for mods and jump to client mod download page
+- ~~Add "top reviewed" -> https://hub.sp-tarkov.com/files/?pageNo=1&sortField=cumulativeLikes&sortOrder=DESC~~
+- ~~Add search for mods and jump to client mod download page~~
 
 
 ## Medium
