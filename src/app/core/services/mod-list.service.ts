@@ -24,7 +24,7 @@ export class ModListService {
   }
 
   deleteModToModList(modItem: ModItem) {
-    const index = this.modList().findIndex(m => m === modItem);
+    const index = this.modList().findIndex(m => m.modName === modItem.modName);
     this.modList().splice(index, 1);
   }
 }
