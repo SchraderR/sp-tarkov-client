@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ipcRenderer, webFrame } from 'electron';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import { EMPTY , Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import IpcRendererEvent = Electron.IpcRendererEvent;
 import { applicationElectronEventNames } from '../events/electron.events';
 
@@ -29,12 +29,23 @@ export class ElectronService {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
         observer.next({ event, args: argsParsed });
-        // TODO Check if its save to remove -> Memory Leak?
-        // observer.complete();
+        observer.complete();
       };
 
       this.ipcRenderer.send(eventName, parameter);
       this.ipcRenderer.on(`${eventName}-completed`, handler);
+    });
+  }
+
+  getDownloadModProgress(fileId: string): Observable<any> {
+    return new Observable(observer => {
+      this.ipcRenderer.on(`download-mod-progress-${fileId}`, (event, args) => {
+        if (args.percent === 1) {
+          observer.next(args);
+          observer.complete();
+        }
+        observer.next(args);
+      });
     });
   }
 

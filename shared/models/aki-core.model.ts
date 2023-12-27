@@ -8,6 +8,7 @@
 }
 
 export interface DownloadModel {
-  url: string;
+  fileId: string;
+  modFileUrl: string;
   akiInstancePath: string;
 }

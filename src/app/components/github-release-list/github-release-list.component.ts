@@ -48,20 +48,7 @@ export default class GithubReleaseListComponent {
   }
 
   startDownload() {
-    const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
-    if (!activeInstance) {
-      return;
-    }
 
-    const downloadModel: DownloadModel = {
-      url: this.downloadLink,
-      akiInstancePath: activeInstance.akiRootDirectory,
-    };
-
-    this.#electronService
-      .sendEvent<any, DownloadModel>('download-mod', downloadModel)
-      .pipe(takeUntilDestroyed())
-      .subscribe(res => console.log(res));
   }
 
   private setModTitle(htmlDoc: Document) {
