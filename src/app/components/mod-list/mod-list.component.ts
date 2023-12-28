@@ -12,11 +12,11 @@ import { firstValueFrom } from 'rxjs';
 import { DownloadModel } from '../../../../shared/models/aki-core.model';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ApplicationElectronFileError } from '../../core/events/electron.events';
-import { MatProgressBarDefaultOptions } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-mod-list',
   standalone: true,
+  // TODO REMOVE?
   providers: [ElectronService],
   imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgForOf, NgOptimizedImage, ModCardComponent],
   templateUrl: './mod-list.component.html',
