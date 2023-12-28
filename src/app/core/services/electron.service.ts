@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { ipcRenderer, webFrame } from 'electron';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import { EMPTY, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { applicationElectronEventNames, ApplicationElectronFileError, applicationElectronFileProgressEventNames } from '../events/electron.events';
+import { ModDownloadProgress } from '../../components/mod-card/mod-card.component';
 import IpcRendererEvent = Electron.IpcRendererEvent;
-import { applicationElectronEventNames } from '../events/electron.events';
 
 @Injectable({
   providedIn: 'root',
@@ -34,18 +35,21 @@ export class ElectronService {
 
       this.ipcRenderer.send(eventName, parameter);
       this.ipcRenderer.on(`${eventName}-completed`, handler);
+      this.ipcRenderer.on(`${eventName}-error`, (_, error: ApplicationElectronFileError) => observer.error(error));
     });
   }
 
-  getDownloadModProgress(fileId: string): Observable<any> {
+  getDownloadModProgressForFileId(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<ModDownloadProgress> {
     return new Observable(observer => {
-      this.ipcRenderer.on(`download-mod-progress-${fileId}`, (event, args) => {
+      const handler = (_: IpcRendererEvent, args: ModDownloadProgress) => {
         if (args.percent === 1) {
           observer.next(args);
           observer.complete();
         }
         observer.next(args);
-      });
+      };
+
+      this.ipcRenderer.on(`${eventName}`, handler);
     });
   }
 

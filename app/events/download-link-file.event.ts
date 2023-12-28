@@ -2,20 +2,24 @@
 import { Page, launch, Browser } from 'puppeteer';
 import { DownloadModel } from '../../shared/models/aki-core.model';
 
+export interface EventFileArgs<T = any> {
+  fileId: string;
+  parameter: T;
+}
+
 export const handleDownloadLinkEvent = () => {
-  ipcMain.on('download-link', (event, modFileId: string) => {
+  ipcMain.on('download-link', (event, fileId: string) => {
     let downloadLink = null;
-    console.log(modFileId);
 
     (async () => {
       const browser = await launch({ headless: 'new' });
       const page = await browser.newPage();
 
-      await page.goto(`https://hub.sp-tarkov.com/files/license/${modFileId}`, { waitUntil: 'networkidle2' });
+      await page.goto(`https://hub.sp-tarkov.com/files/license/${fileId}`, { waitUntil: 'networkidle2' });
       await page.click('[name="confirm"]');
       await page.click('div.formSubmit input[type="submit"]');
 
-      await page.goto(`https://hub.sp-tarkov.com/files/file/${modFileId}`, { waitUntil: 'networkidle2' });
+      await page.goto(`https://hub.sp-tarkov.com/files/file/${fileId}`, { waitUntil: 'networkidle2' });
       await page.click('a.button.buttonPrimary.externalURL');
 
       const newPagePromise = getNewPageWhenLoaded(browser);

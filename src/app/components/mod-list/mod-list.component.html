@@ -1,3 +1,5 @@
 @for (mod of modListSignal; track mod.modName) {
-  <app-mod-card [modItem]="mod" />
+  <app-mod-card [modItemDownloadProgress]="mod"  />
 }
+
+<button mat-raised-button color="accent" (click)="downloadAndInstall()">Download</button>

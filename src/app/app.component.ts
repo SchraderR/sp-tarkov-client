@@ -21,6 +21,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 @Component({
   standalone: true,
   selector: 'app-root',
+  providers: [ElectronService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   imports: [
@@ -41,7 +42,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
-  #electronService = inject(ElectronService);
+  #electronService = inject(ElectronService, { self: true });
   #userSettingService = inject(UserSettingsService);
   #modListService = inject(ModListService);
 

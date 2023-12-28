@@ -28,16 +28,6 @@ export default class GithubReleaseListComponent {
   downloadLink = '';
 
   constructor() {
-    this.#electronService
-      .sendEvent<string>('download-link')
-      .pipe(takeUntilDestroyed())
-      .subscribe(res => {
-        this.#ngZone.run(() => {
-          this.downloadLink = res!.args;
-          this.#changeDetectorRef.detectChanges();
-        });
-      });
-
     this.#httpClient
       .get('https://hub.sp-tarkov.com/files/file/813', { responseType: 'text' })
       .pipe(takeUntilDestroyed())

@@ -1,26 +1,23 @@
 <mat-card>
   <mat-card-content class="card-container">
-    <img class="image-shadow" [ngSrc]="modItem.modImage" height="144" width="144" alt="" />
+    <img class="image-shadow" [ngSrc]="modItemDownloadProgress.modImage" height="100" width="100" alt="" />
     <div class="mod-list-container">
-      <strong class="mod-name one-line-clamp">{{ modItem.modName }}</strong>
-      <div style="display: flex; padding: 8px; border-radius: 4px; gap: 16px">
+      <strong class="mod-name one-line-clamp">{{ modItemDownloadProgress.modName }}</strong>
+      <div style="display: flex; padding: 8px; gap: 8px">
         <div style="width: 100%; justify-content: center">
           <span style="display: flex; justify-content: center">Getting Downloadlink</span>
-          <progress max="1" [value]="downloadLinkProgress"></progress>
+          <!-- TODO MODE WHEN STEP IS ACTIVATED -->
+          <mat-progress-bar mode="buffer" [color]="modItemDownloadProgress.downloadLinkError ? 'warn' : 'accent'"  [value]="modItemDownloadProgress.downloadLinkProgress * 100"></mat-progress-bar>
         </div>
-
         <div style="width: 100%; justify-content: center">
           <span style="display: flex; justify-content: center">Download Mod</span>
-          <progress max="1" [value]="downloadModProgress?.percent" [matTooltipDisabled]="!downloadModProgress" [matTooltip]="downloadModProgress?.transferredBytes + '/' + downloadModProgress?.totalBytes"></progress>
+          <mat-progress-bar [color]="modItemDownloadProgress.downloadModError ? 'warn' : 'accent'" [value]="modItemDownloadProgress?.percent * 100" [matTooltipDisabled]="modItemDownloadProgress.percent === 0" [matTooltip]="modItemDownloadProgress?.transferredBytes + '/' + modItemDownloadProgress?.totalBytes"></mat-progress-bar>
         </div>
-
         <div style="width: 100%; justify-content: center">
           <span style="display: flex; justify-content: center">Unzip Mod</span>
-          <progress max="1" [value]="unzipModProgress"></progress>
+          <mat-progress-bar [color]="modItemDownloadProgress.unzipError ? 'warn' : 'accent'" [value]="modItemDownloadProgress.unzipProgress * 100"></mat-progress-bar>
         </div>
       </div>
-
-      <button mat-raised-button color="accent" (click)="download(modItem)">Download</button>
     </div>
   </mat-card-content>
 </mat-card>
