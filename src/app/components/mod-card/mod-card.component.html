@@ -1,10 +1,10 @@
-<mat-card (mouseenter)="hovering=true" (mouseleave)="hovering=false">
+<mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
   <mat-card-content style="position: relative" class="card-container">
     <img class="image-shadow" [ngSrc]="modDownloadItem.modImage" height="100" width="100" alt="" />
     <div class="mod-container">
       <strong class="mod-name one-line-clamp">{{ modDownloadItem.modName }}</strong>
       <div class="mod-steps-container">
-        <div class="full-width">
+        <div class="full-width" @fadeInOut *ngIf="modDownloadItem.downloadLinkStart">
           <span class="mod-step-name">Fetching Information</span>
           <mat-progress-bar
             [mode]="modDownloadItem.downloadLinkStart && modDownloadItem.downloadLinkProgress === 0 ? 'indeterminate' : 'determinate'"
@@ -12,11 +12,10 @@
             [value]="modDownloadItem.downloadLinkProgress * 100"
           />
         </div>
-        <div class="full-width">
+        <div class="full-width" @fadeInOut *ngIf="modDownloadItem.downloadLinkStart">
           <span class="mod-step-name">Download</span>
           <div class="progress-bar-container">
-            <mat-progress-bar [color]="modDownloadItem.downloadModError ? 'warn' : 'accent'"
-                              [value]="modDownloadItem?.percent * 100" />
+            <mat-progress-bar [color]="modDownloadItem.downloadModError ? 'warn' : 'accent'" [value]="modDownloadItem?.percent * 100" />
             <span *ngIf="modDownloadItem.percent !== 0" class="progress-bar-progress-text">
               @if (modDownloadItem.percent !== 1) {
                 {{ modDownloadItem?.transferredBytes + '/' + modDownloadItem?.totalBytes }}
@@ -26,7 +25,7 @@
             </span>
           </div>
         </div>
-        <div class="full-width">
+        <div class="full-width" @fadeInOut *ngIf="modDownloadItem.downloadLinkStart">
           <span class="mod-step-name">Install</span>
           <mat-progress-bar
             [mode]="modDownloadItem.unzipStart && modDownloadItem.unzipProgress === 0 ? 'indeterminate' : 'determinate'"
@@ -37,11 +36,7 @@
       </div>
     </div>
 
-    <div
-      *ngIf="hovering"
-      @fadeInOut
-      class="delete-button-container"
-    >
+    <div *ngIf="hovering && !modDownloadItem.downloadLinkStart" @fadeInOut class="delete-button-container">
       <button mat-icon-button (click)="removeModFromModList(modDownloadItem)">
         <mat-icon>delete</mat-icon>
       </button>

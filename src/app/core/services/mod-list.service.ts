@@ -61,6 +61,6 @@ export class ModListService {
   }
 
   deleteModToModList(modName: string) {
-    this.modList.set(this.modList().filter(m => m.modName !== modName));
+    this.modList.update(() => [...this.modList().filter(m => m.modName !== modName)]);
   }
 }

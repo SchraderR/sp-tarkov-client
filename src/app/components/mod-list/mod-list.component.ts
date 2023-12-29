@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, NgZone, OnInit } from '@angular/core';
 import { ModItem, ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgForOf , NgIf , NgOptimizedImage } from '@angular/common';
+import { NgForOf, NgIf, NgOptimizedImage } from '@angular/common';
 import { ModCardComponent, ModDownloadProgress, ModItemDownloadProgress } from '../mod-card/mod-card.component';
 import { ElectronService } from '../../core/services/electron.service';
 import { FileHelper } from '../../core/helper/file-helper';
@@ -14,23 +14,26 @@ import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ApplicationElectronFileError } from '../../core/events/electron.events';
 
 @Component({
-  selector: 'app-mod-list',
   standalone: true,
-  // TODO REMOVE?
-  providers: [ElectronService],
+  selector: 'app-mod-list',
   imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgForOf, NgOptimizedImage, ModCardComponent, NgIf],
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
 })
-export default class ModListComponent {
+export default class ModListComponent implements OnInit {
   #modListService = inject(ModListService);
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
 
+  activeModList: ModItemDownloadProgress[] = []; // Non-reactive array
   isDownloadAndInstallInProgress = false;
   modListSignal = computed(() => this.#modListService.modListSignal().map(m => this.getModItemDownload(m) as ModItemDownloadProgress));
+
+  ngOnInit() {
+    this.activeModList = [...this.modListSignal()];
+  }
 
   async downloadAndInstall(): Promise<void> {
     this.isDownloadAndInstallInProgress = true;
@@ -39,7 +42,8 @@ export default class ModListComponent {
       return;
     }
 
-    for (const modItemDownload of this.modListSignal()) {
+    for (let i = 0; i < this.activeModList.length; i++) {
+      const modItemDownload = this.activeModList[i];
       const fileId = FileHelper.extractFileIdFromUrl(modItemDownload.modFileUrl);
       if (!fileId) {
         continue;
@@ -82,8 +86,6 @@ export default class ModListComponent {
           this.#changeDetectorRef.markForCheck();
         });
       } catch (error) {
-        this.isDownloadAndInstallInProgress = false;
-
         switch (error) {
           case ApplicationElectronFileError.unzipError:
             this.#ngZone.run(() => {
@@ -99,6 +101,13 @@ export default class ModListComponent {
         }
       }
     }
+
+    this.isDownloadAndInstallInProgress = false;
+  }
+
+  removeMod(modItem: ModItemDownloadProgress) {
+    this.activeModList = this.activeModList.filter(m => m.modName !== modItem.modName);
+    this.#modListService.deleteModToModList(modItem.modName);
   }
 
   private getModItemDownload(m: ModItem): ModItemDownloadProgress {

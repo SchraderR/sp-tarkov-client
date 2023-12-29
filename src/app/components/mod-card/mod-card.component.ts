@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component , EventEmitter , inject , Input , Output } from '@angular/core';
 import { ModItem, ModListService } from '../../core/services/mod-list.service';
 import { MatCardModule } from '@angular/material/card';
 import { NgIf, NgOptimizedImage } from '@angular/common';
@@ -34,10 +34,10 @@ export interface ModDownloadProgress {
   animations: [fadeInFadeOutAnimation],
 })
 export class ModCardComponent {
-  #modListService = inject(ModListService);
-
   @Input({ required: true }) modDownloadItem!: ModItemDownloadProgress;
+  @Output() removeModEvent = new EventEmitter<ModItemDownloadProgress>();
+
   hovering = false;
 
-  removeModFromModList = (modDownloadItem: ModItemDownloadProgress) => this.#modListService.deleteModToModList(modDownloadItem.modName);
+  removeModFromModList = (modDownloadItem: ModItemDownloadProgress) => this.removeModEvent.emit(modDownloadItem);
 }
