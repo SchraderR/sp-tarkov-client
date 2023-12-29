@@ -31,6 +31,24 @@ export class ModListService {
       modFileUrl: 'https://hub.sp-tarkov.com/files/file/1555-tactical-gear-component/',
       modKind: 'Server mods, Equipment',
     },
+    {
+      modName: "Amands's Graphics 2",
+      modFileUrl: 'https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/',
+      modImage: 'https://hub.sp-tarkov.com/files/images/file/f4/813.png',
+      modKind: '',
+    },
+    {
+      modName: 'SPT Realism Mod 2',
+      modFileUrl: 'https://hub.sp-tarkov.com/files/file/606-spt-realism-mod/',
+      modImage: 'https://hub.sp-tarkov.com/files/images/file/24/606.png',
+      modKind: '',
+    },
+    {
+      modName: 'Tactical Gear Component 2',
+      modImage: 'https://hub.sp-tarkov.com/files/images/file/08/1555.jpg',
+      modFileUrl: 'https://hub.sp-tarkov.com/files/file/1555-tactical-gear-component/',
+      modKind: 'Server mods, Equipment',
+    },
   ]);
   readonly modListSignal = this.modList.asReadonly();
 
@@ -39,11 +57,10 @@ export class ModListService {
       return;
     }
 
-    this.modList().push(modItem);
+    this.modList.update(modItems => ([...modItems, modItem]));
   }
 
-  deleteModToModList(modItem: ModItem) {
-    const index = this.modList().findIndex(m => m.modName === modItem.modName);
-    this.modList().splice(index, 1);
+  deleteModToModList(modName: string) {
+    this.modList.set(this.modList().filter(m => m.modName !== modName));
   }
 }

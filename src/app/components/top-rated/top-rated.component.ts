@@ -26,9 +26,9 @@ export default class TopRatedComponent {
   #placeholderImagePath = 'assets/images/placeholder.png';
 
   accumulatedModList: ModItem[] = [];
-  modListSignal = this.#modListService.modListSignal();
 
-  isInModList = (modName: string) => this.modListSignal.some(m => m.modName === modName);
+  modListSignal = this.#modListService.modListSignal;
+  isInModList = (modName: string) => this.modListSignal().some(m => m.modName === modName);
 
   constructor() {
     this.#httpClient
@@ -59,7 +59,7 @@ export default class TopRatedComponent {
   }
 
   removeModFromModList(mod: ModItem) {
-    this.#modListService.deleteModToModList(mod);
+    this.#modListService.deleteModToModList(mod.modName);
   }
 
   openExternal(modFileUrl: string) {

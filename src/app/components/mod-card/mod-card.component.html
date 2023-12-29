@@ -1,23 +1,50 @@
-<mat-card>
-  <mat-card-content class="card-container">
-    <img class="image-shadow" [ngSrc]="modItemDownloadProgress.modImage" height="100" width="100" alt="" />
-    <div class="mod-list-container">
-      <strong class="mod-name one-line-clamp">{{ modItemDownloadProgress.modName }}</strong>
-      <div style="display: flex; padding: 8px; gap: 8px">
-        <div style="width: 100%; justify-content: center">
-          <span style="display: flex; justify-content: center">Getting Downloadlink</span>
-          <!-- TODO MODE WHEN STEP IS ACTIVATED -->
-          <mat-progress-bar mode="buffer" [color]="modItemDownloadProgress.downloadLinkError ? 'warn' : 'accent'"  [value]="modItemDownloadProgress.downloadLinkProgress * 100"></mat-progress-bar>
+<mat-card (mouseenter)="hovering=true" (mouseleave)="hovering=false">
+  <mat-card-content style="position: relative" class="card-container">
+    <img class="image-shadow" [ngSrc]="modDownloadItem.modImage" height="100" width="100" alt="" />
+    <div class="mod-container">
+      <strong class="mod-name one-line-clamp">{{ modDownloadItem.modName }}</strong>
+      <div class="mod-steps-container">
+        <div class="full-width">
+          <span class="mod-step-name">Fetching Information</span>
+          <mat-progress-bar
+            [mode]="modDownloadItem.downloadLinkStart && modDownloadItem.downloadLinkProgress === 0 ? 'indeterminate' : 'determinate'"
+            [color]="modDownloadItem.downloadLinkError ? 'warn' : 'accent'"
+            [value]="modDownloadItem.downloadLinkProgress * 100"
+          />
         </div>
-        <div style="width: 100%; justify-content: center">
-          <span style="display: flex; justify-content: center">Download Mod</span>
-          <mat-progress-bar [color]="modItemDownloadProgress.downloadModError ? 'warn' : 'accent'" [value]="modItemDownloadProgress?.percent * 100" [matTooltipDisabled]="modItemDownloadProgress.percent === 0" [matTooltip]="modItemDownloadProgress?.transferredBytes + '/' + modItemDownloadProgress?.totalBytes"></mat-progress-bar>
+        <div class="full-width">
+          <span class="mod-step-name">Download</span>
+          <div class="progress-bar-container">
+            <mat-progress-bar [color]="modDownloadItem.downloadModError ? 'warn' : 'accent'"
+                              [value]="modDownloadItem?.percent * 100" />
+            <span *ngIf="modDownloadItem.percent !== 0" class="progress-bar-progress-text">
+              @if (modDownloadItem.percent !== 1) {
+                {{ modDownloadItem?.transferredBytes + '/' + modDownloadItem?.totalBytes }}
+              } @else {
+                {{ modDownloadItem?.totalBytes }}
+              }
+            </span>
+          </div>
         </div>
-        <div style="width: 100%; justify-content: center">
-          <span style="display: flex; justify-content: center">Unzip Mod</span>
-          <mat-progress-bar [color]="modItemDownloadProgress.unzipError ? 'warn' : 'accent'" [value]="modItemDownloadProgress.unzipProgress * 100"></mat-progress-bar>
+        <div class="full-width">
+          <span class="mod-step-name">Install</span>
+          <mat-progress-bar
+            [mode]="modDownloadItem.unzipStart && modDownloadItem.unzipProgress === 0 ? 'indeterminate' : 'determinate'"
+            [color]="modDownloadItem.unzipError ? 'warn' : 'accent'"
+            [value]="modDownloadItem.unzipProgress * 100"
+          />
         </div>
       </div>
+    </div>
+
+    <div
+      *ngIf="hovering"
+      @fadeInOut
+      class="delete-button-container"
+    >
+      <button mat-icon-button (click)="removeModFromModList(modDownloadItem)">
+        <mat-icon>delete</mat-icon>
+      </button>
     </div>
   </mat-card-content>
 </mat-card>

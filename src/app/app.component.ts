@@ -48,7 +48,7 @@ export class AppComponent {
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 
-  modListSignal = this.#modListService.modListSignal();
+  modListSignal = this.#modListService.modListSignal;
 
   constructor() {
     // TODO Maybe Routen End Event Close Dialog

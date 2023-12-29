@@ -1,5 +1,18 @@
-@for (mod of modListSignal; track mod.modName) {
-  <app-mod-card [modItemDownloadProgress]="mod"  />
-}
+<div class="mod-list">
+  @for (mod of modListSignal(); track mod.modName) {
+    <app-mod-card [modDownloadItem]="mod" />
+  }
+</div>
 
-<button mat-raised-button color="accent" (click)="downloadAndInstall()">Download</button>
+<div class="button-container" *ngIf="modListSignal().length">
+  <button mat-raised-button color="accent" [disabled]="isDownloadAndInstallInProgress" (click)="downloadAndInstall()">Download / Install</button>
+</div>
+
+<div
+  *ngIf="!modListSignal().length"
+  style="display: flex; flex-direction: column; height: 100%; width: 100%; justify-content: center; align-items: center"
+>
+  <span style="user-select: none; color: gray; font-size: 128px; position: absolute; opacity: 0.04">¯\_(ツ)_/¯</span>
+  <span style="user-select: none; font-size: x-large">No mods detected!</span>
+  <span style="user-select: none; font-size: smaller">Add some mods to proceed with the installation</span>
+</div>

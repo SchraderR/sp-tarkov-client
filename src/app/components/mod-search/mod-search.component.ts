@@ -35,9 +35,9 @@ export class ModSearchComponent {
 
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Observable<ModItem[]>;
-  modListSignal = this.#modListService.modListSignal();
+  modListSignal = this.#modListService.modListSignal;
 
-  isInModList = (modName: string) => this.modListSignal.some(m => m.modName === modName);
+  isInModList = (modName: string) => this.modListSignal().some(m => m.modName === modName);
 
   constructor() {
     this.filteredModItems = this.searchControl.valueChanges.pipe(
@@ -57,6 +57,6 @@ export class ModSearchComponent {
   removeModFromModlist(event: MouseEvent, mod: ModItem) {
     event.stopPropagation();
 
-    this.#modListService.deleteModToModList(mod);
+    this.#modListService.deleteModToModList(mod.modName);
   }
 }
