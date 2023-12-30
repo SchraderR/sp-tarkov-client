@@ -17,6 +17,8 @@
 - Instances with amount of client and server mods
   - List of mods with version and more
   - ~~Add the ability to read the assembly information from client mods~~
+  - Add a warning that download will automatically accept the licence of the mod
+  - Add a link to the licence file (fetch while accepting licence to download)
 
 
 ## Low
