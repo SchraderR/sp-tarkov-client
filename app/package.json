@@ -8,6 +8,7 @@
     "@types/adm-zip": "^0.5.5",
     "@types/puppeteer": "7.0.4",
     "adm-zip": "^0.5.10",
+    "axios": "^1.6.3",
     "electron-dl": "^3.5.1",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-store": "8.1.0",
