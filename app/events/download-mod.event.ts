@@ -12,7 +12,6 @@ export const handleDownloadModEvent = () => {
       fs.mkdirSync(ankiTempDownloadDir);
     }
 
-    console.log(downloadModel.modFileUrl);
     await download(BrowserWindowSingleton.getInstance(), downloadModel.modFileUrl, {
       directory: ankiTempDownloadDir,
       saveAs: false,
