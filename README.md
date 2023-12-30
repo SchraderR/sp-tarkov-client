@@ -11,8 +11,7 @@
 - ~~Add "top reviewed" -> https://hub.sp-tarkov.com/files/?pageNo=1&sortField=cumulativeLikes&sortOrder=DESC~~
 - ~~Add search for mods and jump to client mod download page~~
 - Add more Information into modCard (information, description, version)
-- support fontawesome icons you can select for a mod
-
+- support fontawesome 4 to support mod icons
 
 ## Medium
 - Instances with amount of client and server mods
