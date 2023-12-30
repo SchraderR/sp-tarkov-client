@@ -24,6 +24,7 @@
 ## Low
 - Release on GitHub
 - (opt) Add overview of running downloads
+- ~~reduce loading content and images to reduce size and get better loading time~~
 
 
 

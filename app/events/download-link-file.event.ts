@@ -1,6 +1,5 @@
 ﻿import { ipcMain } from 'electron';
-import { Page, launch, Browser } from 'puppeteer';
-import { DownloadModel } from '../../shared/models/aki-core.model';
+import { Browser, launch, Page } from 'puppeteer';
 
 export interface EventFileArgs<T = any> {
   fileId: string;
@@ -14,6 +13,19 @@ export const handleDownloadLinkEvent = () => {
     (async () => {
       const browser = await launch({ headless: 'new' });
       const page = await browser.newPage();
+      await page.setRequestInterception(true);
+      page.on('request', req => {
+        if (
+          req.resourceType() === 'stylesheet' ||
+          req.resourceType() === 'font' ||
+          req.resourceType() === 'image' ||
+          req.resourceType() === 'media'
+        ) {
+          req.abort();
+        } else {
+          req.continue();
+        }
+      });
 
       await page.goto(`https://hub.sp-tarkov.com/files/license/${fileId}`, { waitUntil: 'networkidle2' });
       await page.click('[name="confirm"]');
