@@ -1,4 +1,13 @@
 # Todo LIST
+
+## Download Links
+- ~~Support direct archive files~~
+- Support Github release links with tag
+- Support Github release links
+- Support Dropbox
+- Support Mega
+- add more
+
 ## High
 - A~~dd strong caching to store request and the results~~
   - ~~Caching in local storage~~
@@ -18,12 +27,16 @@
   - List of mods with version and more
   - ~~Add the ability to read the assembly information from client mods~~
   - Add a warning that download will automatically accept the licence of the mod
-  - Add a link to the licence file (fetch while accepting licence to download)
+  - Add a link to the licence file for every mod (fetch while accepting licence to download)
+  - Add transparency for github api and their rate limitations (look header in response)
+
 
 
 ## Low
 - Release on GitHub
-- (opt) Add overview of running downloads
+- Create site on Sp Hub
+- Major refactoring of every component
+- (opt) Add overview of running downloads - not limited to a site (like a popout / notification)
 - ~~reduce loading content and images to reduce size and get better loading time~~
 
 
