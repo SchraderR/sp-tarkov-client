@@ -74,7 +74,8 @@ mat-card {
   mix-blend-mode: difference;
 }
 
-.delete-button-container{
+.delete-button-container {
+  cursor: pointer;
   position: absolute;
   top: 0;
   bottom: 0;
