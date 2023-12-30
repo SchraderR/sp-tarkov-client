@@ -19,6 +19,9 @@ export const handleFileUnzipEvent = () => {
         if (f.entryName.indexOf('BepInEx/plugins/') === 0) {
           zip.extractEntryTo(f.entryName, args.akiInstancePath, true, true);
         }
+        if (f.entryName.indexOf('user/mods/') === 0) {
+          zip.extractEntryTo(f.entryName, args.akiInstancePath, true, true);
+        }
       });
 
       // TODO as standalone event
