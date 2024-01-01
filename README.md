@@ -5,8 +5,15 @@
 - Support Github release links with tag
 - Support Github release links
 - Support Dropbox
+  - https://hub.sp-tarkov.com/files/file/652-game-panel-hud/
 - Support Mega
+- Support Google Drive
+  - https://hub.sp-tarkov.com/files/file/379-kmc-server-value-modifier-svm/
 - add more
+- Check Mods
+  - https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/
+  - https://hub.sp-tarkov.com/files/file/1119-waypoints-expanded-bot-patrols-and-navmesh/
+  - https://hub.sp-tarkov.com/files/file/1159-morecheckmarks/
 
 ## High
 - A~~dd strong caching to store request and the results~~
