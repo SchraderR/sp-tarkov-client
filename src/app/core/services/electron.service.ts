@@ -4,8 +4,8 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { Observable } from 'rxjs';
 import { applicationElectronEventNames, ApplicationElectronFileError, applicationElectronFileProgressEventNames } from '../events/electron.events';
-import { ModDownloadProgress } from '../../components/mod-card/mod-card.component';
 import IpcRendererEvent = Electron.IpcRendererEvent;
+import { DownloadProgress , InstallProgress } from '../models/mod';
 
 @Injectable({
   providedIn: 'root',
@@ -39,9 +39,9 @@ export class ElectronService {
     });
   }
 
-  getDownloadModProgressForFileId(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<ModDownloadProgress> {
+  getDownloadModProgressForFileId(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<DownloadProgress> {
     return new Observable(observer => {
-      const handler = (_: IpcRendererEvent, args: ModDownloadProgress) => {
+      const handler = (_: IpcRendererEvent, args: DownloadProgress) => {
         if (args.percent === 1) {
           observer.next(args);
           observer.complete();

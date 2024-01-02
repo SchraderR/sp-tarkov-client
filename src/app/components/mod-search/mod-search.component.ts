@@ -7,9 +7,10 @@ import { MatOptionModule } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, filter, Observable, startWith, switchMap } from 'rxjs';
 import { AkiSearchService } from '../../core/services/aki-search.service';
-import { ModItem, ModListService } from '../../core/services/mod-list.service';
+import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Mod } from '../../core/models/mod';
 
 @Component({
   standalone: true,
@@ -34,10 +35,10 @@ export class ModSearchComponent {
   #modListService = inject(ModListService);
 
   searchControl = new FormControl('', Validators.minLength(2));
-  filteredModItems: Observable<ModItem[]>;
+  filteredModItems: Observable<Mod[]>;
   modListSignal = this.#modListService.modListSignal;
 
-  isInModList = (modName: string) => this.modListSignal().some(m => m.modName === modName);
+  isInModList = (modName: string) => this.modListSignal().some(m => m.name === modName);
 
   constructor() {
     this.filteredModItems = this.searchControl.valueChanges.pipe(
@@ -48,15 +49,15 @@ export class ModSearchComponent {
     );
   }
 
-  addModToModList(event: Event, mod: ModItem) {
+  addModToModList(event: Event, mod: Mod) {
     event.stopPropagation();
 
-    this.#modListService.addModToModList(mod);
+    this.#modListService.addMod(mod);
   }
 
-  removeModFromModlist(event: MouseEvent, mod: ModItem) {
+  removeModFromModlist(event: MouseEvent, mod: Mod) {
     event.stopPropagation();
 
-    this.#modListService.deleteModToModList(mod.modName);
+    this.#modListService.removeMod(mod.name);
   }
 }

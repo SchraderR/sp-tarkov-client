@@ -1,5 +1,4 @@
-import { Component , EventEmitter , inject , Input , Output } from '@angular/core';
-import { ModItem, ModListService } from '../../core/services/mod-list.service';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { NgIf, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,22 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { fadeInFadeOutAnimation } from './mod-card.animations';
 import { MatRippleModule } from '@angular/material/core';
-
-export interface ModItemDownloadProgress extends ModItem, ModDownloadProgress {
-  downloadLinkProgress: number;
-  unzipProgress: number;
-  downloadLinkStart: boolean;
-  unzipStart: boolean;
-  downloadLinkError: boolean;
-  downloadModError: boolean;
-  unzipError: boolean;
-}
-
-export interface ModDownloadProgress {
-  percent: number;
-  totalBytes: string;
-  transferredBytes: string;
-}
+import { Mod } from '../../core/models/mod';
 
 @Component({
   selector: 'app-mod-card',
@@ -34,10 +18,10 @@ export interface ModDownloadProgress {
   animations: [fadeInFadeOutAnimation],
 })
 export class ModCardComponent {
-  @Input({ required: true }) modDownloadItem!: ModItemDownloadProgress;
-  @Output() removeModEvent = new EventEmitter<ModItemDownloadProgress>();
+  @Input({ required: true }) mod!: Mod;
+  @Output() removeModEvent = new EventEmitter<Mod>();
 
   hovering = false;
 
-  removeModFromModList = (modDownloadItem: ModItemDownloadProgress) => this.removeModEvent.emit(modDownloadItem);
+  removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
 }

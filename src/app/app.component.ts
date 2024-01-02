@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { APP_CONFIG } from '../environments/environment';
 import { RouterModule } from '@angular/router';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';

@@ -9,7 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { ElectronService } from '../../core/services/electron.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ModItem, ModListService } from '../../core/services/mod-list.service';
+import { ModListService } from '../../core/services/mod-list.service';
+import { Mod } from '../../core/models/mod';
 
 @Component({
   standalone: true,
@@ -25,10 +26,10 @@ export default class TopRatedComponent {
   #modListService = inject(ModListService);
   #placeholderImagePath = 'assets/images/placeholder.png';
 
-  accumulatedModList: ModItem[] = [];
+  accumulatedModList: Mod[] = [];
 
   modListSignal = this.#modListService.modListSignal;
-  isInModList = (modName: string) => this.modListSignal().some(m => m.modName === modName);
+  isInModList = (modName: string) => this.modListSignal().some(m => m.name === modName);
 
   constructor() {
     this.#httpClient
@@ -42,11 +43,11 @@ export default class TopRatedComponent {
           .map(
             e =>
               ({
-                modName: e.getElementsByClassName('filebaseFileSubject')[0].getElementsByTagName('span')[0].innerHTML,
-                modFileUrl: e.getElementsByTagName('a')[0].href,
-                modImage: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? this.#placeholderImagePath,
-                modKind: '',
-              }) as ModItem
+                name: e.getElementsByClassName('filebaseFileSubject')[0].getElementsByTagName('span')[0].innerHTML,
+                fileUrl: e.getElementsByTagName('a')[0].href,
+                image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? this.#placeholderImagePath,
+                kind: '',
+              }) as Mod
           )
           .filter(e => this.filterCoreMods(e));
 
@@ -54,19 +55,19 @@ export default class TopRatedComponent {
       });
   }
 
-  addModToModList(mod: ModItem) {
-    this.#modListService.addModToModList(mod);
+  addModToModList(mod: Mod) {
+    this.#modListService.addMod(mod);
   }
 
-  removeModFromModList(mod: ModItem) {
-    this.#modListService.deleteModToModList(mod.modName);
+  removeModFromModList(mod: Mod) {
+    this.#modListService.removeMod(mod.name);
   }
 
   openExternal(modFileUrl: string) {
     void this.#electronService.shell.openExternal(modFileUrl);
   }
 
-  private filterCoreMods(e: ModItem) {
-    return !this.#restrictedMods.includes(e.modName);
+  private filterCoreMods(mod: Mod) {
+    return !this.#restrictedMods.includes(mod.name);
   }
 }

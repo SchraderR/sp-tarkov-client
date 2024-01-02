@@ -1,11 +1,11 @@
 <div class="mod-list">
-  @for (mod of activeModList; track mod.modName) {
-    <app-mod-card [modDownloadItem]="mod" (removeModEvent)="removeMod($event)"/>
+  @for (mod of modListSignal(); track mod.name) {
+    <app-mod-card [mod]="mod" (removeModEvent)="removeMod($event)"/>
   }
 </div>
 
-<div class="button-container" *ngIf="activeModList.length">
-  <button mat-raised-button color="accent" [disabled]="isDownloadAndInstallInProgress" (click)="downloadAndInstall()">Download / Install</button>
+<div class="button-container" *ngIf="modListSignal().length">
+  <button mat-raised-button color="accent" (click)="downloadAndInstall()">Download / Install</button>
 </div>
 
 <div
