@@ -11,6 +11,16 @@
       <button mat-icon-button (click)="removeInstance(settingModel)">
         <mat-icon>delete</mat-icon>
       </button>
+      <br>
+      <div style="display: flex; align-items: center">
+        <mat-icon>computer</mat-icon>
+        {{ settingModel.clientMods?.length }}
+      </div>
+
+      <div style="display: flex; align-items: center">
+        <mat-icon>lan</mat-icon>
+        {{ settingModel.serverMods?.length }}
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

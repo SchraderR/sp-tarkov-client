@@ -4,8 +4,6 @@ import * as Store from 'electron-store';
 import * as path from 'path';
 import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableAkiCoreConfigPath } from '../shared/constants';
-import { PowerShell } from 'node-powershell';
-import { spawn } from 'child_process';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('user-settings', async event => {
@@ -76,19 +74,4 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
     }
   }
   event.sender.send('user-settings-completed', userSettingModelResult);
-  return;
-
-  // const tttttt = await getVersion('F:\\EFT_SP_Playground\\BepInEx\\plugins\\spt\\AmandsGraphics.dll');
-  // event.sender.send('user-settings-completed', tttttt.toString());
-}
-
-async function getVersion(dllFilePath: string) {
-  const exec = require('util').promisify(require('child_process').exec);
-  const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
-
-  if (stderr) {
-    return stderr;
-  }
-
-  return stdout;
 }

@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, ViewChild } from '@angular/core';
 import { APP_CONFIG } from '../environments/environment';
 import { RouterModule } from '@angular/router';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -8,7 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { UserSettingModel } from '../../shared/models/user-setting.model';
+import { AkiInstance, ModMeta, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -17,6 +17,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
+import { concatAll, merge, switchMap, tap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -45,6 +46,8 @@ export class AppComponent {
   #electronService = inject(ElectronService, { self: true });
   #userSettingService = inject(UserSettingsService);
   #modListService = inject(ModListService);
+  #ngZone = inject(NgZone);
+  #changeDetectorRef = inject(ChangeDetectorRef);
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 
@@ -65,7 +68,27 @@ export class AppComponent {
   private getCurrentPersonalSettings() {
     this.#electronService
       .sendEvent<UserSettingModel[]>('user-settings')
-      .pipe(takeUntilDestroyed())
-      .subscribe(res => this.#userSettingService.setUserSetting(res!.args));
+      .pipe(
+        tap(res => this.#userSettingService.setUserSetting(res!.args)),
+        switchMap(res => merge(res!.args.map(instance => this.getServerMods(instance)))),
+        concatAll(),
+        takeUntilDestroyed()
+      )
+      .subscribe();
+  }
+
+  private getServerMods(akiInstance: AkiInstance) {
+    return this.#electronService.sendEvent<ModMeta[]>('server-mod', akiInstance.akiRootDirectory).pipe(
+      switchMap(serverMods => {
+        akiInstance.serverMods = serverMods?.args;
+        return this.#electronService.sendEvent<ModMeta[]>('client-mod', akiInstance.akiRootDirectory);
+      }),
+      tap(clientMods => {
+        this.#ngZone.run(() => {
+          akiInstance.clientMods = clientMods?.args;
+          this.#changeDetectorRef.markForCheck();
+        });
+      })
+    );
   }
 }

@@ -34,8 +34,9 @@ export class ElectronService {
       };
 
       this.ipcRenderer.send(eventName, parameter);
-      this.ipcRenderer.on(`${eventName}-completed`, handler);
-      this.ipcRenderer.on(`${eventName}-error`, (_, error: ApplicationElectronFileError) => observer.error(error));
+
+      this.ipcRenderer.once(`${eventName}-completed`, handler);
+      this.ipcRenderer.once(`${eventName}-error`, (_, error: ApplicationElectronFileError) => observer.error(error));
     });
   }
 

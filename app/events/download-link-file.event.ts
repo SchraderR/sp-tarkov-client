@@ -54,7 +54,6 @@ export const handleDownloadLinkEvent = () => {
       const isArchiveLink = isArchiveURL(downloadLink);
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
-        console.log(gitHubInformation);
         if (!gitHubInformation) {
           //  TODO Error Handling
           // await browser.close();
@@ -63,9 +62,10 @@ export const handleDownloadLinkEvent = () => {
         await getReleaseData(gitHubInformation)
           .then(async data => {
             const githubDownloadLink = data?.assets?.[0].browser_download_url;
-            console.log(githubDownloadLink);
+
             event.sender.send('download-link-completed', githubDownloadLink);
             await browser.close();
+
             return;
           })
           .catch(err => console.error(err));

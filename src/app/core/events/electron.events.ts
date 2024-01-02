@@ -5,7 +5,10 @@
   | 'user-settings-remove'
   | 'download-link'
   | 'download-mod'
-  | 'file-unzip';
+  | 'file-unzip'
+  | 'client-mod'
+  | 'server-mod';
+
 export type applicationElectronFileProgressEventNames = 'download-mod-progress';
 
 export enum ApplicationElectronFileError {
