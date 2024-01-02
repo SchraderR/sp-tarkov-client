@@ -36,6 +36,9 @@
   - Add a warning that download will automatically accept the licence of the mod
   - Add a link to the licence file for every mod (fetch while accepting licence to download)
   - Add transparency for github api and their rate limitations (~~look header in response~~)
+  - evaluate "pre-install" dependency check (aki version)
+    - unzip - check package.json / dll?
+    - "pre-all" is hard
 
 
 ## Low
