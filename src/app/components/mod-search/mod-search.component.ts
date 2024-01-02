@@ -10,7 +10,7 @@ import { AkiSearchService } from '../../core/services/aki-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Mod } from '../../core/models/mod';
+import { Mod , ModSearch } from '../../core/models/mod';
 
 @Component({
   standalone: true,
@@ -35,7 +35,7 @@ export class ModSearchComponent {
   #modListService = inject(ModListService);
 
   searchControl = new FormControl('', Validators.minLength(2));
-  filteredModItems: Observable<Mod[]>;
+  filteredModItems: Observable<ModSearch[]>;
   modListSignal = this.#modListService.modListSignal;
 
   isInModList = (modName: string) => this.modListSignal().some(m => m.name === modName);

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
-import { Mod } from '../models/mod';
+import { ModSearch } from '../models/mod';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ export class AkiSearchService {
   modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
 
-  searchMods(searchArgument: string): Observable<Mod[]> {
+  searchMods(searchArgument: string): Observable<ModSearch[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' });
 
     return this.#httpClient
@@ -25,7 +25,7 @@ export class AkiSearchService {
       );
   }
 
-  private extractModInformation(htmlBody: string): Mod[] {
+  private extractModInformation(htmlBody: string): ModSearch[] {
     const searchResult = HtmlHelper.parseStringAsHtml(htmlBody);
     const modListSection = searchResult.body
       ?.getElementsByClassName('section')?.[1]
