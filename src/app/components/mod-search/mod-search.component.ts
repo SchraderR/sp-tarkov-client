@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { AsyncPipe, NgIf, NgOptimizedImage } from '@angular/common';
+import { AsyncPipe, CommonModule, NgIf, NgOptimizedImage } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,13 +10,14 @@ import { AkiSearchService } from '../../core/services/aki-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Mod , ModSearch } from '../../core/models/mod';
+import { Mod, ModSearch } from '../../core/models/mod';
+import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
 
 @Component({
   standalone: true,
   selector: 'app-mod-search',
   imports: [
-    AsyncPipe,
+    CommonModule,
     MatAutocompleteModule,
     MatFormFieldModule,
     MatInputModule,
@@ -25,7 +26,7 @@ import { Mod , ModSearch } from '../../core/models/mod';
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
-    NgIf,
+    IsAlreadyInstalledDirective,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
