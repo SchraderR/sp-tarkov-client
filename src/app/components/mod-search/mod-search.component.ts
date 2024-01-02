@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Mod, ModSearch } from '../../core/models/mod';
 import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   standalone: true,
@@ -27,6 +28,7 @@ import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-in
     MatButtonModule,
     MatIconModule,
     IsAlreadyInstalledDirective,
+    MatTooltipModule,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
