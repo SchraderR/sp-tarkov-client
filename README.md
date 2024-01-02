@@ -39,6 +39,9 @@
   - evaluate "pre-install" dependency check (aki version)
     - unzip - check package.json / dll?
     - "pre-all" is hard
+  - add functionality to revert changes?
+    - changes like installation of mods
+    - add a history of actions (install)
 
 
 ## Low
