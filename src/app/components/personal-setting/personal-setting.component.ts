@@ -32,10 +32,7 @@ export default class PersonalSettingComponent {
         switchMap(() => this.#electronService.sendEvent<UserSettingModel[]>('user-settings')),
         takeUntilDestroyed(this.#destroyRef)
       )
-      .subscribe(result => {
-        console.log ( result );
-        this.updateUserSettingAndDetectChanges(result?.args || []);
-      });
+      .subscribe(result => this.updateUserSettingAndDetectChanges(result?.args || []));
   }
 
   setActiveInstance(settingModel: UserSettingModel) {
