@@ -58,7 +58,7 @@ export class ModSearchComponent {
     this.#modListService.addMod(mod);
   }
 
-  removeModFromModlist(event: MouseEvent, mod: Mod) {
+  removeModFromModList(event: MouseEvent, mod: Mod) {
     event.stopPropagation();
 
     this.#modListService.removeMod(mod.name);

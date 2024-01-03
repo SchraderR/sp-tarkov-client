@@ -3,7 +3,7 @@
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
     @for (mod of filteredModItems | async; track mod) {
-      <mat-option [value]="mod.name" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [appIsAlreadyInstalled]="mod.name">
+      <mat-option [value]="mod.name" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [modName]="mod.name">
         <div style="display: flex; width: 100%;">
           <img alt="" class="example-option-img" [ngSrc]="mod.image" width="50" height="50" />
           <div style="display: flex; flex-direction: column; padding-left: 8px; overflow: auto">
@@ -17,7 +17,7 @@
           <button *ngIf="!isInModList(mod.name) && !alreadyInstalled.isInstalledMod" style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
             <mat-icon >add</mat-icon>
           </button>
-          <button *ngIf="isInModList(mod.name) && !alreadyInstalled.isInstalledMod" style="justify-content: center; align-items: end" mat-icon-button (click)="removeModFromModlist($event, mod)">
+          <button *ngIf="isInModList(mod.name) && !alreadyInstalled.isInstalledMod" style="justify-content: center; align-items: end" mat-icon-button (click)="removeModFromModList($event, mod)">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
