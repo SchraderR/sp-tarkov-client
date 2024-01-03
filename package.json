@@ -2,6 +2,7 @@
   "name": "sp-tarkov-client",
   "version": "0.0.1",
   "description": "EFT-SP Management Tool",
+  "author": "Schrader",
   "main": "app/main.js",
   "private": true,
   "auto-changelog": {
@@ -71,7 +72,6 @@
     "auto-changelog": "*",
     "conventional-changelog-cli": "2.2.2",
     "electron": "28.1.0",
-    "electron-builder": "24.9.1",
     "electron-debug": "3.2.0",
     "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^8.53.0",

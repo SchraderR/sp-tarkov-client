@@ -17,8 +17,17 @@
   "win": {
     "icon": "dist/assets/icons",
     "target": [
-      "portable"
-    ]
+      "nsis"
+    ],
+    "publish": {
+      "provider": "github",
+      "repo": "sp-tarkov-client",
+      "owner": "SchraderR",
+      "token": "ELECTRON_BUILD_TOKEN",
+      "private": true,
+      "protocol": "https",
+      "releaseType": "prerelease"
+    }
   },
   "mac": {
     "icon": "dist/assets/icons",
