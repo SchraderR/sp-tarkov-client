@@ -1,7 +1,7 @@
 <div style="display: flex; flex-direction: column; gap: 8px">
   <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Open and add new EFT Sp-Api Instance</button>
 
-  <mat-card *ngFor="let settingModel of userSettings()">
+  <mat-card *ngFor="let settingModel of userSettingSignal()">
     <mat-card-content>
       <div>Aki-SP Version: {{ settingModel.akiCore.akiVersion }}</div>
       <div>Root-Path: {{ settingModel.akiRootDirectory }}</div>
