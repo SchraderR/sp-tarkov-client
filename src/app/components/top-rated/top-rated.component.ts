@@ -11,13 +11,14 @@ import { ElectronService } from '../../core/services/electron.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ModListService } from '../../core/services/mod-list.service';
 import { Mod } from '../../core/models/mod';
+import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
 
 @Component({
   standalone: true,
   selector: 'app-top-rated',
   templateUrl: './top-rated.component.html',
   styleUrls: ['./top-rated.component.scss'],
-  imports: [MatCardModule, NgForOf, MatButtonModule, MatIconModule, RouterLink, MatTooltipModule, NgOptimizedImage],
+  imports: [MatCardModule, NgForOf, MatButtonModule, MatIconModule, RouterLink, MatTooltipModule, NgOptimizedImage, IsAlreadyInstalledDirective],
 })
 export default class TopRatedComponent {
   #restrictedMods = ['SPT-AKI', 'SPT-AKI-INSTALLER', 'AKI Patcher'];

@@ -1,20 +1,28 @@
-<mat-card *ngFor="let modItem of accumulatedModList">
+<mat-card *ngFor="let mod of accumulatedModList" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [modName]="mod.name">
   <mat-card-content class="card-container">
-    <img class="image-shadow" [ngSrc]="modItem.image" height="144" width="144" alt="">
+    <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
     <div class="mod-list-container">
-      <strong class="mod-name one-line-clamp">{{ modItem.name }}</strong>
+      <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
       <span class="spacer"></span>
-      <div>
-        @if (!isInModList(modItem.name)) {
-          <button mat-icon-button (click)="addModToModList(modItem)">
-            <mat-icon>add</mat-icon>
-          </button>
+      <div style="display: flex">
+        @if (alreadyInstalled.isInstalledMod) {
+          <mat-icon
+            matTooltip="Already installed"
+            style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;margin: unset"
+            color="accent">done_all
+          </mat-icon>
         } @else {
-          <button mat-icon-button (click)="removeModFromModList(modItem)">
-            <mat-icon>delete</mat-icon>
-          </button>
+          @if (!isInModList(mod.name)) {
+            <button mat-icon-button (click)="addModToModList(mod)">
+              <mat-icon>add</mat-icon>
+            </button>
+          } @else {
+            <button mat-icon-button (click)="removeModFromModList(mod)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
         }
-        <button mat-icon-button (click)="openExternal(modItem.fileUrl)" matTooltip="Open external">
+        <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
           <mat-icon>open_in_new</mat-icon>
         </button>
       </div>
