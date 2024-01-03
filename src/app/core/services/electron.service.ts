@@ -26,7 +26,7 @@ export class ElectronService {
   }
 
   sendEvent<T, C = any>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
-    return new Observable<null | { event: any; args: T }>(observer => {
+    return new Observable<{ event: any; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
         observer.next({ event, args: argsParsed });

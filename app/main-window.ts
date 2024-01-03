@@ -73,8 +73,8 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   });
 
   BrowserWindowSingleton.setInstance(browserWindow);
-  browserWindow.minimizable = true;
-  browserWindow.minimize();
+  // browserWindow.minimizable = true;
+  // browserWindow.minimize();
 };
 
 const getExternalDisplay = () => screen.getAllDisplays().find(display => display.bounds.x !== 0 || display.bounds.y !== 0);
