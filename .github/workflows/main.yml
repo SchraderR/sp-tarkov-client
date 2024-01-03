@@ -18,12 +18,12 @@ jobs:
           node-version: '18'
 
       - name: Build/release Electron app
-        uses: coparse-inc/action-electron-builder@v1.0.0
+        uses: samuelmeuli/action-electron-builder@v1
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
           github_token: ${{ secrets.github_token }}
-          build_script_name: "electron:build"
+          build_script_name: "build:prod"
 
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
