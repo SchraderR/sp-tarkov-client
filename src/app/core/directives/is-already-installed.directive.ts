@@ -1,6 +1,7 @@
-import { Directive, inject, Input } from '@angular/core';
+import { Directive, effect, inject, Input } from '@angular/core';
 import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
+import { AkiInstance } from '../../../../shared/models/user-setting.model';
 
 @Directive({
   standalone: true,
@@ -9,15 +10,26 @@ import { closest, distance } from 'fastest-levenshtein';
 })
 export class IsAlreadyInstalledDirective {
   #userSettingsService = inject(UserSettingsService);
+
+  @Input({ required: true }) modName!: string;
   isInstalledMod = false;
 
-  @Input({ required: true }) set appIsAlreadyInstalled(modName: string) {
-    const activeInstance = this.#userSettingsService.getActiveInstance();
+  constructor() {
+    effect(() => {
+      const activeInstance = this.#userSettingsService.getActiveInstance();
+      if (!this.modName || !activeInstance || (!activeInstance.serverMods?.length && !activeInstance.clientMods?.length)) {
+        return false;
+      }
 
-    const closestServerModName = closest(modName, activeInstance!.serverMods!.map(m => m.name));
-    const closestClientModName = closest(modName, activeInstance!.clientMods!.map(m => m.name));
+      this.checkModAlreadyInstalled(this.modName, activeInstance);
+    });
+  }
 
-    this.isInstalledMod = this.isMatchBasedOnLevenshtein(modName, closestServerModName) ||  this.isMatchBasedOnLevenshtein(modName, closestClientModName);
+  private checkModAlreadyInstalled(modName: string, activeInstance: AkiInstance) {
+    const closestServerModName = closest(modName, activeInstance.serverMods.map(m => m.name));
+    const closestClientModName = closest(modName, activeInstance.clientMods.map(m => m.name));
+
+    this.isInstalledMod = this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
   }
 
   private isMatchBasedOnLevenshtein(stringA: string, stringB: string, threshold = 0.2): boolean {
@@ -28,5 +40,3 @@ export class IsAlreadyInstalledDirective {
     return relativeDistance <= threshold;
   }
 }
-
-
