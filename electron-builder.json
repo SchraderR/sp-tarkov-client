@@ -23,7 +23,6 @@
       "provider": "github",
       "repo": "sp-tarkov-client",
       "owner": "SchraderR",
-      "token": "ELECTRON_BUILD_TOKEN",
       "private": true,
       "protocol": "https",
       "releaseType": "prerelease"
