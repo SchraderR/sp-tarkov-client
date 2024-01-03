@@ -44,6 +44,7 @@
   - add functionality to revert changes?
     - changes like installation of mods
     - add a history of actions (install)
+  - all loading indcator for local-mod search and icons
 
 
 ## Low
