@@ -6,8 +6,8 @@ import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shar
 import { stableAkiCoreConfigPath } from '../shared/constants';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('user-settings', event => {
-    handleUserSettingStoreEvent(event, store);
+  ipcMain.on('user-settings', async event => {
+    await handleUserSettingStoreEvent(event, store);
   });
 
   ipcMain.on('user-settings-update', (event, akiInstance: AkiInstance) => {
@@ -39,13 +39,13 @@ function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
   }
 
   const instances = store.get('akiInstances');
-  instances.forEach(i => i.isActive = i.akiRootDirectory === akiInstance.akiRootDirectory)
+  instances.forEach(i => (i.isActive = i.akiRootDirectory === akiInstance.akiRootDirectory));
   store.set('akiInstances', instances);
 
   event.sender.send('user-settings-update-completed');
 }
 
-function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>) {
+async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>) {
   const akiInstances = store.get('akiInstances');
   if (!akiInstances || akiInstances.length === 0) {
     // TODO ERROR HANDLING
@@ -68,12 +68,12 @@ function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<
         akiCore: JSON.parse(akiCoreJson),
         isValid: akiInstance.isValid,
         isActive: akiInstance.isActive,
+        clientMods: akiInstance.clientMods,
+        serverMods: akiInstance.serverMods
       });
     } catch (e) {
       // add to object and return a missing path error message
     }
   }
-
   event.sender.send('user-settings-completed', userSettingModelResult);
-  return;
 }

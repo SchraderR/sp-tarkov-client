@@ -7,15 +7,15 @@ export const appRoutes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'github-release',
-    loadComponent: () => import('./components/github-release-list/github-release-list.component'),
-  },
-  {
     path: 'setting',
     loadComponent: () => import('./components/personal-setting/personal-setting.component'),
   },
   {
     path: 'top-rated',
     loadComponent: () => import('./components/top-rated/top-rated.component'),
+  },
+  {
+    path: 'mod-list',
+    loadComponent: () => import('./components/mod-list/mod-list.component'),
   },
 ];

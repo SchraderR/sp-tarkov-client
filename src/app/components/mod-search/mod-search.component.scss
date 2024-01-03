@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+
+.mat-mdc-option {
+  padding: 8px;
+}
+
+::ng-deep.search-input{
+  width: 100%;
+  @include mat.form-field-density(-5);
+}
+
+::ng-deep.mdc-list-item__primary-text {
+  width: 100%;
+}

@@ -1,17 +1,26 @@
 <div style="display: flex; flex-direction: column; gap: 8px">
   <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Open and add new EFT Sp-Api Instance</button>
 
-  <mat-card *ngFor="let settingModel of userSettings()">
+  <mat-card *ngFor="let settingModel of userSettingSignal()">
     <mat-card-content>
       <div>Aki-SP Version: {{ settingModel.akiCore.akiVersion }}</div>
       <div>Root-Path: {{ settingModel.akiRootDirectory }}</div>
-      <div>Root-Path: {{ settingModel.isActive }}</div>
       <button mat-icon-button (click)="setActiveInstance(settingModel)">
-        <mat-icon [class.fill]="settingModel.isActive">{{ settingModel.isActive ? 'star' : 'edit' }}</mat-icon>
+        <mat-icon [class.fill]="settingModel.isActive">star</mat-icon>
       </button>
       <button mat-icon-button (click)="removeInstance(settingModel)">
         <mat-icon>delete</mat-icon>
       </button>
+      <br>
+      <div style="display: flex; align-items: center">
+        <mat-icon>computer</mat-icon>
+        {{ settingModel.clientMods?.length }}
+      </div>
+
+      <div style="display: flex; align-items: center">
+        <mat-icon>lan</mat-icon>
+        {{ settingModel.serverMods?.length }}
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

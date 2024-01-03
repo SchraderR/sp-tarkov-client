@@ -1,0 +1,22 @@
+$button-size: 48px;
+$button-padding: 8px;
+
+.mod-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  max-height: calc(100% - #{$button-size} - #{$button-padding});
+  overflow: auto;
+}
+
+button {
+  width: 30%;
+}
+
+.button-container {
+  display: flex;
+  width: 100%;
+  padding-top: 8px;
+  justify-content: flex-end;
+}

@@ -1,7 +1,7 @@
 <mat-drawer-container autosize>
   <mat-drawer class="sidenav" mode="side">
     <mat-list (click)="toggleDrawer()">
-      <mat-list-item routerLink="github-release">GitHub-Release</mat-list-item>
+      <!--TODO Add icons -->
       <mat-list-item routerLink="setting">Setting</mat-list-item>
       <mat-list-item routerLink="top-rated">Top Rated Mods</mat-list-item>
     </mat-list>
@@ -11,8 +11,12 @@
     <button mat-icon-button (click)="toggleDrawer()">
       <mat-icon>menu</mat-icon>
     </button>
-
-    <h1>SP-Tarkov Management Tool</h1>
+    <h1 class="draggable-header">SP-Tarkov Management Tool</h1>
+    <span class="spacer"> </span>
+    <app-mod-search style="width: 65%" />
+    <button mat-icon-button routerLink="mod-list"  style="margin-left: 16px">
+      <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
+    </button>
   </mat-toolbar>
 
   <div class="drawer-content">

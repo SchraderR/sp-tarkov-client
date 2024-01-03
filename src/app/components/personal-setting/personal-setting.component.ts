@@ -23,7 +23,7 @@ export default class PersonalSettingComponent {
   #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
 
-  readonly userSettings = this.#userSettingsService.userSettingSignal;
+  readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
 
   getRootEftSpDirectory() {
     this.#electronService
@@ -36,13 +36,16 @@ export default class PersonalSettingComponent {
   }
 
   setActiveInstance(settingModel: UserSettingModel) {
-    this.userSettings().forEach(us => (us.isActive = false));
-    settingModel.isActive = !settingModel.isActive;
+    this.userSettingSignal().forEach(us => (us.isActive = false));
+    settingModel.isActive = true;
+    this.#userSettingsService.updateUserSetting();
 
     const akiInstance: AkiInstance = {
       isActive: settingModel.isActive,
       akiRootDirectory: settingModel.akiRootDirectory,
       isValid: settingModel.isValid,
+      clientMods: settingModel.clientMods,
+      serverMods: settingModel.serverMods
     };
 
     this.#electronService

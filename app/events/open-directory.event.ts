@@ -11,6 +11,12 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
   ipcMain.on('open-directory', event => {
     dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then(selectedDirectoryValue => {
       const selectedPath = selectedDirectoryValue.filePaths[0];
+      // TODO outsource
+      const instance = store.get('akiInstances');
+      if (!instance) {
+        console.log('No store');
+        store.set('akiInstances', []);
+      }
 
       if (fs.existsSync(selectedPath)) {
         const files = fs.readdirSync(selectedPath);

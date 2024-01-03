@@ -2,7 +2,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
-import puppeteer from 'puppeteer';
 
 export const createMainApiManagementWindow = (isServe: boolean): void => {
   console.log('createMainApiManagementWindow');
@@ -12,9 +11,11 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   let browserWindow: BrowserWindow | null = new BrowserWindow({
     x: 0,
     y: 0,
-    width: 1200,
-    height: 630,
-
+    width: 1345,
+    height: 590,
+    autoHideMenuBar: true,
+    frame: true,
+    titleBarStyle: "hidden",
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: isServe,
@@ -22,6 +23,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     },
   });
 
+  browserWindow.setMenu(null);
   browserWindow.webContents.openDevTools();
 
   // browserWindow.webContents.on('will-navigate', function (event, newUrl) {
@@ -41,13 +43,13 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       },
     });
   });
+  require('electron-reload');
 
   console.log ( isServe );
   if (isServe) {
     const debug = require('electron-debug');
     debug();
 
-    require('electron-reloader')(module);
     browserWindow.loadURL('http://localhost:4200');
   } else {
     // Path when running electron executable
@@ -71,8 +73,8 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   });
 
   BrowserWindowSingleton.setInstance(browserWindow);
-  browserWindow.minimizable = true;
-  browserWindow.minimize();
+  // browserWindow.minimizable = true;
+  // browserWindow.minimize();
 };
 
 const getExternalDisplay = () => screen.getAllDisplays().find(display => display.bounds.x !== 0 || display.bounds.y !== 0);
