@@ -14,12 +14,12 @@
       <br>
       <div style="display: flex; align-items: center">
         <mat-icon>computer</mat-icon>
-        {{ settingModel.clientMods?.length }}
+        {{ settingModel?.clientMods?.length ?? 0 }}
       </div>
 
       <div style="display: flex; align-items: center">
         <mat-icon>lan</mat-icon>
-        {{ settingModel.serverMods?.length }}
+        {{ settingModel?.serverMods?.length ?? 0 }}
       </div>
     </mat-card-content>
   </mat-card>

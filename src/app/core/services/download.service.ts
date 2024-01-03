@@ -32,18 +32,17 @@ export class DownloadService {
 
     for (let i = 0; i < this.activeModList().length; i++) {
       const mod = this.activeModList()[i];
-      console.log ( mod );
       const fileId = FileHelper.extractFileIdFromUrl(mod.fileUrl);
-      if (!fileId) {
+      if (!fileId || !mod.installProgress) {
         continue;
       }
 
       try {
         this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
           // this.#ngZone.run(() => {
-          mod.installProgress.downloadStep.percent = progress.percent;
-          mod.installProgress.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
-          mod.installProgress.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);
+          mod.installProgress!.downloadStep.percent = progress.percent;
+          mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
+          mod.installProgress!.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);
           //this.#changeDetectorRef.markForCheck();
           // });
         });

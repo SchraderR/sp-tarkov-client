@@ -3,10 +3,8 @@
   image: string;
   fileUrl: string;
   kind: string;
-  installProgress: InstallProgress;
+  installProgress?: InstallProgress;
 }
-
-export type ModSearch = Omit<Mod, "installProgress">;
 
 export interface InstallProgress {
   completed: boolean;
