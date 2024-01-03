@@ -8,8 +8,8 @@ export interface AkiInstance {
   akiRootDirectory: string;
   isValid: boolean;
   isActive: boolean;
-  clientMods?: ModMeta[];
-  serverMods?: ModMeta[];
+  clientMods: ModMeta[];
+  serverMods: ModMeta[];
 }
 
 export interface UserSettingModel extends AkiInstance {

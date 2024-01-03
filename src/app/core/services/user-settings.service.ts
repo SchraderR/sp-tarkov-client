@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../../../shared/models/user-setting.model';
+import { UserSettingModel } from '../../../../shared/models/user-setting.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,11 @@ export class UserSettingsService {
     this.userSetting.set(userSetting);
   }
 
-  getActiveInstance(): AkiInstance | undefined {
+  updateUserSetting() {
+    this.userSetting.update(state => [...state]);
+  }
+
+  getActiveInstance(): UserSettingModel | undefined {
     return this.userSetting().find(setting => setting.isActive);
   }
 }
