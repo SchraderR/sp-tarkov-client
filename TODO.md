@@ -48,7 +48,7 @@
 
 
 ## Low
-- Release on GitHub
+- ~~Release on GitHub~~
 - Create site on Sp Hub
 - Major refactoring of every component
 - Unit Testing
