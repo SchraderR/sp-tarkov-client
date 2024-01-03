@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
-import { ModSearch } from '../models/mod';
+import { Mod } from '../models/mod';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ export class AkiSearchService {
   modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
 
-  searchMods(searchArgument: string): Observable<ModSearch[]> {
+  searchMods(searchArgument: string): Observable<Mod[]> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' });
 
     return this.#httpClient
@@ -25,7 +25,7 @@ export class AkiSearchService {
       );
   }
 
-  private extractModInformation(htmlBody: string): ModSearch[] {
+  private extractModInformation(htmlBody: string): Mod[] {
     const searchResult = HtmlHelper.parseStringAsHtml(htmlBody);
     const modListSection = searchResult.body
       ?.getElementsByClassName('section')?.[1]
@@ -35,12 +35,11 @@ export class AkiSearchService {
     if (!modListSection) {
       return [];
     }
-
     return Array.from(modListSection).map(e => ({
       name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
       image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
       fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-      kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
+      kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML
     }));
   }
 }
