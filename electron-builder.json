@@ -16,9 +16,7 @@
   ],
   "win": {
     "icon": "dist/assets/icons",
-    "target": [
-      "nsis"
-    ],
+    "target": ["nsis"],
     "publish": {
       "provider": "github",
       "repo": "sp-tarkov-client",
@@ -28,16 +26,4 @@
       "releaseType": "release"
     }
   },
-  "mac": {
-    "icon": "dist/assets/icons",
-    "target": [
-      "dmg"
-    ]
-  },
-  "linux": {
-    "icon": "dist/assets/icons",
-    "target": [
-      "AppImage"
-    ]
-  }
 }
