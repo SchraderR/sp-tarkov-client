@@ -8,7 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { AkiInstance, ModMeta, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModMeta, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -17,7 +17,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { concatAll, merge, switchMap, tap } from 'rxjs';
+import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -69,25 +69,27 @@ export class AppComponent {
     this.#electronService
       .sendEvent<UserSettingModel[]>('user-settings')
       .pipe(
-        tap(res => this.#userSettingService.setUserSetting(res!.args)),
-        switchMap(res => merge(res!.args.map(instance => this.getServerMods(instance)))),
+        tap(res => res && this.#userSettingService.setUserSetting(res.args)),
+        switchMap(res => res && this.getServerMods(res.args)),
         concatAll(),
         takeUntilDestroyed()
       )
-      .subscribe();
+      .subscribe(value => {
+        this.#ngZone.run(() => {
+          value.userSetting.clientMods = value.clientMods.args;
+          value.userSetting.serverMods = value.serverMods.args;
+
+          this.#userSettingService.updateUserSetting();
+        });
+      });
   }
 
-  private getServerMods(akiInstance: AkiInstance) {
-    return this.#electronService.sendEvent<ModMeta[]>('server-mod', akiInstance.akiRootDirectory).pipe(
-      switchMap(serverMods => {
-        akiInstance.serverMods = serverMods?.args;
-        return this.#electronService.sendEvent<ModMeta[]>('client-mod', akiInstance.akiRootDirectory);
-      }),
-      tap(clientMods => {
-        this.#ngZone.run(() => {
-          akiInstance.clientMods = clientMods?.args;
-          this.#changeDetectorRef.markForCheck();
-        });
+  private getServerMods(userSettings: UserSettingModel[]) {
+    return userSettings.map(userSetting =>
+      forkJoin({
+        userSetting: of(userSetting),
+        serverMods: this.#electronService.sendEvent<ModMeta[]>('server-mod', userSetting.akiRootDirectory),
+        clientMods: this.#electronService.sendEvent<ModMeta[]>('client-mod', userSetting.akiRootDirectory),
       })
     );
   }
