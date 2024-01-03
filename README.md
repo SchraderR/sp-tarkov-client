@@ -28,6 +28,8 @@
 - Add more Information into modCard (information, description, version)
 - support fontawesome 4 to support mod icons
 - ~~track download progress global and not scoped~~
+- support single dll archives (https://hub.sp-tarkov.com/files/file/903-no-bush-esp/)
+
 
 ## Medium
 - Instances with amount of client and server mods
