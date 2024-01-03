@@ -4,12 +4,7 @@ on: push
 
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [windows-latest]
-
+    runs-on: windows-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v1
