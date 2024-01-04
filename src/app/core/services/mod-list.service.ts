@@ -7,24 +7,10 @@ import { InstallProgress, Mod } from '../models/mod';
 export class ModListService {
   private modList = signal<Mod[]>([
     {
-      name: "Amands's Graphics",
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/',
-      image: 'https://hub.sp-tarkov.com/files/images/file/f4/813.png',
+      name: 'No Bush ESP',
+      fileUrl: 'https://hub.sp-tarkov.com/files/file/903-no-bush-esp/',
+      image: 'assets/images/placeholder.png',
       kind: '',
-      installProgress: this.initialInstallProgress(),
-    },
-    {
-      name: 'SPT Realism Mod',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/606-spt-realism-mod/',
-      image: 'https://hub.sp-tarkov.com/files/images/file/24/606.png',
-      kind: '',
-      installProgress: this.initialInstallProgress(),
-    },
-    {
-      name: 'Tactical Gear Component',
-      image: 'https://hub.sp-tarkov.com/files/images/file/08/1555.jpg',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/1555-tactical-gear-component/',
-      kind: 'Server mods, Equipment',
       installProgress: this.initialInstallProgress(),
     },
   ]);
@@ -36,6 +22,7 @@ export class ModListService {
     }
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
+    console.log(this.modList());
   }
 
   removeMod(name: string) {
