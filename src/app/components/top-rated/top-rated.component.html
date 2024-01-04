@@ -1,6 +1,7 @@
 <mat-card *ngFor="let mod of accumulatedModList" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [modName]="mod.name">
   <mat-card-content class="card-container">
-    <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
+    <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
+    <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
     <div class="mod-list-container">
       <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
       <span class="spacer"></span>

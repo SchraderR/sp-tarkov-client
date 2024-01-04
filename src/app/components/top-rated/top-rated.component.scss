@@ -10,6 +10,7 @@ mat-card {
 
   mat-card-content {
     padding: unset;
+
     > img {
       border-bottom-left-radius: 4px;
       border-top-left-radius: 4px;
@@ -18,6 +19,17 @@ mat-card {
 }
 
 .image-shadow {
+  box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.mod-icon {
+  min-height: 144px;
+  min-width: 144px;
+  justify-content: center;
+  display: flex;
+  color: #c9c9c9;
+  align-items: center;
+  font-size: 100px;
   box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3);
 }
 
