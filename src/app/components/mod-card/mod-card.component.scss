@@ -10,7 +10,7 @@ mat-progress-bar {
 
 mat-card {
   width: 100%;
-  max-height: 144px;
+  max-height: 100px;
 
   mat-card-content {
     padding: unset;
@@ -23,6 +23,17 @@ mat-card {
 }
 
 .image-shadow {
+  box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.mod-icon {
+  min-height: 100px;
+  min-width: 100px;
+  justify-content: center;
+  display: flex;
+  color: #c9c9c9;
+  align-items: center;
+  font-size: 80px;
   box-shadow: 2px 1px 5px 0 rgba(0, 0, 0, 0.3);
 }
 

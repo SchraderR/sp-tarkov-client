@@ -1,6 +1,7 @@
 <mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
   <mat-card-content style="position: relative" class="card-container">
-    <img class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="" />
+    <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="">
+    <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
     <div class="mod-container" *ngIf="mod.installProgress">
       <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
       <div class="mod-steps-container" @fadeInOut *ngIf="mod?.installProgress as installProgress">
