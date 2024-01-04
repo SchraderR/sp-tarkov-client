@@ -5,15 +5,7 @@ import { InstallProgress, Mod } from '../models/mod';
   providedIn: 'root',
 })
 export class ModListService {
-  private modList = signal<Mod[]>([
-    {
-      name: 'No Bush ESP',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/903-no-bush-esp/',
-      image: 'assets/images/placeholder.png',
-      kind: '',
-      installProgress: this.initialInstallProgress(),
-    },
-  ]);
+  private modList = signal<Mod[]>([]);
   readonly modListSignal = this.modList.asReadonly();
 
   addMod(mod: Mod) {

@@ -4,6 +4,7 @@
     <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
     <div class="mod-list-container">
       <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+      <div class="mod-teaser">{{ mod.teaser }}</div>
       <span class="spacer"></span>
       <div style="display: flex">
         @if (alreadyInstalled.isInstalledMod) {

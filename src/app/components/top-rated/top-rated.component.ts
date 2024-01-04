@@ -57,6 +57,7 @@ export default class TopRatedComponent {
                 fileUrl: e.getElementsByTagName('a')[0].href,
                 image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
                 icon: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon128')[1] ?? null,
+                teaser: e.getElementsByClassName("filebaseFileTeaser")[0].innerHTML ?? "",
                 kind: '',
               }) as Mod
           )

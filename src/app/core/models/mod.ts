@@ -4,6 +4,7 @@
   icon?: string;
   fileUrl: string;
   kind: string;
+  teaser?: string;
   installProgress?: InstallProgress;
 }
 

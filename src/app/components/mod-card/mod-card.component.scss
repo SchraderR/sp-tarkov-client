@@ -62,6 +62,16 @@ mat-card {
   height: 100%;
 }
 
+.mod-teaser {
+  padding: 0 8px;
+  width: 90%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
 .mod-step-name {
   display: flex;
   justify-content: center;
