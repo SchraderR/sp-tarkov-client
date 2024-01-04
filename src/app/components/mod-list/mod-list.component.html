@@ -1,11 +1,11 @@
 <div class="mod-list">
   @for (mod of modListSignal(); track mod.name) {
-    <app-mod-card [mod]="mod" (removeModEvent)="removeMod($event)"/>
+    <app-mod-card @fadeInOut [mod]="mod" (removeModEvent)="removeMod($event)"/>
   }
 </div>
 
 <div class="button-container" *ngIf="modListSignal().length">
-  <button mat-raised-button color="accent" (click)="downloadAndInstall()">Download / Install</button>
+  <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstall()">Download / Install</button>
 </div>
 
 <div

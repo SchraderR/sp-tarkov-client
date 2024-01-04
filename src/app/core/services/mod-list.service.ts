@@ -25,6 +25,10 @@ export class ModListService {
     console.log(this.modList());
   }
 
+  updateMod() {
+    this.modList.update(state => [...state]);
+  }
+
   removeMod(name: string) {
     this.modList.update(() => [...this.modList().filter(m => m.name !== name)]);
   }

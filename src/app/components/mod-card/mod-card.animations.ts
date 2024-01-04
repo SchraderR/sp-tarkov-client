@@ -5,4 +5,3 @@ export const fadeInFadeOutAnimation = trigger('fadeInOut', [
   transition('void => *', animate(250)),
   transition('* => void', animate(0)),
 ]);
-

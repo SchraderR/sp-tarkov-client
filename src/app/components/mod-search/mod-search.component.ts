@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, filter, Observable, startWith, switchMap } from 'rxjs';
+import { debounceTime, filter, Observable, of, startWith, switchMap } from 'rxjs';
 import { AkiSearchService } from '../../core/services/aki-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,8 +47,8 @@ export class ModSearchComponent {
     this.filteredModItems = this.searchControl.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
-      filter(value => !!value?.trim() && this.searchControl.valid),
-      switchMap(searchArgument => this.#akiSearchService.searchMods(searchArgument!))
+      filter(() => this.searchControl.valid),
+      switchMap(searchArgument => (searchArgument?.trim() ? this.#akiSearchService.searchMods(searchArgument!) : of([])))
     );
   }
 
