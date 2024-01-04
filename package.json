@@ -25,7 +25,7 @@
     "electron:serve-tsc": "tsc -p tsconfig.serve.json",
     "electron:serve": "wait-on tcp:4200 && npm run electron:serve-tsc && electron . --serve",
     "electron:local": "npm run build:prod && electron . --serve",
-    "electron:build": "npm run build:prod && electron-builder build --publish=always",
+    "electron:build": "npm run build:prod && electron-builder build --publish=never",
     "test": "ng test --watch=false",
     "test:watch": "ng test",
     "lint": "ng lint"
