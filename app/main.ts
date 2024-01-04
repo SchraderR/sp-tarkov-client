@@ -13,8 +13,6 @@ import { handleServerModsEvent } from './events/server-mods.event';
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
 
-console.log(app.getPath('userData'));
-
 mainApplicationStart(isServe);
 handleOpenDirectoryEvent(store);
 handleDownloadLinkEvent();

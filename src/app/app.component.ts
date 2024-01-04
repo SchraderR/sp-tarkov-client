@@ -54,7 +54,7 @@ export class AppComponent {
 
   constructor() {
     // TODO Maybe Routen End Event Close Dialog
-    console.log('APP_CONFIG', APP_CONFIG);
+    // console.log('APP_CONFIG', APP_CONFIG);
 
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();

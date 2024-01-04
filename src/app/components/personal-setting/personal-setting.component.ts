@@ -51,7 +51,7 @@ export default class PersonalSettingComponent {
     this.#electronService
       .sendEvent('user-settings-update', akiInstance)
       .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(value => console.log(value));
+      .subscribe();
   }
 
   removeInstance(settingModel: UserSettingModel) {

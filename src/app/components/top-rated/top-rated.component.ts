@@ -62,8 +62,6 @@ export default class TopRatedComponent {
               }) as Mod
           )
           .filter(e => this.filterCoreMods(e));
-
-        console.log(this.accumulatedModList);
       });
   }
 

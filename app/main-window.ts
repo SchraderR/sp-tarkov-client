@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 
 export const createMainApiManagementWindow = (isServe: boolean): void => {
-  console.log('createMainApiManagementWindow');
   const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
   const externalDisplay = getExternalDisplay();
 
@@ -45,7 +44,6 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   });
   require('electron-reload');
 
-  console.log ( isServe );
   if (isServe) {
     const debug = require('electron-debug');
     debug();
