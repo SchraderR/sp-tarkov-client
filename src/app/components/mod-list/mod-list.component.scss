@@ -3,11 +3,12 @@ $button-padding: 8px;
 $text-space: 12px;
 
 .mod-list {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   gap: 16px;
 
   max-height: calc(100% - #{$button-size} - #{$button-padding} - #{$text-space});
+  width: 100%;
   overflow: auto;
 
   &.full {

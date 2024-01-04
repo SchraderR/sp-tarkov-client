@@ -47,7 +47,7 @@
     "@types/fast-levenshtein": "0.0.4",
     "electron-builder": "24.9.1",
     "fastest-levenshtein": "1.0.16",
-    "material-symbols": "^0.5.5",
+    "material-symbols": "0.14.3",
     "rxjs": "7.8.1",
     "tslib": "^2.5.0",
     "zone.js": "~0.14.2"

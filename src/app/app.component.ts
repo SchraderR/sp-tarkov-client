@@ -47,7 +47,6 @@ export class AppComponent {
   #userSettingService = inject(UserSettingsService);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
-  #changeDetectorRef = inject(ChangeDetectorRef);
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 

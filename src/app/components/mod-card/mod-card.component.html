@@ -3,7 +3,15 @@
     <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="">
     <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
     <div class="mod-container" *ngIf="mod.installProgress">
-      <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+      <div class="mod-title" style="display: flex">
+        <strong class="one-line-clamp">{{ mod.name }}</strong>
+        <ng-container *ngIf="modLicenseInformation$ | async as modLicenseInformation">
+          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;" (click)="openExternal(modLicenseInformation.url)">
+            <mat-icon style="font-size: 19px">license</mat-icon>
+            <span>{{ modLicenseInformation.text }}</span>
+          </span>
+        </ng-container>
+      </div>
       <div class="mod-steps-container" @fadeInOut *ngIf="mod?.installProgress as installProgress">
         <ng-container *ngIf="!installProgress.completed">
           <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep?.start">
@@ -38,13 +46,13 @@
           </div>
         </ng-container>
 
-        <div *ngIf="installProgress.completed" style="display: flex; height: 100%; width: 100%; justify-content: center; align-items: center">
+        <div *ngIf="installProgress.completed"
+             style="display: flex; height: 100%; width: 100%; justify-content: center; align-items: center">
           <mat-icon>done</mat-icon>
           Installation completed
         </div>
       </div>
     </div>
-
     <div
       @fadeInOut
       *ngIf="hovering && (!mod?.installProgress?.linkStep?.start || mod?.installProgress?.completed)"
