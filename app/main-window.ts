@@ -4,9 +4,6 @@ import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 
 export const createMainApiManagementWindow = (isServe: boolean): void => {
-  const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
-  const externalDisplay = getExternalDisplay();
-
   let browserWindow: BrowserWindow | null = new BrowserWindow({
     x: 0,
     y: 0,
@@ -14,20 +11,17 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     height: 590,
     autoHideMenuBar: true,
     frame: true,
-    titleBarStyle: "hidden",
+    titleBarStyle: 'hidden',
     webPreferences: {
-      nodeIntegration: true,
       allowRunningInsecureContent: isServe,
-      contextIsolation: false, // false if you want to run e2e test with Spectron
     },
   });
 
   browserWindow.setMenu(null);
-  browserWindow.webContents.openDevTools();
 
-  // browserWindow.webContents.on('will-navigate', function (event, newUrl) {
-  //   // More complex code to handle tokens goes here
-  // });
+  if (isServe) {
+    browserWindow.webContents.openDevTools();
+  }
 
   browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
     callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
@@ -42,6 +36,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       },
     });
   });
+
   require('electron-reload');
 
   if (isServe) {
@@ -71,8 +66,4 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
   });
 
   BrowserWindowSingleton.setInstance(browserWindow);
-  // browserWindow.minimizable = true;
-  // browserWindow.minimize();
 };
-
-const getExternalDisplay = () => screen.getAllDisplays().find(display => display.bounds.x !== 0 || display.bounds.y !== 0);
