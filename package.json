@@ -2,7 +2,10 @@
   "name": "sp-tarkov-client",
   "version": "0.1.0",
   "description": "EFT-SP Management Tool",
-  "author": "Schrader",
+  "author": {
+    "name": "Schrader",
+    "url": "https://github.com/SchraderR"
+  },
   "main": "app/main.js",
   "private": true,
   "auto-changelog": {

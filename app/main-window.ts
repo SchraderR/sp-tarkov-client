@@ -11,10 +11,12 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     height: 590,
     autoHideMenuBar: true,
     frame: true,
+    icon: "app/assets/icon.png",
     titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: isServe,
+      contextIsolation: false
     },
   });
 

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as sevenBin from '7zip-bin';
 import { extractFull, list } from 'node-7z';
-import { clientModPath, serverModPath } from '../shared/constants';
+import { clientModPath, serverModPath } from '../constants';
 
 export const handleFileUnzipEvent = () => {
   ipcMain.on('file-unzip', async (event, args: any) => {

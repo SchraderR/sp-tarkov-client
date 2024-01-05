@@ -26,6 +26,7 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   imports: [
+    CommonModule,
     MatButtonModule,
     CommonModule,
     RouterModule,
@@ -43,7 +44,7 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
-  #electronService = inject(ElectronService, { self: true });
+  #electronService = inject(ElectronService);
   #userSettingService = inject(UserSettingsService);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
@@ -51,6 +52,7 @@ export class AppComponent {
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 
   modListSignal = this.#modListService.modListSignal;
+  appIconPath = "assets/images/icon.png"
 
   constructor() {
     // TODO Maybe Routen End Event Close Dialog

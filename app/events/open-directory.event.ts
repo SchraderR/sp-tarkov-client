@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { stableAkiServerName } from '../shared/constants';
+import { stableAkiServerName } from '../constants';
 import { BrowserWindowSingleton } from '../browserWindow';
 
 export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) => {

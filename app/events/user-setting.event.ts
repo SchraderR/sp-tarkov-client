@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as Store from 'electron-store';
 import * as path from 'path';
 import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { stableAkiCoreConfigPath } from '../shared/constants';
+import { stableAkiCoreConfigPath } from '../constants';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('user-settings', async event => {
