@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, NgZone, ViewChild } from '@angular/core';
+import { ChangeDetectorRef , Component , DestroyRef , inject , NgZone , ViewChild } from '@angular/core';
 import { APP_CONFIG } from '../environments/environment';
 import { RouterModule } from '@angular/router';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -39,25 +39,23 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
     MatAutocompleteModule,
     NgOptimizedImage,
     ModSearchComponent,
-    MatBadgeModule,
+    MatBadgeModule
   ],
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
   #electronService = inject(ElectronService);
   #userSettingService = inject(UserSettingsService);
+  #destroyRef= inject(DestroyRef)
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 
   modListSignal = this.#modListService.modListSignal;
-  appIconPath = "assets/images/icon.png"
+  appIconPath = 'assets/images/icon.png';
 
   constructor() {
-    // TODO Maybe Routen End Event Close Dialog
-    // console.log('APP_CONFIG', APP_CONFIG);
-
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
   }
@@ -65,6 +63,8 @@ export class AppComponent {
   toggleDrawer() {
     void this.matDrawer.toggle();
   }
+
+  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') => void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
   private getCurrentPersonalSettings() {
     this.#electronService

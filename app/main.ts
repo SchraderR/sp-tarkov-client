@@ -9,6 +9,7 @@ import { handleDownloadModEvent } from './events/download-mod.event';
 import { handleFileUnzipEvent } from './events/file-unzip.event';
 import { handleClientModsEvent } from './events/client-mods.event';
 import { handleServerModsEvent } from './events/server-mods.event';
+import { handleWindowEvents } from './events/window.event';
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
@@ -21,3 +22,4 @@ handleFileUnzipEvent();
 handleUserSettingStoreEvents(store);
 handleClientModsEvent();
 handleServerModsEvent();
+handleWindowEvents();

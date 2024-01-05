@@ -1,6 +1,6 @@
 <mat-drawer-container autosize>
   <mat-drawer class="sidenav" mode="side">
-    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+    <div style="display: flex; justify-content: center; padding-bottom: 8px;">
       <img alt="" [ngSrc]="appIconPath" height="100" width="100">
     </div>
     <mat-divider />
@@ -18,18 +18,30 @@
         <div matListItemTitle>Top Rated Mods</div>
       </mat-list-item>
     </mat-list>
+    <span class="spacer"></span>
+    <div>
+      Issue? -> Link Github
+    </div>
   </mat-drawer>
 
-  <mat-toolbar>
-    <button mat-icon-button (click)="toggleDrawer()">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <h1 class="draggable-header">SP-Tarkov Management Tool - TestBuild</h1>
-    <span class="spacer"> </span>
-    <app-mod-search style="width: 65%" />
-    <button mat-icon-button routerLink="mod-list" style="margin-left: 16px">
-      <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
-    </button>
+  <mat-toolbar class="draggable-header" style="display: flex; width: 100%;">
+    <div style="display: flex; justify-content: center; align-items: center">
+      <button class="no-drag" mat-icon-button (click)="toggleDrawer()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <h1>SP-EFT Manager - TestBuild</h1>
+    </div>
+    <div style="display: flex; width: 100%; justify-content: center; align-items: center">
+      <app-mod-search class="no-drag" style="width: 60%" />
+      <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
+        <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
+      </button>
+    </div>
+    <div class="window-control-buttons" style="display: flex; padding-left: 24px; gap: 8px">
+      <mat-icon class="no-drag" (click)="sendWindowEvent('window-minimize')">minimize</mat-icon>
+      <mat-icon class="no-drag" (click)="sendWindowEvent('window-maximize')">stack</mat-icon>
+      <mat-icon class="no-drag close" (click)="sendWindowEvent('window-close')">close</mat-icon>
+    </div>
   </mat-toolbar>
 
   <div class="drawer-content">

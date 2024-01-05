@@ -7,7 +7,10 @@
   | 'download-mod'
   | 'file-unzip'
   | 'client-mod'
-  | 'server-mod';
+  | 'server-mod'
+  | 'window-minimize'
+  | 'window-maximize'
+  | 'window-close';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress';
 
