@@ -35,6 +35,16 @@ export const handleDownloadLinkEvent = () => {
       await page.click('div.formSubmit input[type="submit"]');
 
       await page.goto(`https://hub.sp-tarkov.com/files/file/${fileId}`, { waitUntil: 'networkidle2' });
+
+      const downloadLinkButton = await page.$('a.button.buttonPrimary.externalURL');
+      const downloadLinkButtonLink = await page.evaluate(el => el?.getAttribute('href'), downloadLinkButton);
+      console.log ( downloadLinkButtonLink );
+      // TODO check.... maybe have to be downloaded on the same process which accepted the licence
+      if (downloadLinkButtonLink?.includes('https://hub.sp-tarkov.com/files/download')) {
+        event.sender.send('download-link-completed', downloadLinkButtonLink);
+        await browser.close();
+        return;
+      }
       await page.click('a.button.buttonPrimary.externalURL');
 
       const newPagePromise = getNewPageWhenLoaded(browser);
@@ -60,7 +70,6 @@ export const handleDownloadLinkEvent = () => {
 
             event.sender.send('download-link-completed', githubDownloadLink);
             await browser.close();
-
             return;
           })
           .catch(err => console.error(err));

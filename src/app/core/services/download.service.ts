@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, inject, Injectable, NgZone } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { DownloadModel } from '../../../../shared/models/aki-core.model';
@@ -49,10 +49,12 @@ export class DownloadService {
         mod.installProgress.linkStep.start = true;
         const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string>('download-link', fileId));
         mod.installProgress.linkStep.progress = 1;
+        console.log(downloadLinkEvent);
 
         mod.installProgress.linkStep.progress = 1;
         const downloadModel: DownloadModel = {
           fileId,
+          name: mod.name,
           akiInstancePath: activeInstance.akiRootDirectory,
           modFileUrl: downloadLinkEvent!.args,
         };
