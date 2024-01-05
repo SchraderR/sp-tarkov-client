@@ -1,7 +1,6 @@
 ﻿import { ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ApplicationElectronFileError } from '../../src/app/core/events/electron.events';
 import * as sevenBin from '7zip-bin';
 import { extractFull, list } from 'node-7z';
 import { clientModPath, serverModPath } from '../shared/constants';
@@ -31,7 +30,8 @@ export const handleFileUnzipEvent = () => {
         .catch(err => console.error(err));
     } catch (error) {
       console.error(error);
-      event.sender.send('file-unzip-error', ApplicationElectronFileError.unzipError);
+      // TODO Error Shared Mapping
+      event.sender.send('file-unzip-error', 0);
     }
   });
 

@@ -15,16 +15,10 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: isServe,
-      contextIsolation: false, // false if you want to run e2e test with Spectron
     },
   });
 
   browserWindow.setMenu(null);
-
-  if (isServe) {
-    browserWindow.webContents.openDevTools();
-  }
-
   browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
     callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
   });
@@ -39,12 +33,12 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     });
   });
 
-  require('electron-reload');
-
   if (isServe) {
+    browserWindow.webContents.openDevTools();
     const debug = require('electron-debug');
     debug();
 
+    require('electron-reload');
     browserWindow.loadURL('http://localhost:4200');
   } else {
     let pathIndex = './index.html';
@@ -56,14 +50,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     const url = new URL(path.join('file:', __dirname, pathIndex));
     void browserWindow.loadURL(url.href);
   }
-
-  // Emitted when the window is closed.
-  browserWindow.on('closed', () => {
-    // Dereference the window object, usually you would store window
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    browserWindow = null;
-  });
+  browserWindow.on('closed', () => (browserWindow = null));
 
   BrowserWindowSingleton.setInstance(browserWindow);
 };
