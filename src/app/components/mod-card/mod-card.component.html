@@ -13,8 +13,8 @@
           </span>
         </ng-container>
       </div>
-      <div class="mod-teaser" *ngIf="!mod.installProgress?.linkStep.start">{{ mod.teaser }}</div>
-      <div class="mod-steps-container" @fadeInOut *ngIf="mod.installProgress?.linkStep.start">
+      <div class="mod-teaser" *ngIf="!mod.installProgress?.linkStep?.start">{{ mod.teaser }}</div>
+      <div class="mod-steps-container" @fadeInOut *ngIf="mod.installProgress?.linkStep?.start">
         <ng-container *ngIf="mod?.installProgress as installProgress">
           <ng-container *ngIf="!installProgress.completed">
             <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep?.start">
