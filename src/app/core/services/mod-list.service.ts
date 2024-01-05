@@ -5,29 +5,7 @@ import { InstallProgress, Mod } from '../models/mod';
   providedIn: 'root',
 })
 export class ModListService {
-  private modList = signal<Mod[]>([
-    {
-      name: "Amands's Graphics",
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/813-amands-s-graphics/',
-      image: 'https://hub.sp-tarkov.com/files/images/file/f4/813.png',
-      kind: '',
-      installProgress: this.initialInstallProgress(),
-    },
-    {
-      name: 'SPT Realism Mod',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/606-spt-realism-mod/',
-      image: 'https://hub.sp-tarkov.com/files/images/file/24/606.png',
-      kind: '',
-      installProgress: this.initialInstallProgress(),
-    },
-    {
-      name: 'Tactical Gear Component',
-      image: 'https://hub.sp-tarkov.com/files/images/file/08/1555.jpg',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/1555-tactical-gear-component/',
-      kind: 'Server mods, Equipment',
-      installProgress: this.initialInstallProgress(),
-    },
-  ]);
+  private modList = signal<Mod[]>([]);
   readonly modListSignal = this.modList.asReadonly();
 
   addMod(mod: Mod) {
@@ -36,6 +14,11 @@ export class ModListService {
     }
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
+    console.log(this.modList());
+  }
+
+  updateMod() {
+    this.modList.update(state => [...state]);
   }
 
   removeMod(name: string) {

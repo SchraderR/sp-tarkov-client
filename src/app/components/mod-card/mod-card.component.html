@@ -1,45 +1,64 @@
 <mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
   <mat-card-content style="position: relative" class="card-container">
-    <img class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="" />
-    <div class="mod-container" *ngIf="mod.installProgress">
-      <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
-      <div class="mod-steps-container" *ngIf="mod?.installProgress as installProgress">
-        <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep?.start">
-          <span class="mod-step-name">Fetching Information</span>
-          <mat-progress-bar
-            [mode]="installProgress.linkStep.start && installProgress.linkStep.progress === 0 ? 'indeterminate' : 'determinate'"
-            [color]="installProgress.linkStep.error ? 'warn' : 'accent'"
-            [value]="installProgress.linkStep.progress * 100"
-          />
-        </div>
-        <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep?.start">
-          <span class="mod-step-name">Download</span>
-          <div class="progress-bar-container">
-            <mat-progress-bar [color]="installProgress.downloadStep.error ? 'warn' : 'accent'"
-                              [value]="installProgress.downloadStep.percent * 100" />
-            <span *ngIf="installProgress.downloadStep.percent !== 0" class="progress-bar-progress-text">
+    <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="">
+    <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
+    <div class="mod-container">
+      <div class="mod-title" style="display: flex">
+        <strong class="one-line-clamp">{{ mod.name }}</strong>
+        <ng-container *ngIf="modLicenseInformation$ | async as modLicenseInformation">
+          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;"
+                (click)="openExternal(modLicenseInformation.url)">
+            <mat-icon style="font-size: 19px">license</mat-icon>
+            <span>{{ modLicenseInformation.text }}</span>
+          </span>
+        </ng-container>
+      </div>
+      <div class="mod-teaser" *ngIf="!mod.installProgress?.linkStep?.start">{{ mod.teaser }}</div>
+      <div class="mod-steps-container" @fadeInOut *ngIf="mod.installProgress?.linkStep?.start">
+        <ng-container *ngIf="mod?.installProgress as installProgress">
+          <ng-container *ngIf="!installProgress.completed">
+            <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep?.start">
+              <span class="mod-step-name">Fetching Information</span>
+              <mat-progress-bar
+                [mode]="installProgress.linkStep.start && installProgress.linkStep.progress === 0 ? 'indeterminate' : 'determinate'"
+                [color]="installProgress.linkStep.error ? 'warn' : 'accent'"
+                [value]="installProgress.linkStep.progress * 100"
+              />
+            </div>
+            <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep?.start">
+              <span class="mod-step-name">Download</span>
+              <div class="progress-bar-container">
+                <mat-progress-bar [color]="installProgress.downloadStep.error ? 'warn' : 'accent'"
+                                  [value]="installProgress.downloadStep.percent * 100" />
+                <span *ngIf="installProgress.downloadStep.percent !== 0" class="progress-bar-progress-text">
               @if (installProgress.downloadStep.percent !== 1) {
                 {{ installProgress.downloadStep.transferredBytes + '/' + installProgress.downloadStep.totalBytes }}
               } @else {
                 {{ installProgress.downloadStep.totalBytes }}
               }
             </span>
+              </div>
+            </div>
+            <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep.start">
+              <span class="mod-step-name">Install</span>
+              <mat-progress-bar
+                [mode]="installProgress.unzipStep.start && installProgress.unzipStep.progress  === 0 ? 'indeterminate' : 'determinate'"
+                [color]="installProgress.unzipStep.error ? 'warn' : 'accent'"
+                [value]="installProgress.unzipStep.progress * 100"
+              />
+            </div>
+          </ng-container>
+          <div *ngIf="installProgress.completed"
+               style="display: flex; height: 100%; width: 100%; justify-content: center; align-items: center">
+            <mat-icon>done</mat-icon>
+            Installation completed
           </div>
-        </div>
-        <div class="full-width" @fadeInOut *ngIf="installProgress.linkStep.start">
-          <span class="mod-step-name">Install</span>
-          <mat-progress-bar
-            [mode]="installProgress.unzipStep.start && installProgress.unzipStep.progress === 0 ? 'indeterminate' : 'determinate'"
-            [color]="installProgress.unzipStep.error ? 'warn' : 'accent'"
-            [value]="installProgress.unzipStep.progress * 100"
-          />
-        </div>
+        </ng-container>
       </div>
     </div>
-
     <div
       @fadeInOut
-      *ngIf="hovering && !mod?.installProgress?.linkStep?.start"
+      *ngIf="hovering && (!mod?.installProgress?.linkStep?.start || mod?.installProgress?.completed)"
       class="delete-button-container"
       (click)="removeModFromModList(mod)">
       <mat-icon>delete</mat-icon>

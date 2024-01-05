@@ -14,7 +14,6 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
       // TODO outsource
       const instance = store.get('akiInstances');
       if (!instance) {
-        console.log('No store');
         store.set('akiInstances', []);
       }
 

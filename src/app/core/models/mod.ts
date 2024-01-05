@@ -1,8 +1,10 @@
 ﻿export interface Mod {
   name: string;
   image: string;
+  icon?: string;
   fileUrl: string;
   kind: string;
+  teaser?: string;
   installProgress?: InstallProgress;
 }
 

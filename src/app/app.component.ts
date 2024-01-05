@@ -47,7 +47,6 @@ export class AppComponent {
   #userSettingService = inject(UserSettingsService);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
-  #changeDetectorRef = inject(ChangeDetectorRef);
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 
@@ -55,7 +54,7 @@ export class AppComponent {
 
   constructor() {
     // TODO Maybe Routen End Event Close Dialog
-    console.log('APP_CONFIG', APP_CONFIG);
+    // console.log('APP_CONFIG', APP_CONFIG);
 
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();

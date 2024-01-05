@@ -3,11 +3,6 @@ import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 
-export interface EventFileArgs<T = any> {
-  fileId: string;
-  parameter: T;
-}
-
 export interface GithubLinkData {
   userName: string;
   repoName: string;
