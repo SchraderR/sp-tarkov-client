@@ -7,6 +7,7 @@ export interface Mod {
   fileUrl: string;
   kind: string;
   teaser?: string;
+  isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
 }
 

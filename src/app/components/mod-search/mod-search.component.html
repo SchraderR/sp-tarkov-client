@@ -2,26 +2,26 @@
   <mat-label>Search for SP Aki Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
-    @for (mod of filteredModItems | async; track mod) {
-      <mat-option [value]="mod.name" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [modName]="mod.name">
+    <ng-container *ngFor="let mod of filteredModItems | async">
+      <mat-option [value]="mod.name" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
         <div style="display: flex; width: 100%;">
-          <img alt="" class="example-option-img" [ngSrc]="mod.image" width="50" height="50" />
+          <img alt="" class="example-option-img" [ngSrc]="mod?.image" width="50" height="50" />
           <div style="display: flex; flex-direction: column; padding-left: 8px; overflow: auto">
             <span class="text-ellipsis">{{ mod.name }}</span>
             <span class="x-small">{{ mod.kind }}</span>
           </div>
           <span class="spacer"></span>
-          <div *ngIf="alreadyInstalled.isInstalledMod" style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;" matTooltip="Already installed">
+          <div *ngIf="alreadyInstalled.isAlreadyInstalled()" style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;" matTooltip="Already installed">
             <mat-icon color="accent" style="margin: unset">done_all</mat-icon>
           </div>
-          <button *ngIf="!isInModList(mod.name) && !alreadyInstalled.isInstalledMod" style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
+          <button *ngIf="!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()" style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
             <mat-icon >add</mat-icon>
           </button>
-          <button *ngIf="isInModList(mod.name) && !alreadyInstalled.isInstalledMod" style="justify-content: center; align-items: end" mat-icon-button (click)="removeModFromModList($event, mod)">
+          <button *ngIf="alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()" style="justify-content: center; align-items: end" mat-icon-button (click)="removeModFromModList($event, mod)">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
       </mat-option>
-    }
+    </ng-container>
   </mat-autocomplete>
 </mat-form-field>

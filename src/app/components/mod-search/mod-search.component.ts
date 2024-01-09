@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Mod } from '../../core/models/mod';
 import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserSettingsService } from '../../core/services/user-settings.service';
 
 @Component({
   standalone: true,
@@ -39,9 +40,7 @@ export class ModSearchComponent {
 
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Observable<Mod[]>;
-  modListSignal = this.#modListService.modListSignal;
 
-  isInModList = (modName: string) => this.modListSignal().some(m => m.name === modName);
 
   constructor() {
     this.filteredModItems = this.searchControl.valueChanges.pipe(
