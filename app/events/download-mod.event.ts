@@ -22,7 +22,7 @@ export const handleDownloadModEvent = () => {
       directory: ankiTempDownloadDir,
       saveAs: false,
       onProgress: progress => event.sender.send('download-mod-progress', progress),
-      onCompleted: file => event.sender.send('download-mod-completed', file),
+      onCompleted: file => event.sender.send('download-mod-completed', file.path),
     });
   });
 };

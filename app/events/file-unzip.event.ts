@@ -16,7 +16,6 @@ export const handleFileUnzipEvent = () => {
       }
 
       const archivePath = args.filePath;
-      console.log(archivePath);
       const isSingleDll = await checkForSingleDll(archivePath);
       if (isSingleDll) {
         await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath));
@@ -43,6 +42,7 @@ export const handleFileUnzipEvent = () => {
     return new Promise(resolve => {
       list(archivePath, { $bin: sevenBin.path7za, $cherryPick: ['*.dll'] })
         .on('data', data => {
+          console.log ( data );
           if (!data.file.includes('/')) {
             dllFound = true;
           }

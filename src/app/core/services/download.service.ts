@@ -80,6 +80,8 @@ export class DownloadService {
             mod.installProgress!.completed = true;
             this.downloadProgressEvent.next();
             this.#modListService.updateMod();
+
+            return;
           });
 
         const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
@@ -95,14 +97,9 @@ export class DownloadService {
           modFileUrl: downloadLinkEvent!.args,
         };
 
-        if (this.directDownloadFilePath) {
-          console.log('directDownloadFilePath');
-          console.log(this.directDownloadFilePath);
-        }
-
-        const downloadFileEvent = await firstValueFrom(this.#electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel));
+        const downloadFilePath = await firstValueFrom(this.#electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel));
         const test: FileUnzipEvent = {
-          filePath: downloadFileEvent?.args,
+          filePath: downloadFilePath?.args,
           akiInstancePath: activeInstance.akiRootDirectory,
         };
         mod.installProgress.unzipStep.start = true;

@@ -2,7 +2,7 @@
 
 export interface Mod {
   name: string;
-  image: string;
+  image?: string;
   icon?: string;
   fileUrl: string;
   kind: string;
