@@ -13,3 +13,8 @@ export interface DownloadModel {
   modFileUrl: string;
   akiInstancePath: string;
 }
+
+export interface LinkModel {
+  fileId: string;
+  akiInstancePath: string;
+}

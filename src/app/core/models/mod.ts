@@ -1,4 +1,6 @@
-﻿export interface Mod {
+﻿import { DownloadProgress } from '../../../../shared/models/download.model';
+
+export interface Mod {
   name: string;
   image: string;
   icon?: string;
@@ -22,12 +24,4 @@ export interface StepProgress {
   error: boolean;
   start: boolean;
   progress: number;
-}
-
-export interface DownloadProgress {
-  percent: number;
-  totalBytes: string;
-  transferredBytes: string;
-  start: boolean;
-  error: boolean;
 }

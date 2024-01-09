@@ -4,9 +4,10 @@ import * as fs from 'fs';
 import * as sevenBin from '7zip-bin';
 import { extractFull, list } from 'node-7z';
 import { clientModPath, serverModPath } from '../constants';
+import { FileUnzipEvent } from '../../shared/models/unzip.model';
 
 export const handleFileUnzipEvent = () => {
-  ipcMain.on('file-unzip', async (event, args: any) => {
+  ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
     try {
       const ankiTempDownloadDir = path.join(args.akiInstancePath, '_temp');
 
@@ -14,7 +15,8 @@ export const handleFileUnzipEvent = () => {
         fs.mkdirSync(ankiTempDownloadDir);
       }
 
-      const archivePath = args.file.path;
+      const archivePath = args.filePath;
+      console.log(archivePath);
       const isSingleDll = await checkForSingleDll(archivePath);
       if (isSingleDll) {
         await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath));

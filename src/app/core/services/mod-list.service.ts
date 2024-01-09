@@ -5,7 +5,15 @@ import { InstallProgress, Mod } from '../models/mod';
   providedIn: 'root',
 })
 export class ModListService {
-  private modList = signal<Mod[]>([]);
+  private modList = signal<Mod[]>([
+    {
+      fileUrl: 'https://hub.sp-tarkov.com/files/file/1550-amands-controller/',
+      image: 'https://hub.sp-tarkov.com/files/images/file/7a/1550.png',
+      installProgress: this.initialInstallProgress(),
+      kind: 'Client mods',
+      name: "Amands' Controller",
+    },
+  ]);
   readonly modListSignal = this.modList.asReadonly();
 
   addMod(mod: Mod) {

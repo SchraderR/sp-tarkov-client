@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { Observable } from 'rxjs';
 import { applicationElectronEventNames, ApplicationElectronFileError, applicationElectronFileProgressEventNames } from '../events/electron.events';
 import IpcRendererEvent = Electron.IpcRendererEvent;
-import { DownloadProgress , InstallProgress } from '../models/mod';
+import { DownloadBase, DownloadProgress } from '../../../../shared/models/download.model';
 
 @Injectable({
   providedIn: 'root',
@@ -40,14 +40,18 @@ export class ElectronService {
     });
   }
 
-  getDownloadModProgressForFileId(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<DownloadProgress> {
+  getDownloadModProgressForFileId<T extends DownloadBase = any>(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<T> {
     return new Observable(observer => {
-      const handler = (_: IpcRendererEvent, args: DownloadProgress) => {
-        if (args.percent === 1) {
+      const handler = (_: IpcRendererEvent, args: T) => {
+        if (args?.percent === 1) {
           observer.next(args);
           observer.complete();
         }
         observer.next(args);
+
+        if (eventName === 'download-mod-direct' || eventName === 'download-mod-direct-completed') {
+          observer.complete();
+        }
       };
 
       this.ipcRenderer.on(`${eventName}`, handler);
