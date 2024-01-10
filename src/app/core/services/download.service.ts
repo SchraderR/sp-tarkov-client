@@ -85,7 +85,6 @@ export class DownloadService {
         const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
         const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string>('download-link', linkModel));
         mod.installProgress.linkStep.progress = 1;
-        console.log(downloadLinkEvent);
 
         mod.installProgress.linkStep.progress = 1;
         const downloadModel: DownloadModel = {
