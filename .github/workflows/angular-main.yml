@@ -5,16 +5,19 @@ on:
   pull_request:
 
 jobs:
-  release:
+  build:
+    name: Angular Build
     runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Node Setup
         uses: actions/setup-node@v4
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm i
 
       - name: Lint Code
         run: npm run lint
