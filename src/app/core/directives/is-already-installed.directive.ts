@@ -17,12 +17,13 @@ export class IsAlreadyInstalledDirective {
 
   @Input({ required: true }) mod!: Mod;
 
-  isAlreadyInstalled = computed(() => this.checkModAlreadyInstalled(this.mod.name));
-  isInModList = computed(() => this.checkModInModList(this.mod.name));
+  isAlreadyInstalled = computed(() => this.checkModAlreadyInstalled());
+  isInModList = computed(() => this.checkModInModList());
 
-  private checkModAlreadyInstalled(modName: string) {
+  private checkModAlreadyInstalled() {
+    const modName = this.mod.name;
     const activeInstance = this.#userSettingsService.getActiveInstance();
-    if (!this.mod || !activeInstance || (!activeInstance.serverMods?.length && !activeInstance.clientMods?.length)) {
+    if (!this.mod || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
       return false;
     }
 
@@ -36,7 +37,7 @@ export class IsAlreadyInstalledDirective {
     return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
   }
 
-  private isMatchBasedOnLevenshtein(stringA: string, stringB: string, threshold = 0.2): boolean {
+  private isMatchBasedOnLevenshtein(stringA = "", stringB = "", threshold = 0.2): boolean {
     const levenshteinDistance = distance(stringA, stringB);
     const averageLength = (stringA.length + stringB.length) / 2;
 
@@ -44,7 +45,7 @@ export class IsAlreadyInstalledDirective {
     return relativeDistance <= threshold;
   }
 
-  private checkModInModList(modName: string) {
-    return this.#modListService.modListSignal().some(m => m.name === modName);
+  private checkModInModList() {
+    return this.#modListService.modListSignal().some(m => m.name === this.mod.name);
   }
 }

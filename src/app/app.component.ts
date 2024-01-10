@@ -50,7 +50,7 @@ export class AppComponent {
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
   config = APP_CONFIG;
-  version = packageJson.version
+  version = packageJson.version;
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 

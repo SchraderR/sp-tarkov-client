@@ -35,6 +35,7 @@ export class AkiSearchService {
     if (!modListSection) {
       return [];
     }
+
     return Array.from(modListSection).map(e => ({
       name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
       image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
