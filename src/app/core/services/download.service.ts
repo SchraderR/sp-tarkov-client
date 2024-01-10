@@ -13,8 +13,6 @@ import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
   providedIn: 'root',
 })
 export class DownloadService {
-  private directDownloadFilePath = '';
-
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
