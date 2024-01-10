@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, EMPTY, firstValueFrom, switchMap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
 import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';

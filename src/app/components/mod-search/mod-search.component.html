@@ -3,7 +3,7 @@
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
     <ng-container *ngFor="let mod of filteredModItems | async">
-      <mat-option [value]="mod.name" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
+      <mat-option [value]="mod.name" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
         <div style="display: flex; width: 100%;">
           <img alt="" class="example-option-img" [ngSrc]="mod.image ?? ''" width="50" height="50" />
           <div style="display: flex; flex-direction: column; padding-left: 8px; overflow: auto">

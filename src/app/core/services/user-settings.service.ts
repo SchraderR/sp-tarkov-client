@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 import { UserSettingModel } from '../../../../shared/models/user-setting.model';
-import { Mod } from '../models/mod';
 
 @Injectable({
   providedIn: 'root',

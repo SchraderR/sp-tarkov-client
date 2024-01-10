@@ -1,4 +1,4 @@
-<mat-card *ngFor="let mod of accumulatedModList" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
+<mat-card *ngFor="let mod of accumulatedModList" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
   <mat-card-content class="card-container">
     <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
     <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>

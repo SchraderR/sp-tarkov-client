@@ -3,12 +3,10 @@ import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
-import { FormControl, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
 
 @Directive({
   standalone: true,
-  selector: '[isAlreadyInstalled]',
+  selector: '[appIsAlreadyInstalled]',
   exportAs: 'isAlreadyInstalled',
 })
 export class IsAlreadyInstalledDirective {
@@ -31,13 +29,19 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
-    const closestServerModName = closest(modName, activeInstance.serverMods.map(m => m.name));
-    const closestClientModName = closest(modName, activeInstance.clientMods.map(m => m.name));
+    const closestServerModName = closest(
+      modName,
+      activeInstance.serverMods.map(m => m.name)
+    );
+    const closestClientModName = closest(
+      modName,
+      activeInstance.clientMods.map(m => m.name)
+    );
 
     return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
   }
 
-  private isMatchBasedOnLevenshtein(stringA = "", stringB = "", threshold = 0.2): boolean {
+  private isMatchBasedOnLevenshtein(stringA = '', stringB = '', threshold = 0.2): boolean {
     const levenshteinDistance = distance(stringA, stringB);
     const averageLength = (stringA.length + stringB.length) / 2;
 

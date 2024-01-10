@@ -67,7 +67,7 @@ export default class PersonalSettingComponent {
   }
 
   removeInstance(settingModel: UserSettingModel) {
-    this.#electronService.sendEvent('user-settings-remove', settingModel.akiRootDirectory).subscribe(result => {
+    this.#electronService.sendEvent('user-settings-remove', settingModel.akiRootDirectory).subscribe(() => {
       this.#ngZone.run(() => {
         this.#userSettingsService.removeUserSetting(settingModel.akiRootDirectory);
         this.#userSettingsService.updateUserSetting();
