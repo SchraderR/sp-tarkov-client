@@ -33,7 +33,7 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
     } catch (error) {
       console.error(error);
       // TODO Error Shared Mapping
-      event.sender.send('file-unzip-error', 0);
+      // event.sender.send('file-unzip-error', 3);
     }
   });
 

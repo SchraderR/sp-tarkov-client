@@ -113,9 +113,15 @@ export class DownloadService {
             mod.installProgress.unzipStep.progress = 1;
             break;
           case ApplicationElectronFileError.downloadError:
+            mod.installProgress.downloadStep.error = true;
+            mod.installProgress.downloadStep.percent = 100;
+            break;
           case ApplicationElectronFileError.downloadLinkError:
+            mod.installProgress.linkStep.error = true;
+            mod.installProgress.linkStep.progress = 1;
             break;
         }
+        continue;
       }
     }
 
