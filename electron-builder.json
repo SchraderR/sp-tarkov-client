@@ -2,7 +2,6 @@
   "asar": true,
   "productName": "SP-EFT Manager",
   "artifactName": "sp-eft-manager-${version}.${ext}",
-  "extends": null,
   "directories": {
     "output": "release/"
   },
@@ -24,7 +23,7 @@
       "provider": "github",
       "repo": "sp-tarkov-client",
       "owner": "SchraderR",
-      "private": true,
+      "private": false,
       "protocol": "https",
       "releaseType": "release"
     }
