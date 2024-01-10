@@ -1,5 +1,7 @@
 {
   "asar": true,
+  "productName": "SP-EFT Manager",
+  "artifactName": "sp-eft-manager-${version}.${ext}",
   "directories": {
     "output": "release/"
   },
@@ -15,7 +17,7 @@
     }
   ],
   "win": {
-    "icon": "dist/assets/icons",
+    "icon": "app/assets/icon.ico",
     "target": ["nsis"],
     "publish": {
       "provider": "github",

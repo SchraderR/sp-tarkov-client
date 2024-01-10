@@ -3,10 +3,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as sevenBin from '7zip-bin';
 import { extractFull, list } from 'node-7z';
-import { clientModPath, serverModPath } from '../shared/constants';
+import { clientModPath, serverModPath } from '../constants';
+import { FileUnzipEvent } from '../../shared/models/unzip.model';
 
 export const handleFileUnzipEvent = () => {
-  ipcMain.on('file-unzip', async (event, args: any) => {
+  ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
     try {
       const ankiTempDownloadDir = path.join(args.akiInstancePath, '_temp');
 
@@ -14,7 +15,7 @@ export const handleFileUnzipEvent = () => {
         fs.mkdirSync(ankiTempDownloadDir);
       }
 
-      const archivePath = args.file.path;
+      const archivePath = args.filePath;
       const isSingleDll = await checkForSingleDll(archivePath);
       if (isSingleDll) {
         await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath));
@@ -41,6 +42,7 @@ export const handleFileUnzipEvent = () => {
     return new Promise(resolve => {
       list(archivePath, { $bin: sevenBin.path7za, $cherryPick: ['*.dll'] })
         .on('data', data => {
+          console.log ( data );
           if (!data.file.includes('/')) {
             dllFound = true;
           }

@@ -19,11 +19,11 @@ export interface ModLicenseInformation {
 }
 
 @Component({
-  selector: 'app-mod-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, NgOptimizedImage, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatIconModule, MatRippleModule],
+  selector: 'app-mod-card',
   templateUrl: './mod-card.component.html',
   styleUrl: './mod-card.component.scss',
+  imports: [CommonModule, MatCardModule, NgOptimizedImage, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatIconModule, MatRippleModule],
   animations: [fadeInFadeOutAnimation],
 })
 export class ModCardComponent implements OnInit {
@@ -34,17 +34,14 @@ export class ModCardComponent implements OnInit {
   @Output() removeModEvent = new EventEmitter<Mod>();
 
   hovering = false;
-
-  removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
 
   ngOnInit() {
     this.modLicenseInformation$ = this.getModLicenseInformation();
   }
 
-  openExternal(licenseUrl: string) {
-    void this.#electronService.shell.openExternal(licenseUrl);
-  }
+  removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
+  openExternal = (licenseUrl: string) => void this.#electronService.shell.openExternal(licenseUrl);
 
   private getModLicenseInformation(): Observable<ModLicenseInformation> {
     if (!this.mod?.fileUrl) {
@@ -63,6 +60,4 @@ export class ModCardComponent implements OnInit {
       })
     );
   }
-
-  protected readonly open = open;
 }

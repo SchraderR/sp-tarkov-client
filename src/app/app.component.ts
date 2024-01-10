@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, inject, NgZone, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
 import { APP_CONFIG } from '../environments/environment';
+import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
@@ -22,10 +23,10 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
 @Component({
   standalone: true,
   selector: 'app-root',
-  providers: [ElectronService],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   imports: [
+    CommonModule,
     MatButtonModule,
     CommonModule,
     RouterModule,
@@ -43,26 +44,28 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
-  #electronService = inject(ElectronService, { self: true });
+  #electronService = inject(ElectronService);
   #userSettingService = inject(UserSettingsService);
+  #destroyRef = inject(DestroyRef);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
+  config = APP_CONFIG;
+  version = packageJson.version;
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 
   modListSignal = this.#modListService.modListSignal;
+  appIconPath = 'assets/images/icon.png';
 
   constructor() {
-    // TODO Maybe Routen End Event Close Dialog
-    // console.log('APP_CONFIG', APP_CONFIG);
-
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
   }
 
-  toggleDrawer() {
-    void this.matDrawer.toggle();
-  }
+  toggleDrawer = () => void this.matDrawer.toggle();
+  openExternal = (url: string) => void this.#electronService.shell.openExternal(url);
+  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
+    void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
   private getCurrentPersonalSettings() {
     this.#electronService

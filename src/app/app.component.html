@@ -1,22 +1,58 @@
 <mat-drawer-container autosize>
   <mat-drawer class="sidenav" mode="side">
-    <mat-list (click)="toggleDrawer()">
-      <!--TODO Add icons -->
-      <mat-list-item routerLink="setting">Setting</mat-list-item>
-      <mat-list-item routerLink="top-rated">Top Rated Mods</mat-list-item>
+    <div style="display: flex; justify-content: center; padding-bottom: 8px; position: relative;">
+      <img alt="" [ngSrc]="appIconPath" height="100" width="100">
+      <span style="position: absolute; right: 0; bottom: 0">v{{ version }}</span>
+    </div>
+    <mat-divider />
+
+    <mat-list>
+      <mat-list-item routerLink="setting" (click)="toggleDrawer()">
+        <mat-icon matListItemIcon>settings</mat-icon>
+        <div matListItemTitle>Setting</div>
+        <div matListItemLine style="font-size: small">Configure your Aki Instances</div>
+      </mat-list-item>
+
+      <mat-list-item routerLink="top-rated" (click)="toggleDrawer()">
+        <mat-icon matListItemIcon>trophy</mat-icon>
+        <div matListItemTitle>Top Rated Mods</div>
+      </mat-list-item>
     </mat-list>
+    <span class="spacer"></span>
+    <div style="font-size: small;">
+      <div>
+        Report issue or ideas on
+        <a class="issue-link-text" (click)="openExternal(config.githubIssueUrl)">
+          Github
+          <mat-icon>open_in_new</mat-icon>
+        </a>
+        or
+        <a class="issue-link-text" (click)="openExternal(config.akiHubLink)">
+          Aki
+          <mat-icon>open_in_new</mat-icon>
+        </a>
+      </div>
+    </div>
   </mat-drawer>
 
-  <mat-toolbar>
-    <button mat-icon-button (click)="toggleDrawer()">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <h1 class="draggable-header">SP-Tarkov Management Tool - TestBuild</h1>
-    <span class="spacer"> </span>
-    <app-mod-search style="width: 65%" />
-    <button mat-icon-button routerLink="mod-list"  style="margin-left: 16px">
-      <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
-    </button>
+  <mat-toolbar class="draggable-header" style="display: flex; width: 100%;">
+    <div style="display: flex; justify-content: center; align-items: center">
+      <button class="no-drag" mat-icon-button (click)="toggleDrawer()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <h1>SP-EFT Manager - Beta</h1>
+    </div>
+    <div style="display: flex; width: 100%; justify-content: center; align-items: center">
+      <app-mod-search class="no-drag" style="width: 60%" />
+      <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
+        <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
+      </button>
+    </div>
+    <div class="window-control-buttons" style="display: flex; padding-left: 24px; gap: 8px">
+      <mat-icon class="no-drag" (click)="sendWindowEvent('window-minimize')">minimize</mat-icon>
+      <mat-icon class="no-drag" (click)="sendWindowEvent('window-maximize')">stack</mat-icon>
+      <mat-icon class="no-drag close" (click)="sendWindowEvent('window-close')">close</mat-icon>
+    </div>
   </mat-toolbar>
 
   <div class="drawer-content">

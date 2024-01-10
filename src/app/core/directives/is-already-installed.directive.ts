@@ -1,7 +1,10 @@
-import { Directive, effect, inject, Input } from '@angular/core';
+import { computed, Directive, inject, Input } from '@angular/core';
 import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
-import { AkiInstance } from '../../../../shared/models/user-setting.model';
+import { Mod } from '../models/mod';
+import { ModListService } from '../services/mod-list.service';
+import { FormControl, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 @Directive({
   standalone: true,
@@ -10,33 +13,39 @@ import { AkiInstance } from '../../../../shared/models/user-setting.model';
 })
 export class IsAlreadyInstalledDirective {
   #userSettingsService = inject(UserSettingsService);
+  #modListService = inject(ModListService);
 
-  @Input({ required: true }) modName!: string;
-  isInstalledMod = false;
+  @Input({ required: true }) mod!: Mod;
 
-  constructor() {
-    effect(() => {
-      const activeInstance = this.#userSettingsService.getActiveInstance();
-      if (!this.modName || !activeInstance || (!activeInstance.serverMods?.length && !activeInstance.clientMods?.length)) {
-        return false;
-      }
+  isAlreadyInstalled = computed(() => this.checkModAlreadyInstalled());
+  isInModList = computed(() => this.checkModInModList());
 
-      this.checkModAlreadyInstalled(this.modName, activeInstance);
-    });
-  }
+  private checkModAlreadyInstalled() {
+    const modName = this.mod.name;
+    const activeInstance = this.#userSettingsService.getActiveInstance();
+    if (!this.mod || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
+      return false;
+    }
 
-  private checkModAlreadyInstalled(modName: string, activeInstance: AkiInstance) {
+    if (!activeInstance) {
+      return false;
+    }
+
     const closestServerModName = closest(modName, activeInstance.serverMods.map(m => m.name));
     const closestClientModName = closest(modName, activeInstance.clientMods.map(m => m.name));
 
-    this.isInstalledMod = this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
+    return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
   }
 
-  private isMatchBasedOnLevenshtein(stringA: string, stringB: string, threshold = 0.2): boolean {
+  private isMatchBasedOnLevenshtein(stringA = "", stringB = "", threshold = 0.2): boolean {
     const levenshteinDistance = distance(stringA, stringB);
     const averageLength = (stringA.length + stringB.length) / 2;
 
     const relativeDistance = levenshteinDistance / averageLength;
     return relativeDistance <= threshold;
+  }
+
+  private checkModInModList() {
+    return this.#modListService.modListSignal().some(m => m.name === this.mod.name);
   }
 }

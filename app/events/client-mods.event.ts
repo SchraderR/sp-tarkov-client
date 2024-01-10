@@ -1,6 +1,6 @@
 ﻿import { ipcMain } from 'electron';
 import * as path from 'path';
-import { clientModPath } from '../shared/constants';
+import { clientModPath } from '../constants';
 import * as fs from 'fs';
 
 export const handleClientModsEvent = () => {

@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, inject, Injectable, NgZone } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
-import { DownloadModel } from '../../../../shared/models/aki-core.model';
+import { BehaviorSubject, EMPTY, firstValueFrom, switchMap } from 'rxjs';
+import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
 import { UserSettingsService } from './user-settings.service';
-import { DownloadProgress } from '../models/mod';
 import { ModListService } from './mod-list.service';
+import { DirectDownload, DownloadProgress } from '../../../../shared/models/download.model';
+import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,8 @@ export class DownloadService {
       }
 
       try {
+        mod.installProgress.linkStep.start = true;
+
         this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
           mod.installProgress!.downloadStep.percent = progress.percent;
           mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
@@ -46,20 +49,55 @@ export class DownloadService {
           this.downloadProgressEvent.next();
         });
 
-        mod.installProgress.linkStep.start = true;
-        const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string>('download-link', fileId));
+        this.#electronService
+          .getDownloadModProgressForFileId('download-mod-direct')
+          .pipe(
+            switchMap(() => {
+              mod.installProgress!.linkStep.progress = 1;
+              mod.installProgress!.downloadStep.pending = true;
+              this.downloadProgressEvent.next();
+
+              return this.#electronService.getDownloadModProgressForFileId<DirectDownload>('download-mod-direct-completed');
+            }),
+            switchMap(directDownload => {
+              mod.installProgress!.unzipStep.start = true;
+              mod.installProgress!.downloadStep.percent = 100;
+              mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+directDownload.totalBytes);
+              this.downloadProgressEvent.next();
+
+              const unzipEvent: FileUnzipEvent = {
+                filePath: directDownload.savePath,
+                akiInstancePath: activeInstance.akiRootDirectory,
+              };
+
+              return this.#electronService.sendEvent<void, FileUnzipEvent>('file-unzip', unzipEvent);
+            })
+          )
+          .subscribe(() => {
+            mod.installProgress!.unzipStep.progress = 1;
+            mod.installProgress!.completed = true;
+            this.downloadProgressEvent.next();
+            this.#modListService.updateMod();
+
+            return;
+          });
+
+        const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
+        const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string>('download-link', linkModel));
         mod.installProgress.linkStep.progress = 1;
+        console.log(downloadLinkEvent);
 
         mod.installProgress.linkStep.progress = 1;
         const downloadModel: DownloadModel = {
           fileId,
+          name: mod.name,
           akiInstancePath: activeInstance.akiRootDirectory,
           modFileUrl: downloadLinkEvent!.args,
         };
 
-        const downloadFileEvent = await firstValueFrom(this.#electronService.sendEvent<string>('download-mod', downloadModel));
-        const test = {
-          file: downloadFileEvent?.args,
+        const downloadFilePath = await firstValueFrom(this.#electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel));
+        const test: FileUnzipEvent = {
+          filePath: downloadFilePath?.args,
           akiInstancePath: activeInstance.akiRootDirectory,
         };
         mod.installProgress.unzipStep.start = true;

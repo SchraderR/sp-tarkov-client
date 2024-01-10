@@ -31,7 +31,7 @@
                 <mat-progress-bar [color]="installProgress.downloadStep.error ? 'warn' : 'accent'"
                                   [value]="installProgress.downloadStep.percent * 100" />
                 <span *ngIf="installProgress.downloadStep.percent !== 0" class="progress-bar-progress-text">
-              @if (installProgress.downloadStep.percent !== 1) {
+              @if (installProgress.downloadStep.percent !== 1 && installProgress.downloadStep.transferredBytes) {
                 {{ installProgress.downloadStep.transferredBytes + '/' + installProgress.downloadStep.totalBytes }}
               } @else {
                 {{ installProgress.downloadStep.totalBytes }}
@@ -48,8 +48,7 @@
               />
             </div>
           </ng-container>
-          <div *ngIf="installProgress.completed"
-               style="display: flex; height: 100%; width: 100%; justify-content: center; align-items: center">
+          <div *ngIf="installProgress.completed" style="display: flex; height: 100%; width: 100%; justify-content: center; align-items: center; font-size: large">
             <mat-icon>done</mat-icon>
             Installation completed
           </div>

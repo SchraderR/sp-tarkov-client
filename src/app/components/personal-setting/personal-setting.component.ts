@@ -3,36 +3,51 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { AkiInstance, UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { AkiInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
-import { switchMap } from 'rxjs';
+import { forkJoin, of, switchMap, tap } from 'rxjs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule],
 })
 export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
-  #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
+  #ngZone = inject(NgZone);
 
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
 
   getRootEftSpDirectory() {
     this.#electronService
-      .sendEvent('open-directory')
+      .sendEvent<UserSettingModel>('open-directory')
       .pipe(
-        switchMap(() => this.#electronService.sendEvent<UserSettingModel[]>('user-settings')),
+        switchMap(result => {
+          return forkJoin({
+            userSetting: of(result.args),
+            serverMods: this.#electronService.sendEvent<ModMeta[]>('server-mod', result.args.akiRootDirectory),
+            clientMods: this.#electronService.sendEvent<ModMeta[]>('client-mod', result.args.akiRootDirectory),
+          });
+        }),
+        tap(result => {
+          const newUserSetting = result.userSetting;
+          newUserSetting.clientMods = result.clientMods.args;
+          newUserSetting.serverMods = result.serverMods.args;
+
+          this.#userSettingsService.addUserSetting(newUserSetting);
+          this.#changeDetectorRef.detectChanges();
+        }),
         takeUntilDestroyed(this.#destroyRef)
       )
-      .subscribe(result => this.updateUserSettingAndDetectChanges(result?.args || []));
+      .subscribe();
   }
 
   setActiveInstance(settingModel: UserSettingModel) {
@@ -45,29 +60,18 @@ export default class PersonalSettingComponent {
       akiRootDirectory: settingModel.akiRootDirectory,
       isValid: settingModel.isValid,
       clientMods: settingModel.clientMods,
-      serverMods: settingModel.serverMods
+      serverMods: settingModel.serverMods,
     };
 
-    this.#electronService
-      .sendEvent('user-settings-update', akiInstance)
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe();
+    this.#electronService.sendEvent('user-settings-update', akiInstance).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
   }
 
   removeInstance(settingModel: UserSettingModel) {
-    this.#electronService
-      .sendEvent('user-settings-remove', settingModel.akiRootDirectory)
-      .pipe(
-        switchMap(() => this.#electronService.sendEvent<UserSettingModel[]>('user-settings')),
-        takeUntilDestroyed(this.#destroyRef)
-      )
-      .subscribe(result => this.updateUserSettingAndDetectChanges(result?.args || []));
-  }
-
-  private updateUserSettingAndDetectChanges(userSettings: UserSettingModel[]) {
-    this.#ngZone.run(() => {
-      this.#userSettingsService.setUserSetting(userSettings);
-      this.#changeDetectorRef.detectChanges();
+    this.#electronService.sendEvent('user-settings-remove', settingModel.akiRootDirectory).subscribe(result => {
+      this.#ngZone.run(() => {
+        this.#userSettingsService.removeUserSetting(settingModel.akiRootDirectory);
+        this.#userSettingsService.updateUserSetting();
+      });
     });
   }
 }

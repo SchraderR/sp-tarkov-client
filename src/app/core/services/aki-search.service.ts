@@ -35,11 +35,12 @@ export class AkiSearchService {
     if (!modListSection) {
       return [];
     }
+
     return Array.from(modListSection).map(e => ({
       name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
       image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
       fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-      kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML
+      kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
     }));
   }
 }

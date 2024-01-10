@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as Store from 'electron-store';
 import * as path from 'path';
 import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { stableAkiCoreConfigPath } from '../shared/constants';
+import { stableAkiCoreConfigPath } from '../constants';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('user-settings', async event => {
@@ -49,7 +49,7 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
   const akiInstances = store.get('akiInstances');
   if (!akiInstances || akiInstances.length === 0) {
     // TODO ERROR HANDLING
-    // SEND MESSAGE TO SET ROOT DIR
+    event.sender.send('user-settings-completed', []);
     return;
   }
 
@@ -68,8 +68,8 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         akiCore: JSON.parse(akiCoreJson),
         isValid: akiInstance.isValid,
         isActive: akiInstance.isActive,
-        clientMods: akiInstance.clientMods,
-        serverMods: akiInstance.serverMods
+        clientMods: akiInstance.clientMods ?? [],
+        serverMods: akiInstance.serverMods ?? []
       });
     } catch (e) {
       // add to object and return a missing path error message
