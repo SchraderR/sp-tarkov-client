@@ -1,3 +1,6 @@
+@use '@angular/material' as mat;
+@use 'styles' as *;
+
 $toolbar-height: 64px;
 $additionalPadding: 16px;
 $listPaddingSize: 16px;
@@ -48,6 +51,19 @@ $dividerMargin: 9px;
     &.close {
       background: rgba(255, 0, 0, 0.4);
     }
+  }
+}
+
+.issue-link-text {
+  display: inline-flex;
+  cursor: pointer;
+  text-decoration: none;
+  color: mat.get-color-from-palette($mat-theme-accent-palette, 500);
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
   }
 }
 

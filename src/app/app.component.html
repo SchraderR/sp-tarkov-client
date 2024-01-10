@@ -1,26 +1,37 @@
 <mat-drawer-container autosize>
   <mat-drawer class="sidenav" mode="side">
-    <div style="display: flex; justify-content: center; padding-bottom: 8px;">
+    <div style="display: flex; justify-content: center; padding-bottom: 8px; position: relative;">
       <img alt="" [ngSrc]="appIconPath" height="100" width="100">
+      <span style="position: absolute; right: 0; bottom: 0">v{{ version }}</span>
     </div>
     <mat-divider />
 
-    <mat-list (click)="toggleDrawer()">
-      <!--TODO Add icons -->
-      <mat-list-item routerLink="setting">
+    <mat-list>
+      <mat-list-item routerLink="setting" (click)="toggleDrawer()">
         <mat-icon matListItemIcon>settings</mat-icon>
         <div matListItemTitle>Setting</div>
         <div matListItemLine style="font-size: small">Configure your Aki Instances</div>
       </mat-list-item>
 
-      <mat-list-item routerLink="top-rated">
+      <mat-list-item routerLink="top-rated" (click)="toggleDrawer()">
         <mat-icon matListItemIcon>trophy</mat-icon>
         <div matListItemTitle>Top Rated Mods</div>
       </mat-list-item>
     </mat-list>
     <span class="spacer"></span>
     <div>
-      Issue? -> Link Github
+      <div>
+        Report an Issue on
+        <a class="issue-link-text" (click)="openExternal(config.githubIssueUrl)">
+          GitHub
+          <mat-icon>open_in_new</mat-icon>
+        </a>
+        or
+        <a class="issue-link-text" (click)="openExternal(config.akiHubLink)">
+          Aki
+          <mat-icon>open_in_new</mat-icon>
+        </a>
+      </div>
     </div>
   </mat-drawer>
 
@@ -29,7 +40,7 @@
       <button class="no-drag" mat-icon-button (click)="toggleDrawer()">
         <mat-icon>menu</mat-icon>
       </button>
-      <h1>SP-EFT Manager - TestBuild</h1>
+      <h1>SP-EFT Manager - Beta</h1>
     </div>
     <div style="display: flex; width: 100%; justify-content: center; align-items: center">
       <app-mod-search class="no-drag" style="width: 60%" />
