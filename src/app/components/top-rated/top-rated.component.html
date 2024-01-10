@@ -7,22 +7,26 @@
       <div class="mod-teaser">{{ mod.teaser }}</div>
       <span class="spacer"></span>
       <div style="display: flex">
-        @if (alreadyInstalled.isAlreadyInstalled()) {
-          <mat-icon
-            matTooltip="Already installed"
-            style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;margin: unset"
-            color="accent">done_all
-          </mat-icon>
-        } @else {
-          @if (!isInModList(mod.name)) {
-            <button mat-icon-button (click)="addModToModList(mod)">
-              <mat-icon>add</mat-icon>
-            </button>
+        @if (isActiveAkiInstanceAvailable()) {
+          @if (alreadyInstalled.isAlreadyInstalled()) {
+            <mat-icon
+              matTooltip="Already installed"
+              style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;margin: unset"
+              color="accent">done_all
+            </mat-icon>
           } @else {
-            <button mat-icon-button (click)="removeModFromModList(mod)">
-              <mat-icon>delete</mat-icon>
-            </button>
+            @if (!alreadyInstalled.isInModList()) {
+              <button mat-icon-button (click)="addModToModList(mod)">
+                <mat-icon>add</mat-icon>
+              </button>
+            } @else {
+              <button mat-icon-button (click)="removeModFromModList(mod)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
           }
+        } @else {
+          <mat-icon style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px" color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">warning</mat-icon>
         }
         <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
           <mat-icon>open_in_new</mat-icon>

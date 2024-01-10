@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ModListService } from '../../core/services/mod-list.service';
 import { Mod } from '../../core/models/mod';
 import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
+import { UserSettingsService } from '../../core/services/user-settings.service';
 
 @Component({
   standalone: true,
@@ -35,11 +36,11 @@ export default class TopRatedComponent {
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
   #modListService = inject(ModListService);
+  #userSettingsService = inject(UserSettingsService);
 
   accumulatedModList: Mod[] = [];
 
-  modListSignal = this.#modListService.modListSignal;
-  isInModList = (modName: string) => this.modListSignal().some(m => m.name === modName);
+  isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   constructor() {
     this.#httpClient

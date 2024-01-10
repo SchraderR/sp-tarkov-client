@@ -8,13 +8,14 @@ import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
 import { forkJoin, of, switchMap, tap } from 'rxjs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule],
 })
 export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);

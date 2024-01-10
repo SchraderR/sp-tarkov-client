@@ -37,6 +37,9 @@ import { UserSettingsService } from '../../core/services/user-settings.service';
 export class ModSearchComponent {
   #akiSearchService = inject(AkiSearchService);
   #modListService = inject(ModListService);
+  #userSettingsService = inject(UserSettingsService);
+
+  isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Observable<Mod[]>;
