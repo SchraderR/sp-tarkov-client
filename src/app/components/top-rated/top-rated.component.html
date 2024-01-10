@@ -1,4 +1,4 @@
-<mat-card *ngFor="let mod of accumulatedModList" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [modName]="mod.name">
+<mat-card *ngFor="let mod of accumulatedModList" isAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
   <mat-card-content class="card-container">
     <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
     <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
@@ -7,7 +7,7 @@
       <div class="mod-teaser">{{ mod.teaser }}</div>
       <span class="spacer"></span>
       <div style="display: flex">
-        @if (alreadyInstalled.isInstalledMod) {
+        @if (alreadyInstalled.isAlreadyInstalled()) {
           <mat-icon
             matTooltip="Already installed"
             style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;margin: unset"

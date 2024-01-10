@@ -14,9 +14,9 @@ import { fadeInFadeOutAnimation } from '../mod-card/mod-card.animations';
 @Component({
   standalone: true,
   selector: 'app-mod-list',
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent],
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
+  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent],
   animations: [fadeInFadeOutAnimation]
 })
 export default class ModListComponent {

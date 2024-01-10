@@ -5,48 +5,6 @@ import { InstallProgress, Mod } from '../models/mod';
   providedIn: 'root',
 })
 export class ModListService {
-  private modList = signal<Mod[]>([]);
-  readonly modListSignal = this.modList.asReadonly();
-
-  addMod(mod: Mod) {
-    if (this.modList().some(m => m.name === mod.name)) {
-      return;
-    }
-
-    this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
-  }
-
-  updateMod() {
-    this.modList.update(state => [...state]);
-  }
-
-  removeMod(name: string) {
-    this.modList.update(() => [...this.modList().filter(m => m.name !== name)]);
-  }
-
-  private initialInstallProgress(): InstallProgress {
-    return {
-      completed: false,
-      linkStep: {
-        start: false,
-        error: false,
-        progress: 0,
-      },
-      downloadStep: {
-        start: false,
-        error: false,
-        percent: 0,
-        totalBytes: '',
-        transferredBytes: '',
-      },
-      unzipStep: {
-        start: false,
-        error: false,
-        progress: 0,
-      },
-    };
-  }
-
   private mockModList: Mod[] = [
     {
       name: "Amands's Graphics",
@@ -123,4 +81,50 @@ export class ModListService {
       installProgress: this.initialInstallProgress(),
     },
   ];
+
+  private modList = signal<Mod[]>(this.mockModList);
+  readonly modListSignal = this.modList.asReadonly();
+
+  addMod(mod: Mod) {
+    if (this.modList().some(m => m.name === mod.name)) {
+      return;
+    }
+
+    this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
+  }
+
+  updateMod() {
+    this.modList.update(state => [...state]);
+  }
+
+  removeMod(name: string) {
+    this.modList.update(() => [...this.modList().filter(m => m.name !== name)]);
+  }
+
+  clearModList() {
+    this.modList.set([]);
+  }
+
+  private initialInstallProgress(): InstallProgress {
+    return {
+      completed: false,
+      linkStep: {
+        start: false,
+        error: false,
+        progress: 0,
+      },
+      downloadStep: {
+        start: false,
+        error: false,
+        percent: 0,
+        totalBytes: '',
+        transferredBytes: '',
+      },
+      unzipStep: {
+        start: false,
+        error: false,
+        progress: 0,
+      },
+    };
+  }
 }

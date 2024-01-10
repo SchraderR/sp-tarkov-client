@@ -21,7 +21,6 @@ export class IsAlreadyInstalledDirective {
   isInModList = computed(() => this.checkModInModList(this.mod.name));
 
   private checkModAlreadyInstalled(modName: string) {
-    console.log ( modName );
     const activeInstance = this.#userSettingsService.getActiveInstance();
     if (!this.mod || !activeInstance || (!activeInstance.serverMods?.length && !activeInstance.clientMods?.length)) {
       return false;
@@ -46,7 +45,6 @@ export class IsAlreadyInstalledDirective {
   }
 
   private checkModInModList(modName: string) {
-    console.log(modName);
     return this.#modListService.modListSignal().some(m => m.name === modName);
   }
 }
