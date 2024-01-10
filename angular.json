@@ -46,7 +46,7 @@
             }
           },
           "configurations": {
-            "development": {
+            "dev": {
               "optimization": false,
               "outputHashing": "none",
               "sourceMap": true,
@@ -54,11 +54,17 @@
               "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false
+              "buildOptimizer": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
             },
             "production": {
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
@@ -71,20 +77,58 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "web": {
+              "optimization": false,
+              "outputHashing": "none",
+              "sourceMap": true,
+              "namedChunks": false,
+              "aot": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.web.ts"
+                }
+              ]
+            },
+            "web-production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.web.prod.ts"
+                }
+              ]
             }
           }
         },
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "buildTarget": "angular-electron:build"
+            "browserTarget": "angular-electron:build"
           },
           "configurations": {
-            "development": {
-              "buildTarget": "angular-electron:build:development"
+            "dev": {
+              "browserTarget": "angular-electron:build:dev"
             },
             "production": {
-              "buildTarget": "angular-electron:build:production"
+              "browserTarget": "angular-electron:build:production"
+            },
+            "web": {
+              "browserTarget": "angular-electron:build:web"
+            },
+            "web-production": {
+              "browserTarget": "angular-electron:build:web-production"
             }
           }
         },
