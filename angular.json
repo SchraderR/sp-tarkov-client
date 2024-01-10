@@ -54,13 +54,7 @@
               "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ]
+              "buildOptimizer": false
             },
             "production": {
               "optimization": true,
@@ -86,13 +80,7 @@
               "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.web.ts"
-                }
-              ]
+              "buildOptimizer": false
             },
             "web-production": {
               "optimization": true,
@@ -106,7 +94,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.web.prod.ts"
+                  "with": "src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -115,20 +103,20 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "angular-electron:build"
+            "buildTarget": "angular-electron:build"
           },
           "configurations": {
             "dev": {
-              "browserTarget": "angular-electron:build:dev"
+              "buildTarget": "angular-electron:build:dev"
             },
             "production": {
-              "browserTarget": "angular-electron:build:production"
+              "buildTarget": "angular-electron:build:production"
             },
             "web": {
-              "browserTarget": "angular-electron:build:web"
+              "buildTarget": "angular-electron:build:web"
             },
             "web-production": {
-              "browserTarget": "angular-electron:build:web-production"
+              "buildTarget": "angular-electron:build:web-production"
             }
           }
         },
