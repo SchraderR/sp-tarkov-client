@@ -12,7 +12,6 @@ import { HttpClient } from '@angular/common/http';
 import { HtmlHelper } from '../../core/helper/html-helper';
 import { EMPTY, map, Observable } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
-import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
 
 export interface ModLicenseInformation {
   url: string;
