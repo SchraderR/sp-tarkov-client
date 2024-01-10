@@ -1,5 +1,5 @@
 ﻿import { ipcMain } from 'electron';
-import { chromium } from 'playwright';
+import { chromium, Page } from 'playwright';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
@@ -14,23 +14,31 @@ export interface GithubLinkData {
 }
 
 export const handleDownloadLinkEvent = () => {
-  ipcMain.on('download-link', (event, linkModel: LinkModel) => {
+  ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
     let downloadLink = null;
 
-    (async () => {
+    await (async () => {
       const browser = await chromium.launch();
       const context = await browser.newContext();
       const page = await context.newPage();
+      await page.route('**/*', route => {
+        if (
+          route.request().resourceType() === 'stylesheet' ||
+          route.request().resourceType() === 'font' ||
+          route.request().resourceType() === 'image' ||
+          route.request().resourceType() === 'media'
+        ) {
+          route.abort();
+        } else {
+          route.continue();
+        }
+      });
 
       await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`);
       await page.click('[name="confirm"]');
-      await context.route('**/*.{png,jpg,jpeg,svg,gif,css,woff2}', route => route.abort());
 
       await page.click('div.formSubmit input[type="submit"]');
       await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`);
-
-      const downloadLinkButton = await page.$('a.button.buttonPrimary.externalURL');
-      const downloadLinkButtonLink = await downloadLinkButton?.evaluate(el => el.getAttribute('href'));
 
       const ankiTempDownloadDir = path.join(linkModel.akiInstancePath, '_temp');
       if (!fs.existsSync(ankiTempDownloadDir)) {
@@ -38,43 +46,52 @@ export const handleDownloadLinkEvent = () => {
       }
 
       const downloadEventPromise = page
-        .waitForEvent('download', { timeout: 500 })
+        .waitForEvent('download', { timeout: 1000 })
         .then(async download => {
           event.sender.send('download-mod-direct');
-
-          const savePath = `${ankiTempDownloadDir}/${download.suggestedFilename()}`;
-          await download.saveAs(savePath);
-
-          const directDownload: DirectDownload = {
-            savePath,
-            totalBytes: fs.statSync(savePath).size.toString(),
-            percent: 100,
-          };
-
-          event.sender.send('download-mod-direct-completed', directDownload);
+          return download;
         })
         .catch(() => false);
 
-      await page.click('a.button.buttonPrimary.externalURL');
-      const newPage = await context.waitForEvent('page', { timeout: 500 }).catch(() => null);
-      const downloadEvent = await downloadEventPromise;
+      const newPagePromise = context
+        .waitForEvent('page', { timeout: 1000 })
+        .then(p => p)
+        .catch(() => false);
 
-      if (downloadEvent) {
-        await browser.close();
-        return;
+      const [newPage, downloadEvent] = await Promise.all([newPagePromise, downloadEventPromise, page.click('a.button.buttonPrimary.externalURL')]);
+
+      if (typeof downloadEvent !== 'boolean') {
+        const sourceFilePath = await downloadEvent.path();
+
+        const destinationFileName = `copy.${downloadEvent.suggestedFilename()}`;
+        const destinationFilePath = path.join(ankiTempDownloadDir, destinationFileName);
+
+        fs.copyFile(sourceFilePath, destinationFilePath, async err => {
+          if (err) {
+            return;
+          }
+
+          const directDownload: DirectDownload = {
+            savePath: destinationFilePath,
+            totalBytes: fs.statSync(destinationFilePath).size.toString(),
+            percent: 100,
+          };
+          event.sender.send('download-mod-direct-completed', directDownload);
+        });
       }
 
-      if (!newPage) {
+      if (newPage === false) {
+        // event.sender.send('download-link-error', 0);
         // TODO proper error handling
-        await browser.close();
+        await context.close();
         return;
       }
 
-      await newPage.waitForLoadState('networkidle');
+      await (newPage as Page).waitForLoadState('networkidle');
 
-      downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
+      downloadLink = await (newPage as Page).$eval('a[href]', e => e.getAttribute('href'));
       if (!downloadLink) {
-        await browser.close();
+        await context.close();
         return;
       }
 
@@ -88,14 +105,14 @@ export const handleDownloadLinkEvent = () => {
           .then(async data => {
             const githubDownloadLink = data?.assets?.[0].browser_download_url;
             event.sender.send('download-link-completed', githubDownloadLink);
-            await browser.close();
+            await context.close();
             return;
           })
           .catch(err => console.error(err));
       }
 
       event.sender.send('download-link-completed', downloadLink);
-      await browser.close();
+      await context.close();
     })();
   });
 };
