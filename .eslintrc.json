@@ -1,7 +1,7 @@
 {
   "root": true,
   "ignorePatterns": [
-    "typings.d.ts",
+    "**/typings.d.ts",
     "app/**/*",
     "dist/**/*",
     "release/**/*"
