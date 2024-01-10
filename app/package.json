@@ -18,8 +18,10 @@
     "electron-dl": "^3.5.1",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-store": "8.1.0",
+    "electron-updater": "6.1.7",
     "node-7z": "^3.0.0",
     "node-powershell": "^5.0.1",
+    "playwright": "1.40.1",
     "puppeteer": "20.8.1",
     "ts-node": "10.9.2",
     "util": "^0.12.5"

@@ -5,8 +5,6 @@ import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Page } from '@playwright/test';
-import IpcMainEvent = Electron.IpcMainEvent;
 import { DirectDownload } from '../../shared/models/download.model';
 
 export interface GithubLinkData {
