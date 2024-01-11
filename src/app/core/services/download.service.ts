@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, EMPTY, firstValueFrom, switchMap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
 import { UserSettingsService } from './user-settings.service';
 import { ModListService } from './mod-list.service';
-import { DirectDownload, DownloadProgress } from '../../../../shared/models/download.model';
+import { DownloadProgress } from '../../../../shared/models/download.model';
 import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
 
 @Injectable({
@@ -49,41 +49,8 @@ export class DownloadService {
           this.downloadProgressEvent.next();
         });
 
-        this.#electronService
-          .getDownloadModProgressForFileId('download-mod-direct')
-          .pipe(
-            switchMap(() => {
-              mod.installProgress!.linkStep.progress = 1;
-              mod.installProgress!.downloadStep.pending = true;
-              this.downloadProgressEvent.next();
-
-              return this.#electronService.getDownloadModProgressForFileId<DirectDownload>('download-mod-direct-completed');
-            }),
-            switchMap(directDownload => {
-              mod.installProgress!.unzipStep.start = true;
-              mod.installProgress!.downloadStep.percent = 100;
-              mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+directDownload.totalBytes);
-              this.downloadProgressEvent.next();
-
-              const unzipEvent: FileUnzipEvent = {
-                filePath: directDownload.savePath,
-                akiInstancePath: activeInstance.akiRootDirectory,
-              };
-
-              return this.#electronService.sendEvent<void, FileUnzipEvent>('file-unzip', unzipEvent);
-            })
-          )
-          .subscribe(() => {
-            mod.installProgress!.unzipStep.progress = 1;
-            mod.installProgress!.completed = true;
-            this.downloadProgressEvent.next();
-            this.#modListService.updateMod();
-
-            return;
-          });
-
         const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
-        const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string>('download-link', linkModel));
+        const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string, LinkModel>('download-link', linkModel));
         mod.installProgress.linkStep.progress = 1;
 
         mod.installProgress.linkStep.progress = 1;
@@ -100,7 +67,7 @@ export class DownloadService {
           akiInstancePath: activeInstance.akiRootDirectory,
         };
         mod.installProgress.unzipStep.start = true;
-        await firstValueFrom(this.#electronService.sendEvent<any>('file-unzip', test));
+        await firstValueFrom(this.#electronService.sendEvent('file-unzip', test));
         mod.installProgress.unzipStep.progress = 1;
         mod.installProgress.completed = true;
 

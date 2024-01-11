@@ -1,11 +1,8 @@
 ﻿import { ipcMain } from 'electron';
-import { chromium, Page } from 'playwright';
+import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
-import * as path from 'path';
-import * as fs from 'fs';
-import { DirectDownload } from '../../shared/models/download.model';
 
 export interface GithubLinkData {
   userName: string;
@@ -18,80 +15,46 @@ export const handleDownloadLinkEvent = () => {
     let downloadLink = null;
 
     await (async () => {
-      const browser = await chromium.launch();
-      const context = await browser.newContext();
-      const page = await context.newPage();
-      await page.route('**/*', route => {
+      const browser = await launch({ headless: 'new' });
+      const page = await browser.newPage();
+      await page.setRequestInterception(true);
+      page.on('request', req => {
         if (
-          route.request().resourceType() === 'stylesheet' ||
-          route.request().resourceType() === 'font' ||
-          route.request().resourceType() === 'image' ||
-          route.request().resourceType() === 'media'
+          req.resourceType() === 'stylesheet' ||
+          req.resourceType() === 'font' ||
+          req.resourceType() === 'image' ||
+          req.resourceType() === 'media'
         ) {
-          route.abort();
+          req.abort();
         } else {
-          route.continue();
+          req.continue();
         }
       });
 
-      await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`);
+      await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
       await page.click('[name="confirm"]');
-
       await page.click('div.formSubmit input[type="submit"]');
-      await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`);
 
-      const ankiTempDownloadDir = path.join(linkModel.akiInstancePath, '_temp');
-      if (!fs.existsSync(ankiTempDownloadDir)) {
-        fs.mkdirSync(ankiTempDownloadDir);
-      }
-
-      const downloadEventPromise = page
-        .waitForEvent('download', { timeout: 1000 })
-        .then(async download => {
-          event.sender.send('download-mod-direct');
-          return download;
-        })
-        .catch(() => false);
-
-      const newPagePromise = context
-        .waitForEvent('page', { timeout: 1000 })
-        .then(p => p)
-        .catch(() => false);
-
-      const [newPage, downloadEvent] = await Promise.all([newPagePromise, downloadEventPromise, page.click('a.button.buttonPrimary.externalURL')]);
-
-      if (typeof downloadEvent !== 'boolean') {
-        const sourceFilePath = await downloadEvent.path();
-
-        const destinationFileName = `copy.${downloadEvent.suggestedFilename()}`;
-        const destinationFilePath = path.join(ankiTempDownloadDir, destinationFileName);
-
-        fs.copyFile(sourceFilePath, destinationFilePath, async err => {
-          if (err) {
-            return;
+      page.on('response', response => {
+        const status = response.status();
+        if (status >= 300 && status <= 399) {
+          if (response.headers()['location'].includes('dev.sp-tarkov.com/attachments')) {
+            downloadLink = response.headers()['location'];
+            event.sender.send('download-link-completed', downloadLink);
+            browser.close();
           }
+        }
+      });
 
-          const directDownload: DirectDownload = {
-            savePath: destinationFilePath,
-            totalBytes: fs.statSync(destinationFilePath).size.toString(),
-            percent: 100,
-          };
-          event.sender.send('download-mod-direct-completed', directDownload);
-        });
-      }
+      await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+      await page.click('a.button.buttonPrimary.externalURL');
 
-      if (newPage === false) {
-        // event.sender.send('download-link-error', 0);
-        // TODO proper error handling
-        await context.close();
-        return;
-      }
+      const newPagePromise = getNewPageWhenLoaded(browser);
+      const newPage: Page = await newPagePromise;
 
-      await (newPage as Page).waitForLoadState('networkidle');
-
-      downloadLink = await (newPage as Page).$eval('a[href]', e => e.getAttribute('href'));
+      downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
       if (!downloadLink) {
-        await context.close();
+        await browser.close();
         return;
       }
 
@@ -99,22 +62,39 @@ export const handleDownloadLinkEvent = () => {
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
         if (!gitHubInformation) {
+          //  TODO Error Handling
+          // await browser.close();
           return;
         }
         await getReleaseData(gitHubInformation)
           .then(async data => {
             const githubDownloadLink = data?.assets?.[0].browser_download_url;
+
             event.sender.send('download-link-completed', githubDownloadLink);
-            await context.close();
+            await browser.close();
+
             return;
           })
           .catch(err => console.error(err));
       }
 
       event.sender.send('download-link-completed', downloadLink);
-      await context.close();
+      await browser.close();
     })();
   });
+};
+
+const getNewPageWhenLoaded = async (browser: Browser) => {
+  return new Promise<Page>(x =>
+    browser.on('targetcreated', async target => {
+      if (target.type() === 'page') {
+        const newPage = await target.page();
+        const newPagePromise = new Promise<Page>(y => newPage.once('domcontentloaded', () => y(newPage)));
+        const isPageLoaded = await newPage.evaluate(() => document.readyState);
+        return isPageLoaded.match('complete|interactive') ? x(newPage) : x(newPagePromise);
+      }
+    })
+  );
 };
 
 function isArchiveURL(url: string): boolean {

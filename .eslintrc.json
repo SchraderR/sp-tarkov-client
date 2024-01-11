@@ -1,6 +1,7 @@
 {
   "root": true,
   "ignorePatterns": [
+    "**/typings.d.ts",
     "app/**/*",
     "dist/**/*",
     "release/**/*"
@@ -10,23 +11,21 @@
       "files": [
         "*.ts"
       ],
-      "parserOptions": {
-        "project": [
-          "./tsconfig.serve.json",
-          "./src/tsconfig.app.json",
-          "./src/tsconfig.spec.json",
-          "./e2e/tsconfig.e2e.json"
-        ],
-        "createDefaultProgram": true
-      },
       "extends": [
-        "plugin:@angular-eslint/ng-cli-compat",
-        "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
-        "prefer-arrow/prefer-arrow-functions": 0,
-        "@angular-eslint/directive-selector": 0,
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
         "@angular-eslint/component-selector": [
           "error",
           {
@@ -34,8 +33,7 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ],
-        "jsdoc/newline-after-description": 0
+        ]
       }
     },
     {

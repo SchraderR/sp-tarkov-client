@@ -90,8 +90,8 @@ export class AppComponent {
     return userSettings.map(userSetting =>
       forkJoin({
         userSetting: of(userSetting),
-        serverMods: this.#electronService.sendEvent<ModMeta[]>('server-mod', userSetting.akiRootDirectory),
-        clientMods: this.#electronService.sendEvent<ModMeta[]>('client-mod', userSetting.akiRootDirectory),
+        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
+        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
       })
     );
   }

@@ -4,8 +4,8 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { Observable } from 'rxjs';
 import { applicationElectronEventNames, ApplicationElectronFileError, applicationElectronFileProgressEventNames } from '../events/electron.events';
+import { DownloadBase } from '../../../../shared/models/download.model';
 import IpcRendererEvent = Electron.IpcRendererEvent;
-import { DownloadBase, DownloadProgress } from '../../../../shared/models/download.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,8 +25,8 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
-  sendEvent<T, C = any>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
-    return new Observable<{ event: any; args: T }>(observer => {
+  sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
+    return new Observable<{ event: unknown; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
         observer.next({ event, args: argsParsed });
@@ -40,7 +40,9 @@ export class ElectronService {
     });
   }
 
-  getDownloadModProgressForFileId<T extends DownloadBase = any>(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<T> {
+  getDownloadModProgressForFileId<T extends DownloadBase = never>(
+    eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'
+  ): Observable<T> {
     return new Observable(observer => {
       const handler = (_: IpcRendererEvent, args: T) => {
         if (args?.percent === 1) {

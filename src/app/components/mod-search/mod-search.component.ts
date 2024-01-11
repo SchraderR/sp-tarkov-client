@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -43,7 +43,6 @@ export class ModSearchComponent {
 
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Observable<Mod[]>;
-
 
   constructor() {
     this.filteredModItems = this.searchControl.valueChanges.pipe(
