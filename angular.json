@@ -54,13 +54,7 @@
               "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ]
+              "buildOptimizer": false
             },
             "production": {
               "optimization": true,
@@ -86,13 +80,7 @@
               "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": false,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ]
+              "buildOptimizer": false
             },
             "web-production": {
               "optimization": true,
@@ -166,6 +154,20 @@
             "lintFilePatterns": [
               "src/**/*.ts",
               "src/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "angular-electron-e2e": {
+      "root": "e2e",
+      "projectType": "application",
+      "architect": {
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "e2e/**/*.ts"
             ]
           }
         }

@@ -15,7 +15,7 @@
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 
 export enum ApplicationElectronFileError {
-  unzipError,
-  downloadError,
   downloadLinkError,
+  downloadError,
+  unzipError,
 }
