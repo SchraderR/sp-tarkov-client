@@ -33,8 +33,8 @@ export default class PersonalSettingComponent {
         switchMap(result => {
           return forkJoin({
             userSetting: of(result.args),
-            serverMods: this.#electronService.sendEvent<ModMeta[]>('server-mod', result.args.akiRootDirectory),
-            clientMods: this.#electronService.sendEvent<ModMeta[]>('client-mod', result.args.akiRootDirectory),
+            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.akiRootDirectory),
+            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.akiRootDirectory),
           });
         }),
         tap(result => {

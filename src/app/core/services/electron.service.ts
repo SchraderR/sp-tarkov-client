@@ -25,8 +25,8 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
-  sendEvent<T, C = any>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
-    return new Observable<{ event: any; args: T }>(observer => {
+  sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
+    return new Observable<{ event: unknown; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
         observer.next({ event, args: argsParsed });
@@ -40,7 +40,7 @@ export class ElectronService {
     });
   }
 
-  getDownloadModProgressForFileId<T extends DownloadBase = any>(
+  getDownloadModProgressForFileId<T extends DownloadBase = never>(
     eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'
   ): Observable<T> {
     return new Observable(observer => {
