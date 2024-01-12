@@ -1,7 +1,7 @@
 {
   "name": "sp-tarkov-client",
   "description": "EFT-SP Management Tool",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "main.js",
   "private": true,
   "author": {
@@ -9,11 +9,9 @@
     "url": "https://github.com/SchraderR"
   },
   "dependencies": {
-    "@types/adm-zip": "^0.5.5",
     "@types/node-7z": "^2.1.8",
     "@types/puppeteer": "7.0.4",
     "7zip-bin": "^5.2.0",
-    "adm-zip": "^0.5.10",
     "axios": "^1.6.5",
     "electron-dl": "^3.5.1",
     "electron-reload": "^2.0.0-alpha.1",
