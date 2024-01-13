@@ -4,6 +4,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
 
+interface SearchResponse {
+  template: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -16,17 +20,17 @@ export class AkiSearchService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' });
 
     return this.#httpClient
-      .post(this.modSearchUrl, `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`, {
+      .post<SearchResponse>(this.modSearchUrl, `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`, {
         headers: headers,
       })
       .pipe(
-        map((response: any) => this.extractModInformation(response.template)),
+        map(response => this.extractModInformation(response)),
         catchError(() => EMPTY)
       );
   }
 
-  private extractModInformation(htmlBody: string): Mod[] {
-    const searchResult = HtmlHelper.parseStringAsHtml(htmlBody);
+  private extractModInformation(searchResponse: SearchResponse): Mod[] {
+    const searchResult = HtmlHelper.parseStringAsHtml(searchResponse.template);
     const modListSection = searchResult.body
       ?.getElementsByClassName('section')?.[1]
       ?.querySelectorAll('div.sectionTitle + ul')?.[0]

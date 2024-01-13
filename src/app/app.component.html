@@ -6,7 +6,7 @@
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
     <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
-      <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
+      <mat-icon class="font-weight-400" [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
     </button>
   </div>
   <div class="window-control-buttons" [class.expanded]="isExpanded">

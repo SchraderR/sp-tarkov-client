@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core'
 import { APP_CONFIG } from '../environments/environment';
 import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
-import { MatDrawer , MatSidenav , MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -65,7 +65,7 @@ export class AppComponent {
   }
 
   toggleDrawer = () => {
-    this.isExpanded = false
+    this.isExpanded = false;
     void this.matSideNav.toggle();
   };
 
