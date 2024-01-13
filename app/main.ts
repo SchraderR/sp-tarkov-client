@@ -17,7 +17,7 @@ void autoUpdater.checkForUpdatesAndNotify();
 
 mainApplicationStart(isServe);
 handleOpenDirectoryEvent(store);
-handleDownloadLinkEvent();
+handleDownloadLinkEvent(isServe);
 handleDownloadModEvent();
 handleFileUnzipEvent(isServe);
 handleUserSettingStoreEvents(store);

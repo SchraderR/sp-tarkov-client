@@ -1,8 +1,9 @@
-﻿import { ipcMain } from 'electron';
+﻿import { app, ipcMain } from 'electron';
 import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
+import { install, Browser as Browsers } from '@puppeteer/browsers';
 
 export interface GithubLinkData {
   userName: string;
@@ -10,12 +11,30 @@ export interface GithubLinkData {
   tag: string;
 }
 
-export const handleDownloadLinkEvent = () => {
+export const handleDownloadLinkEvent = (isServe: boolean) => {
   ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
     let downloadLink = null;
 
+    if (!isServe) {
+      await install({
+        browser: Browsers.CHROME,
+        buildId: '119.0.6045.105',
+        cacheDir: `${app.getPath('home')}/.local-chromium`,
+      });
+    }
+
     await (async () => {
-      const browser = await launch({ headless: 'new' });
+      let browser: Browser;
+
+      if (isServe) {
+        browser = await launch({ headless: 'new' });
+      } else {
+        browser = await launch({
+          headless: 'new',
+          executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-119.0.6045.105/chrome-win64/chrome.exe`,
+        });
+      }
+
       const page = await browser.newPage();
       await page.setRequestInterception(true);
       page.on('request', req => {
@@ -89,6 +108,8 @@ const getNewPageWhenLoaded = async (browser: Browser) => {
     browser.on('targetcreated', async target => {
       if (target.type() === 'page') {
         const newPage = await target.page();
+        if (!newPage) return;
+
         const newPagePromise = new Promise<Page>(y => newPage.once('domcontentloaded', () => y(newPage)));
         const isPageLoaded = await newPage.evaluate(() => document.readyState);
         return isPageLoaded.match('complete|interactive') ? x(newPage) : x(newPagePromise);
