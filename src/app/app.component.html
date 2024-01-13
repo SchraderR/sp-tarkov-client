@@ -19,16 +19,22 @@
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
   <mat-sidenav [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
     <mat-action-list class="side-navigation-actions-container">
-      <mat-list-item routerLink="setting" (click)="toggleDrawer()">
-        <mat-icon matListItemIcon>settings</mat-icon>
-        <div matListItemTitle>Setting</div>
-        <div matListItemLine class="font-x-small">Configure your Aki Instances</div>
+      <mat-list-item routerLink="new" (click)="toggleDrawer()">
+        <mat-icon matListItemIcon>fiber_new</mat-icon>
+        <div matListItemTitle>New Mods</div>
       </mat-list-item>
       <mat-list-item routerLink="top-rated" (click)="toggleDrawer()">
         <mat-icon matListItemIcon>trophy</mat-icon>
         <div matListItemTitle>Top Rated Mods</div>
       </mat-list-item>
+      <mat-divider />
+      <mat-list-item routerLink="setting" (click)="toggleDrawer()">
+        <mat-icon matListItemIcon>settings</mat-icon>
+        <div matListItemTitle>Setting</div>
+        <div matListItemLine class="font-x-small">Configure your Aki Instances</div>
+      </mat-list-item>
       <span class="spacer"></span>
+
       <div *ngIf="isExpanded" class="issue-container font-small justify-center align-center">
         Report issue or ideas on
         <a class="issue-link-text" (click)="openExternal(config.githubIssueUrl)">Github

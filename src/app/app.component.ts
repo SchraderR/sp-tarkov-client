@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core'
 import { APP_CONFIG } from '../environments/environment';
 import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatDrawer , MatSidenav , MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -54,7 +54,7 @@ export class AppComponent {
   version = packageJson.version;
   isExpanded = false;
 
-  @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
+  @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
 
   modListSignal = this.#modListService.modListSignal;
   appIconPath = 'assets/images/icon.png';
@@ -64,7 +64,11 @@ export class AppComponent {
     this.getCurrentPersonalSettings();
   }
 
-  toggleDrawer = () => void this.matDrawer.toggle();
+  toggleDrawer = () => {
+    this.isExpanded = false
+    void this.matSideNav.toggle();
+  };
+
   openExternal = (url: string) => void this.#electronService.shell.openExternal(url);
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
     void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();

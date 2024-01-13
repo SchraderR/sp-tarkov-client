@@ -29,6 +29,10 @@ body {
   }
 }
 
+mat-icon {
+  font-weight: 200 !important;
+}
+
 .full-width {
   width: 100%;
 }
@@ -44,6 +48,7 @@ body {
 .font-x-small {
   font-size: x-small;
 }
+
 .font-small {
   font-size: small;
 }
