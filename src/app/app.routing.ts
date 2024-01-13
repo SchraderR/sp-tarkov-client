@@ -15,6 +15,10 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./components/top-rated/top-rated.component'),
   },
   {
+    path: 'new',
+    loadComponent: () => import('./components/new-mods/new-mods.component'),
+  },
+  {
     path: 'mod-list',
     loadComponent: () => import('./components/mod-list/mod-list.component'),
   },

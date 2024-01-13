@@ -6,7 +6,7 @@
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
     <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
-      <mat-icon class="font-weight-400" [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
+      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
     </button>
   </div>
   <div class="window-control-buttons" [class.expanded]="isExpanded">
@@ -55,7 +55,7 @@
     </mat-action-list>
   </mat-sidenav>
   <mat-sidenav-content class="sidenav-content">
-    <div [class.extended]="isExpanded" class="full-width full-height">
+    <div [class.extended]="isExpanded" class="full-width full-height overflow-auto">
       <router-outlet />
     </div>
   </mat-sidenav-content>

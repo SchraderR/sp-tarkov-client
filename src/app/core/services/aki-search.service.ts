@@ -31,10 +31,7 @@ export class AkiSearchService {
 
   private extractModInformation(searchResponse: SearchResponse): Mod[] {
     const searchResult = HtmlHelper.parseStringAsHtml(searchResponse.template);
-    const modListSection = searchResult.body
-      ?.getElementsByClassName('section')?.[1]
-      ?.querySelectorAll('div.sectionTitle + ul')?.[0]
-      ?.getElementsByClassName('extendedNotificationItem');
+    const modListSection = searchResult.body?.querySelectorAll('.section:nth-child(2) div.sectionTitle + ul .extendedNotificationItem');
 
     if (!modListSection) {
       return [];

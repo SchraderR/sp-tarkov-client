@@ -71,6 +71,12 @@ mat-sidenav[style] {
   visibility: visible !important;
 }
 
+.sidenav-content {
+  height: calc(100% - 16px);
+  padding-left: 8px;
+  padding-top: 8px;
+}
+
 .logo {
   padding-right: 16px;
 }
