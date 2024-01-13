@@ -9,7 +9,7 @@ import { ModListService } from '../../core/services/mod-list.service';
 import { Mod } from '../../core/models/mod';
 import { DownloadService } from '../../core/services/download.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fadeInFadeOutAnimation } from '../mod-card/mod-card.animations';
+import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 
 @Component({
   standalone: true,
@@ -17,7 +17,7 @@ import { fadeInFadeOutAnimation } from '../mod-card/mod-card.animations';
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
   imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent],
-  animations: [fadeInFadeOutAnimation]
+  animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent {
   #modListService = inject(ModListService);

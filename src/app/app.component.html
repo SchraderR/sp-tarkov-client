@@ -1,61 +1,56 @@
-<mat-drawer-container autosize>
-  <mat-drawer class="sidenav" mode="side">
-    <div style="display: flex; justify-content: center; padding-bottom: 8px; position: relative;">
-      <img alt="" [ngSrc]="appIconPath" height="100" width="100">
-      <span style="position: absolute; right: 0; bottom: 0">v{{ version }}</span>
-    </div>
-    <mat-divider />
+<mat-toolbar class="draggable-header" [class.expanded]="isExpanded">
+  <div class="flex justify-center align-center">
+    <img alt="" class="logo" [ngSrc]="appIconPath" height="50" width="50">
+    <h1>SP-EFT Manager - Beta</h1>
+  </div>
+  <div class="flex justify-center align-center full-width">
+    <app-mod-search class="no-drag" style="width: 60%" />
+    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
+      <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
+    </button>
+  </div>
+  <div class="window-control-buttons" [class.expanded]="isExpanded">
+    <mat-icon class="no-drag" (click)="sendWindowEvent('window-minimize')">minimize</mat-icon>
+    <mat-icon class="no-drag" (click)="sendWindowEvent('window-maximize')">stack</mat-icon>
+    <mat-icon class="no-drag close" (click)="sendWindowEvent('window-close')">close</mat-icon>
+  </div>
+</mat-toolbar>
 
-    <mat-list>
+<mat-sidenav-container class="sidenav-container" [autosize]="true">
+  <mat-sidenav [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
+    <mat-action-list class="side-navigation-actions-container">
       <mat-list-item routerLink="setting" (click)="toggleDrawer()">
         <mat-icon matListItemIcon>settings</mat-icon>
         <div matListItemTitle>Setting</div>
-        <div matListItemLine style="font-size: small">Configure your Aki Instances</div>
+        <div matListItemLine class="font-x-small">Configure your Aki Instances</div>
       </mat-list-item>
-
       <mat-list-item routerLink="top-rated" (click)="toggleDrawer()">
         <mat-icon matListItemIcon>trophy</mat-icon>
         <div matListItemTitle>Top Rated Mods</div>
       </mat-list-item>
-    </mat-list>
-    <span class="spacer"></span>
-    <div style="font-size: small;">
-      <div>
+      <span class="spacer"></span>
+      <div *ngIf="isExpanded" class="issue-container font-small justify-center align-center">
         Report issue or ideas on
-        <a class="issue-link-text" (click)="openExternal(config.githubIssueUrl)">
-          Github
+        <a class="issue-link-text" (click)="openExternal(config.githubIssueUrl)">Github
           <mat-icon>open_in_new</mat-icon>
         </a>
-        or
-        <a class="issue-link-text" (click)="openExternal(config.akiHubLink)">
-          Aki
+        <a class="issue-link-text" (click)="openExternal(config.akiHubLink)">Aki
           <mat-icon>open_in_new</mat-icon>
         </a>
       </div>
-    </div>
-  </mat-drawer>
-
-  <mat-toolbar class="draggable-header" style="display: flex; width: 100%;">
-    <div style="display: flex; justify-content: center; align-items: center">
-      <button class="no-drag" mat-icon-button (click)="toggleDrawer()">
-        <mat-icon>menu</mat-icon>
+      <div class="version-container font-small">
+        <span>v{{ version }}</span>
+      </div>
+      <button mat-list-item disableRipple class="extension-action" (click)="isExpanded = !isExpanded">
+        <div class="toggle-menu">
+          <mat-icon>{{ isExpanded ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right' }}</mat-icon>
+        </div>
       </button>
-      <h1>SP-EFT Manager - Beta</h1>
+    </mat-action-list>
+  </mat-sidenav>
+  <mat-sidenav-content class="sidenav-content">
+    <div [class.extended]="isExpanded" class="full-width full-height">
+      <router-outlet />
     </div>
-    <div style="display: flex; width: 100%; justify-content: center; align-items: center">
-      <app-mod-search class="no-drag" style="width: 60%" />
-      <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
-        <mat-icon [matBadge]="modListSignal().length" matBadgeColor="accent">list</mat-icon>
-      </button>
-    </div>
-    <div class="window-control-buttons" style="display: flex; padding-left: 24px; gap: 8px">
-      <mat-icon class="no-drag" (click)="sendWindowEvent('window-minimize')">minimize</mat-icon>
-      <mat-icon class="no-drag" (click)="sendWindowEvent('window-maximize')">stack</mat-icon>
-      <mat-icon class="no-drag close" (click)="sendWindowEvent('window-close')">close</mat-icon>
-    </div>
-  </mat-toolbar>
-
-  <div class="drawer-content">
-    <router-outlet />
-  </div>
-</mat-drawer-container>
+  </mat-sidenav-content>
+</mat-sidenav-container>

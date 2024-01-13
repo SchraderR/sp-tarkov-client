@@ -19,6 +19,7 @@ import { ModSearchComponent } from './components/mod-search/mod-search.component
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
 import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
+import { sidenavAnimation } from './sidenavAnimation';
 
 @Component({
   standalone: true,
@@ -28,9 +29,8 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
   imports: [
     CommonModule,
     MatButtonModule,
-    CommonModule,
-    RouterModule,
     MatSidenavModule,
+    RouterModule,
     MatToolbarModule,
     MatIconModule,
     MatListModule,
@@ -41,6 +41,7 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
     ModSearchComponent,
     MatBadgeModule,
   ],
+  animations: [sidenavAnimation],
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
@@ -51,6 +52,7 @@ export class AppComponent {
   #ngZone = inject(NgZone);
   config = APP_CONFIG;
   version = packageJson.version;
+  isExpanded = false;
 
   @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
 

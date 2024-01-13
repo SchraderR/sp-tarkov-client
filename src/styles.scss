@@ -33,12 +33,19 @@ body {
   width: 100%;
 }
 
+.full-height {
+  height: 100%;
+}
+
 .spacer {
   flex: 1 1 auto;
 }
 
-.x-small {
+.font-x-small {
   font-size: x-small;
+}
+.font-small {
+  font-size: small;
 }
 
 .text-ellipsis {
@@ -52,6 +59,18 @@ body {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
 }
 
 // TODO Remove or better

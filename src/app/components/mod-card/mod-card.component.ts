@@ -5,13 +5,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
-import { fadeInFadeOutAnimation } from './mod-card.animations';
 import { MatRippleModule } from '@angular/material/core';
 import { Mod } from '../../core/models/mod';
 import { HttpClient } from '@angular/common/http';
 import { HtmlHelper } from '../../core/helper/html-helper';
 import { EMPTY, map, Observable } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
+import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 
 export interface ModLicenseInformation {
   url: string;
