@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
-import { APP_CONFIG } from '../environments/environment';
+import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -50,7 +50,7 @@ export class AppComponent {
   #destroyRef = inject(DestroyRef);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
-  config = APP_CONFIG;
+  config = environment;
   version = packageJson.version;
   isExpanded = false;
 

@@ -1,4 +1,5 @@
-<mat-card *ngFor="let mod of accumulatedModList" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
+<mat-card *ngFor="let mod of accumulatedModList" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
+          [mod]="mod">
   <mat-card-content class="card-container">
     <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
     <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
@@ -26,7 +27,10 @@
             }
           }
         } @else {
-          <mat-icon style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px" color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">warning</mat-icon>
+          <mat-icon style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px"
+                    color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">
+            warning
+          </mat-icon>
         }
         <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
           <mat-icon>open_in_new</mat-icon>
@@ -35,3 +39,5 @@
     </div>
   </mat-card-content>
 </mat-card>
+
+<mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20"></mat-paginator>

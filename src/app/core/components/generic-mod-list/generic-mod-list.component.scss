@@ -1,5 +1,6 @@
 :host {
   display: flex;
+  overflow: auto;
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -62,3 +63,13 @@ mat-card {
   display: flex;
   flex-direction: row;
 }
+
+.floating-paginator {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  position: absolute;
+  bottom: 0;
+  right: 34px;
+  z-index: 100;
+}
+
