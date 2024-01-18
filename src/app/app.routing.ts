@@ -16,7 +16,7 @@ export const appRoutes: Routes = [
     data: {
       sortField: 'cumulativeLikes',
       sortOrder: 'DESC',
-    }
+    },
   },
   {
     path: 'new',
@@ -24,7 +24,15 @@ export const appRoutes: Routes = [
     data: {
       sortField: 'time',
       sortOrder: 'DESC',
-    }
+    },
+  },
+  {
+    path: 'updated',
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: {
+      sortField: 'lastChangeTime',
+      sortOrder: 'DESC',
+    },
   },
   {
     path: 'mod-list',

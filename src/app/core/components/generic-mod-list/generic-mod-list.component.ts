@@ -18,7 +18,7 @@ import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { debounceTime, Subscription } from 'rxjs';
 
-export type GenericModListSortField = 'cumulativeLikes' | 'time';
+export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
 
 @Component({

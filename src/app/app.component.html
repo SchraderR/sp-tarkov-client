@@ -19,20 +19,29 @@
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
   <mat-sidenav [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
     <mat-action-list class="side-navigation-actions-container">
-      <mat-list-item routerLink="new" (click)="toggleDrawer()">
-        <mat-icon matListItemIcon>fiber_new</mat-icon>
-        <div matListItemTitle>New Mods</div>
-      </mat-list-item>
-      <mat-list-item routerLink="top-rated" (click)="toggleDrawer()">
+      <mat-list-item routerLink="top-rated" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="Top Rated Mods">
         <mat-icon matListItemIcon>trophy</mat-icon>
         <div matListItemTitle>Top Rated Mods</div>
       </mat-list-item>
+      <mat-list-item routerLink="new" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="New Mods">
+        <mat-icon matListItemIcon>fiber_new</mat-icon>
+        <div matListItemTitle>New Mods</div>
+      </mat-list-item>
+      <mat-list-item routerLink="updated" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="Recent updated Mods">
+        <mat-icon matListItemIcon>Update</mat-icon>
+        <div matListItemTitle>Updated Mods</div>
+
+      </mat-list-item>
       <mat-divider />
-      <mat-list-item routerLink="setting" (click)="toggleDrawer()">
+      <mat-list-item routerLink="setting" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="Configure your Aki Instances">
         <mat-icon matListItemIcon>settings</mat-icon>
         <div matListItemTitle>Setting</div>
         <div matListItemLine class="font-x-small">Configure your Aki Instances</div>
       </mat-list-item>
+
+
+
+
       <span class="spacer"></span>
 
       <div *ngIf="isExpanded" class="issue-container font-small justify-center align-center">

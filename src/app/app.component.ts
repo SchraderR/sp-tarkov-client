@@ -20,6 +20,7 @@ import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
 import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   standalone: true,
@@ -40,6 +41,7 @@ import { sidenavAnimation } from './sidenavAnimation';
     NgOptimizedImage,
     ModSearchComponent,
     MatBadgeModule,
+    MatTooltipModule,
   ],
   animations: [sidenavAnimation],
 })
