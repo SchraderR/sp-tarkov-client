@@ -9,6 +9,8 @@ export interface Mod {
   teaser?: string;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
+  supportedAkiVersion?: string;
+  akiVersionColorCode?: string;
 }
 
 export interface InstallProgress {
