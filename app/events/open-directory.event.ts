@@ -32,7 +32,7 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
           store.set('akiInstances', [...store.get('akiInstances'), { akiRootDirectory: selectedPath }]);
           event.sender.send('open-directory-completed', {
             akiRootDirectory: selectedPath,
-            akiCore: akiCoreJson,
+            akiCore: JSON.parse(akiCoreJson),
             isValid: true,
             isActive: false,
             clientMods: [],
