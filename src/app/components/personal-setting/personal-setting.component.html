@@ -1,5 +1,5 @@
 <div style="display: flex; flex-direction: column; gap: 8px">
-  <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Add new SPT Instance</button>
+  <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Add SPT Instance</button>
   <mat-accordion>
     @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
       <mat-expansion-panel>
