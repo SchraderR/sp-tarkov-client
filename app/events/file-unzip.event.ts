@@ -17,8 +17,17 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
       }
 
       const archivePath = args.filePath;
-      const isSingleDll = await checkForSingleDll(archivePath, sevenBinPath);
-      if (isSingleDll) {
+      const isSingleDllFile = await checkForSingleDll(archivePath);
+      if (isSingleDllFile) {
+        const fileName = path.basename(archivePath);
+        const newFileName = fileName.replace(/\(\d+\)/g, '');
+        fs.copyFileSync(archivePath, path.join(args.akiInstancePath, clientModPath, newFileName));
+        event.sender.send('file-unzip-completed');
+        return;
+      }
+
+      const isArchiveWithSingleDll = await checkForArchiveWithSingleDll(archivePath, sevenBinPath);
+      if (isArchiveWithSingleDll) {
         await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath), sevenBinPath);
         event.sender.send('file-unzip-completed');
         return;
@@ -37,7 +46,7 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
     }
   });
 
-  function checkForSingleDll(archivePath: string, sevenBinPath: string): Promise<boolean> {
+  function checkForArchiveWithSingleDll(archivePath: string, sevenBinPath: string): Promise<boolean> {
     let dllFound = false;
 
     return new Promise(resolve => {
@@ -50,6 +59,10 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
         })
         .on('end', () => resolve(dllFound));
     });
+  }
+
+  async function checkForSingleDll(path: string) {
+    return path.endsWith('.dll');
   }
 
   function extractArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any): Promise<void> {

@@ -77,6 +77,13 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         return;
       }
 
+      const isDirectDllLink = isDirectDll(downloadLink);
+      if (isDirectDllLink) {
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+        return;
+      }
+
       const isArchiveLink = isArchiveURL(downloadLink);
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
@@ -85,6 +92,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
           // await browser.close();
           return;
         }
+
         await getReleaseData(gitHubInformation)
           .then(async data => {
             const githubDownloadLink = data?.assets?.[0].browser_download_url;
@@ -128,6 +136,10 @@ function isArchiveURL(url: string): boolean {
   const fileExtension = fileSegments[fileSegments.length - 1];
 
   return extensions.includes(fileExtension);
+}
+
+function isDirectDll(downloadLink: string) {
+  return downloadLink.endsWith('.dll');
 }
 
 function parseGitHubLink(url: string): GithubLinkData | null {

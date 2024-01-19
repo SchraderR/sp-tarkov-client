@@ -5,7 +5,8 @@
     <ng-container *ngFor="let mod of filteredModItems | async">
       <mat-option [value]="mod.name" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
         <div style="display: flex; width: 100%;">
-          <img alt="" class="example-option-img" [ngSrc]="mod.image ?? ''" width="50" height="50" />
+          <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" width="50" height="50" alt="">
+          <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
           <div style="display: flex; flex-direction: column; padding-left: 8px; overflow: auto">
             <span class="text-ellipsis">{{ mod.name }}</span>
             <span class="font-x-small">{{ mod.kind }}</span>

@@ -5,7 +5,15 @@ import { InstallProgress, Mod } from '../models/mod';
   providedIn: 'root',
 })
 export class ModListService {
-  private modList = signal<Mod[]>([]);
+  private modList = signal<Mod[]>([
+    {
+      name: "That's Lit",
+      image: 'assets/images/placeholder.png',
+      fileUrl: 'https://hub.sp-tarkov.com/files/file/1453-that-s-lit/',
+      kind: 'Client mods',
+      installProgress: this.initialInstallProgress(),
+    },
+  ]);
   readonly modListSignal = this.modList.asReadonly();
 
   addMod(mod: Mod) {
@@ -14,6 +22,7 @@ export class ModListService {
     }
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
+    console.log(this.modList());
   }
 
   updateMod() {
