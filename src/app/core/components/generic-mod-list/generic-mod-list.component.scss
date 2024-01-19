@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 :host {
   display: flex;
   overflow: auto;
@@ -64,16 +66,32 @@ mat-card {
   flex-direction: row;
 }
 
-.floating-paginator {
-  background-color: rgba(75, 75, 75);
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+
+.action-container {
+  display: flex;
   position: absolute;
+  height: 58px;
   bottom: 0;
   right: 34px;
-  z-index: 100;
+  justify-content: flex-end;
+  align-items: center;
+  width: fit-content;
+  border-radius: 4px;
+  background-color: rgba(75, 75, 75);
   border: 1px solid rgba(0, 0, 0, 0.5);
+
+  ::ng-deep.filter-input {
+    @include mat.form-field-density(-5);
+  }
+
+  .floating-paginator {
+    background-color: rgba(75, 75, 75);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    z-index: 100;
+  }
 }
+
 
 .image-version-container {
   position: relative;
@@ -88,7 +106,7 @@ mat-card {
   color: white;
   padding: 2px 4px;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: 4px 4px 4px 0;
 
   &.badge.label.green {
     background-color: #090;

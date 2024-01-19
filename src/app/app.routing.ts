@@ -35,6 +35,14 @@ export const appRoutes: Routes = [
     },
   },
   {
+    path: 'most-loaded',
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: {
+      sortField: 'downloads',
+      sortOrder: 'DESC',
+    },
+  },
+  {
     path: 'mod-list',
     loadComponent: () => import('./components/mod-list/mod-list.component'),
   },

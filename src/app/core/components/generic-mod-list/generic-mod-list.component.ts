@@ -17,8 +17,10 @@ import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { debounceTime, Subscription } from 'rxjs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
 
-export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime';
+export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
 
 @Component({
@@ -36,6 +38,8 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     NgOptimizedImage,
     IsAlreadyInstalledDirective,
     MatPaginatorModule,
+    MatToolbarModule,
+    MatSelectModule,
   ],
 })
 export default class GenericModListComponent implements AfterViewInit {
@@ -59,6 +63,8 @@ export default class GenericModListComponent implements AfterViewInit {
   accumulatedModList: Mod[] = [];
   pageSize = 0;
   pageLength = 0;
+  pageNumber = 0;
+  loading = false;
 
   ngAfterViewInit() {
     this.paginatorSubscription = this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
@@ -71,6 +77,10 @@ export default class GenericModListComponent implements AfterViewInit {
   }
 
   isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
+
+  refresh() {
+    this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
+  }
 
   addModToModList(mod: Mod) {
     this.#modListService.addMod(mod);
@@ -89,6 +99,7 @@ export default class GenericModListComponent implements AfterViewInit {
   }
 
   private loadData(sortValue: GenericModListSortField, pageNumber = 0) {
+    this.loading = true;
     this.#httpClient
       .get(`${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}`, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.#destroyRef))
@@ -115,8 +126,10 @@ export default class GenericModListComponent implements AfterViewInit {
           )
           .filter(e => this.filterCoreMods(e));
 
+        this.pageNumber = pageNumber;
         this.pageSize = this.accumulatedModList.length;
         this.pageLength = pageNumbers[pageNumbers.length - 1] * 20;
+        this.loading = false;
       });
   }
 }

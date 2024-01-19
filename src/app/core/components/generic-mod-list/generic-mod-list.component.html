@@ -1,9 +1,12 @@
-<mat-card *ngFor="let mod of accumulatedModList" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
+<mat-card *ngFor="let mod of accumulatedModList" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
+          [mod]="mod">
   <mat-card-content class="card-container">
     <div class="image-version-container">
       <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
       <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-      <div *ngIf="mod.supportedAkiVersion" [class]="mod.akiVersionColorCode" class="font-small image-aki-version">{{ mod.supportedAkiVersion }}</div>
+      <div *ngIf="mod.supportedAkiVersion" [class]="mod.akiVersionColorCode"
+           class="font-small image-aki-version">{{ mod.supportedAkiVersion }}
+      </div>
     </div>
     <div class="mod-list-container">
       <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
@@ -42,5 +45,9 @@
   </mat-card-content>
 </mat-card>
 
-<mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
-               [pageSize]="20"></mat-paginator>
+<mat-toolbar class="action-container">
+  <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
+    <mat-icon>refresh</mat-icon>
+  </button>
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
+</mat-toolbar>
