@@ -1,24 +1,46 @@
 <div style="display: flex; flex-direction: column; gap: 8px">
   <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Add new SPT Instance</button>
+  <mat-accordion>
+    @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon
+              [class.fill]="settingModel.isActive"
+              (click)="$event.stopPropagation(); $event.preventDefault(); setActiveInstance(settingModel)">
+              star
+            </mat-icon>
+            <span style="margin-left: 8px">Version: {{ settingModel.akiCore.akiVersion }}</span>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span style="margin-left: 8px">{{ settingModel.akiRootDirectory }}</span></mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="expansion-panel-container">
+          <div class="delete-button-container" (click)="removeInstance(settingModel)">
+            <mat-icon>delete</mat-icon>
+          </div>
+          <br>
+          <div style="display: flex; flex-direction: row;">
+            <div style="width: 50%">
+              Client-Mods: {{ settingModel?.clientMods?.length ?? 0 }}
+              <ul>
+                @for (mod of settingModel.clientMods; track mod.name) {
+                  <li>{{ mod.name }} - v{{ mod.version }}</li>
+                }
+              </ul>
+            </div>
 
-  <mat-card *ngFor="let settingModel of userSettingSignal()">
-    <mat-card-content>
-      <div>Aki-SP Version: {{ settingModel.akiCore.akiVersion }}</div>
-      <div>Root: {{ settingModel.akiRootDirectory }}</div>
-      <button mat-icon-button (click)="setActiveInstance(settingModel)" matTooltip="Activate SP-Instance">
-        <mat-icon [class.fill]="settingModel.isActive">star</mat-icon>
-      </button>
-      <button mat-icon-button (click)="removeInstance(settingModel)">
-        <mat-icon>delete</mat-icon>
-      </button>
-      <br>
-      <div style="display: flex; align-items: center">
-        Installed Client-Mods: {{ settingModel?.clientMods?.length ?? 0 }}
-      </div>
-
-      <div style="display: flex; align-items: center">
-        Installed Server-Mods: {{ settingModel?.serverMods?.length ?? 0 }}
-      </div>
-    </mat-card-content>
-  </mat-card>
+            <div style="width: 50%">
+              Server-Mods: {{ settingModel?.serverMods?.length ?? 0 }}
+              <ul>
+                @for (mod of settingModel.serverMods; track mod.name) {
+                  <li>{{ mod.name }} - v{{ mod.version }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    }
+  </mat-accordion>
 </div>
