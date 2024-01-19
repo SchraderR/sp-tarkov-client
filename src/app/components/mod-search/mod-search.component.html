@@ -7,23 +7,23 @@
         <div style="display: flex; width: 100%;">
           <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" width="50" height="50" alt="">
           <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-          <div style="display: flex; flex-direction: column; padding-left: 8px; overflow: auto">
+          <div class="mod-information-container">
             <span class="text-ellipsis">{{ mod.name }}</span>
             <span class="font-x-small">{{ mod.kind }}</span>
           </div>
           <span class="spacer"></span>
           @if (isActiveAkiInstanceAvailable()) {
-            <div *ngIf="alreadyInstalled.isAlreadyInstalled()" style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;" matTooltip="Already installed">
+            <div *ngIf="alreadyInstalled.isAlreadyInstalled()" class="already-installed-icon-container" matTooltip="Already installed">
               <mat-icon color="accent" style="margin: unset">done_all</mat-icon>
             </div>
-            <button *ngIf="!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()" style="justify-content: center; align-items: end" mat-icon-button (click)="addModToModList($event, mod)">
+            <button *ngIf="!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()" class="icon-end" mat-icon-button (click)="addModToModList($event, mod)">
               <mat-icon >add</mat-icon>
             </button>
-            <button *ngIf="alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()" style="justify-content: center; align-items: end" mat-icon-button (click)="removeModFromModList($event, mod)">
+            <button *ngIf="alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()" class="icon-end" mat-icon-button (click)="removeModFromModList($event, mod)">
               <mat-icon>delete</mat-icon>
             </button>
           } @else {
-            <mat-icon style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px" color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">warning</mat-icon>
+            <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">warning</mat-icon>
           }
         </div>
       </mat-option>

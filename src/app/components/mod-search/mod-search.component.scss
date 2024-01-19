@@ -12,3 +12,15 @@
 ::ng-deep.mdc-list-item__primary-text {
   width: 100%;
 }
+
+.icon-end {
+  justify-content: center;
+  align-items: end;
+}
+
+.mod-information-container {
+  display: flex;
+  flex-direction: column;
+  padding-left: 8px;
+  overflow: auto;
+}

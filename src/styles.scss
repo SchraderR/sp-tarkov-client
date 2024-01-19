@@ -29,6 +29,22 @@ body {
   }
 }
 
+.already-installed-icon-container {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 48px !important;
+  width: 48px !important;
+}
+
+.mod-install-instance-warning {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 48px !important;
+  width: 48px !important;
+}
+
 mat-icon {
   font-weight: 200 !important;
 }

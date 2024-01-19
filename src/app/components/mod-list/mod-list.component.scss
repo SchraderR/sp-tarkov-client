@@ -26,3 +26,38 @@ button {
   padding: 8px 0;
   justify-content: flex-end;
 }
+
+.no-mod-emote-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 24px);
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+
+  .emote {
+    user-select: none;
+    color: gray;
+    font-size: 128px;
+    position: absolute;
+    opacity: 0.04
+  }
+
+  .no-mods-text {
+    user-select: none;
+    font-size: x-large;
+  }
+
+  .no-mods-subtext {
+    user-select: none;
+    font-size: smaller;
+  }
+}
+
+.licence-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: smaller;
+  padding: 4px;
+}

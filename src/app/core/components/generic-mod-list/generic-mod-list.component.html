@@ -16,8 +16,8 @@
         @if (isActiveAkiInstanceAvailable()) {
           @if (alreadyInstalled.isAlreadyInstalled()) {
             <mat-icon
+              class="already-installed-icon-container"
               matTooltip="Already installed"
-              style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px;margin: unset"
               color="accent">done_all
             </mat-icon>
           } @else {
@@ -32,8 +32,7 @@
             }
           }
         } @else {
-          <mat-icon style="display: flex; justify-content: center; align-items: center; height: 48px; width: 48px"
-                    color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">
+          <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable download functionality">
             warning
           </mat-icon>
         }
