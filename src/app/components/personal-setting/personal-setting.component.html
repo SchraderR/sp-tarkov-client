@@ -1,5 +1,19 @@
 <div style="display: flex; flex-direction: column; gap: 8px">
   <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Add SPT Instance</button>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>General Settings</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div style="display:flex; align-items: center;">
+        <button mat-icon-button (click)="openExternalChromePath()">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <h3>Aki-Instances</h3>
   <mat-accordion>
     @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
       <mat-expansion-panel>

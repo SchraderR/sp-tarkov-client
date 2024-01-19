@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -53,6 +53,10 @@ export default class PersonalSettingComponent {
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe();
+  }
+
+  openExternalChromePath() {
+    void this.#electronService.shell.openExternal("C:\\Users");
   }
 
   setActiveInstance(settingModel: UserSettingModel) {
