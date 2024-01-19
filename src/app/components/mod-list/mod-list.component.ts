@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, inject, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, NgZone, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,7 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
   imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent],
   animations: [fadeInFadeOutAnimation],
 })
-export default class ModListComponent {
+export default class ModListComponent implements OnInit {
   #modListService = inject(ModListService);
   #downloadService = inject(DownloadService);
   ngZone = inject(NgZone);
@@ -28,6 +28,7 @@ export default class ModListComponent {
   modListSignal = this.#modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
   isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
+  emote = '';
 
   constructor() {
     this.#downloadService.downloadProgressEvent.pipe(takeUntilDestroyed()).subscribe(() => {
@@ -35,9 +36,31 @@ export default class ModListComponent {
     });
   }
 
+  ngOnInit() {
+    this.selectRandomEmote();
+  }
+
   downloadAndInstall = () => this.#downloadService.downloadAndInstall();
 
   removeMod(mod: Mod) {
     this.#modListService.removeMod(mod.name);
+  }
+
+  private selectRandomEmote() {
+    const emotes = [
+      '乁( ͡° ͜ʖ ͡°)ㄏ',
+      '¯\\_( ͠° ͟ʖ ͠°)_/¯',
+      '乁( ⁰͡ Ĺ̯ ⁰͡ ) ㄏ',
+      '¯\\_( ◉ 3 ◉ )_/¯',
+      '¯\\_(⊙︿⊙)_/¯',
+      '¯\\_(ツ)_/¯',
+      '¯\\_〳 •̀ o •́ 〵_/¯',
+      '¯\\_( ͡ᵔ ͜ʖ ͡ᵔ )_/¯',
+      '¯\\_(° ͜ʖ °)_/¯',
+      '乁( ͡° ͜ʖ ͡ °)ㄏ',
+      '┐( ͡◉ ͜ʖ ͡◉)┌',
+      '¯\\_(⊙_ʖ⊙)_/¯',
+    ];
+    this.emote = emotes[Math.floor(Math.random() * emotes.length)];
   }
 }
