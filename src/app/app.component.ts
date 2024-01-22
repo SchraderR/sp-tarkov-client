@@ -3,7 +3,7 @@ import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
@@ -28,7 +28,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   imports: [
-    CommonModule,
     MatButtonModule,
     MatSidenavModule,
     RouterModule,
@@ -41,8 +40,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     NgOptimizedImage,
     ModSearchComponent,
     MatBadgeModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   animations: [sidenavAnimation],
 })
 export class AppComponent {

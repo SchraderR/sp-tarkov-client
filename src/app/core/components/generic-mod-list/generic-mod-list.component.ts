@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -29,7 +29,6 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
   templateUrl: './generic-mod-list.component.html',
   styleUrl: './generic-mod-list.component.scss',
   imports: [
-    CommonModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -39,8 +38,8 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     IsAlreadyInstalledDirective,
     MatPaginatorModule,
     MatToolbarModule,
-    MatSelectModule,
-  ],
+    MatSelectModule
+],
 })
 export default class GenericModListComponent implements AfterViewInit {
   private paginatorSubscription: Subscription | undefined;

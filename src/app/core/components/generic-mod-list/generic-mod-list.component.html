@@ -1,48 +1,56 @@
-<mat-card *ngFor="let mod of accumulatedModList" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
-          [mod]="mod">
-  <mat-card-content class="card-container">
-    <div class="image-version-container">
-      <img *ngIf="mod.image" class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
-      <span *ngIf="mod.icon" [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-      <div *ngIf="mod.supportedAkiVersion" [class]="mod.akiVersionColorCode"
-           class="font-small image-aki-version">{{ mod.supportedAkiVersion }}
-      </div>
-    </div>
-    <div class="mod-list-container">
-      <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
-      <div class="mod-teaser">{{ mod.teaser }}</div>
-      <span class="spacer"></span>
-      <div style="display: flex">
-        @if (isActiveAkiInstanceAvailable()) {
-          @if (alreadyInstalled.isAlreadyInstalled()) {
-            <mat-icon
-              class="already-installed-icon-container"
-              matTooltip="Already installed"
-              color="accent">done_all
-            </mat-icon>
-          } @else {
-            @if (!alreadyInstalled.isInModList()) {
-              <button mat-icon-button (click)="addModToModList(mod)">
-                <mat-icon>add</mat-icon>
-              </button>
-            } @else {
-              <button mat-icon-button (click)="removeModFromModList(mod)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            }
-          }
-        } @else {
-          <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable additional functionality">
-            warning
-          </mat-icon>
+@for (mod of accumulatedModList; track mod) {
+  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
+    [mod]="mod">
+    <mat-card-content class="card-container">
+      <div class="image-version-container">
+        @if (mod.image) {
+          <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
         }
-        <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
-          <mat-icon>open_in_new</mat-icon>
-        </button>
+        @if (mod.icon) {
+          <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
+        }
+        @if (mod.supportedAkiVersion) {
+          <div [class]="mod.akiVersionColorCode"
+            class="font-small image-aki-version">{{ mod.supportedAkiVersion }}
+          </div>
+        }
       </div>
-    </div>
-  </mat-card-content>
-</mat-card>
+      <div class="mod-list-container">
+        <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+        <div class="mod-teaser">{{ mod.teaser }}</div>
+        <span class="spacer"></span>
+        <div style="display: flex">
+          @if (isActiveAkiInstanceAvailable()) {
+            @if (alreadyInstalled.isAlreadyInstalled()) {
+              <mat-icon
+                class="already-installed-icon-container"
+                matTooltip="Already installed"
+                color="accent">done_all
+              </mat-icon>
+            } @else {
+              @if (!alreadyInstalled.isInModList()) {
+                <button mat-icon-button (click)="addModToModList(mod)">
+                  <mat-icon>add</mat-icon>
+                </button>
+              } @else {
+                <button mat-icon-button (click)="removeModFromModList(mod)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            }
+          } @else {
+            <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable additional functionality">
+              warning
+            </mat-icon>
+          }
+          <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
 
 <mat-toolbar class="action-container">
   <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">

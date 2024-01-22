@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
@@ -18,7 +18,7 @@ import { MatLineModule } from '@angular/material/core';
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatExpansionModule, MatListModule, MatLineModule],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatExpansionModule, MatListModule, MatLineModule],
 })
 export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);
