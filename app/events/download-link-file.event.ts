@@ -85,7 +85,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
       }
 
       const isDropBoxLink = isDropBox(downloadLink)
-      if (isDropBoxLink && downloadLink.endsWith('&dl=0')) {
+      if (isDropBoxLink) {
         downloadLink = downloadLink.replace('&dl=0', '&dl=1');
         event.sender.send('download-link-completed', downloadLink);
         await browser.close();
