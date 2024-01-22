@@ -12,6 +12,8 @@ interface SearchResponse {
   providedIn: 'root',
 })
 export class AkiSearchService {
+  private restricted = ['Community support']
+
   #httpClient = inject(HttpClient);
   modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
@@ -37,11 +39,14 @@ export class AkiSearchService {
       return [];
     }
 
-    return Array.from(modListSection).map(e => ({
-      name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
-      image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
-      fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-      kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
-    }));
+
+    return Array.from(modListSection)
+      .map(e => ({
+        name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
+        image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
+        fileUrl: e.getElementsByTagName('a')?.[0]?.href,
+        kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
+      }))
+      .filter(m => !this.restricted.some(r => m.kind.includes(r)));
   }
 }
