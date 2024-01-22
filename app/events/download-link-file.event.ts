@@ -84,6 +84,14 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         return;
       }
 
+      const isDropBoxLink = isDropBox(downloadLink)
+      if (isDropBoxLink && downloadLink.endsWith('&dl=0')) {
+        downloadLink = downloadLink.replace('&dl=0', '&dl=1');
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+        return;
+      }
+
       const isArchiveLink = isArchiveURL(downloadLink);
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
@@ -140,6 +148,10 @@ function isArchiveURL(url: string): boolean {
 
 function isDirectDll(downloadLink: string) {
   return downloadLink.endsWith('.dll');
+}
+
+function isDropBox(downloadLink: string) {
+  return downloadLink.includes('dropbox');
 }
 
 function parseGitHubLink(url: string): GithubLinkData | null {
