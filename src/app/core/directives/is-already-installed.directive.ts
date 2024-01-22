@@ -14,6 +14,7 @@ export class IsAlreadyInstalledDirective {
     "SAIN": 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
     "SWAG + DONUTS": 'SWAG + Donuts - Dynamic Spawn Waves and Custom Spawn Points',
     "LPARedux": 'Lock Picking Attorney Redux',
+    "NLE": 'Never Lose Equipments',
   };
 
   private alternativeClientModNames: { [key: string]: string } = {
