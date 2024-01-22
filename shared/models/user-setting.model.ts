@@ -19,4 +19,5 @@ export interface UserSettingModel extends AkiInstance {
 export interface ModMeta {
   name: string;
   version: string;
+  alternativeName?: string;
 }
