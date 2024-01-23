@@ -1,11 +1,12 @@
 ﻿import { DownloadProgress } from '../../../../shared/models/download.model';
+import { Kind } from '../../../../shared/models/unzip.model';
 
 export interface Mod {
   name: string;
   image?: string;
   icon?: string;
   fileUrl: string;
-  kind: string;
+  kind: Kind | undefined;
   teaser?: string;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;

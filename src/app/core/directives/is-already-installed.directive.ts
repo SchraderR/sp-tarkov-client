@@ -25,6 +25,7 @@ export class IsAlreadyInstalledDirective {
     "DrakiaXYZ-Waypoints": 'Waypoints - Expanded Bot Patrols and Navmesh',
     "FOVFix": 'Fontaine\'s FOV Fix & Variable Optics',
     "SamSWAT.FOV": 'SamSwat\'s INCREASED FOV - Reupload',
+    "IcyClawz.ItemSellPrice": "Item Sell Price"
   };
 
   #userSettingsService = inject(UserSettingsService);
