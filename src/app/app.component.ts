@@ -40,8 +40,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     NgOptimizedImage,
     ModSearchComponent,
     MatBadgeModule,
-    MatTooltipModule
-],
+    MatTooltipModule,
+  ],
   animations: [sidenavAnimation],
 })
 export class AppComponent {
@@ -51,6 +51,7 @@ export class AppComponent {
   #destroyRef = inject(DestroyRef);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
+
   config = environment;
   version = packageJson.version;
   isExpanded = false;
@@ -71,8 +72,7 @@ export class AppComponent {
   };
 
   openExternal = (url: string) => void this.#electronService.shell.openExternal(url);
-  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
-    void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') => void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
   private getCurrentPersonalSettings() {
     this.#electronService
