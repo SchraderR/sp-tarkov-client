@@ -15,35 +15,24 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
   ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
     let downloadLink = null;
 
-    if (!isServe) {
-      await install({
-        browser: Browsers.CHROME,
-        buildId: '119.0.6045.105',
-        cacheDir: `${app.getPath('home')}/.local-chromium`,
-      });
-    }
+    await install({
+      browser: Browsers.CHROME,
+      buildId: '122.0.6257.0',
+      cacheDir: `${app.getPath('home')}/.local-chromium`,
+    });
 
     await (async () => {
       let browser: Browser;
 
-      if (isServe) {
-        browser = await launch({ headless: 'new' });
-      } else {
-        browser = await launch({
-          headless: 'new',
-          executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-119.0.6045.105/chrome-win64/chrome.exe`,
-        });
-      }
+      browser = await launch({
+        headless: 'new',
+        executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
+      });
 
       const page = await browser.newPage();
       await page.setRequestInterception(true);
       page.on('request', req => {
-        if (
-          req.resourceType() === 'stylesheet' ||
-          req.resourceType() === 'font' ||
-          req.resourceType() === 'image' ||
-          req.resourceType() === 'media'
-        ) {
+        if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image' || req.resourceType() === 'media') {
           req.abort();
         } else {
           req.continue();
@@ -84,9 +73,21 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         return;
       }
 
-      const isDropBoxLink = isDropBox(downloadLink)
+      const isDropBoxLink = isDropBox(downloadLink);
       if (isDropBoxLink) {
         downloadLink = downloadLink.replace('&dl=0', '&dl=1');
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+        return;
+      }
+
+      const isGoogleDriveLink = isGoogleDrive(downloadLink);
+      console.log(downloadLink);
+      if (isGoogleDriveLink) {
+        const id: string = downloadLink.split('/file/d/')[1].split('/view')[0];
+        console.log(id);
+        downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
+        console.log(downloadLink);
         event.sender.send('download-link-completed', downloadLink);
         await browser.close();
         return;
@@ -152,6 +153,10 @@ function isDirectDll(downloadLink: string) {
 
 function isDropBox(downloadLink: string) {
   return downloadLink.includes('dropbox');
+}
+
+function isGoogleDrive(downloadLink: string) {
+  return downloadLink.includes('drive.google');
 }
 
 function parseGitHubLink(url: string): GithubLinkData | null {
