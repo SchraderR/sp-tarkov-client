@@ -8,12 +8,9 @@ import { Kind } from '../../../../shared/models/unzip.model';
 export class ModListService {
   private modList = signal<Mod[]>([
     {
-      name: 'KMC Server Value Modifier (SVM)',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/379-kmc-server-value-modifier-svm/',
-      image: 'https://hub.sp-tarkov.com/files/images/file/a8/379.jpg',
-      teaser: 'Standalone All-In-One Tool you ever need: Gives you the access for most game values and quality of life improvements, featuring easy-to-use GUI and ability to create presets',
-      supportedAkiVersion: 'SPT-AKI 3.7.1',
-      akiVersionColorCode: 'badge label slightly-outdated',
+      name: "Fin's AI Tweaks (FAIT)",
+      image: 'assets/images/placeholder.png',
+      fileUrl: 'https://hub.sp-tarkov.com/files/file/94-fin-s-ai-tweaks-fait/',
       kind: Kind.server,
       installProgress: this.initialInstallProgress(),
     },
