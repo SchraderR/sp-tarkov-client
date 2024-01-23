@@ -65,6 +65,7 @@ export class DownloadService {
         const test: FileUnzipEvent = {
           filePath: downloadFilePath?.args,
           akiInstancePath: activeInstance.akiRootDirectory,
+          kind: mod.kind,
         };
         mod.installProgress.unzipStep.start = true;
         await firstValueFrom(this.#electronService.sendEvent('file-unzip', test));

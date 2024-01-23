@@ -3,6 +3,7 @@ import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
+import { Kind } from '../../../../shared/models/unzip.model';
 
 interface SearchResponse {
   template: string;
@@ -12,7 +13,7 @@ interface SearchResponse {
   providedIn: 'root',
 })
 export class AkiSearchService {
-  private restricted = ['Community support']
+  private restricted = ['Community support'];
 
   #httpClient = inject(HttpClient);
   modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
@@ -39,14 +40,23 @@ export class AkiSearchService {
       return [];
     }
 
-
     return Array.from(modListSection)
-      .map(e => ({
-        name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
-        image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
-        fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-        kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
-      }))
-      .filter(m => !this.restricted.some(r => m.kind.includes(r)));
+      .map(e => {
+        const rawKind = e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML;
+        let kind: Kind | undefined;
+        if (rawKind.startsWith('Client mods')) {
+          kind = Kind.client;
+        } else if (rawKind.startsWith('Server mods')) {
+          kind = Kind.server;
+        }
+
+        return {
+          name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
+          image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
+          fileUrl: e.getElementsByTagName('a')?.[0]?.href,
+          kind: kind,
+        } as Mod;  // Type assertion here
+      })
+      .filter(m => m.kind !== undefined && !this.restricted.some(r => m.kind?.includes(r)) );
   }
 }

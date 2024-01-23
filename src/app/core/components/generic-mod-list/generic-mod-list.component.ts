@@ -120,7 +120,7 @@ export default class GenericModListComponent implements AfterViewInit {
                 teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
                 supportedAkiVersion: e.getElementsByClassName('badge label')[0].innerHTML ?? '',
                 akiVersionColorCode: e.getElementsByClassName('badge label')[0].className,
-                kind: '',
+                kind: undefined,
               }) as Mod
           )
           .filter(e => this.filterCoreMods(e));

@@ -33,6 +33,23 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
         return;
       }
 
+      const isHappyPath = await isHappyPathArchive(archivePath, sevenBinPath);
+      console.log(isHappyPath);
+      if (!isHappyPath) {
+        switch (args.kind) {
+          case 'client':
+            await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath), sevenBinPath);
+            break;
+          case 'server':
+            await extractArchive(archivePath, path.join(args.akiInstancePath, serverModPath), sevenBinPath);
+            break;
+          default:
+            break;
+        }
+        event.sender.send('file-unzip-completed');
+        return;
+      }
+
       const clientModExtraction = extractArchive(archivePath, args.akiInstancePath, sevenBinPath, [`${clientModPath}/*`]);
       const serverModExtraction = extractArchive(archivePath, args.akiInstancePath, sevenBinPath, [`${serverModPath}/*`]);
 
@@ -63,6 +80,22 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
 
   async function checkForSingleDll(path: string) {
     return path.endsWith('.dll');
+  }
+
+  function isHappyPathArchive(archivePath: string, sevenBinPath: string): Promise<boolean> {
+    let isHappyPath = false;
+
+    return new Promise((resolve, reject) => {
+      list(archivePath, { $bin: sevenBinPath })
+        .on('data', data => {
+          const filePath = data.file;
+          if (filePath.startsWith(clientModPath) || filePath.startsWith(serverModPath)) {
+            isHappyPath = true;
+          }
+        })
+        .on('end', () => resolve(isHappyPath))
+        .on('error', error => reject(error));
+    });
   }
 
   function extractArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any): Promise<void> {
