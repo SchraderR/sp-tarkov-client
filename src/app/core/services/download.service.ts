@@ -63,6 +63,7 @@ export class DownloadService {
       }
     }
 
+    this.#electronService.sendEvent('clear-temp', activeInstance.akiRootDirectory).subscribe();
     this.isDownloadAndInstallInProgress.next(false);
   }
 
@@ -71,7 +72,7 @@ export class DownloadService {
 
     if (isInProgress) {
       const modIndex = this.#modListService.modListSignal().findIndex(modItem => modItem.name == mod.name);
-      if(modIndex !== -1) {
+      if (modIndex !== -1) {
         this.#modListService.modListSignal().splice(modIndex, 1);
         this.#modListService.modListSignal().push(mod);
       }
