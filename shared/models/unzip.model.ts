@@ -7,4 +7,5 @@
 export enum Kind {
   client = 'client' ,
   server = 'server' ,
+  overhaul = 'overhaul' ,
 }

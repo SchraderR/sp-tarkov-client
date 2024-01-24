@@ -157,7 +157,7 @@ function isGoogleDrive(downloadLink: string) {
 }
 
 function parseGitHubLink(url: string): GithubLinkData | null {
-  const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/(releases\/tag\/(.*))?/;
+  const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/releases\/(tag\/(.*))?/;
   const matches = url.match(regex);
 
   if (matches) {
@@ -172,7 +172,7 @@ function parseGitHubLink(url: string): GithubLinkData | null {
 }
 
 async function getReleaseData({ tag, userName, repoName }: GithubLinkData) {
-  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
+  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split("/")[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
 
   try {
     const response = await axios.get<GithubRelease>(url);

@@ -48,6 +48,8 @@ export class AkiSearchService {
           kind = Kind.client;
         } else if (rawKind.startsWith('Server mods')) {
           kind = Kind.server;
+        } else if (rawKind.startsWith('Overhaul')) {
+          kind = Kind.overhaul;
         }
 
         return {

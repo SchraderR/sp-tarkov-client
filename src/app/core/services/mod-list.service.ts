@@ -1,20 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 import { InstallProgress, Mod } from '../models/mod';
-import { Kind } from '../../../../shared/models/unzip.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ModListService {
-  private modList = signal<Mod[]>([
-    {
-      name: "MusicManiac's Advanced Quest Loader (MMAQL)",
-      image: 'assets/images/placeholder.png',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/1719-musicmaniac-s-advanced-quest-loader-mmaql/',
-      kind: Kind.server,
-      installProgress: this.initialInstallProgress(),
-    },
-  ]);
+  private modList = signal<Mod[]>([]);
   readonly modListSignal = this.modList.asReadonly();
 
   addMod(mod: Mod) {
