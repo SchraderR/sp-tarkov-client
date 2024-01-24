@@ -27,7 +27,7 @@
     <div>Limit: {{ githubRateLimit?.limit ?? 0 }}</div>
     <div>Remaining: {{ githubRateLimit?.remaining ?? 0 }}</div>
     <div>Used: {{ githubRateLimit?.used ?? 0 }}</div>
-    <div *ngIf="githubRateLimit?.reset">Reset: {{ githubRateLimit?.reset * 1000 | date:"dd.MM.YYYY HH:mm" }}</div>
+    <div *ngIf="githubRateLimit?.reset">Reset: {{ githubRateLimit!.reset * 1000 | date:"dd.MM.YYYY HH:mm" }}</div>
   </mat-list>
 </mat-menu>
 
