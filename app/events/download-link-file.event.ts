@@ -3,7 +3,7 @@ import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
-import { install, Browser as Browsers } from '@puppeteer/browsers';
+import { Browser as Browsers, install } from '@puppeteer/browsers';
 
 export interface GithubLinkData {
   userName: string;
@@ -75,7 +75,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
 
       const isDropBoxLink = isDropBox(downloadLink);
       if (isDropBoxLink) {
-        downloadLink = downloadLink.replace('&dl=0', '&dl=1');
+        downloadLink = downloadLink.replace('&dl=0', '&dl=1').replace('?dl=0', '?dl=1');
         event.sender.send('download-link-completed', downloadLink);
         await browser.close();
         return;

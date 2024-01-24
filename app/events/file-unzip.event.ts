@@ -3,10 +3,10 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as sevenBin from '7zip-bin';
 import * as unrar from 'node-unrar-js';
+import { Extractor } from 'node-unrar-js';
 import { extractFull, list } from 'node-7z';
 import { clientModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
-import { Extractor } from 'node-unrar-js';
 
 export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
@@ -20,7 +20,6 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
 
       const archivePath = args.filePath;
       const isRarArchive = archivePath.endsWith('.rar');
-
       const isSingleDllFile = await checkForSingleDll(archivePath);
       if (isSingleDllFile) {
         const fileName = path.basename(archivePath);
