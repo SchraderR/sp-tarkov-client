@@ -90,9 +90,6 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
   }
 
   const isHappyPath = await isHappyPathArchive(archivePath, sevenBinPath);
-  console.log(isHappyPath);
-  console.log(args.kind);
-
   if (!isHappyPath) {
     switch (args.kind) {
       case 'client':
@@ -127,7 +124,6 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
 
   Promise.all([clientModExtraction, serverModExtraction])
     .then(([clientResult, serverResult]) => {
-      console.log(clientResult, serverResult);
       if (clientResult || serverResult) {
         event.sender.send('file-unzip-completed');
       } else if (!clientResult && !serverResult) {
@@ -237,6 +233,5 @@ function checkForServerMod(path: string, sevenBinPath: string): Promise<boolean>
 
 function isRootDirectory(filePath: string): boolean {
   const parts = filePath.split('/');
-  console.log(parts);
   return parts.length <= 2;
 }

@@ -14,7 +14,6 @@ export class ModListService {
     }
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
-    console.log(this.modList());
   }
 
   updateMod() {
