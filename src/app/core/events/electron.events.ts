@@ -10,7 +10,8 @@
   | 'server-mod'
   | 'window-minimize'
   | 'window-maximize'
-  | 'window-close';
+  | 'window-close'
+  | 'clear-temp';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 

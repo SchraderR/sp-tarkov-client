@@ -4,7 +4,7 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { Observable } from 'rxjs';
 import { applicationElectronEventNames, ApplicationElectronFileError, applicationElectronFileProgressEventNames } from '../events/electron.events';
-import { DownloadBase } from '../../../../shared/models/download.model';
+import { DownloadBase, GithubRateLimit } from '../../../../shared/models/download.model';
 import IpcRendererEvent = Electron.IpcRendererEvent;
 
 @Injectable({
@@ -40,9 +40,7 @@ export class ElectronService {
     });
   }
 
-  getDownloadModProgressForFileId<T extends DownloadBase = never>(
-    eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'
-  ): Observable<T> {
+  getDownloadModProgressForFileId<T extends DownloadBase = never>(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<T> {
     return new Observable(observer => {
       const handler = (_: IpcRendererEvent, args: T) => {
         if (args?.percent === 1) {
@@ -57,6 +55,17 @@ export class ElectronService {
       };
 
       this.ipcRenderer.on(`${eventName}`, handler);
+    });
+  }
+
+  getGithubRateLimitInformation(): Observable<GithubRateLimit> {
+    return new Observable(observer => {
+      const handler = (_: IpcRendererEvent, args: GithubRateLimit) => {
+        observer.next(args);
+        observer.complete();
+      };
+
+      this.ipcRenderer.on("github-ratelimit-information", handler);
     });
   }
 

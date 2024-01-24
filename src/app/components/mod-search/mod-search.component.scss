@@ -4,11 +4,23 @@
   padding: 8px;
 }
 
-::ng-deep.search-input{
-  width: 100%;
+::ng-deep.search-input {
   @include mat.form-field-density(-5);
+  width: 100%;
 }
 
 ::ng-deep.mdc-list-item__primary-text {
   width: 100%;
+}
+
+.icon-end {
+  justify-content: center;
+  align-items: end;
+}
+
+.mod-information-container {
+  display: flex;
+  flex-direction: column;
+  padding-left: 8px;
+  overflow: auto;
 }

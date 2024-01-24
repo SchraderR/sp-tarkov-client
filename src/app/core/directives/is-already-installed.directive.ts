@@ -10,6 +10,34 @@ import { ModListService } from '../services/mod-list.service';
   exportAs: 'isAlreadyInstalled',
 })
 export class IsAlreadyInstalledDirective {
+  private alternativeServerModNames: { [key: string]: string } = {
+    SVM: 'KMC Server Value Modifier (SVM)',
+    SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
+    'SWAG + DONUTS': 'SWAG + Donuts - Dynamic Spawn Waves and Custom Spawn Points',
+    LPARedux: 'Lock Picking Attorney Redux',
+    NLE: 'Never Lose Equipments',
+    RPG7: 'RPG-7',
+    'AR-54': 'AR-54 7.62x54mmR Designated Marksman Rifle (DMR)',
+    'Tactical Gear Component (TGC)': 'Tactical Gear Component',
+    lotus: 'Lotus Trader',
+    'Fox-PineappleBlitz': 'Fox - PINEAPPLE BLITZ GRENADE (RE-UPLOAD)',
+  };
+
+  private alternativeClientModNames: { [key: string]: string } = {
+    SVM: 'KMC Server Value Modifier (SVM)',
+    SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
+    'DrakiaXYZ-BigBrain': 'BigBrain',
+    'skwizzy.LootingBots': 'Looting Bots',
+    'dvize.BushNoESP': 'No Bush ESP',
+    'DrakiaXYZ-Waypoints': 'Waypoints - Expanded Bot Patrols and Navmesh',
+    FOVFix: "Fontaine's FOV Fix & Variable Optics",
+    'SamSWAT.FOV': "SamSwat's INCREASED FOV - Reupload",
+    'IcyClawz.ItemSellPrice': 'Item Sell Price',
+    'CactusPie.FastHealing': 'Fast healing',
+    GamePanelHUDCompass: 'Game Panel HUD',
+    'CactusPie.MapLocation.Common': "CactusPie's Minimap",
+  };
+
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
 
@@ -29,19 +57,40 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
+    console.log('activeInstance.clientMods');
+    console.table(activeInstance.clientMods);
+    console.log('activeInstance.serverMods');
+    console.table(activeInstance.serverMods);
+
+    for (const serverMod of activeInstance.serverMods) {
+      if (Object.prototype.hasOwnProperty.call(this.alternativeServerModNames, serverMod.name)) {
+        serverMod.alternativeName = this.alternativeServerModNames[serverMod.name] as string;
+      }
+    }
+
+    for (const clientMod of activeInstance.clientMods) {
+      if (Object.prototype.hasOwnProperty.call(this.alternativeClientModNames, clientMod.name)) {
+        clientMod.alternativeName = this.alternativeClientModNames[clientMod.name];
+      }
+    }
+
     const closestServerModName = closest(
       modName,
-      activeInstance.serverMods.map(m => m.name)
+      activeInstance.serverMods.flatMap(m => [m.name, m.alternativeName ?? ''])
     );
     const closestClientModName = closest(
       modName,
-      activeInstance.clientMods.map(m => m.name)
+      activeInstance.clientMods.flatMap(m => [m.name, m.alternativeName ?? ''])
     );
 
     return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
   }
 
   private isMatchBasedOnLevenshtein(stringA = '', stringB = '', threshold = 0.2): boolean {
+    if (!stringA || !stringB) {
+      return false;
+    }
+
     const levenshteinDistance = distance(stringA, stringB);
     const averageLength = (stringA.length + stringB.length) / 2;
 

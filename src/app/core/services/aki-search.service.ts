@@ -3,11 +3,18 @@ import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
+import { Kind } from '../../../../shared/models/unzip.model';
+
+interface SearchResponse {
+  template: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AkiSearchService {
+  private restricted = ['Community support'];
+
   #httpClient = inject(HttpClient);
   modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
@@ -16,31 +23,42 @@ export class AkiSearchService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' });
 
     return this.#httpClient
-      .post(this.modSearchUrl, `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`, {
+      .post<SearchResponse>(this.modSearchUrl, `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`, {
         headers: headers,
       })
       .pipe(
-        map((response: any) => this.extractModInformation(response.template)),
+        map(response => this.extractModInformation(response)),
         catchError(() => EMPTY)
       );
   }
 
-  private extractModInformation(htmlBody: string): Mod[] {
-    const searchResult = HtmlHelper.parseStringAsHtml(htmlBody);
-    const modListSection = searchResult.body
-      ?.getElementsByClassName('section')?.[1]
-      ?.querySelectorAll('div.sectionTitle + ul')?.[0]
-      ?.getElementsByClassName('extendedNotificationItem');
+  private extractModInformation(searchResponse: SearchResponse): Mod[] {
+    const searchResult = HtmlHelper.parseStringAsHtml(searchResponse.template);
+    const modListSection = searchResult.body?.querySelectorAll('.section:nth-child(2) div.sectionTitle + ul .extendedNotificationItem');
 
     if (!modListSection) {
       return [];
     }
 
-    return Array.from(modListSection).map(e => ({
-      name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
-      image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
-      fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-      kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
-    }));
+    return Array.from(modListSection)
+      .map(e => {
+        const rawKind = e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML;
+        let kind: Kind | undefined;
+        if (rawKind.startsWith('Client mods')) {
+          kind = Kind.client;
+        } else if (rawKind.startsWith('Server mods')) {
+          kind = Kind.server;
+        } else if (rawKind.startsWith('Overhaul')) {
+          kind = Kind.overhaul;
+        }
+
+        return {
+          name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
+          image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
+          fileUrl: e.getElementsByTagName('a')?.[0]?.href,
+          kind: kind,
+        } as Mod;  // Type assertion here
+      })
+      .filter(m => m.kind !== undefined && !this.restricted.some(r => m.kind?.includes(r)) );
   }
 }

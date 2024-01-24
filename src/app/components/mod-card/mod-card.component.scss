@@ -107,4 +107,17 @@ mat-card {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &.retry {
+    background: rgb(239, 184, 35);
+  }
+}
+
+.installation-completed-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  font-size: large
 }

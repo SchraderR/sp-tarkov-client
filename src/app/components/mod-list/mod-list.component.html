@@ -4,20 +4,23 @@
   }
 </div>
 
-<div class="button-container" *ngIf="modListSignal().length" >
-  <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstall()">Download / Install</button>
-</div>
+@if (modListSignal().length) {
+  <div class="button-container" >
+    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstallAll()">Download / Install</button>
+  </div>
+}
 
-<div
-  @fadeInOut
-  *ngIf="!modListSignal().length"
-  style="display: flex; flex-direction: column; height: calc(100% - 24px); width: 100%; justify-content: center; align-items: center"
->
-  <span style="user-select: none; color: gray; font-size: 128px; position: absolute; opacity: 0.04">¯\_(ツ)_/¯</span>
-  <span style="user-select: none; font-size: x-large">No mods detected!</span>
-  <span style="user-select: none; font-size: smaller">Add some mods to proceed with the installation</span>
-</div>
+@if (!modListSignal().length) {
+  <div
+    @fadeInOut
+    class="no-mod-emote-container"
+    >
+    <span class="emote">{{ emote }}</span>
+    <span class="no-mods-text">No mods detected!</span>
+    <span class="no-mods-subtext">Add some mods to proceed with the installation</span>
+  </div>
+}
 
-<span style="position: absolute; bottom: 0; left: 0; font-size: smaller; padding: 4px;">
+<span class="licence-text">
   *By using this application, you agree to and accept the respective open source licenses for any mods you download
 </span>

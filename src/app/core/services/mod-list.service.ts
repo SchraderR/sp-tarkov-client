@@ -24,9 +24,10 @@ export class ModListService {
     this.modList.update(() => [...this.modList().filter(m => m.name !== name)]);
   }
 
-  private initialInstallProgress(): InstallProgress {
+  initialInstallProgress(): InstallProgress {
     return {
       completed: false,
+      error: false,
       linkStep: {
         start: false,
         error: false,

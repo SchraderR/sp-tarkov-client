@@ -1,9 +1,9 @@
 import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
-import { APP_CONFIG } from '../environments/environment';
+import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
@@ -19,6 +19,10 @@ import { ModSearchComponent } from './components/mod-search/mod-search.component
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
 import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
+import { sidenavAnimation } from './sidenavAnimation';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { GithubRateLimit } from '../../shared/models/download.model';
 
 @Component({
   standalone: true,
@@ -28,9 +32,8 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
   imports: [
     CommonModule,
     MatButtonModule,
-    CommonModule,
-    RouterModule,
     MatSidenavModule,
+    RouterModule,
     MatToolbarModule,
     MatIconModule,
     MatListModule,
@@ -40,7 +43,11 @@ import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
     NgOptimizedImage,
     ModSearchComponent,
     MatBadgeModule,
+    MatTooltipModule,
+    MatMenuModule,
+    DatePipe,
   ],
+  animations: [sidenavAnimation],
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
@@ -49,23 +56,31 @@ export class AppComponent {
   #destroyRef = inject(DestroyRef);
   #modListService = inject(ModListService);
   #ngZone = inject(NgZone);
-  config = APP_CONFIG;
-  version = packageJson.version;
 
-  @ViewChild(MatDrawer, { static: true }) matDrawer!: MatDrawer;
+  config = environment;
+  version = packageJson.version;
+  isExpanded = false;
+
+  @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
 
   modListSignal = this.#modListService.modListSignal;
   appIconPath = 'assets/images/icon.png';
+  githubRateLimit: GithubRateLimit | undefined = undefined;
 
   constructor() {
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
+
+    this.getGithubRateLimitInformation();
   }
 
-  toggleDrawer = () => void this.matDrawer.toggle();
+  toggleDrawer = () => {
+    this.isExpanded = false;
+    void this.matSideNav.toggle();
+  };
+
   openExternal = (url: string) => void this.#electronService.shell.openExternal(url);
-  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
-    void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') => void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
   private getCurrentPersonalSettings() {
     this.#electronService
@@ -94,5 +109,9 @@ export class AppComponent {
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
       })
     );
+  }
+
+  private getGithubRateLimitInformation() {
+    this.#electronService.getGithubRateLimitInformation().subscribe(value => (this.githubRateLimit = value));
   }
 }

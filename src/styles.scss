@@ -29,16 +29,58 @@ body {
   }
 }
 
+.github-info-panel {
+  color: white;
+  padding: 8px;
+  background: #666 !important;
+}
+
+.already-installed-icon-container {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 48px !important;
+  width: 48px !important;
+}
+
+.mod-install-instance-warning {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 48px !important;
+  width: 48px !important;
+}
+
+mat-icon {
+  font-weight: 200 !important;
+}
+
+.font-weight-400 {
+  font-weight: 400 !important;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
 .full-width {
   width: 100%;
+}
+
+.full-height {
+  height: 100%;
 }
 
 .spacer {
   flex: 1 1 auto;
 }
 
-.x-small {
+.font-x-small {
   font-size: x-small;
+}
+
+.font-small {
+  font-size: small;
 }
 
 .text-ellipsis {
@@ -52,6 +94,18 @@ body {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
 }
 
 // TODO Remove or better

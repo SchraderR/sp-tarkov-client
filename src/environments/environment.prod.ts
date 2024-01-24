@@ -1,6 +1,7 @@
-export const APP_CONFIG = {
+export const environment = {
   production: true,
   environment: 'PROD',
   githubIssueUrl: 'https://github.com/SchraderR/sp-tarkov-client/issues',
-  akiHubLink: 'https://hub.sp-tarkov.com/files/file/1702-sp-eft-manager/',
+  akiHubEftManagerLink: 'https://hub.sp-tarkov.com/files/file/1702-sp-eft-manager/',
+  akiFileBaseLink: 'https://hub.sp-tarkov.com/files',
 };

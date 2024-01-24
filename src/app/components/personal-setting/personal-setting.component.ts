@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, signal } from '@angular/core';
+
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
@@ -9,13 +9,16 @@ import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
 import { forkJoin, of, switchMap, tap } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatListModule } from '@angular/material/list';
+import { MatLineModule } from '@angular/material/core';
 
 @Component({
   standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatExpansionModule, MatListModule, MatLineModule],
 })
 export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);
@@ -38,16 +41,22 @@ export default class PersonalSettingComponent {
           });
         }),
         tap(result => {
-          const newUserSetting = result.userSetting;
-          newUserSetting.clientMods = result.clientMods.args;
-          newUserSetting.serverMods = result.serverMods.args;
+          this.#ngZone.run(() => {
+            const newUserSetting = result.userSetting;
+            newUserSetting.clientMods = result.clientMods.args;
+            newUserSetting.serverMods = result.serverMods.args;
 
-          this.#userSettingsService.addUserSetting(newUserSetting);
-          this.#changeDetectorRef.detectChanges();
+            this.#userSettingsService.addUserSetting(newUserSetting);
+            this.#changeDetectorRef.detectChanges();
+          });
         }),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe();
+  }
+
+  openExternalChromePath() {
+    void this.#electronService.shell.openExternal("C:\\Users");
   }
 
   setActiveInstance(settingModel: UserSettingModel) {

@@ -1,3 +1,25 @@
 .fill {
   font-variation-settings: "FILL" 1;
 }
+
+::ng-deep.mat-expansion-panel-body {
+  padding-right: 0 !important;
+}
+
+.delete-button-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 8px;
+  width: 60px;
+  background: rgb(178, 39, 46);
+  border-radius: 4px;
+}
+
+.expansion-panel-container {
+  position: relative;
+}

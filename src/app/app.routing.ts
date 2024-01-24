@@ -12,7 +12,35 @@ export const appRoutes: Routes = [
   },
   {
     path: 'top-rated',
-    loadComponent: () => import('./components/top-rated/top-rated.component'),
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: {
+      sortField: 'cumulativeLikes',
+      sortOrder: 'DESC',
+    },
+  },
+  {
+    path: 'new',
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: {
+      sortField: 'time',
+      sortOrder: 'DESC',
+    },
+  },
+  {
+    path: 'updated',
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: {
+      sortField: 'lastChangeTime',
+      sortOrder: 'DESC',
+    },
+  },
+  {
+    path: 'most-loaded',
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: {
+      sortField: 'downloads',
+      sortOrder: 'DESC',
+    },
   },
   {
     path: 'mod-list',

@@ -1,0 +1,123 @@
+import { AfterViewInit, Component, DestroyRef, inject, Input, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ElectronService } from '../../services/electron.service';
+import { ModListService } from '../../services/mod-list.service';
+import { UserSettingsService } from '../../services/user-settings.service';
+import { Mod } from '../../models/mod';
+import { restrictedModList } from '../../../constants';
+import { IsAlreadyInstalledDirective } from '../../directives/is-already-installed.directive';
+import { environment } from '../../../../environments/environment';
+import { HtmlHelper } from '../../helper/html-helper';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { debounceTime, Subscription } from 'rxjs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
+
+export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
+export type GenericModListSortOrder = 'ASC' | 'DESC';
+
+@Component({
+  standalone: true,
+  selector: 'app-generic-mod-list',
+  templateUrl: './generic-mod-list.component.html',
+  styleUrl: './generic-mod-list.component.scss',
+  imports: [MatCardModule, MatButtonModule, MatIconModule, RouterLink, MatTooltipModule, NgOptimizedImage, IsAlreadyInstalledDirective, MatPaginatorModule, MatToolbarModule, MatSelectModule],
+})
+export default class GenericModListComponent implements AfterViewInit {
+  private paginatorSubscription: Subscription | undefined;
+  private _sortField: GenericModListSortField | undefined;
+  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+
+  @Input() set sortField(sortValue: GenericModListSortField) {
+    this._sortField = sortValue;
+    this.loadData(sortValue);
+  }
+
+  @Input() sortOrder: GenericModListSortOrder = 'DESC';
+
+  #httpClient = inject(HttpClient);
+  #electronService = inject(ElectronService);
+  #modListService = inject(ModListService);
+  #userSettingsService = inject(UserSettingsService);
+  #destroyRef = inject(DestroyRef);
+
+  accumulatedModList: Mod[] = [];
+  pageSize = 0;
+  pageLength = 0;
+  pageNumber = 0;
+  loading = false;
+
+  ngAfterViewInit() {
+    this.paginatorSubscription = this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
+      if (!this._sortField) {
+        return;
+      }
+
+      this.loadData(this._sortField, event.pageIndex);
+    });
+  }
+
+  isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
+
+  refresh() {
+    this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
+  }
+
+  addModToModList(mod: Mod) {
+    this.#modListService.addMod(mod);
+  }
+
+  removeModFromModList(mod: Mod) {
+    this.#modListService.removeMod(mod.name);
+  }
+
+  openExternal(modFileUrl: string) {
+    void this.#electronService.shell.openExternal(modFileUrl);
+  }
+
+  private filterCoreMods(mod: Mod) {
+    return !restrictedModList.includes(mod.name);
+  }
+
+  private loadData(sortValue: GenericModListSortField, pageNumber = 0) {
+    this.loading = true;
+    this.#httpClient
+      .get(`${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}`, { responseType: 'text' })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(pestRatedViewString => {
+        const modView = HtmlHelper.parseStringAsHtml(pestRatedViewString);
+        const modList = modView.body.getElementsByClassName('filebaseFileCard');
+
+        const elements = modView.querySelectorAll('.paginationTop .pagination ul li:not([class])');
+        const pageNumbers = Array.from(elements).map(li => parseInt(li.textContent ?? ''));
+
+        this.accumulatedModList = Array.from(modList)
+          .map(
+            e =>
+              ({
+                name: e.getElementsByClassName('filebaseFileSubject')[0].getElementsByTagName('span')[0].innerHTML,
+                fileUrl: e.getElementsByTagName('a')[0].href,
+                image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
+                icon: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon128')[1] ?? null,
+                teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
+                supportedAkiVersion: e.getElementsByClassName('badge label')[0].innerHTML ?? '',
+                akiVersionColorCode: e.getElementsByClassName('badge label')[0].className,
+                kind: undefined,
+              }) as Mod
+          )
+          .filter(e => this.filterCoreMods(e));
+
+        this.pageNumber = pageNumber;
+        this.pageSize = this.accumulatedModList.length;
+        this.pageLength = pageNumbers[pageNumbers.length - 1] * 20;
+        this.loading = false;
+      });
+  }
+}

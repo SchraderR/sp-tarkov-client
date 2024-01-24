@@ -3,7 +3,8 @@ import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
-import { install, Browser as Browsers } from '@puppeteer/browsers';
+import { Browser as Browsers, install } from '@puppeteer/browsers';
+import { GithubRateLimit } from '../../shared/models/download.model';
 
 export interface GithubLinkData {
   userName: string;
@@ -15,35 +16,24 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
   ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
     let downloadLink = null;
 
-    if (!isServe) {
-      await install({
-        browser: Browsers.CHROME,
-        buildId: '119.0.6045.105',
-        cacheDir: `${app.getPath('home')}/.local-chromium`,
-      });
-    }
+    await install({
+      browser: Browsers.CHROME,
+      buildId: '122.0.6257.0',
+      cacheDir: `${app.getPath('home')}/.local-chromium`,
+    });
 
     await (async () => {
       let browser: Browser;
 
-      if (isServe) {
-        browser = await launch({ headless: 'new' });
-      } else {
-        browser = await launch({
-          headless: 'new',
-          executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-119.0.6045.105/chrome-win64/chrome.exe`,
-        });
-      }
+      browser = await launch({
+        headless: 'new',
+        executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
+      });
 
       const page = await browser.newPage();
       await page.setRequestInterception(true);
       page.on('request', req => {
-        if (
-          req.resourceType() === 'stylesheet' ||
-          req.resourceType() === 'font' ||
-          req.resourceType() === 'image' ||
-          req.resourceType() === 'media'
-        ) {
+        if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image' || req.resourceType() === 'media') {
           req.abort();
         } else {
           req.continue();
@@ -77,15 +67,62 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         return;
       }
 
+      const isDirectDllLink = isDirectDll(downloadLink);
+      if (isDirectDllLink) {
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+        return;
+      }
+
+      const isDropBoxLink = isDropBox(downloadLink);
+      if (isDropBoxLink) {
+        downloadLink = downloadLink.replace('&dl=0', '&dl=1').replace('?dl=0', '?dl=1');
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+        return;
+      }
+
+      const isGoogleDriveLink = isGoogleDrive(downloadLink);
+      if (isGoogleDriveLink) {
+        downloadLink = downloadLink.split('?')[0];
+        let regex;
+        if (downloadLink.includes('/file/d/')) {
+          regex = /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/;
+        } else if (downloadLink.includes('/folders/')) {
+          regex = /https:\/\/drive\.google\.com\/drive\/folders\/(.*?)(\/|$)/;
+        }
+
+        if (!regex) {
+          event.sender.send('download-link-error', 0);
+          await browser.close();
+          return;
+        }
+
+        const match = downloadLink.match(regex);
+        const id = match ? match[1] : null;
+
+        if (id === null) {
+          event.sender.send('download-link-error', 0);
+          await browser.close();
+          return;
+        }
+
+        downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+        return;
+      }
+
       const isArchiveLink = isArchiveURL(downloadLink);
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
         if (!gitHubInformation) {
-          //  TODO Error Handling
-          // await browser.close();
+          event.sender.send('download-link-completed', downloadLink);
+          await browser.close();
           return;
         }
-        await getReleaseData(gitHubInformation)
+
+        await getReleaseData(gitHubInformation, event)
           .then(async data => {
             const githubDownloadLink = data?.assets?.[0].browser_download_url;
 
@@ -130,11 +167,30 @@ function isArchiveURL(url: string): boolean {
   return extensions.includes(fileExtension);
 }
 
-function parseGitHubLink(url: string): GithubLinkData | null {
-  const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/releases\/tag\/(.*)/;
-  const matches = url.match(regex);
+function isDirectDll(downloadLink: string) {
+  return downloadLink.endsWith('.dll');
+}
 
-  if (matches && matches.length === 4) {
+function isDropBox(downloadLink: string) {
+  return downloadLink.includes('dropbox');
+}
+
+function isGoogleDrive(downloadLink: string) {
+  return downloadLink.includes('drive.google');
+}
+
+function parseGitHubLink(url: string): GithubLinkData | null {
+  if (!url.endsWith('/')) {
+    url = url + '/';
+  }
+
+  if (!url.endsWith('/releases')) {
+    url = url + 'releases/latest/';
+  }
+
+  const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/releases\/(tag\/(.*))?/;
+  const matches = url.match(regex);
+  if (matches) {
     return {
       userName: matches[1],
       repoName: matches[2],
@@ -145,15 +201,19 @@ function parseGitHubLink(url: string): GithubLinkData | null {
   }
 }
 
-async function getReleaseData({ tag, userName, repoName }: GithubLinkData) {
-  const url = `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag}`;
+async function getReleaseData({ tag, userName, repoName }: GithubLinkData, event: Electron.IpcMainEvent) {
+  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split('/')[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
 
   try {
     const response = await axios.get<GithubRelease>(url);
-    console.log('X-RateLimit-Remaining:', response.headers['x-ratelimit-remaining']);
-    console.log('X-RateLimit-Reset:', response.headers['x-ratelimit-reset']);
-    console.log('X-RateLimit-Limit:', response.headers['x-ratelimit-limit']);
-    console.log('X-RateLimit-Used:', response.headers['x-ratelimit-used']);
+    const githubRateLimit: GithubRateLimit = {
+      remaining: response.headers['x-ratelimit-remaining'],
+      reset: response.headers['x-ratelimit-reset'],
+      limit: response.headers['x-ratelimit-limit'],
+      used: response.headers['x-ratelimit-used'],
+    };
+
+    event.sender.send('github-ratelimit-information', githubRateLimit);
 
     return response.data;
   } catch (error) {
