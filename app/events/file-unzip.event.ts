@@ -46,9 +46,6 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
 
 async function handleRarArchive(archivePath: string, sevenBinPath: string, args: FileUnzipEvent, event: Electron.IpcMainEvent) {
   const extractorForFiles = await unrar.createExtractorFromFile({ filepath: archivePath });
-  // const extracted = extractor.getFileList();
-  // const files = [...extracted.fileHeaders];
-  // console.log(files);
 
   const isRarWithSingleDll = await checkForRarWithSingleDll(extractorForFiles);
   if (isRarWithSingleDll) {
@@ -98,6 +95,18 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
       case 'server':
         await extractArchive(archivePath, path.join(args.akiInstancePath, serverModPath), sevenBinPath);
         break;
+
+      case undefined:
+        const isClientMod = await checkForClientMod(archivePath, sevenBinPath);
+        const isServerMod = await checkForServerMod(archivePath, sevenBinPath);
+
+        if (isClientMod) {
+          await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath), sevenBinPath);
+        } else if (isServerMod) {
+          await extractArchive(archivePath, path.join(args.akiInstancePath, serverModPath), sevenBinPath);
+        }
+
+        break;
       default:
         break;
     }
@@ -119,7 +128,6 @@ function checkForArchiveWithSingleDll(archivePath: string, sevenBinPath: string)
   return new Promise(resolve => {
     list(archivePath, { $bin: sevenBinPath, $cherryPick: ['*.dll'] })
       .on('data', data => {
-        console.log(data);
         if (!data.file.includes('/')) {
           dllFound = true;
         }
@@ -187,5 +195,25 @@ function extractArchive(path: string, dest: string, sevenBinPath: string, cherry
     extractFull(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [] })
       .on('end', resolve)
       .on('error', err => reject(err));
+  });
+}
+
+function checkForClientMod(path: string, sevenBinPath: string): Promise<boolean> {
+  let isClientMod = false;
+  return new Promise((resolve, reject) => {
+    list(path, { $bin: sevenBinPath, $cherryPick: ['*.dll'], recursive: true })
+      .on('data', data => (isClientMod = true))
+      .on('end', () => resolve(isClientMod))
+      .on('error', reject);
+  });
+}
+
+function checkForServerMod(path: string, sevenBinPath: string): Promise<boolean> {
+  let isServerMod = false;
+  return new Promise((resolve, reject) => {
+    list(path, { $bin: sevenBinPath, $cherryPick: ['package.json'], recursive: true })
+      .on('data', () => (isServerMod = true))
+      .on('end', () => resolve(isServerMod))
+      .on('error', reject);
   });
 }

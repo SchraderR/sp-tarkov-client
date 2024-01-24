@@ -11,6 +11,7 @@ import { ModListService } from '../services/mod-list.service';
 })
 export class IsAlreadyInstalledDirective {
   private alternativeServerModNames: { [key: string]: string } = {
+    "SVM": 'KMC Server Value Modifier (SVM)',
     "SAIN": 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
     "SWAG + DONUTS": 'SWAG + Donuts - Dynamic Spawn Waves and Custom Spawn Points',
     "LPARedux": 'Lock Picking Attorney Redux',
@@ -46,6 +47,9 @@ export class IsAlreadyInstalledDirective {
     if (!activeInstance) {
       return false;
     }
+
+    console.log ( activeInstance?.serverMods );
+    console.log ( activeInstance?.clientMods );
 
     for (const serverMod of activeInstance.serverMods) {
       if (Object.prototype.hasOwnProperty.call(this.alternativeServerModNames, serverMod.name)) {
