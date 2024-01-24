@@ -48,9 +48,6 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
-    console.log ( activeInstance?.serverMods );
-    console.log ( activeInstance?.clientMods );
-
     for (const serverMod of activeInstance.serverMods) {
       if (Object.prototype.hasOwnProperty.call(this.alternativeServerModNames, serverMod.name)) {
         serverMod.alternativeName = this.alternativeServerModNames[serverMod.name] as string;

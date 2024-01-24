@@ -37,6 +37,7 @@ export const handleDownloadModEvent = () => {
       saveAs: false,
       onProgress: progress => event.sender.send('download-mod-progress', progress),
       onCompleted: file => event.sender.send('download-mod-completed', file.path),
+      onCancel: () => event.sender.send('download-mod-error', 1),
     });
   });
 };
@@ -82,6 +83,7 @@ async function waitForDownload(downloadModel: DownloadModel, browser: Browser, e
       await browser.close();
     } catch (error) {
       console.log(error);
+      event.sender.send('download-mod-error', 1);
     }
   });
 }

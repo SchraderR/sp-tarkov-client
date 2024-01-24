@@ -5,7 +5,6 @@
 
     const match = url.pathname.match(regex);
     if (match === null) {
-      console.log('No match');
       return null;
     }
 

@@ -12,6 +12,7 @@ import { HtmlHelper } from '../../core/helper/html-helper';
 import { EMPTY, map, Observable } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
+import { DownloadService } from '../../core/services/download.service';
 
 export interface ModLicenseInformation {
   url: string;
@@ -29,6 +30,7 @@ export interface ModLicenseInformation {
 export class ModCardComponent implements OnInit {
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
+  #downloadService = inject(DownloadService);
 
   @Input({ required: true }) mod!: Mod;
   @Output() removeModEvent = new EventEmitter<Mod>();
@@ -42,6 +44,8 @@ export class ModCardComponent implements OnInit {
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
   openExternal = (licenseUrl: string) => void this.#electronService.shell.openExternal(licenseUrl);
+
+  downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 
   private getModLicenseInformation(): Observable<ModLicenseInformation> {
     if (!this.mod?.fileUrl) {

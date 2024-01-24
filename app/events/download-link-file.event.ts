@@ -115,7 +115,6 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
       const isArchiveLink = isArchiveURL(downloadLink);
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
-        console.log(gitHubInformation);
         if (!gitHubInformation) {
           event.sender.send('download-link-completed', downloadLink);
           await browser.close();
@@ -190,7 +189,6 @@ function parseGitHubLink(url: string): GithubLinkData | null {
 
   const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/releases\/(tag\/(.*))?/;
   const matches = url.match(regex);
-  console.log(matches);
   if (matches) {
     return {
       userName: matches[1],
@@ -204,7 +202,6 @@ function parseGitHubLink(url: string): GithubLinkData | null {
 
 async function getReleaseData({ tag, userName, repoName }: GithubLinkData) {
   const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split('/')[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
-  console.log(url);
 
   try {
     const response = await axios.get<GithubRelease>(url);

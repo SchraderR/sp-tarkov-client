@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, switchMap } from 'rxjs';
 import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
@@ -8,6 +8,8 @@ import { UserSettingsService } from './user-settings.service';
 import { ModListService } from './mod-list.service';
 import { DownloadProgress } from '../../../../shared/models/download.model';
 import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
+import { Mod } from '../models/mod';
+import { UserSettingModel } from '../../../../shared/models/user-setting.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +23,7 @@ export class DownloadService {
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
 
-  async downloadAndInstall(): Promise<void> {
+  async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
     const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
     if (!activeInstance) {
@@ -40,40 +42,9 @@ export class DownloadService {
       }
 
       try {
-        mod.installProgress.linkStep.start = true;
-
-        const downloadProgressSubscription = this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
-          mod.installProgress!.downloadStep.percent = progress.percent;
-          mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
-          mod.installProgress!.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);
-          this.downloadProgressEvent.next();
-        });
-
-        const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
-        const downloadLinkEvent = await firstValueFrom(this.#electronService.sendEvent<string, LinkModel>('download-link', linkModel));
-        mod.installProgress.linkStep.progress = 1;
-
-        mod.installProgress.linkStep.progress = 1;
-        const downloadModel: DownloadModel = {
-          fileId,
-          name: mod.name,
-          akiInstancePath: activeInstance.akiRootDirectory,
-          modFileUrl: downloadLinkEvent!.args,
-        };
-
-        const downloadFilePath = await firstValueFrom(this.#electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel));
-        const test: FileUnzipEvent = {
-          filePath: downloadFilePath?.args,
-          akiInstancePath: activeInstance.akiRootDirectory,
-          kind: mod.kind,
-        };
-        mod.installProgress.unzipStep.start = true;
-        await firstValueFrom(this.#electronService.sendEvent('file-unzip', test));
-        mod.installProgress.unzipStep.progress = 1;
-        mod.installProgress.completed = true;
-        downloadProgressSubscription.unsubscribe();
-        this.#modListService.updateMod();
+        await this.installProcess(mod, fileId, activeInstance);
       } catch (error) {
+        mod.installProgress.error = true;
         switch (error) {
           case ApplicationElectronFileError.unzipError:
             mod.installProgress.unzipStep.error = true;
@@ -93,5 +64,70 @@ export class DownloadService {
     }
 
     this.isDownloadAndInstallInProgress.next(false);
+  }
+
+  async downloadAndInstallSingle(mod: Mod): Promise<void> {
+    const isInProgress = this.isDownloadAndInstallInProgress.value;
+
+    if (isInProgress) {
+      const modIndex = this.#modListService.modListSignal().findIndex(modItem => modItem.name == mod.name);
+      if(modIndex !== -1) {
+        this.#modListService.modListSignal().splice(modIndex, 1);
+        this.#modListService.modListSignal().push(mod);
+      }
+    } else {
+      mod.installProgress = this.#modListService.initialInstallProgress();
+      await this.downloadAndInstallAll();
+    }
+  }
+
+  private async installProcess(mod: Mod, fileId: string, activeInstance: UserSettingModel) {
+    if (!mod?.installProgress) {
+      return;
+    }
+
+    mod.installProgress.linkStep.start = true;
+
+    this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
+      mod.installProgress!.downloadStep.percent = progress.percent;
+      mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
+      mod.installProgress!.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);
+      this.downloadProgressEvent.next();
+    });
+
+    const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
+
+    await this.#electronService
+      .sendEvent<string, LinkModel>('download-link', linkModel)
+      .pipe(
+        switchMap(downloadLinkEvent => {
+          mod.installProgress!.linkStep.progress = 1;
+
+          const downloadModel: DownloadModel = {
+            fileId,
+            name: mod.name,
+            akiInstancePath: activeInstance.akiRootDirectory,
+            modFileUrl: downloadLinkEvent!.args,
+          };
+
+          return this.#electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel);
+        }),
+        switchMap(downloadFilePath => {
+          const test: FileUnzipEvent = {
+            filePath: downloadFilePath?.args,
+            akiInstancePath: activeInstance.akiRootDirectory,
+            kind: mod.kind,
+          };
+
+          mod.installProgress!.unzipStep.start = true;
+
+          return this.#electronService.sendEvent('file-unzip', test);
+        })
+      )
+      .toPromise();
+
+    mod.installProgress!.unzipStep.progress = 1;
+    mod.installProgress!.completed = true;
+    this.#modListService.updateMod();
   }
 }

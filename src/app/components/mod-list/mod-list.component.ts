@@ -40,7 +40,7 @@ export default class ModListComponent implements OnInit {
     this.selectRandomEmote();
   }
 
-  downloadAndInstall = () => this.#downloadService.downloadAndInstall();
+  downloadAndInstallAll = () => this.#downloadService.downloadAndInstallAll();
 
   removeMod(mod: Mod) {
     this.#modListService.removeMod(mod.name);

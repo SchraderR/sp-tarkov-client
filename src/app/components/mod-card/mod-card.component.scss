@@ -107,6 +107,10 @@ mat-card {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &.retry {
+    background: rgb(239, 184, 35);
+  }
 }
 
 .installation-completed-container {

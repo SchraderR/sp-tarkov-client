@@ -18,6 +18,7 @@ export interface InstallProgress {
   completed: boolean;
   started?: Date;
   finished?: Date;
+  error?: boolean;
 
   linkStep: StepProgress;
   downloadStep: DownloadProgress;
