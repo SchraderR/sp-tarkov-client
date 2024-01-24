@@ -82,12 +82,9 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
       }
 
       const isGoogleDriveLink = isGoogleDrive(downloadLink);
-      console.log(downloadLink);
       if (isGoogleDriveLink) {
         const id: string = downloadLink.split('/file/d/')[1].split('/view')[0];
-        console.log(id);
         downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
-        console.log(downloadLink);
         event.sender.send('download-link-completed', downloadLink);
         await browser.close();
         return;
@@ -97,8 +94,8 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
         if (!gitHubInformation) {
-          //  TODO Error Handling
-          // await browser.close();
+          event.sender.send('download-link-completed', downloadLink);
+          await browser.close();
           return;
         }
 
@@ -160,10 +157,10 @@ function isGoogleDrive(downloadLink: string) {
 }
 
 function parseGitHubLink(url: string): GithubLinkData | null {
-  const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/releases\/tag\/(.*)/;
+  const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/(releases\/tag\/(.*))?/;
   const matches = url.match(regex);
 
-  if (matches && matches.length === 4) {
+  if (matches) {
     return {
       userName: matches[1],
       repoName: matches[2],
@@ -175,7 +172,7 @@ function parseGitHubLink(url: string): GithubLinkData | null {
 }
 
 async function getReleaseData({ tag, userName, repoName }: GithubLinkData) {
-  const url = `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag}`;
+  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
 
   try {
     const response = await axios.get<GithubRelease>(url);

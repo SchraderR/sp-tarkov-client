@@ -8,9 +8,9 @@ import { Kind } from '../../../../shared/models/unzip.model';
 export class ModListService {
   private modList = signal<Mod[]>([
     {
-      name: "Fin's AI Tweaks (FAIT)",
+      name: "MusicManiac's Advanced Quest Loader (MMAQL)",
       image: 'assets/images/placeholder.png',
-      fileUrl: 'https://hub.sp-tarkov.com/files/file/94-fin-s-ai-tweaks-fait/',
+      fileUrl: 'https://hub.sp-tarkov.com/files/file/1719-musicmaniac-s-advanced-quest-loader-mmaql/',
       kind: Kind.server,
       installProgress: this.initialInstallProgress(),
     },
