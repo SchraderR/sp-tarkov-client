@@ -30,7 +30,6 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
       }
 
       if (isRarArchive) {
-        console.log('isRarArchive', isRarArchive);
         await handleRarArchive(archivePath, sevenBinPath, args, event);
         return;
       } else {
@@ -52,7 +51,6 @@ async function handleRarArchive(archivePath: string, sevenBinPath: string, args:
   // console.log(files);
 
   const isRarWithSingleDll = await checkForRarWithSingleDll(extractorForFiles);
-  console.log('isRarWithSingleDll', isRarWithSingleDll);
   if (isRarWithSingleDll) {
     const extractorForDll = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, clientModPath) });
     extractorForDll.extract();
@@ -60,7 +58,6 @@ async function handleRarArchive(archivePath: string, sevenBinPath: string, args:
     return;
   }
   const isRarHappyPath = await isHappyPathRar(extractorForFiles);
-  console.log('isRarHappyPath', isRarHappyPath);
   if (!isRarHappyPath) {
     switch (args.kind) {
       case 'client':
@@ -118,7 +115,6 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
 
 function checkForArchiveWithSingleDll(archivePath: string, sevenBinPath: string): Promise<boolean> {
   let dllFound = false;
-  console.log('dllFound', dllFound);
 
   return new Promise(resolve => {
     list(archivePath, { $bin: sevenBinPath, $cherryPick: ['*.dll'] })
