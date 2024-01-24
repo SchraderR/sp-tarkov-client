@@ -36,15 +36,12 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
 
       if (isRarArchive) {
         await handleRarArchive(archivePath, args, event);
-        return;
       } else {
         await handleOtherArchive(archivePath, sevenBinPath, args, event);
-        return;
       }
     } catch (error) {
       console.error(error);
-      // TODO Error Shared Mapping
-      // event.sender.send('file-unzip-error', 3);
+      event.sender.send('file-unzip-error', 3);
     }
   });
 };
@@ -65,14 +62,12 @@ async function handleRarArchive(archivePath: string, args: FileUnzipEvent, event
       case 'client':
         const extractorForClient = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, clientModPath) });
         const clientFiles = extractorForClient.extract().files;
-        for (const file of clientFiles) {
-        } // this extracts the files. wtf
+        for (const file of clientFiles) {} // this extracts the files. wtf
         break;
       case 'server':
         const extractorForServer = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, serverModPath) });
         const serverFiles = extractorForServer.extract().files;
-        for (const file of serverFiles) {
-        } // this extracts the files. wtf
+        for (const file of serverFiles) {} // this extracts the files. wtf
         break;
       default:
         break;
@@ -87,6 +82,7 @@ async function handleRarArchive(archivePath: string, args: FileUnzipEvent, event
 
 async function handleOtherArchive(archivePath: string, sevenBinPath: string, args: FileUnzipEvent, event: Electron.IpcMainEvent) {
   const isArchiveWithSingleDll = await checkForArchiveWithSingleDll(archivePath, sevenBinPath);
+
   if (isArchiveWithSingleDll) {
     await extractArchive(archivePath, path.join(args.akiInstancePath, clientModPath), sevenBinPath);
     event.sender.send('file-unzip-completed');
@@ -94,6 +90,9 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
   }
 
   const isHappyPath = await isHappyPathArchive(archivePath, sevenBinPath);
+  console.log(isHappyPath);
+  console.log(args.kind);
+
   if (!isHappyPath) {
     switch (args.kind) {
       case 'client':
@@ -113,8 +112,10 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
           await extractArchive(archivePath, path.join(args.akiInstancePath, serverModPath), sevenBinPath);
         }
 
-        break;
-      default:
+        if (!isClientMod && !isServerMod) {
+          event.sender.send('file-unzip-error', 3);
+          throw new Error();
+        }
         break;
     }
     event.sender.send('file-unzip-completed');
@@ -126,6 +127,7 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
 
   Promise.all([clientModExtraction, serverModExtraction])
     .then(([clientResult, serverResult]) => {
+      console.log(clientResult, serverResult);
       if (clientResult || serverResult) {
         event.sender.send('file-unzip-completed');
       } else if (!clientResult && !serverResult) {
@@ -217,7 +219,7 @@ function checkForClientMod(path: string, sevenBinPath: string): Promise<boolean>
   let isClientMod = false;
   return new Promise((resolve, reject) => {
     list(path, { $bin: sevenBinPath, $cherryPick: ['*.dll'], recursive: true })
-      .on('data', data => (isClientMod = true))
+      .on('data', data => (isClientMod = isRootDirectory(data.file)))
       .on('end', () => resolve(isClientMod))
       .on('error', reject);
   });
@@ -227,8 +229,14 @@ function checkForServerMod(path: string, sevenBinPath: string): Promise<boolean>
   let isServerMod = false;
   return new Promise((resolve, reject) => {
     list(path, { $bin: sevenBinPath, $cherryPick: ['package.json'], recursive: true })
-      .on('data', () => (isServerMod = true))
+      .on('data', data => (isServerMod = isRootDirectory(data.file)))
       .on('end', () => resolve(isServerMod))
       .on('error', reject);
   });
+}
+
+function isRootDirectory(filePath: string): boolean {
+  const parts = filePath.split('/');
+  console.log(parts);
+  return parts.length <= 2;
 }
