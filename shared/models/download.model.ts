@@ -13,3 +13,10 @@ export interface DownloadProgress extends DownloadBase {
 export interface DirectDownload extends DownloadBase {
   savePath: string;
 }
+
+export interface GithubRateLimit {
+  remaining: number;
+  reset: number;
+  limit: number;
+  used: number;
+}

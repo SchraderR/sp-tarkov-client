@@ -15,6 +15,11 @@ export const handleDownloadModEvent = () => {
       fs.mkdirSync(ankiTempDownloadDir);
     }
 
+    if (!downloadModel.modFileUrl) {
+      event.sender.send('download-mod-error', 1);
+      return;
+    }
+
     if (downloadModel.modFileUrl.includes('docs.google.com')) {
       browser = await launch({
         headless: 'new',
@@ -81,8 +86,11 @@ async function waitForDownload(downloadModel: DownloadModel, browser: Browser, e
 
       await page.goto(downloadModel.modFileUrl, { waitUntil: 'networkidle2' });
       await browser.close();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error?.message?.includes('net::ERR_ABORTED')) {
+        return;
+      }
+
       event.sender.send('download-mod-error', 1);
     }
   });

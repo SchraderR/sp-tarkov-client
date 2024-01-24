@@ -29,8 +29,13 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
         return;
       }
 
+      if (!archivePath.endsWith('.zip') && !archivePath.endsWith('.7z') && !archivePath.endsWith('.rar')) {
+        event.sender.send('file-unzip-error', 2);
+        return;
+      }
+
       if (isRarArchive) {
-        await handleRarArchive(archivePath, sevenBinPath, args, event);
+        await handleRarArchive(archivePath, args, event);
         return;
       } else {
         await handleOtherArchive(archivePath, sevenBinPath, args, event);
@@ -44,7 +49,7 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
   });
 };
 
-async function handleRarArchive(archivePath: string, sevenBinPath: string, args: FileUnzipEvent, event: Electron.IpcMainEvent) {
+async function handleRarArchive(archivePath: string, args: FileUnzipEvent, event: Electron.IpcMainEvent) {
   const extractorForFiles = await unrar.createExtractorFromFile({ filepath: archivePath });
 
   const isRarWithSingleDll = await checkForRarWithSingleDll(extractorForFiles);
@@ -60,12 +65,14 @@ async function handleRarArchive(archivePath: string, sevenBinPath: string, args:
       case 'client':
         const extractorForClient = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, clientModPath) });
         const clientFiles = extractorForClient.extract().files;
-        for (const file of clientFiles) {} // this extracts the files. wtf
+        for (const file of clientFiles) {
+        } // this extracts the files. wtf
         break;
       case 'server':
         const extractorForServer = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, serverModPath) });
         const serverFiles = extractorForServer.extract().files;
-        for (const file of serverFiles) {} // this extracts the files. wtf
+        for (const file of serverFiles) {
+        } // this extracts the files. wtf
         break;
       default:
         break;
@@ -118,7 +125,13 @@ async function handleOtherArchive(archivePath: string, sevenBinPath: string, arg
   const serverModExtraction = extractArchive(archivePath, args.akiInstancePath, sevenBinPath, [`${serverModPath}/*`]);
 
   Promise.all([clientModExtraction, serverModExtraction])
-    .then(() => event.sender.send('file-unzip-completed'))
+    .then(([clientResult, serverResult]) => {
+      if (clientResult || serverResult) {
+        event.sender.send('file-unzip-completed');
+      } else if (!clientResult && !serverResult) {
+        event.sender.send('file-unzip-error', 3);
+      }
+    })
     .catch(err => console.error(err));
 }
 
@@ -190,10 +203,12 @@ function isHappyPathArchive(archivePath: string, sevenBinPath: string): Promise<
   });
 }
 
-function extractArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any): Promise<void> {
+function extractArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any): Promise<boolean> {
+  let hasFiles = false;
   return new Promise((resolve, reject) => {
     extractFull(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [] })
-      .on('end', resolve)
+      .on('data', () => (hasFiles = true))
+      .on('end', () => resolve(hasFiles))
       .on('error', err => reject(err));
   });
 }

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
 import { Browser as Browsers, install } from '@puppeteer/browsers';
+import { GithubRateLimit } from '../../shared/models/download.model';
 
 export interface GithubLinkData {
   userName: string;
@@ -121,7 +122,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
           return;
         }
 
-        await getReleaseData(gitHubInformation)
+        await getReleaseData(gitHubInformation, event)
           .then(async data => {
             const githubDownloadLink = data?.assets?.[0].browser_download_url;
 
@@ -200,15 +201,19 @@ function parseGitHubLink(url: string): GithubLinkData | null {
   }
 }
 
-async function getReleaseData({ tag, userName, repoName }: GithubLinkData) {
+async function getReleaseData({ tag, userName, repoName }: GithubLinkData, event: Electron.IpcMainEvent) {
   const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split('/')[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
 
   try {
     const response = await axios.get<GithubRelease>(url);
-    console.log('X-RateLimit-Remaining:', response.headers['x-ratelimit-remaining']);
-    console.log('X-RateLimit-Reset:', response.headers['x-ratelimit-reset']);
-    console.log('X-RateLimit-Limit:', response.headers['x-ratelimit-limit']);
-    console.log('X-RateLimit-Used:', response.headers['x-ratelimit-used']);
+    const githubRateLimit: GithubRateLimit = {
+      remaining: response.headers['x-ratelimit-remaining'],
+      reset: response.headers['x-ratelimit-reset'],
+      limit: response.headers['x-ratelimit-limit'],
+      used: response.headers['x-ratelimit-used'],
+    };
+
+    event.sender.send('github-ratelimit-information', githubRateLimit);
 
     return response.data;
   } catch (error) {

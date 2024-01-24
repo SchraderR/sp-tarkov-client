@@ -3,7 +3,7 @@ import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { RouterModule } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgOptimizedImage } from '@angular/common';
+import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
@@ -21,6 +21,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { GithubRateLimit } from '../../shared/models/download.model';
 
 @Component({
   standalone: true,
@@ -28,6 +30,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   imports: [
+    CommonModule,
     MatButtonModule,
     MatSidenavModule,
     RouterModule,
@@ -41,6 +44,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ModSearchComponent,
     MatBadgeModule,
     MatTooltipModule,
+    MatMenuModule,
+    DatePipe,
   ],
   animations: [sidenavAnimation],
 })
@@ -60,10 +65,13 @@ export class AppComponent {
 
   modListSignal = this.#modListService.modListSignal;
   appIconPath = 'assets/images/icon.png';
+  githubRateLimit: GithubRateLimit | undefined = undefined;
 
   constructor() {
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
+
+    this.getGithubRateLimitInformation();
   }
 
   toggleDrawer = () => {
@@ -101,5 +109,9 @@ export class AppComponent {
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
       })
     );
+  }
+
+  private getGithubRateLimitInformation() {
+    this.#electronService.getGithubRateLimitInformation().subscribe(value => (this.githubRateLimit = value));
   }
 }
