@@ -19,7 +19,6 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { debounceTime, Subscription } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
-import { Kind } from '../../../../../shared/models/unzip.model';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';

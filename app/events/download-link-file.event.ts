@@ -83,7 +83,29 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
 
       const isGoogleDriveLink = isGoogleDrive(downloadLink);
       if (isGoogleDriveLink) {
-        const id: string = downloadLink.split('/file/d/')[1].split('/view')[0];
+        downloadLink = downloadLink.split('?')[0];
+        let regex;
+        if (downloadLink.includes('/file/d/')) {
+          regex = /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/;
+        } else if (downloadLink.includes('/folders/')) {
+          regex = /https:\/\/drive\.google\.com\/drive\/folders\/(.*?)(\/|$)/;
+        }
+
+        if (!regex) {
+          event.sender.send('download-link-error', 0);
+          await browser.close();
+          return;
+        }
+
+        const match = downloadLink.match(regex);
+        const id = match ? match[1] : null;
+
+        if (id === null) {
+          event.sender.send('download-link-error', 0);
+          await browser.close();
+          return;
+        }
+
         downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
         event.sender.send('download-link-completed', downloadLink);
         await browser.close();
@@ -93,6 +115,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
       const isArchiveLink = isArchiveURL(downloadLink);
       if (!isArchiveLink) {
         const gitHubInformation = parseGitHubLink(downloadLink);
+        console.log(gitHubInformation);
         if (!gitHubInformation) {
           event.sender.send('download-link-completed', downloadLink);
           await browser.close();
@@ -157,9 +180,17 @@ function isGoogleDrive(downloadLink: string) {
 }
 
 function parseGitHubLink(url: string): GithubLinkData | null {
+  if (!url.endsWith('/')) {
+    url = url + '/';
+  }
+
+  if (!url.endsWith('/releases')) {
+    url = url + 'releases/latest/';
+  }
+
   const regex = /https:\/\/github\.com\/(.*?)\/(.*?)\/releases\/(tag\/(.*))?/;
   const matches = url.match(regex);
-
+  console.log(matches);
   if (matches) {
     return {
       userName: matches[1],
@@ -172,7 +203,8 @@ function parseGitHubLink(url: string): GithubLinkData | null {
 }
 
 async function getReleaseData({ tag, userName, repoName }: GithubLinkData) {
-  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split("/")[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
+  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split('/')[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
+  console.log(url);
 
   try {
     const response = await axios.get<GithubRelease>(url);

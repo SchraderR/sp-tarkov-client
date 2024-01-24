@@ -42,7 +42,7 @@ export class DownloadService {
       try {
         mod.installProgress.linkStep.start = true;
 
-        this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
+        const downloadProgressSubscription = this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
           mod.installProgress!.downloadStep.percent = progress.percent;
           mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
           mod.installProgress!.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);
@@ -71,7 +71,7 @@ export class DownloadService {
         await firstValueFrom(this.#electronService.sendEvent('file-unzip', test));
         mod.installProgress.unzipStep.progress = 1;
         mod.installProgress.completed = true;
-
+        downloadProgressSubscription.unsubscribe();
         this.#modListService.updateMod();
       } catch (error) {
         switch (error) {
