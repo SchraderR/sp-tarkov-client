@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone } from '@angular/core';
-
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
@@ -12,14 +11,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
-import { JoyrideModule, JoyrideService } from 'ngx-joyride';
 
 @Component({
   standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
-  imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatExpansionModule, MatListModule, MatLineModule, JoyrideModule],
+  imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatExpansionModule, MatListModule, MatLineModule],
 })
 export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);
@@ -27,13 +25,8 @@ export default class PersonalSettingComponent {
   #userSettingsService = inject(UserSettingsService);
   #changeDetectorRef = inject(ChangeDetectorRef);
   #ngZone = inject(NgZone);
-  #joyrideService = inject(JoyrideService);
 
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
-
-  startTour() {
-    this.#joyrideService.startTour({ steps: ['firstStep', 'secondStep'] });
-  }
 
   getRootEftSpDirectory() {
     this.#electronService
