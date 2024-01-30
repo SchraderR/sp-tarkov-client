@@ -1,4 +1,4 @@
-<mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
+<mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false" *ngIf="mod">
   <mat-card-content style="position: relative" class="card-container">
     @if (mod.image) {
       <img class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="">
