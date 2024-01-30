@@ -86,6 +86,9 @@ export class DownloadService {
     if (!mod?.installProgress) {
       return;
     }
+    if (mod?.installProgress?.error) {
+      mod.installProgress = this.#modListService.initialInstallProgress();
+    }
 
     mod.installProgress.linkStep.start = true;
 
