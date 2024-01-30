@@ -40,7 +40,9 @@ export class ElectronService {
     });
   }
 
-  getDownloadModProgressForFileId<T extends DownloadBase = never>(eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'): Observable<T> {
+  getDownloadModProgressForFileId<T extends DownloadBase = never>(
+    eventName: applicationElectronFileProgressEventNames = 'download-mod-progress'
+  ): Observable<T> {
     return new Observable(observer => {
       const handler = (_: IpcRendererEvent, args: T) => {
         if (args?.percent === 1) {
@@ -65,7 +67,7 @@ export class ElectronService {
         observer.complete();
       };
 
-      this.ipcRenderer.on("github-ratelimit-information", handler);
+      this.ipcRenderer.on('github-ratelimit-information', handler);
     });
   }
 
@@ -89,7 +91,6 @@ export class ElectronService {
         console.error(`stderr: ${stderr}`);
         return;
       }
-      console.log(`stdout:\n${stdout}`);
     });
   }
 }
