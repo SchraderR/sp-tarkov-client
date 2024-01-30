@@ -51,13 +51,14 @@
     "electron-builder": "24.9.1",
     "fastest-levenshtein": "1.0.16",
     "material-symbols": "0.14.3",
+    "ngx-joyride": "2.5.0",
     "rxjs": "7.8.1",
     "tslib": "^2.5.0",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "17.0.0",
-    "@angular-devkit/build-angular": "17.0.8",
+    "@angular-devkit/build-angular": "17.1.1",
     "@angular-eslint/builder": "17.1.1",
     "@angular-eslint/eslint-plugin": "17.1.1",
     "@angular-eslint/eslint-plugin-template": "17.1.1",
@@ -94,7 +95,7 @@
     "prettier": "3.1.1",
     "ts-node": "10.9.2",
     "typescript": "~5.2.2",
-    "wait-on": "7.0.1",
+    "wait-on": "7.2.0",
     "webdriver-manager": "12.1.9"
   }
 }
