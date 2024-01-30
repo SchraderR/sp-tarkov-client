@@ -80,7 +80,8 @@ export class AppComponent {
   };
 
   openExternal = (url: string) => void this.#electronService.shell.openExternal(url);
-  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') => void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+  sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
+    void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
   private getCurrentPersonalSettings() {
     this.#electronService

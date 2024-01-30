@@ -16,6 +16,12 @@
   }
 
   <h3>Aki-Instances</h3>
+
+  <h1 joyrideStep="firstStep" title="Page Title" text="Main title!">Text</h1>
+  <div joyrideStep="secondStep" title="Page Title" text="Main title!">Div content</div>
+
+  <button (click)="startTour()">Szart</button>
+
   <mat-accordion>
     @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
       <mat-expansion-panel>
