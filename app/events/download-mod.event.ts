@@ -80,18 +80,22 @@ async function waitForDownload(downloadModel: DownloadModel, browser: Browser, e
           });
           event.sender.send('download-mod-completed', path.resolve(ankiTempDownloadDir, guids[progressEvent.guid]));
           await browser?.close();
-          resolve(true); // Resolve promise here
+          resolve(true);
         }
       });
 
       await page.goto(downloadModel.modFileUrl, { waitUntil: 'networkidle2' });
-      await browser.close();
+      const form = await page.$('#download-form');
+      if (form) {
+        await page.evaluate((f: Element) => (f as HTMLFormElement).submit(), form);
+      }
     } catch (error: any) {
       if (error?.message?.includes('net::ERR_ABORTED')) {
         return;
       }
 
       event.sender.send('download-mod-error', 1);
+      await browser.close();
     }
   });
 }
