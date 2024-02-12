@@ -9,9 +9,10 @@ jobs:
   virustotal:
     runs-on: ubuntu-latest
     steps:
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v4.1.2
-      - run: ls -l
+      - name: release-downloader
+        uses: robinraju/release-downloader@v1.9
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@octokit-retry
         with:
