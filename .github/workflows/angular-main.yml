@@ -26,7 +26,7 @@ jobs:
         run: npm run lint
 
       - name: Run Tests
-        run: npm run test -- --no-watch --no-progress --browsers=AngularElectron
+        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
 
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
