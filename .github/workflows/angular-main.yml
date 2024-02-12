@@ -26,7 +26,7 @@ jobs:
         run: npm run lint
 
       - name: Run Tests
-        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
+        run: npm run test -- --no-watch --no-progress --browsers=AngularElectron
 
       - name: Build Code
         run: npm run build
