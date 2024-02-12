@@ -9,6 +9,9 @@ jobs:
   virustotal:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - run: ls -l *.exe
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@octokit-retry
         with:
