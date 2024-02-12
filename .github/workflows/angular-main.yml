@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: Angular Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Setup Google Chrome
