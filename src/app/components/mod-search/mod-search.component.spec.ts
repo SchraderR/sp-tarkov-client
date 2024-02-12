@@ -7,8 +7,8 @@ describe('ModSearchComponent', () => {
   let component: ModSearchComponent;
   let fixture: ComponentFixture<ModSearchComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [NoopAnimationsModule, ModSearchComponent, HttpClientTestingModule],
     }).compileComponents();
 
