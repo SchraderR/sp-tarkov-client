@@ -1,6 +1,6 @@
 {
   "name": "sp-tarkov-client",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "description": "SP-EFT Manager",
   "author": {
     "name": "Schrader",
@@ -66,6 +66,7 @@
     "@angular-eslint/template-parser": "17.1.1",
     "@angular/cli": "17.0.8",
     "@angular/compiler-cli": "17.0.8",
+    "@ngneat/spectator": "16.0.0",
     "@ngx-translate/core": "14.0.0",
     "@ngx-translate/http-loader": "7.0.0",
     "@types/jasmine": "4.3.1",
@@ -86,7 +87,7 @@
     "jasmine-core": "4.6.0",
     "jasmine-spec-reporter": "7.0.0",
     "karma": "6.4.2",
-    "karma-coverage-istanbul-reporter": "3.0.3",
+    "karma-coverage": "^2.2.1",
     "karma-electron": "7.3.0",
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.0.0",

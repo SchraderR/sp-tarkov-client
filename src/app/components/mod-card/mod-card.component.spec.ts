@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ModCardComponent } from './mod-card.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ModCardComponent', () => {
   let component: ModCardComponent;
   let fixture: ComponentFixture<ModCardComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ModCardComponent]
-    })
-    .compileComponents();
-    
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ModCardComponent, HttpClientTestingModule],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ModCardComponent);
     component = fixture.componentInstance;
+    component.mod = { fileUrl: '', kind: undefined, name: '', image: '' };
     fixture.detectChanges();
   });
 
