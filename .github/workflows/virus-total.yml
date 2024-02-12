@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: release-downloader
         uses: robinraju/release-downloader@v1.9
+        with:
+          latest: true
       - name: Display structure of downloaded files
         run: ls -R
       - name: VirusTotal Scan
