@@ -26,22 +26,8 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['AngularElectron'],
+    browsers: ['ChromeHeadless'],
     singleRun: false,
     restartOnFileChange: true,
-    customLaunchers: {
-      AngularElectron: {
-        base: 'Electron',
-        flags: ['--remote-debugging-port=9222'],
-        browserWindowOptions: {
-          webPreferences: {
-            nodeIntegration: true,
-            nodeIntegrationInSubFrames: true,
-            allowRunningInsecureContent: true,
-            contextIsolation: false,
-          },
-        },
-      },
-    },
   });
 };
