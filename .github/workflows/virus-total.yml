@@ -7,10 +7,9 @@ on:
 
 jobs:
   virustotal:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-      -
-        name: VirusTotal Scan
+      - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@octokit-retry
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
