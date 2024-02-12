@@ -135,8 +135,17 @@ mat-sidenav[style] {
 
 .mat-mdc-list-item {
   height: 56px !important;
+  $icon-color: null;
 
-  & mat-icon {
-    color: white;
+  @media (prefers-color-scheme: light) {
+    .mat-icon {
+      color: black;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .mat-icon {
+      color: white;
+    }
   }
 }

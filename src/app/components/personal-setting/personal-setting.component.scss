@@ -16,8 +16,19 @@
   bottom: 0;
   right: 8px;
   width: 60px;
-  background: rgb(178, 39, 46);
   border-radius: 4px;
+
+  .mat-icon {
+    color: white;
+  }
+
+  @media (prefers-color-scheme: light) {
+    background: rgb(231, 33, 44);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: rgb(178, 39, 46);
+  }
 }
 
 .expansion-panel-container {

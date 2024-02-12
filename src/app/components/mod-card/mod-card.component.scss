@@ -108,6 +108,14 @@ mat-card {
   justify-content: center;
   align-items: center;
 
+  @media (prefers-color-scheme: light) {
+    background: rgb(231, 33, 44);
+
+    .mat-icon {
+      color: white;
+    }
+  }
+
   &.retry {
     background: rgb(239, 184, 35);
   }
