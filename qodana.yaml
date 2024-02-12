@@ -1,5 +1,11 @@
 version: "1.0"
 bootstrap: npm install
 
+exclude:
+  - name: All
+    paths:
+      - node_modules/
+      - app/node_modules/
 include:
   - name: Eslint
+  - name: GrazieInspection
