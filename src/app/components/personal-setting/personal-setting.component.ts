@@ -6,11 +6,12 @@ import { AkiInstance, ModMeta, UserSettingModel } from '../../../../shared/model
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
-import { forkJoin, of, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, forkJoin, of, switchMap, tap } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   standalone: true,
@@ -24,6 +25,8 @@ export default class PersonalSettingComponent {
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #changeDetectorRef = inject(ChangeDetectorRef);
+  #matSnackBar = inject(MatSnackBar);
+
   #ngZone = inject(NgZone);
 
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
@@ -48,6 +51,17 @@ export default class PersonalSettingComponent {
             this.#userSettingsService.addUserSetting(newUserSetting);
             this.#changeDetectorRef.detectChanges();
           });
+        }),
+        catchError((error: { message: string }) => {
+          this.#ngZone.run(() => {
+            this.#matSnackBar.open(error.message, '', {
+              duration: 3000,
+              verticalPosition: 'bottom',
+              horizontalPosition: 'center',
+            });
+          });
+
+          return EMPTY;
         }),
         takeUntilDestroyed(this.#destroyRef)
       )
