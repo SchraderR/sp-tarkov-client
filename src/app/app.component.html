@@ -10,8 +10,8 @@
         download
       </mat-icon>
     </button>
-    <button class="no-drag" mat-icon-button [matMenuTriggerFor]="info">
-      <mat-icon class="font-weight-400">info</mat-icon>
+    <button *ngIf="githubRateLimit" class="no-drag" mat-icon-button [matMenuTriggerFor]="info">
+      <i class="fa fa-github" aria-hidden="true"></i>
     </button>
   </div>
   <div class="window-control-buttons" [class.expanded]="isExpanded">
