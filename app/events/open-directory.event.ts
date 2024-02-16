@@ -52,6 +52,10 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
           event.sender.send('open-directory-error', {
             message: 'Could not resolve AKI Core. Please ensure that you have selected the root directory.',
           });
+        } else {
+          event.sender.send('open-directory-error', {
+            message: 'An unknown error occurred.',
+          });
         }
       }
     });
