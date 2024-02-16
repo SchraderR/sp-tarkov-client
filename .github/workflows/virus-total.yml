@@ -14,11 +14,12 @@ jobs:
         with:
           latest: true
       - name: Display structure of downloaded files
-        run: ls -R
+        run: ls
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           update_release_body: true
           files: |
             *.exe
