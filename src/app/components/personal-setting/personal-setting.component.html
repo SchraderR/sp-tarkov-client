@@ -23,6 +23,7 @@
         <mat-expansion-panel-header>
           <mat-panel-title>
             <mat-icon
+              class="active-star"
               [class.fill]="settingModel.isActive"
               (click)="$event.stopPropagation(); $event.preventDefault(); setActiveInstance(settingModel)">
               star
