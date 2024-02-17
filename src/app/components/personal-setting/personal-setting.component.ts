@@ -12,13 +12,31 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 
 @Component({
   standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
-  imports: [MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatExpansionModule, MatListModule, MatLineModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatExpansionModule,
+    MatListModule,
+    MatLineModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+  ],
+  animations: [fadeInFadeOutAnimation],
 })
 export default class PersonalSettingComponent {
   #destroyRef = inject(DestroyRef);
@@ -26,10 +44,16 @@ export default class PersonalSettingComponent {
   #userSettingsService = inject(UserSettingsService);
   #changeDetectorRef = inject(ChangeDetectorRef);
   #matSnackBar = inject(MatSnackBar);
-
   #ngZone = inject(NgZone);
 
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
+  currentTheme = new FormControl();
+  hoveringInstance: string = '';
+
+  changeTheme(event: MatSelectChange) {
+    console.log(event);
+    // this.#userSettingsService.updateUserSetting();
+  }
 
   getRootEftSpDirectory() {
     this.#electronService

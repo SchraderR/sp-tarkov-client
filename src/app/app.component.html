@@ -6,7 +6,8 @@
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
     <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
-      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false" matBadgeColor="accent">
+      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false"
+                matBadgeColor="accent">
         download
       </mat-icon>
     </button>
@@ -34,6 +35,12 @@
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
   <mat-sidenav [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
     <mat-action-list class="side-navigation-actions-container">
+      <mat-list-item routerLink="instance-overview" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                     matTooltip="Active Instance">
+        <mat-icon matListItemIcon>manage_accounts</mat-icon>
+        <div matListItemTitle>Active Instance</div>
+      </mat-list-item>
+      <mat-divider />
       <mat-list-item routerLink="new" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="New Mods">
         <mat-icon matListItemIcon>fiber_new</mat-icon>
         <div matListItemTitle>New Mods</div>
@@ -58,7 +65,6 @@
                      matTooltip="Setup Aki Instances">
         <mat-icon matListItemIcon>settings</mat-icon>
         <div matListItemTitle>Setting</div>
-        <div matListItemLine class="font-x-small">Configure your Aki Instances</div>
       </mat-list-item>
       <span class="spacer"></span>
       @if (isExpanded) {

@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'setting', pathMatch: 'full' },
   { path: 'setting', loadComponent: () => import('./components/personal-setting/personal-setting.component') },
+  { path: 'instance-overview', loadComponent: () => import('./components/instance-overview/instance-overview.component') },
+  { path: 'mod-list', loadComponent: () => import('./components/mod-list/mod-list.component') },
   {
     path: 'top-rated',
     loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
@@ -23,5 +25,4 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
     data: { sortField: 'downloads', sortOrder: 'DESC' },
   },
-  { path: 'mod-list', loadComponent: () => import('./components/mod-list/mod-list.component') },
 ];
