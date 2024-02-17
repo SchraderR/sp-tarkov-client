@@ -79,7 +79,7 @@ export class AppComponent {
     void this.matSideNav.toggle();
   };
 
-  openExternal = (url: string) => void this.#electronService.shell.openExternal(url);
+  openExternal = (url: string) => void this.#electronService.openExternal(url);
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
     void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 

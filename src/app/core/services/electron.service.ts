@@ -25,6 +25,8 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
+  openExternal = (licenseUrl: string) => void this.shell.openExternal(licenseUrl);
+
   sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
     return new Observable<{ event: unknown; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {

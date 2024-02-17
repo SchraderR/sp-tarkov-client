@@ -43,7 +43,7 @@ export class ModCardComponent implements OnInit {
   }
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
-  openExternal = (licenseUrl: string) => void this.#electronService.shell.openExternal(licenseUrl);
+  openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
 
   downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 

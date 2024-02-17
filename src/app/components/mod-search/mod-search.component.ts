@@ -14,6 +14,7 @@ import { Mod } from '../../core/models/mod';
 import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-installed.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserSettingsService } from '../../core/services/user-settings.service';
+import { ElectronService } from '../../core/services/electron.service';
 
 @Component({
   standalone: true,
@@ -38,6 +39,7 @@ export class ModSearchComponent {
   #akiSearchService = inject(AkiSearchService);
   #modListService = inject(ModListService);
   #userSettingsService = inject(UserSettingsService);
+  #electronService = inject(ElectronService);
 
   isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
@@ -52,6 +54,8 @@ export class ModSearchComponent {
       switchMap(searchArgument => (searchArgument?.trim() ? this.#akiSearchService.searchMods(searchArgument!) : of([])))
     );
   }
+
+  openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
 
   addModToModList(event: Event, mod: Mod) {
     event.stopPropagation();
