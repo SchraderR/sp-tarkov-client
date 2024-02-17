@@ -1,9 +1,11 @@
-﻿import { BrowserWindow, screen } from 'electron';
+﻿import { BrowserWindow, nativeTheme } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
+import * as Store from 'electron-store';
+import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 
-export const createMainApiManagementWindow = (isServe: boolean): void => {
+export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
   let browserWindow: BrowserWindow | null = new BrowserWindow({
     x: 0,
     y: 0,
@@ -11,12 +13,12 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     height: 590,
     autoHideMenuBar: true,
     frame: true,
-    icon: "app/assets/icon.png",
+    icon: 'app/assets/icon.png',
     titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: isServe,
-      contextIsolation: false
+      contextIsolation: false,
     },
   });
 
@@ -34,6 +36,12 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       },
     });
   });
+
+  const theme = store.get('theme');
+  if (!theme) {
+    store.set('theme', 'system');
+  }
+  nativeTheme.themeSource = store.get('theme');
 
   if (isServe) {
     browserWindow.webContents.openDevTools();

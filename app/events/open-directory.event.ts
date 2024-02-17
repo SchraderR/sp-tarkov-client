@@ -13,11 +13,6 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
     dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then(selectedDirectoryValue => {
       try {
         const selectedPath = selectedDirectoryValue.filePaths[0];
-        // TODO outsource?
-        const instance = store.get('akiInstances');
-        if (!instance) {
-          store.set('akiInstances', []);
-        }
 
         if (fs.existsSync(selectedPath)) {
           const files = fs.readdirSync(selectedPath);

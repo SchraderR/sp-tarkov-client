@@ -32,6 +32,10 @@
 
   @media (prefers-color-scheme: light) {
     background: rgb(231, 33, 44);
+
+    .mat-icon {
+      color: white;
+    }
   }
 
   @media (prefers-color-scheme: dark) {

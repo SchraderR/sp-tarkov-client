@@ -47,12 +47,13 @@ export default class PersonalSettingComponent {
   #ngZone = inject(NgZone);
 
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
-  currentTheme = new FormControl();
+  currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   hoveringInstance: string = '';
 
   changeTheme(event: MatSelectChange) {
-    console.log(event);
-    // this.#userSettingsService.updateUserSetting();
+    this.#electronService.sendEvent('theme-toggle', event.value).subscribe(() => {
+      this.#userSettingsService.currentTheme.set(event.value);
+    });
   }
 
   getRootEftSpDirectory() {

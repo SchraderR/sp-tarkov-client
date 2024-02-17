@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { ModMeta, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -70,6 +70,7 @@ export class AppComponent {
   constructor() {
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
+    this.getCurrentThemeSettings();
 
     this.getGithubRateLimitInformation();
   }
@@ -114,5 +115,12 @@ export class AppComponent {
 
   private getGithubRateLimitInformation() {
     this.#electronService.getGithubRateLimitInformation().subscribe(value => (this.githubRateLimit = value));
+  }
+
+  private getCurrentThemeSettings() {
+    this.#electronService.sendEvent<Theme>('theme-setting').subscribe(value => {
+      console.log(value);
+      this.#userSettingService.currentTheme.set(value.args);
+    });
   }
 }

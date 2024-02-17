@@ -11,7 +11,9 @@
   | 'window-minimize'
   | 'window-maximize'
   | 'window-close'
-  | 'clear-temp';
+  | 'clear-temp'
+  | 'theme-setting'
+  | 'theme-toggle';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 

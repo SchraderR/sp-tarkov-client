@@ -2,6 +2,7 @@
 
 export interface UserSettingStoreModel {
   akiInstances: AkiInstance[];
+  theme: Theme;
 }
 
 export interface AkiInstance {
@@ -20,4 +21,10 @@ export interface ModMeta {
   name: string;
   version: string;
   alternativeName?: string;
+}
+
+export enum Theme {
+  dark = 'dark',
+  light = 'light',
+  system = 'system',
 }
