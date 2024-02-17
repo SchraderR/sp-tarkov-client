@@ -21,9 +21,6 @@
             </ng-container>
           </div>
           <span class="spacer"></span>
-          <button class="icon-end" mat-icon-button (click)="$event.stopPropagation(); openExternal(mod.fileUrl)">
-            <mat-icon>open_in_new</mat-icon>
-          </button>
           @if (isActiveAkiInstanceAvailable()) {
             @if (alreadyInstalled.isAlreadyInstalled()) {
               <div class="already-installed-icon-container" matTooltip="Already installed">
@@ -48,6 +45,9 @@
               warning
             </mat-icon>
           }
+          <button class="icon-end" mat-icon-button (click)="$event.stopPropagation(); openExternal(mod.fileUrl)">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
         </div>
       </mat-option>
     }
