@@ -1,17 +1,26 @@
-<mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
-  <mat-card-content style="position: relative" class="card-container">
-    @if (mod.image) {
-      <img class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="">
-    }
-    @if (mod.icon) {
-      <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-    }
+<mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false" style="height: 100%">
+  <mat-card-content style="position: relative; height: 100%" class="card-container">
+    <div style="position: relative;">
+      @if (hovering) {
+        <div
+          @fadeInOut
+          class="external-button-container"
+          (click)="openExternal(mod.fileUrl)">
+          <mat-icon class="font-weight-400 icon-size-48">open_in_new</mat-icon>
+        </div>
+      }
+      @if (mod.image) {
+        <img class="image-shadow" [ngSrc]="mod.image" height="100" width="100" alt="">
+      }
+      @if (mod.icon) {
+        <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
+      }
+    </div>
     <div class="mod-container">
       <div class="mod-title" style="display: flex">
         <strong class="one-line-clamp">{{ mod.name }}</strong>
         @if (modLicenseInformation$ | async; as modLicenseInformation) {
-          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;"
-                (click)="openExternal(modLicenseInformation.url)">
+          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;" (click)="openExternal(modLicenseInformation.url)">
             <mat-icon style="font-size: 19px">license</mat-icon>
             <span>{{ modLicenseInformation.text }}</span>
           </span>
