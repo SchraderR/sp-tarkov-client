@@ -1,13 +1,13 @@
 <div style="display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px">
-  <mat-card>
+  <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent">
     <mat-card-header>
       <mat-card-title>Aki-Instances ({{ userSettingSignal().length }})</mat-card-title>
     </mat-card-header>
-
     <mat-card-content>
       <mat-list style="display: flex; flex-direction: column; gap: 8px">
         @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
-          <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory" (mouseleave)="hoveringInstance = ''">
+          <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
+                         (mouseleave)="hoveringInstance = ''">
             <mat-icon matListItemAvatar class="active-star" [class.fill]="settingModel.isActive"
                       (click)="setActiveInstance(settingModel)">
               star
@@ -47,3 +47,14 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+
+<ng-template #joyRideStepContent>
+  <h4>Adding an Instance:</h4>
+  <span>
+    First, you will need to add an instance.
+    <p>
+    To do this, navigate through the file dialog and point it to the root directory that contains both your AKI Server and AKI Launcher.
+    This process will help the system to recognize these elements and work accordingly.
+  </span>
+</ng-template>

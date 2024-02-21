@@ -10,13 +10,14 @@ import { Mod } from '../../core/models/mod';
 import { DownloadService } from '../../core/services/download.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
+import { JoyrideModule } from 'ngx-joyride';
 
 @Component({
   standalone: true,
   selector: 'app-mod-list',
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent],
+  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent, JoyrideModule],
   animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent implements OnInit {

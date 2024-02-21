@@ -12,11 +12,12 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
+import { JoyrideModule } from 'ngx-joyride';
 
 @Component({
   standalone: true,
@@ -35,6 +36,8 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
     MatFormFieldModule,
     MatSelectModule,
     ReactiveFormsModule,
+    JoyrideModule,
+    NgOptimizedImage,
   ],
   animations: [fadeInFadeOutAnimation],
 })

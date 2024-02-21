@@ -5,7 +5,8 @@
   </div>
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
-    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px">
+    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep"
+            [stepContent]="joyRideStepDownloadButtonContent">
       <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false"
                 matBadgeColor="accent">
         download
@@ -41,26 +42,29 @@
         <div matListItemTitle>Active Instance</div>
       </mat-list-item>
       <mat-divider />
-      <mat-list-item routerLink="new" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="New Mods">
-        <mat-icon matListItemIcon>fiber_new</mat-icon>
-        <div matListItemTitle>New Mods</div>
-      </mat-list-item>
-      <mat-list-item routerLink="updated" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
-                     matTooltip="Updated Mods">
-        <mat-icon matListItemIcon>update</mat-icon>
-        <div matListItemTitle>Updated Mods</div>
-      </mat-list-item>
-      <mat-list-item routerLink="top-rated" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
-                     matTooltip="Top Rated Mods">
-        <mat-icon matListItemIcon>trophy</mat-icon>
-        <div matListItemTitle>Top Rated Mods</div>
-      </mat-list-item>
-      <mat-list-item routerLink="most-loaded" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
-                     matTooltip="Most downloaded">
-        <mat-icon matListItemIcon>keyboard_double_arrow_down</mat-icon>
-        <div matListItemTitle>Most loaded Mods</div>
-      </mat-list-item>
-      <mat-divider />
+      <div joyrideStep="sideNavStep" [stepContent]="joyRideStepContent">
+        <mat-list-item routerLink="new" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                       matTooltip="New Mods">
+          <mat-icon matListItemIcon>fiber_new</mat-icon>
+          <div matListItemTitle>New Mods</div>
+        </mat-list-item>
+        <mat-list-item routerLink="updated" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                       matTooltip="Updated Mods">
+          <mat-icon matListItemIcon>update</mat-icon>
+          <div matListItemTitle>Updated Mods</div>
+        </mat-list-item>
+        <mat-list-item routerLink="top-rated" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                       matTooltip="Top Rated Mods">
+          <mat-icon matListItemIcon>trophy</mat-icon>
+          <div matListItemTitle>Top Rated Mods</div>
+        </mat-list-item>
+        <mat-list-item routerLink="most-loaded" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                       matTooltip="Most downloaded">
+          <mat-icon matListItemIcon>keyboard_double_arrow_down</mat-icon>
+          <div matListItemTitle>Most loaded Mods</div>
+        </mat-list-item>
+        <mat-divider />
+      </div>
       <mat-list-item routerLink="setting" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
                      matTooltip="Setup Aki Instances">
         <mat-icon matListItemIcon>settings</mat-icon>
@@ -89,8 +93,38 @@
     </mat-action-list>
   </mat-sidenav>
   <mat-sidenav-content class="sidenav-content">
-    <div [class.extended]="isExpanded" class="full-width full-height overflow-auto">
+    <div [class.extended]="isExpanded" class="full-width full-height overflow-auto" joyrideStep="downloadOverviewStep"
+         stepPosition="center" [stepContent]="joyRideStepDownloadOverviewContent">
       <router-outlet />
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<ng-template #joyRideStepContent>
+  <h4>Download Mods:</h4>
+  <span>
+    Here you can search for the mods you wish to add to your SPT-Instance.
+    <br>
+    You can add Mods to your instance by clicking on the "Add" icon.
+    <br>
+    <img ngSrc="assets/images/mod-install-icon.png" height="159" width="420">
+  </span>
+</ng-template>
+
+<ng-template #joyRideStepDownloadButtonContent>
+  <h4>Download List:</h4>
+  <span>
+    Here, you can see how many mods are currently in the download list and can be downloaded to your instance.
+  </span>
+</ng-template>
+
+<ng-template #joyRideStepDownloadOverviewContent>
+  <h4>Download Overview</h4>
+  <span>
+  All selected mods appear in the list<br>
+  Hover over mods for options: remove, review license or visit mod's page<br>
+  <p></p>
+  Begin the download and installation process by clicking "Download / Install"-Button<br>
+  Additional mods can be added to the queue even during an active download<br>
+  </span>
+</ng-template>

@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
 import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,10 @@ import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { GithubRateLimit } from '../../shared/models/download.model';
+import { JoyrideModule, JoyrideService } from 'ngx-joyride';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SnackbarTutorialHintComponent } from './components/snackbar-tutorial-hint/snackbar-tutorial-hint.component';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   standalone: true,
@@ -46,6 +50,8 @@ import { GithubRateLimit } from '../../shared/models/download.model';
     MatTooltipModule,
     MatMenuModule,
     DatePipe,
+    JoyrideModule,
+    MatCardModule,
   ],
   animations: [sidenavAnimation],
 })
@@ -55,6 +61,9 @@ export class AppComponent {
   #userSettingService = inject(UserSettingsService);
   #destroyRef = inject(DestroyRef);
   #modListService = inject(ModListService);
+  #joyrideService = inject(JoyrideService);
+  #matSnackBar = inject(MatSnackBar);
+  #router = inject(Router);
   #ngZone = inject(NgZone);
 
   config = environment;
@@ -71,6 +80,7 @@ export class AppComponent {
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
     this.getCurrentPersonalSettings();
     this.getCurrentThemeSettings();
+    this.getCurrentTutorialSettings();
 
     this.getGithubRateLimitInformation();
   }
@@ -118,9 +128,40 @@ export class AppComponent {
   }
 
   private getCurrentThemeSettings() {
-    this.#electronService.sendEvent<Theme>('theme-setting').subscribe(value => {
-      console.log(value);
-      this.#userSettingService.currentTheme.set(value.args);
+    this.#electronService.sendEvent<Theme>('theme-setting').subscribe(value => this.#userSettingService.currentTheme.set(value.args));
+  }
+
+  private getCurrentTutorialSettings() {
+    this.#electronService.sendEvent<boolean>('tutorial-setting').subscribe(value => {
+      this.#ngZone.run(() => {
+        this.#userSettingService.isTutorialDone.set(value.args);
+
+        if (!value.args) {
+          this.#matSnackBar
+            .openFromComponent(SnackbarTutorialHintComponent, { horizontalPosition: 'end' })
+            .afterDismissed()
+            .subscribe(selection => {
+              if (selection.dismissedByAction) {
+                this.#joyrideService
+                  .startTour({ steps: ['settingStepInstance@setting', 'sideNavStep', 'downloadStep', 'downloadOverviewStep@mod-list'] })
+                  .subscribe({
+                    next: step => {
+                      if (step.name === 'downloadStep') {
+                        this.#modListService.addFakeModForTutorial();
+                      }
+                    },
+                    complete: () => {
+                      this.#modListService.clearFakeTutorialMods();
+                      this.#electronService.sendEvent('tutorial-toggle').subscribe();
+                      this.#router.navigate(['/setting']);
+                    },
+                  });
+              } else {
+                this.#electronService.sendEvent('tutorial-toggle').subscribe();
+              }
+            });
+        }
+      });
     });
   }
 }

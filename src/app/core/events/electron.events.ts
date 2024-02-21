@@ -13,8 +13,9 @@
   | 'window-close'
   | 'clear-temp'
   | 'theme-setting'
-  | 'theme-toggle';
-
+  | 'theme-toggle'
+  | 'tutorial-setting'
+  | 'tutorial-toggle';
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 
 export enum ApplicationElectronFileError {

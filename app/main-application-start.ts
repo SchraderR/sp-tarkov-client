@@ -10,6 +10,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
   if (!instance) {
     store.set('akiInstances', []);
     store.set('theme', Theme.system);
+    store.set('isTutorialDone', false);
   }
 
   try {

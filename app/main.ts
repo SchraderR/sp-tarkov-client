@@ -12,6 +12,7 @@ import { handleWindowEvents } from './events/window.event';
 import { autoUpdater } from 'electron-updater';
 import { handleClearTemporaryDirectoryEvent } from './events/clear-temp.event';
 import { handleThemeEvents } from './events/theme.event';
+import { handleTutorialEvents } from './events/tutorial.event';
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
@@ -28,3 +29,4 @@ handleServerModsEvent();
 handleWindowEvents();
 handleClearTemporaryDirectoryEvent();
 handleThemeEvents(store);
+handleTutorialEvents(store);

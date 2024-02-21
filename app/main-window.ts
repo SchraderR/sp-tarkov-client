@@ -43,6 +43,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
   }
   nativeTheme.themeSource = store.get('theme');
 
+  const isTutorialDone = store.get('isTutorialDone');
+  if (!isTutorialDone) {
+    store.set('isTutorialDone', false);
+  }
+
   if (isServe) {
     browserWindow.webContents.openDevTools();
     const debug = require('electron-debug');

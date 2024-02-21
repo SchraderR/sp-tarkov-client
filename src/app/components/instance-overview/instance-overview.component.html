@@ -1,0 +1,8 @@
+<div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+  @if (!isActiveAkiInstanceAvailable()) {
+    <div style="display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center">
+      There is no active Instance. Please go to the setting and activate an SPT-Instance.
+      <button style="display: flex; width: 50%; " mat-raised-button color="accent" routerLink="../setting">Setting-Page</button>
+    </div>
+  }
+</div>
