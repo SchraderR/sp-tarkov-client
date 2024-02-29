@@ -15,6 +15,7 @@ import { IsAlreadyInstalledDirective } from '../../core/directives/is-already-in
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ElectronService } from '../../core/services/electron.service';
+import { DownloadService } from '../../core/services/download.service';
 
 @Component({
   standalone: true,
@@ -40,11 +41,13 @@ export class ModSearchComponent {
   #modListService = inject(ModListService);
   #userSettingsService = inject(UserSettingsService);
   #electronService = inject(ElectronService);
+  #downloadService = inject(DownloadService);
 
   isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Observable<Mod[]>;
+  isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
 
   constructor() {
     this.filteredModItems = this.searchControl.valueChanges.pipe(

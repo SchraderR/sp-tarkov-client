@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import { Browser, launch } from 'puppeteer';
 
-const DOWNLOAD_TIMEOUT = 30000; // 30 seconds
+const DOWNLOAD_TIMEOUT = 60000;
 export const handleDownloadModEvent = () => {
   ipcMain.on('download-mod', async (event, downloadModel: DownloadModel) => {
     let browser: Browser | null = null;
@@ -93,9 +93,8 @@ async function waitForDownload(downloadModel: DownloadModel, browser: Browser, e
         }
       });
 
-      await page.goto(downloadModel.modFileUrl, { waitUntil: 'networkidle2' });
       downloadTimeoutId = setTimeout(() => reject(new Error('Download timeout')), DOWNLOAD_TIMEOUT);
-
+      await page.goto(downloadModel.modFileUrl, { waitUntil: 'networkidle2' });
       const form = await page.$('#download-form');
       if (form) {
         await page.evaluate((f: Element) => (f as HTMLFormElement).submit(), form);

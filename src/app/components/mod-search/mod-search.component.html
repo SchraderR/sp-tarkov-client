@@ -28,7 +28,12 @@
               </div>
             }
             @if (!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
-              <button class="icon-end" mat-icon-button (click)="addModToModList($event, mod)">
+              <button
+                class="icon-end"
+                mat-icon-button
+                (click)="addModToModList($event, mod)"
+                [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
+              >
                 <mat-icon>add</mat-icon>
               </button>
             }

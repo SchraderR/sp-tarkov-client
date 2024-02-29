@@ -92,7 +92,7 @@
       </div>
     }
 
-    @if (hovering && (!mod?.installProgress?.linkStep?.start || mod?.installProgress?.completed) && !mod?.installProgress?.error) {
+    @if (hovering && (!mod?.installProgress?.linkStep?.start || mod?.installProgress?.completed || mod?.installProgress?.error)) {
       <div
         @fadeInOut
         class="delete-button-container"

@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgOptimizedImage } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,6 +19,7 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { debounceTime, Subscription } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
+import { DownloadService } from '../../services/download.service';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -28,7 +29,19 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
   selector: 'app-generic-mod-list',
   templateUrl: './generic-mod-list.component.html',
   styleUrl: './generic-mod-list.component.scss',
-  imports: [MatCardModule, MatButtonModule, MatIconModule, RouterLink, MatTooltipModule, NgOptimizedImage, IsAlreadyInstalledDirective, MatPaginatorModule, MatToolbarModule, MatSelectModule],
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    RouterLink,
+    MatTooltipModule,
+    NgOptimizedImage,
+    IsAlreadyInstalledDirective,
+    MatPaginatorModule,
+    MatToolbarModule,
+    MatSelectModule,
+    AsyncPipe,
+  ],
 })
 export default class GenericModListComponent implements AfterViewInit {
   private paginatorSubscription: Subscription | undefined;
@@ -47,12 +60,14 @@ export default class GenericModListComponent implements AfterViewInit {
   #modListService = inject(ModListService);
   #userSettingsService = inject(UserSettingsService);
   #destroyRef = inject(DestroyRef);
+  #downloadService = inject(DownloadService);
 
   accumulatedModList: Mod[] = [];
   pageSize = 0;
   pageLength = 0;
   pageNumber = 0;
   loading = false;
+  isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
 
   ngAfterViewInit() {
     this.paginatorSubscription = this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
