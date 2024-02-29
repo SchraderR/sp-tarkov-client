@@ -16,6 +16,7 @@ export interface AkiInstance {
 
 export interface UserSettingModel extends AkiInstance {
   akiCore: AkiCore;
+  isLoading: boolean;
 }
 
 export interface ModMeta {

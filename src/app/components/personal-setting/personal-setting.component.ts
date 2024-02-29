@@ -18,6 +18,7 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { JoyrideModule } from 'ngx-joyride';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   standalone: true,
@@ -38,6 +39,7 @@ import { JoyrideModule } from 'ngx-joyride';
     ReactiveFormsModule,
     JoyrideModule,
     NgOptimizedImage,
+    MatProgressSpinner,
   ],
   animations: [fadeInFadeOutAnimation],
 })
@@ -64,19 +66,28 @@ export default class PersonalSettingComponent {
       .sendEvent<UserSettingModel>('open-directory')
       .pipe(
         switchMap(result => {
+          const newUserSetting: UserSettingModel = { ...result.args, isLoading: true };
+          this.#userSettingsService.addUserSetting(newUserSetting);
+          this.#changeDetectorRef.detectChanges();
+
           return forkJoin({
-            userSetting: of(result.args),
+            userSetting: of(newUserSetting),
             serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.akiRootDirectory),
             clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.akiRootDirectory),
           });
         }),
         tap(result => {
           this.#ngZone.run(() => {
-            const newUserSetting = result.userSetting;
-            newUserSetting.clientMods = result.clientMods.args;
-            newUserSetting.serverMods = result.serverMods.args;
+            const userSetting = this.#userSettingsService.userSettingSignal().find(s => s.akiRootDirectory === result.userSetting.akiRootDirectory);
+            if (!userSetting) {
+              return;
+            }
 
-            this.#userSettingsService.addUserSetting(newUserSetting);
+            userSetting.clientMods = result.clientMods.args;
+            userSetting.serverMods = result.serverMods.args;
+            userSetting.isLoading = false;
+
+            this.#userSettingsService.userSettingSignal();
             this.#changeDetectorRef.detectChanges();
           });
         }),

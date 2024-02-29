@@ -6,20 +6,28 @@
     <mat-card-content>
       <mat-list style="display: flex; flex-direction: column; gap: 8px">
         @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
-          <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
-                         (mouseleave)="hoveringInstance = ''">
-            <mat-icon matListItemAvatar class="active-star" [class.fill]="settingModel.isActive"
-                      (click)="setActiveInstance(settingModel)">
-              star
-            </mat-icon>
-            <div matListItemTitle>{{ settingModel.akiCore.akiVersion }}</div>
-            <div matListItemLine>{{ settingModel.akiRootDirectory }}</div>
-            @if (settingModel.akiRootDirectory === hoveringInstance) {
-              <div @fadeInOut class="delete-button-container" (click)="removeInstance(settingModel)">
-                <mat-icon>delete</mat-icon>
-              </div>
-            }
-          </mat-list-item>
+          @if (settingModel.isLoading) {
+            <mat-list-item lines="2">
+              <mat-spinner [diameter]="50"></mat-spinner>
+            </mat-list-item>
+          }
+          @if (!settingModel.isLoading) {
+            <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
+                           (mouseleave)="hoveringInstance = ''">
+              <mat-icon matListItemAvatar class="active-star" [class.fill]="settingModel.isActive"
+                        (click)="setActiveInstance(settingModel)">
+                star
+              </mat-icon>
+              <div matListItemTitle>{{ settingModel.akiCore.akiVersion }}</div>
+              <div matListItemLine>{{ settingModel.akiRootDirectory }}</div>
+              @if (settingModel.akiRootDirectory === hoveringInstance) {
+                <div @fadeInOut class="delete-button-container" (click)="removeInstance(settingModel)">
+                  <mat-icon>delete</mat-icon>
+                </div>
+              }
+            </mat-list-item>
+          }
+
         }
       </mat-list>
     </mat-card-content>
