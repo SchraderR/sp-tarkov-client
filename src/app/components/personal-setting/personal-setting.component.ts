@@ -120,6 +120,7 @@ export default class PersonalSettingComponent {
       isActive: settingModel.isActive,
       akiRootDirectory: settingModel.akiRootDirectory,
       isValid: settingModel.isValid,
+      isLoading: settingModel.isLoading,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,
     };

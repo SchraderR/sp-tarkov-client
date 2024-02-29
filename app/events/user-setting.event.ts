@@ -68,8 +68,9 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         akiCore: JSON.parse(akiCoreJson),
         isValid: akiInstance.isValid,
         isActive: akiInstance.isActive,
+        isLoading: akiInstance.isLoading,
         clientMods: akiInstance.clientMods ?? [],
-        serverMods: akiInstance.serverMods ?? []
+        serverMods: akiInstance.serverMods ?? [],
       });
     } catch (e) {
       // add to object and return a missing path error message

@@ -10,13 +10,13 @@ export interface AkiInstance {
   akiRootDirectory: string;
   isValid: boolean;
   isActive: boolean;
+  isLoading: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }
 
 export interface UserSettingModel extends AkiInstance {
   akiCore: AkiCore;
-  isLoading: boolean;
 }
 
 export interface ModMeta {

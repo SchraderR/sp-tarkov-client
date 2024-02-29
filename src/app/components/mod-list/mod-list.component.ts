@@ -28,13 +28,14 @@ export default class ModListComponent implements OnInit {
 
   modListSignal = this.#modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
+  isModCompleted = computed(() => this.modListSignal().some(m => m.installProgress?.completed));
   isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
   emote = '';
 
   constructor() {
-    this.#downloadService.downloadProgressEvent.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.ngZone.run(() => this.changeDetectorRef.markForCheck());
-    });
+    this.#downloadService.downloadProgressEvent
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.ngZone.run(() => this.changeDetectorRef.markForCheck()));
   }
 
   ngOnInit() {
@@ -45,6 +46,10 @@ export default class ModListComponent implements OnInit {
 
   removeMod(mod: Mod) {
     this.#modListService.removeMod(mod.name);
+  }
+
+  removeCompletedMods() {
+    this.#modListService.removeCompletedMods();
   }
 
   private selectRandomEmote() {

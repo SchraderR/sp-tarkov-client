@@ -24,6 +24,10 @@ export class ModListService {
     this.modList.update(() => [...this.modList().filter(m => m.name !== name)]);
   }
 
+  removeCompletedMods() {
+    this.modList.update(() => [...this.modList().filter(m => !m.installProgress?.completed)]);
+  }
+
   initialInstallProgress(): InstallProgress {
     return {
       completed: false,
