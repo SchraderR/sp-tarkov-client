@@ -55,6 +55,7 @@ export default class PersonalSettingComponent {
 
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
+  experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
   hoveringInstance: string = '';
 
   changeTheme(event: MatSelectChange) {

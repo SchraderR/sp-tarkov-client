@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
 import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { Router, RouterModule } from '@angular/router';
@@ -82,6 +82,7 @@ export class AppComponent {
     this.getCurrentPersonalSettings();
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
+    this.getCurrentExpFunctionSettings();
 
     this.getGithubRateLimitInformation();
   }
@@ -97,7 +98,6 @@ export class AppComponent {
 
   startCurrentInstance(): void {
     const activeInstance = this.#userSettingService.getActiveInstance();
-    console.log(activeInstance);
     if (!activeInstance) {
       return;
     }
