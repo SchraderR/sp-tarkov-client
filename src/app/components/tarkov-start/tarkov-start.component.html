@@ -1,0 +1,10 @@
+<div style="display: flex; flex-direction: column">
+
+  <button (click)="startInstanceServer()">start server</button>
+
+  <div style="display: flex; flex-direction: column">
+    @for (line of serverOutput(); track $index; ) {
+      <div>{{ line }}</div>
+    }
+  </div>
+</div>

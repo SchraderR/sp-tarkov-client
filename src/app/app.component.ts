@@ -100,7 +100,7 @@ export class AppComponent {
     void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
   openTarkovStartDrawer(): void {
-    this.isTarkovInstanceRunExpanded = true;
+    this.isTarkovInstanceRunExpanded = !this.isTarkovInstanceRunExpanded;
   }
 
   private getCurrentPersonalSettings() {
