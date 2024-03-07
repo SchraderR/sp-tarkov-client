@@ -11,7 +11,7 @@
       </mat-icon>
     </button>
     @if (isExperimentalFunctionActive()) {
-      <button class="no-drag" mat-icon-button style="margin-left: 8px" (click)="startCurrentInstance()">
+      <button class="no-drag" mat-icon-button style="margin-left: 8px" (click)="openTarkovStartDrawer()">
         <mat-icon class="font-weight-400" style="color: #009900;" aria-hidden="false">
           expand_circle_right
         </mat-icon>
@@ -39,7 +39,7 @@
 </mat-menu>
 
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
-  <mat-sidenav [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
+  <mat-sidenav class="visible" [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
     <mat-action-list class="side-navigation-actions-container">
       <mat-list-item routerLink="instance-overview" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
                      matTooltip="Active Instance">
@@ -103,6 +103,12 @@
       <router-outlet />
     </div>
   </mat-sidenav-content>
+
+  <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded">
+    @if(isTarkovInstanceRunExpanded) {
+      <app-tarkov-start />
+    }
+  </mat-sidenav>
 </mat-sidenav-container>
 
 <ng-template #joyRideStepContent>

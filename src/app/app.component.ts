@@ -27,6 +27,7 @@ import { JoyrideModule, JoyrideService } from 'ngx-joyride';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackbarTutorialHintComponent } from './components/snackbar-tutorial-hint/snackbar-tutorial-hint.component';
 import { MatCardModule } from '@angular/material/card';
+import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 
 @Component({
   standalone: true,
@@ -52,6 +53,7 @@ import { MatCardModule } from '@angular/material/card';
     DatePipe,
     JoyrideModule,
     MatCardModule,
+    TarkovStartComponent,
   ],
   animations: [sidenavAnimation],
 })
@@ -69,6 +71,7 @@ export class AppComponent {
   config = environment;
   version = packageJson.version;
   isExpanded = false;
+  isTarkovInstanceRunExpanded = false;
   isExperimentalFunctionActive = this.#userSettingService.isExperimentalFunctionActive;
 
   @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
@@ -96,13 +99,8 @@ export class AppComponent {
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
     void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
 
-  startCurrentInstance(): void {
-    const activeInstance = this.#userSettingService.getActiveInstance();
-    if (!activeInstance) {
-      return;
-    }
-
-    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.akiRootDirectory).subscribe();
+  openTarkovStartDrawer(): void {
+    this.isTarkovInstanceRunExpanded = true;
   }
 
   private getCurrentPersonalSettings() {

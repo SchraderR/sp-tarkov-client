@@ -17,8 +17,10 @@ export const handleTarkovStartEvent = () => {
         detached: false, // run the child process in the background as a service
         windowsHide: true, // hide the console window on Windows
       });
-      child.stdout?.on('data', data => console.log(data.toString()));
-      child.stderr?.on('data', data => console.log(data.toString()));
+
+      child.stdout?.on('data', data => event.sender.send('server-output', data.toString()));
+      child.stderr?.on('data', data => console.error(data.toString()));
+
       child.on('exit', code => console.log(`Child exited with code ${code}`));
       child!.unref();
     } catch (e) {

@@ -19,7 +19,9 @@
   | 'tarkov-start'
   | 'exp-function-setting'
   | 'exp-function-toggle';
+
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
+export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
 
 export enum ApplicationElectronFileError {
   downloadLinkError,
