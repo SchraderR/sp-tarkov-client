@@ -42,7 +42,7 @@
     <mat-card-header>
       <mat-card-title>General Settings</mat-card-title>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content style="display: flex; flex-direction: column; gap: 16px;">
       <mat-form-field color="accent" class="theme-select" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Current Theme</mat-label>
         <mat-select [formControl]="currentTheme" (selectionChange)="changeTheme($event)">
@@ -51,6 +51,12 @@
           <mat-option value="system">System</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <div>
+        <mat-slide-toggle (change)="toggleExperimentalFunction($event)">Activate Experimental Function</mat-slide-toggle>
+        <p>Text about warning and such things</p>
+      </div>
+
     </mat-card-content>
   </mat-card>
 </div>

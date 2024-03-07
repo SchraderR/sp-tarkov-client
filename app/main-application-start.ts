@@ -11,6 +11,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
     store.set('akiInstances', []);
     store.set('theme', Theme.system);
     store.set('isTutorialDone', false);
+    store.set('isExperimentalFunctionActive', false);
   }
 
   try {

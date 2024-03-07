@@ -4,6 +4,7 @@ export interface UserSettingStoreModel {
   akiInstances: AkiInstance[];
   theme: Theme;
   isTutorialDone: boolean;
+  isExperimentalFunctionsActive: boolean;
 }
 
 export interface AkiInstance {

@@ -19,6 +19,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   standalone: true,
@@ -40,6 +41,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     JoyrideModule,
     NgOptimizedImage,
     MatProgressSpinner,
+    MatSlideToggle,
   ],
   animations: [fadeInFadeOutAnimation],
 })
@@ -59,6 +61,12 @@ export default class PersonalSettingComponent {
     this.#electronService.sendEvent('theme-toggle', event.value).subscribe(() => {
       this.#userSettingsService.currentTheme.set(event.value);
     });
+  }
+
+  toggleExperimentalFunction(event: MatSlideToggleChange) {
+    this.#electronService
+      .sendEvent('exp-function-toggle', event.checked)
+      .subscribe(() => this.#userSettingsService.isExperimentalFunctionActive.set(event.checked));
   }
 
   getRootEftSpDirectory() {

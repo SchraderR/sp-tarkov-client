@@ -15,7 +15,10 @@
   | 'theme-setting'
   | 'theme-toggle'
   | 'tutorial-setting'
-  | 'tutorial-toggle';
+  | 'tutorial-toggle'
+  | 'tarkov-start'
+  | 'exp-function-setting'
+  | 'exp-function-toggle';
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 
 export enum ApplicationElectronFileError {

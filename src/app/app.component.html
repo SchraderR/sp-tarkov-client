@@ -5,13 +5,19 @@
   </div>
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
-    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep"
-            [stepContent]="joyRideStepDownloadButtonContent">
-      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false"
-                matBadgeColor="accent">
+    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep" [stepContent]="joyRideStepDownloadButtonContent">
+      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false" matBadgeColor="accent">
         download
       </mat-icon>
     </button>
+    @if (isExperimentalFunctionActive()) {
+      <button class="no-drag" mat-icon-button style="margin-left: 8px" (click)="startCurrentInstance()">
+        <mat-icon class="font-weight-400" style="color: #009900;" aria-hidden="false">
+          expand_circle_right
+        </mat-icon>
+      </button>
+    }
+
     <button *ngIf="githubRateLimit" class="no-drag" mat-icon-button [matMenuTriggerFor]="info">
       <i class="fa fa-github" aria-hidden="true"></i>
     </button>

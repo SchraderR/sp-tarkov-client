@@ -48,6 +48,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     store.set('isTutorialDone', false);
   }
 
+  const isExperimentalFunctionActive = store.get('isExperimentalFunctionActive');
+  if (!isExperimentalFunctionActive) {
+    store.set('isExperimentalFunctionActive', false);
+  }
+
   if (isServe) {
     browserWindow.webContents.openDevTools();
     const debug = require('electron-debug');

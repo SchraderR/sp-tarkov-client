@@ -69,6 +69,7 @@ export class AppComponent {
   config = environment;
   version = packageJson.version;
   isExpanded = false;
+  isExperimentalFunctionActive = this.#userSettingService.isExperimentalFunctionActive;
 
   @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
 
@@ -93,6 +94,16 @@ export class AppComponent {
   openExternal = (url: string) => void this.#electronService.openExternal(url);
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
     void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+
+  startCurrentInstance(): void {
+    const activeInstance = this.#userSettingService.getActiveInstance();
+    console.log(activeInstance);
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.akiRootDirectory).subscribe();
+  }
 
   private getCurrentPersonalSettings() {
     this.#electronService
@@ -129,6 +140,12 @@ export class AppComponent {
 
   private getCurrentThemeSettings() {
     this.#electronService.sendEvent<Theme>('theme-setting').subscribe(value => this.#userSettingService.currentTheme.set(value.args));
+  }
+
+  private getCurrentExpFunctionSettings() {
+    this.#electronService
+      .sendEvent<boolean>('exp-function-setting')
+      .subscribe(value => this.#userSettingService.isExperimentalFunctionActive.set(value.args));
   }
 
   private getCurrentTutorialSettings() {
