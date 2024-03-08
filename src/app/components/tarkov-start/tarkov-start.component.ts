@@ -32,6 +32,7 @@ export class TarkovStartComponent implements OnInit {
       .subscribe(outputLine => {
         this.#ngZone.run(() => {
           // a lot of magic ansi code replace
+          // eslint-disable-next-line no-control-regex
           const cleanedOutputLine = outputLine.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
           this.#tarkovInstanceService.addToServerOutput(cleanedOutputLine);
         });

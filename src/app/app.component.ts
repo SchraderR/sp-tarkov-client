@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { concatAll, forkJoin, of, switchMap, tap } from 'rxjs';
+import { concatAll, forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
