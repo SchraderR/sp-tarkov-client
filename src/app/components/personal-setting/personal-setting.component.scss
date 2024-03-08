@@ -42,6 +42,12 @@
   @media (prefers-color-scheme: dark) {
     background: rgb(178, 39, 46);
   }
+
+  &.open-instance-button {
+    right: 72px;
+    background:  transparent;
+    border: 1px gray dashed;
+  }
 }
 
 .active-star {

@@ -68,6 +68,10 @@ export default class PersonalSettingComponent {
     });
   }
 
+  openInstance(akiRootDirectory: string) {
+    this.#electronService.openPath(akiRootDirectory);
+  }
+
   getRootEftSpDirectory() {
     this.#electronService
       .sendEvent<UserSettingModel>('open-directory')

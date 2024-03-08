@@ -21,6 +21,10 @@
               <div matListItemTitle>{{ settingModel.akiCore.akiVersion }}</div>
               <div matListItemLine>{{ settingModel.akiRootDirectory }}</div>
               @if (settingModel.akiRootDirectory === hoveringInstance) {
+                <div @fadeInOut class="delete-button-container open-instance-button" (click)="openInstance(settingModel.akiRootDirectory)">
+                  <mat-icon>open_in_new</mat-icon>
+                </div>
+
                 <div @fadeInOut class="delete-button-container" (click)="removeInstance(settingModel)">
                   <mat-icon>delete</mat-icon>
                 </div>
@@ -32,8 +36,8 @@
     </mat-card-content>
 
     <mat-card-footer>
-      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">Add SPT
-        Instance
+      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">
+        Add SPT Instance
       </button>
     </mat-card-footer>
   </mat-card>
@@ -52,9 +56,11 @@
         </mat-select>
       </mat-form-field>
       <div>
-        <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">Activate Experimental Function</mat-slide-toggle>
-        @if(experimentalFunctionsActive.value) {
-          <p  style="color: orangered; font-size: small">Text about warning and such things</p>
+        <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">
+          Activate Experimental Function
+        </mat-slide-toggle>
+        @if (experimentalFunctionsActive.value) {
+          <p style="color: orangered; font-size: small">Text about warning and such things</p>
         }
       </div>
     </mat-card-content>
