@@ -1,8 +1,9 @@
-<div style="display: flex; flex-direction: column">
+<div style="display: flex; flex-direction: column; width: 100%;">
+  <div style="padding: 8px;">
+    <button mat-flat-button color="accent" (click)="startInstanceServer()">Start server</button>
+  </div>
 
-  <button (click)="startInstanceServer()">start server</button>
-
-  <div style="display: flex; flex-direction: column">
+  <div style="display: flex; flex-direction: column; overflow: auto; height: 100%; padding: 8px;">
     @for (line of serverOutput(); track $index; ) {
       <div>{{ line }}</div>
     }
