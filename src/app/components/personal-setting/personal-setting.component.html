@@ -15,6 +15,7 @@
             <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
                            (mouseleave)="hoveringInstance = ''">
               <mat-icon matListItemAvatar class="active-star" [class.fill]="settingModel.isActive"
+                        matTooltip="Set instance to active"
                         (click)="setActiveInstance(settingModel)">
                 star
               </mat-icon>

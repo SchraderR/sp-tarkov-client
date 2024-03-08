@@ -78,6 +78,9 @@ export default class PersonalSettingComponent {
       .pipe(
         switchMap(result => {
           const newUserSetting: UserSettingModel = { ...result.args, isLoading: true };
+
+          console.log(this.#userSettingsService.userSettingSignal().length);
+
           this.#userSettingsService.addUserSetting(newUserSetting);
           this.#changeDetectorRef.detectChanges();
 
@@ -97,9 +100,6 @@ export default class PersonalSettingComponent {
             userSetting.clientMods = result.clientMods.args;
             userSetting.serverMods = result.serverMods.args;
             userSetting.isLoading = false;
-
-            this.#userSettingsService.userSettingSignal();
-            this.#changeDetectorRef.detectChanges();
           });
         }),
         catchError((error: { message: string }) => {
@@ -116,10 +116,6 @@ export default class PersonalSettingComponent {
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe();
-  }
-
-  openExternalChromePath() {
-    void this.#electronService.shell.openExternal('C:\\Users');
   }
 
   setActiveInstance(settingModel: UserSettingModel) {
