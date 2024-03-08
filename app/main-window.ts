@@ -48,9 +48,9 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     store.set('isTutorialDone', false);
   }
 
-  const isExperimentalFunctionActive = store.get('isExperimentalFunctionActive');
-  if (!isExperimentalFunctionActive) {
-    store.set('isExperimentalFunctionActive', false);
+  const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
+  if (!isExperimentalFunctionsActive) {
+    store.set('isExperimentalFunctionsActive', false);
   }
 
   if (isServe) {

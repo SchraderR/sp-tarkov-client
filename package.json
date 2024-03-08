@@ -48,7 +48,7 @@
     "@fontsource/roboto": "^4.5.8",
     "@ngneat/transloco": "4.2.2",
     "@types/fast-levenshtein": "0.0.4",
-    "electron-builder": "24.9.1",
+    "electron-builder": "24.13.3",
     "fastest-levenshtein": "1.0.16",
     "material-symbols": "0.14.3",
     "ngx-joyride": "2.5.0",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "17.0.0",
-    "@angular-devkit/build-angular": "17.2.1",
+    "@angular-devkit/build-angular": "17.2.3",
     "@angular-eslint/builder": "17.2.1",
     "@angular-eslint/eslint-plugin": "17.2.1",
     "@angular-eslint/eslint-plugin-template": "17.2.1",

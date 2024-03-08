@@ -104,7 +104,7 @@
     </div>
   </mat-sidenav-content>
 
-  <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded">
+  <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
     @if(isTarkovInstanceRunExpanded) {
       <app-tarkov-start />
     }
