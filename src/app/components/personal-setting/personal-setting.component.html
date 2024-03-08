@@ -1,63 +1,83 @@
-<div style="display: flex; flex-direction: column; gap: 8px">
-  <button mat-flat-button color="accent" (click)="getRootEftSpDirectory()">Add SPT Instance</button>
-  @if (false) {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>General Settings</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div style="display:flex; align-items: center;">
-          <button mat-icon-button (click)="openExternalChromePath()">
-            <mat-icon>open_in_new</mat-icon>
-          </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  }
+<div style="display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px">
+  <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent">
+    <mat-card-header>
+      <mat-card-title>Aki-Instances ({{ userSettingSignal().length }})</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list style="display: flex; flex-direction: column; gap: 8px">
+        @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
+          @if (settingModel.isLoading) {
+            <mat-list-item lines="2">
+              <mat-spinner [diameter]="50"></mat-spinner>
+            </mat-list-item>
+          }
+          @if (!settingModel.isLoading) {
+            <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
+                           (mouseleave)="hoveringInstance = ''">
+              <mat-icon matListItemAvatar class="active-star" [class.fill]="settingModel.isActive"
+                        matTooltip="Set instance to active"
+                        (click)="setActiveInstance(settingModel)">
+                star
+              </mat-icon>
+              <div matListItemTitle>{{ settingModel.akiCore.akiVersion }}</div>
+              <div matListItemLine>{{ settingModel.akiRootDirectory }}</div>
+              @if (settingModel.akiRootDirectory === hoveringInstance) {
+                <div @fadeInOut class="delete-button-container open-instance-button" (click)="openInstance(settingModel.akiRootDirectory)">
+                  <mat-icon>open_in_new</mat-icon>
+                </div>
 
-  <h3>Aki-Instances</h3>
+                <div @fadeInOut class="delete-button-container" (click)="removeInstance(settingModel)">
+                  <mat-icon>delete</mat-icon>
+                </div>
+              }
+            </mat-list-item>
+          }
+        }
+      </mat-list>
+    </mat-card-content>
 
-  <mat-accordion>
-    @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon
-              [class.fill]="settingModel.isActive"
-              (click)="$event.stopPropagation(); $event.preventDefault(); setActiveInstance(settingModel)">
-              star
-            </mat-icon>
-            <span style="margin-left: 8px">Version: {{ settingModel.akiCore.akiVersion }}</span>
-          </mat-panel-title>
-          <mat-panel-description>
-            <span style="margin-left: 8px">{{ settingModel.akiRootDirectory }}</span></mat-panel-description>
-        </mat-expansion-panel-header>
-        <div class="expansion-panel-container">
-          <div class="delete-button-container" (click)="removeInstance(settingModel)">
-            <mat-icon>delete</mat-icon>
-          </div>
-          <br>
-          <div style="display: flex; flex-direction: row;">
-            <div style="width: 50%">
-              Client-Mods: {{ settingModel?.clientMods?.length ?? 0 }}
-              <ul>
-                @for (mod of settingModel.clientMods; track mod.name) {
-                  <li>{{ mod.name }} - v{{ mod.version }}</li>
-                }
-              </ul>
-            </div>
+    <mat-card-footer>
+      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">
+        Add SPT Instance
+      </button>
+    </mat-card-footer>
+  </mat-card>
 
-            <div style="width: 50%">
-              Server-Mods: {{ settingModel?.serverMods?.length ?? 0 }}
-              <ul>
-                @for (mod of settingModel.serverMods; track mod.name) {
-                  <li>{{ mod.name }} - v{{ mod.version }}</li>
-                }
-              </ul>
-            </div>
-          </div>
-        </div>
-      </mat-expansion-panel>
-    }
-  </mat-accordion>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>General Settings</mat-card-title>
+    </mat-card-header>
+    <mat-card-content style="display: flex; flex-direction: column; gap: 16px;">
+      <mat-form-field color="accent" class="theme-select" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Current Theme</mat-label>
+        <mat-select [formControl]="currentTheme" (selectionChange)="changeTheme($event)">
+          <mat-option value="light">Light</mat-option>
+          <mat-option value="dark">Dark</mat-option>
+          <mat-option value="system">System</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">
+          Activate Experimental Function
+        </mat-slide-toggle>
+        @if (experimentalFunctionsActive.value) {
+          <p style="color: orangered; font-size: small">Text about warning and such things</p>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
+
+
+<ng-template #joyRideStepContent>
+  <h4>Adding an Instance:</h4>
+  <span>
+    First, you will need to add an instance.
+    <p>
+    To do this, navigate through the file dialog and point it to the root directory that contains both your AKI Server and AKI Launcher.
+    This process will help the system to recognize these elements and work accordingly.
+    <p>
+    After adding an instance, you can set it as the active instance by clicking on the star icon.<br>
+    Mods will be installed in the active instance.<br>
+  </span>
+</ng-template>

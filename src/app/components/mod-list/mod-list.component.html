@@ -5,7 +5,8 @@
 </div>
 
 @if (modListSignal().length) {
-  <div class="button-container" >
+  <div class="button-container">
+    <button mat-icon-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModCompleted()" (click)="removeCompletedMods()" matTooltip="Remove all completed Mods"><mat-icon>scan_delete</mat-icon></button>
     <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstallAll()">Download / Install</button>
   </div>
 }

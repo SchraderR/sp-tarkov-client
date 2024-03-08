@@ -1,7 +1,6 @@
 ﻿name: Release Virus Total Scan
 
 on:
-  workflow_dispatch:
   release:
     types: [published]
 
@@ -9,11 +8,14 @@ jobs:
   virustotal:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: VirusTotal Scan
+      - name: release-downloader
+        uses: robinraju/release-downloader@v1.9
+        with:
+          latest: true
+      - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
           update_release_body: true
           files: |
-            .exe$
+            *.exe

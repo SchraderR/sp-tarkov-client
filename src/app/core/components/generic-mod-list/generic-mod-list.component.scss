@@ -71,7 +71,7 @@ mat-card {
   display: flex;
   position: absolute;
   height: 58px;
-  bottom: 0;
+  bottom: 4px;
   right: 34px;
   justify-content: flex-end;
   align-items: center;
@@ -82,6 +82,14 @@ mat-card {
 
   ::ng-deep.filter-input {
     @include mat.form-field-density(-5);
+  }
+
+  @media (prefers-color-scheme: light) {
+    background-color: rgb(236, 236, 236) !important;
+
+    ::ng-deep.mat-mdc-paginator-container {
+      background-color: rgb(236, 236, 236) !important;
+    }
   }
 
   .floating-paginator {

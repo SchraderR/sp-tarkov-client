@@ -13,7 +13,12 @@
           }
           <div class="mod-information-container">
             <span class="text-ellipsis">{{ mod.name }}</span>
-            <span class="font-x-small">{{ mod.kind }}</span>
+            <span class="spacer"></span>
+            <ng-container [ngSwitch]="mod.kind">
+              <span class="font-x-small" *ngSwitchCase="'client'">Client Mod</span>
+              <span class="font-x-small" *ngSwitchCase="'server'">Server Mod</span>
+              <span class="font-x-small" *ngSwitchCase="'overhaul'">Overhaul Mod</span>
+            </ng-container>
           </div>
           <span class="spacer"></span>
           @if (isActiveAkiInstanceAvailable()) {
@@ -23,8 +28,13 @@
               </div>
             }
             @if (!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
-              <button class="icon-end" mat-icon-button (click)="addModToModList($event, mod)">
-                <mat-icon >add</mat-icon>
+              <button
+                class="icon-end"
+                mat-icon-button
+                (click)="addModToModList($event, mod)"
+                [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
+              >
+                <mat-icon>add</mat-icon>
               </button>
             }
             @if (alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
@@ -33,8 +43,16 @@
               </button>
             }
           } @else {
-            <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable additional functionality">warning</mat-icon>
+            <mat-icon
+              class="mod-install-instance-warning"
+              color="warn"
+              matTooltip="Add or activate an instance of SPT to enable additional functionality">
+              warning
+            </mat-icon>
           }
+          <button class="icon-end" mat-icon-button (click)="$event.stopPropagation(); openExternal(mod.fileUrl)">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
         </div>
       </mat-option>
     }

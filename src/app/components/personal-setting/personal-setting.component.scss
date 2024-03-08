@@ -1,9 +1,22 @@
-.fill {
-  font-variation-settings: "FILL" 1;
+@use '@angular/material' as mat;
+
+:host ::ng-deep {
+  .mat-expansion-panel-body {
+    padding-right: 0 !important;
+  }
+
+  .theme-select {
+    @include mat.form-field-density(-5);
+    width: fit-content;
+  }
+
+  .mat-expansion-indicator {
+    display: none !important;
+  }
 }
 
-::ng-deep.mat-expansion-panel-body {
-  padding-right: 0 !important;
+.fill {
+  font-variation-settings: "FILL" 1;
 }
 
 .delete-button-container {
@@ -16,10 +29,44 @@
   bottom: 0;
   right: 8px;
   width: 60px;
-  background: rgb(178, 39, 46);
   border-radius: 4px;
+
+  @media (prefers-color-scheme: light) {
+    background: rgb(231, 33, 44);
+
+    .mat-icon {
+      color: white;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: rgb(178, 39, 46);
+  }
+
+  &.open-instance-button {
+    right: 72px;
+    background:  transparent;
+    border: 1px gray dashed;
+  }
+}
+
+.active-star {
+  color: white;
+  height: 40px;
+  width: 40px;
+  font-size: 40px;
+  cursor: pointer;
 }
 
 .expansion-panel-container {
   position: relative;
+}
+
+.instance-button {
+  width: 100%;
+
+  &.footer {
+    border-top-left-radius: unset;
+    border-top-right-radius: unset;
+  }
 }

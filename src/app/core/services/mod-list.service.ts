@@ -24,6 +24,10 @@ export class ModListService {
     this.modList.update(() => [...this.modList().filter(m => m.name !== name)]);
   }
 
+  removeCompletedMods() {
+    this.modList.update(() => [...this.modList().filter(m => !m.installProgress?.completed)]);
+  }
+
   initialInstallProgress(): InstallProgress {
     return {
       completed: false,
@@ -46,5 +50,44 @@ export class ModListService {
         progress: 0,
       },
     };
+  }
+
+  clearFakeTutorialMods() {
+    this.modList.set([]);
+  }
+
+  addFakeModForTutorial() {
+    this.modList.set([
+      {
+        name: "Amands's Graphics",
+        fileUrl: null!,
+        image: 'https://hub.sp-tarkov.com/files/images/file/f4/813.png',
+        teaser: 'Lighting and postprocessing overhaul',
+        supportedAkiVersion: 'Empfohlen',
+        kind: undefined,
+        akiVersionColorCode: 'badge label green jsLabelFeatured',
+        installProgress: null!,
+      },
+      {
+        name: "SAIN 2.0 - Solarint's AI Modifications - Full AI Combat System Replacement",
+        fileUrl: null!,
+        image: 'https://hub.sp-tarkov.com/files/images/file/c6/1062.jpg',
+        teaser: "Bots that don't suck.",
+        supportedAkiVersion: 'Empfohlen',
+        kind: undefined,
+        akiVersionColorCode: 'badge label green jsLabelFeatured',
+        installProgress: null!,
+      },
+      {
+        name: 'SPT Realism Mod',
+        fileUrl: null!,
+        image: 'https://hub.sp-tarkov.com/files/images/file/24/606.png',
+        teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
+        supportedAkiVersion: 'Empfohlen',
+        kind: undefined,
+        akiVersionColorCode: 'badge label green jsLabelFeatured',
+        installProgress: null!,
+      },
+    ]);
   }
 }

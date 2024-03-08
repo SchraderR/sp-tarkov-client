@@ -1,0 +1,11 @@
+@media (prefers-color-scheme: light) {
+  .cancel-button.mdc-button {
+    color: white !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .cancel-button.mdc-button {
+    color: black !important;
+  }
+}

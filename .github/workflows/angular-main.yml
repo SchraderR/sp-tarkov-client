@@ -1,8 +1,6 @@
 name: Angular Workflow
 
-on:
-  workflow_dispatch:
-  pull_request:
+on: [workflow_dispatch, pull_request]
 
 jobs:
   build:
@@ -10,6 +8,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Setup Google Chrome
+        uses: browser-actions/setup-chrome@v1
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -23,7 +24,7 @@ jobs:
         run: npm run lint
 
       - name: Run Tests
-        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
 
       - name: Build Code
         run: npm run build

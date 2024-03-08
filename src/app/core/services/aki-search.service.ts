@@ -13,7 +13,7 @@ interface SearchResponse {
   providedIn: 'root',
 })
 export class AkiSearchService {
-  private restricted = ['Community support'];
+  private restrictedModKinds = ['Community support'];
 
   #httpClient = inject(HttpClient);
   modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
@@ -23,9 +23,11 @@ export class AkiSearchService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' });
 
     return this.#httpClient
-      .post<SearchResponse>(this.modSearchUrl, `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`, {
-        headers: headers,
-      })
+      .post<SearchResponse>(
+        this.modSearchUrl,
+        `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`,
+        { headers: headers }
+      )
       .pipe(
         map(response => this.extractModInformation(response)),
         catchError(() => EMPTY)
@@ -57,8 +59,8 @@ export class AkiSearchService {
           image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
           fileUrl: e.getElementsByTagName('a')?.[0]?.href,
           kind: kind,
-        } as Mod;  // Type assertion here
+        } as Mod; // Type assertion here
       })
-      .filter(m => m.kind !== undefined && !this.restricted.some(r => m.kind?.includes(r)) );
+      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)));
   }
 }

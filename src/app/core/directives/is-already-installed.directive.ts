@@ -21,6 +21,7 @@ export class IsAlreadyInstalledDirective {
     'Tactical Gear Component (TGC)': 'Tactical Gear Component',
     lotus: 'Lotus Trader',
     'Fox-PineappleBlitz': 'Fox - PINEAPPLE BLITZ GRENADE (RE-UPLOAD)',
+    'Skills Extended': '[BETA] Skills Extended',
   };
 
   private alternativeClientModNames: { [key: string]: string } = {
@@ -36,6 +37,8 @@ export class IsAlreadyInstalledDirective {
     'CactusPie.FastHealing': 'Fast healing',
     GamePanelHUDCompass: 'Game Panel HUD',
     'CactusPie.MapLocation.Common': "CactusPie's Minimap",
+    SkillsExtended: '[BETA] Skills Extended',
+    BetterFolderBrowser: 'Minimalist Launcher',
   };
 
   #userSettingsService = inject(UserSettingsService);

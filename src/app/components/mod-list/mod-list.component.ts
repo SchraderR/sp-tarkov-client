@@ -10,13 +10,14 @@ import { Mod } from '../../core/models/mod';
 import { DownloadService } from '../../core/services/download.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
+import { JoyrideModule } from 'ngx-joyride';
 
 @Component({
   standalone: true,
   selector: 'app-mod-list',
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent],
+  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent, JoyrideModule],
   animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent implements OnInit {
@@ -27,13 +28,14 @@ export default class ModListComponent implements OnInit {
 
   modListSignal = this.#modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
+  isModCompleted = computed(() => this.modListSignal().some(m => m.installProgress?.completed));
   isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
   emote = '';
 
   constructor() {
-    this.#downloadService.downloadProgressEvent.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.ngZone.run(() => this.changeDetectorRef.markForCheck());
-    });
+    this.#downloadService.downloadProgressEvent
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.ngZone.run(() => this.changeDetectorRef.markForCheck()));
   }
 
   ngOnInit() {
@@ -44,6 +46,10 @@ export default class ModListComponent implements OnInit {
 
   removeMod(mod: Mod) {
     this.#modListService.removeMod(mod.name);
+  }
+
+  removeCompletedMods() {
+    this.#modListService.removeCompletedMods();
   }
 
   private selectRandomEmote() {

@@ -1,0 +1,75 @@
+@if (!activeAkiInstance) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+    <div style="display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center">
+      There is no active Instance. Please go to the setting and activate an SPT-Instance.
+      <button style="display: flex; width: 50%; " mat-raised-button color="accent" routerLink="../setting">
+        Setting-Page
+      </button>
+    </div>
+  </div>
+}
+
+@if (activeAkiInstance?.isLoading) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+    <mat-spinner [diameter]="100"></mat-spinner>
+  </div>
+}
+
+@if (activeAkiInstance && !activeAkiInstance.isLoading) {
+  <div class="mod-list-container">
+    <div class="mod-list">
+      <h2>Server-Mods</h2>
+
+      <mat-list style="overflow: auto;">
+        @if (activeAkiInstance.serverMods.length === 0) {
+          <span>No Server-Mods installed!</span>
+        }
+
+        @for (serverMod of activeAkiInstance.serverMods; track $index) {
+          <mat-list-item>
+            <span matListItemTitle>{{ serverMod.name }}</span>
+            <span matListItemLine>{{ serverMod.version }}</span>
+
+            <div style="display: flex;" matListItemMeta>
+              @if (serverMod.name === 'SPT Realism Mod') {
+                <button class="list-item-button" mat-icon-button (click)="openRealismTool(serverMod.modPath)">
+                  <mat-icon>expand_circle_right</mat-icon>
+                </button>
+              }
+              @if (serverMod.name === 'SVM') {
+                <button class="list-item-button" mat-icon-button (click)="openSVMTool(serverMod.modPath)">
+                  <mat-icon>expand_circle_right</mat-icon>
+                </button>
+              }
+
+              <button class="list-item-button" mat-icon-button (click)="openExternal(serverMod.modPath)">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </div>
+
+          </mat-list-item>
+        }
+      </mat-list>
+    </div>
+
+    <div class="mod-list">
+      <h2>Client-Mods</h2>
+      <mat-list style="overflow: auto;">
+        @if (activeAkiInstance.serverMods.length === 0) {
+          <span>No Client-Mods installed!</span>
+        }
+        @for (clientMod of activeAkiInstance.clientMods; track $index) {
+          <mat-list-item>
+            <span matListItemTitle>{{ clientMod.name }}</span>
+            <span matListItemLine>{{ clientMod.version }}</span>
+
+            <button class="list-item-button" matListItemMeta mat-icon-button
+                    (click)="openExternal(clientMod.modPath)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </mat-list-item>
+        }
+      </mat-list>
+    </div>
+  </div>
+}

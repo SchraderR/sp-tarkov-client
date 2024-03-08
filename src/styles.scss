@@ -49,6 +49,7 @@ body {
   align-items: center;
   height: 48px !important;
   width: 48px !important;
+  margin: unset !important;
 }
 
 mat-icon {
@@ -222,3 +223,8 @@ $mat-dark-theme: mat.define-dark-theme(
 @media (prefers-color-scheme: dark) {
   @include mat.all-component-colors($mat-dark-theme);
 }
+
+@media (prefers-color-scheme: light) {
+  @include mat.all-component-colors($mat-core-theme);
+}
+

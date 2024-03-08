@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { Theme, UserSettingModel } from '../../../../shared/models/user-setting.model';
 
 @Injectable({
   providedIn: 'root',
@@ -7,6 +7,9 @@ import { UserSettingModel } from '../../../../shared/models/user-setting.model';
 export class UserSettingsService {
   private userSetting = signal<UserSettingModel[]>([]);
   readonly userSettingSignal = this.userSetting.asReadonly();
+  currentTheme = signal<Theme | null>(null);
+  isExperimentalFunctionActive = signal<boolean>(false);
+  isTutorialDone = signal<boolean | null>(null);
 
   setUserSetting(userSetting: UserSettingModel[]) {
     this.userSetting.set(userSetting);

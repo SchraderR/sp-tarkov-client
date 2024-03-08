@@ -3,7 +3,12 @@ import { ipcRenderer, webFrame } from 'electron';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import { Observable } from 'rxjs';
-import { applicationElectronEventNames, ApplicationElectronFileError, applicationElectronFileProgressEventNames } from '../events/electron.events';
+import {
+  applicationElectronEventNames,
+  ApplicationElectronFileError,
+  applicationElectronFileProgressEventNames,
+  applicationTarkovInstanceOutputEventNames,
+} from '../events/electron.events';
 import { DownloadBase, GithubRateLimit } from '../../../../shared/models/download.model';
 import IpcRendererEvent = Electron.IpcRendererEvent;
 
@@ -24,6 +29,9 @@ export class ElectronService {
   constructor() {
     this.initialElectronConfig();
   }
+
+  openExternal = (url: string) => void this.shell.openExternal(url);
+  openPath = (path: string) => void this.shell.openPath(path);
 
   sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
     return new Observable<{ event: unknown; args: T }>(observer => {
@@ -52,6 +60,20 @@ export class ElectronService {
         observer.next(args);
 
         if (eventName === 'download-mod-direct' || eventName === 'download-mod-direct-completed') {
+          observer.complete();
+        }
+      };
+
+      this.ipcRenderer.on(`${eventName}`, handler);
+    });
+  }
+
+  getServerOutput(eventName: applicationTarkovInstanceOutputEventNames = 'server-output'): Observable<string> {
+    return new Observable(observer => {
+      const handler = (_: IpcRendererEvent, args: string) => {
+        observer.next(args);
+
+        if (eventName === 'server-output-completed') {
           observer.complete();
         }
       };

@@ -1,12 +1,15 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { ElectronService } from './electron.service';
 
 describe('ElectronService', () => {
-  beforeEach(waitForAsync(() => TestBed.configureTestingModule({})));
+  let service: ElectronService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ElectronService);
+  });
 
   it('should be created', () => {
-    const service: ElectronService = TestBed.get(ElectronService);
     expect(service).toBeTruthy();
   });
 });

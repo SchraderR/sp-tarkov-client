@@ -18,7 +18,6 @@ export class DownloadService {
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
-
   activeModList = this.#modListService.modListSignal;
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
@@ -93,6 +92,9 @@ export class DownloadService {
     mod.installProgress.linkStep.start = true;
 
     this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
+      if (mod.installProgress!.error) {
+        return;
+      }
       mod.installProgress!.downloadStep.percent = progress.percent;
       mod.installProgress!.downloadStep.totalBytes = FileHelper.fileSize(+progress.totalBytes);
       mod.installProgress!.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);

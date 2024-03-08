@@ -11,12 +11,16 @@ import { handleServerModsEvent } from './events/server-mods.event';
 import { handleWindowEvents } from './events/window.event';
 import { autoUpdater } from 'electron-updater';
 import { handleClearTemporaryDirectoryEvent } from './events/clear-temp.event';
+import { handleThemeEvents } from './events/theme.event';
+import { handleTutorialEvents } from './events/tutorial.event';
+import { handleTarkovStartEvent } from './events/tarkov-start.event';
+import { handleExperimentalFunctionsEvents } from './events/experimental-functions.event';
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
 void autoUpdater.checkForUpdatesAndNotify();
 
-mainApplicationStart(isServe);
+mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
 handleDownloadLinkEvent(isServe);
 handleDownloadModEvent();
@@ -26,3 +30,7 @@ handleClientModsEvent();
 handleServerModsEvent();
 handleWindowEvents();
 handleClearTemporaryDirectoryEvent();
+handleThemeEvents(store);
+handleTutorialEvents(store);
+handleTarkovStartEvent();
+handleExperimentalFunctionsEvents(store);
