@@ -21,7 +21,7 @@ export const handleClientModsEvent = () => {
 
         for (const file of rootDllFiles) {
           const version = await getVersion(path.join(file.path, file.name));
-          data.push({ name: file.name.split('.dll')[0], version, modPath: path.join(rootServerPath, file.name) });
+          data.push({ name: file.name.split('.dll')[0], version, modPath: rootServerPath });
         }
 
         for (let dir of rootDirectories) {
@@ -36,7 +36,11 @@ export const handleClientModsEvent = () => {
 
           const filePath = path.join(directoryDll[0].path, directoryDll[0].name);
           const version = await getVersion(filePath);
-          data.push({ name: directoryDll[0].name.split('.dll')[0], version, modPath: path.join(filePath) });
+          data.push({
+            name: directoryDll[0].name.split('.dll')[0],
+            version,
+            modPath: directoryDll[0].path,
+          });
         }
 
         event.sender.send('client-mod-completed', data);

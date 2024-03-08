@@ -3,3 +3,24 @@
   width: 100%;
   height: 100%;
 }
+
+.list-item-button {
+  display: flex !important;
+  justify-content: center;
+}
+
+.mod-list-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+
+  .mod-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    user-select: none;
+  }
+}

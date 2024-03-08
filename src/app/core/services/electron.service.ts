@@ -30,7 +30,8 @@ export class ElectronService {
     this.initialElectronConfig();
   }
 
-  openExternal = (licenseUrl: string) => void this.shell.openExternal(licenseUrl);
+  openExternal = (url: string) => void this.shell.openExternal(url);
+  openPath = (path: string) => void this.shell.openPath(path);
 
   sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
     return new Observable<{ event: unknown; args: T }>(observer => {

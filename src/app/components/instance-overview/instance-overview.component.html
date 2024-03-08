@@ -17,18 +17,52 @@
 
 
 @if (activeAkiInstance && !activeAkiInstance.isLoading) {
-  <div style="display: flex; flex-direction: row; height: 100%; width: 100%;">
-    <div style="display: flex; flex-direction: column; background: darkgray; height: 100%; width: 100%;">
+  <div class="mod-list-container">
+    <div class="mod-list">
+      <h2>Server-Mods</h2>
 
-      @for (serverMod of activeAkiInstance.serverMods; track $index) {
-        <div>{{ serverMod.name }}</div>
-      }
+      <mat-list style="overflow: auto;">
+        @for (serverMod of activeAkiInstance.serverMods; track $index) {
+          <mat-list-item>
+            <span matListItemTitle>{{ serverMod.name }}</span>
+            <span matListItemLine>{{ serverMod.version }}</span>
+
+            <div style="display: flex;" matListItemMeta>
+              @if (serverMod.name === 'SPT Realism Mod') {
+                <button class="list-item-button" mat-icon-button (click)="openRealismTool(serverMod.modPath)">
+                  <mat-icon>expand_circle_right</mat-icon>
+                </button>
+              }
+              @if (serverMod.name === 'SVM') {
+                <button class="list-item-button" mat-icon-button (click)="openSVMTool(serverMod.modPath)">
+                  <mat-icon>expand_circle_right</mat-icon>
+                </button>
+              }
+
+              <button class="list-item-button" mat-icon-button (click)="openExternal(serverMod.modPath)">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </div>
+
+          </mat-list-item>
+        }
+      </mat-list>
     </div>
 
-    <div style="display: flex; flex-direction: column; background: grey; height: 100%; width: 100%;">
-      @for (clientMod of activeAkiInstance.clientMods; track $index) {
-        <div>{{ clientMod.name }}</div>
-      }
+    <div class="mod-list">
+      <h2>Client-Mods</h2>
+      <mat-list style="overflow: auto;">
+        @for (clientMod of activeAkiInstance.clientMods; track $index) {
+          <mat-list-item>
+            <span matListItemTitle>{{ clientMod.name }}</span>
+            <span matListItemLine>{{ clientMod.version }}</span>
+
+            <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(clientMod.modPath)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </mat-list-item>
+        }
+      </mat-list>
     </div>
   </div>
 }
