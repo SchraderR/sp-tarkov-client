@@ -123,7 +123,7 @@ export class AppComponent {
           userSetting.serverMods = value.serverMods.args;
           userSetting.isLoading = false;
 
-          this.#userSettingService.userSettingSignal();
+          this.#userSettingService.updateUserSetting();
           this.#changeDetectorRef.detectChanges();
         });
       });
