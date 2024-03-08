@@ -24,6 +24,7 @@ export interface ModMeta {
   name: string;
   version: string;
   alternativeName?: string;
+  modPath: string;
 }
 
 export enum Theme {

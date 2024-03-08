@@ -67,6 +67,7 @@ export class AppComponent {
   #matSnackBar = inject(MatSnackBar);
   #router = inject(Router);
   #ngZone = inject(NgZone);
+  #changeDetectorRef = inject(ChangeDetectorRef);
 
   config = environment;
   version = packageJson.version;
@@ -107,29 +108,39 @@ export class AppComponent {
     this.#electronService
       .sendEvent<UserSettingModel[]>('user-settings')
       .pipe(
-        tap(res => res && this.#userSettingService.setUserSetting(res.args)),
         switchMap(res => res && this.getServerMods(res.args)),
         concatAll(),
         takeUntilDestroyed()
       )
       .subscribe(value => {
         this.#ngZone.run(() => {
-          value.userSetting.clientMods = value.clientMods.args;
-          value.userSetting.serverMods = value.serverMods.args;
+          const userSetting = this.#userSettingService.userSettingSignal().find(s => s.akiRootDirectory === value.userSetting.akiRootDirectory);
+          if (!userSetting) {
+            return;
+          }
 
-          this.#userSettingService.updateUserSetting();
+          userSetting.clientMods = value.clientMods.args;
+          userSetting.serverMods = value.serverMods.args;
+          userSetting.isLoading = false;
+
+          this.#userSettingService.userSettingSignal();
+          this.#changeDetectorRef.detectChanges();
         });
       });
   }
 
   private getServerMods(userSettings: UserSettingModel[]) {
-    return userSettings.map(userSetting =>
-      forkJoin({
+    return userSettings.map(userSetting => {
+      const newUserSetting: UserSettingModel = { ...userSetting, isLoading: true };
+      this.#userSettingService.addUserSetting(newUserSetting);
+      this.#changeDetectorRef.detectChanges();
+
+      return forkJoin({
         userSetting: of(userSetting),
         serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
-      })
-    );
+      });
+    });
   }
 
   private getGithubRateLimitInformation() {

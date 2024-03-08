@@ -59,15 +59,13 @@ export default class PersonalSettingComponent {
   hoveringInstance: string = '';
 
   changeTheme(event: MatSelectChange) {
-    this.#electronService.sendEvent('theme-toggle', event.value).subscribe(() => {
-      this.#userSettingsService.currentTheme.set(event.value);
-    });
+    this.#electronService.sendEvent('theme-toggle', event.value).subscribe(() => this.#userSettingsService.currentTheme.set(event.value));
   }
 
   toggleExperimentalFunction(event: MatSlideToggleChange) {
-    this.#electronService
-      .sendEvent('exp-function-toggle', event.checked)
-      .subscribe(() => this.#userSettingsService.isExperimentalFunctionActive.set(event.checked));
+    this.#electronService.sendEvent('exp-function-toggle', event.checked).subscribe(() => {
+      this.#ngZone.run(() => this.#userSettingsService.isExperimentalFunctionActive.set(event.checked));
+    });
   }
 
   getRootEftSpDirectory() {

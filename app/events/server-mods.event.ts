@@ -20,7 +20,7 @@ export const handleServerModsEvent = () => {
             const packageJson = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             const { name, version, akiVersion } = packageJson;
             if (name && version && akiVersion) {
-              data.push({ name, version, akiVersion });
+              data.push({ name, version, akiVersion, modPath: path.join(rootServerPath, dir) });
             }
           }
         }

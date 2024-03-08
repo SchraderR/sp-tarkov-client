@@ -1,8 +1,35 @@
-<div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
-  @if (!isActiveAkiInstanceAvailable()) {
+@if (!activeAkiInstance) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <div style="display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center">
       There is no active Instance. Please go to the setting and activate an SPT-Instance.
-      <button style="display: flex; width: 50%; " mat-raised-button color="accent" routerLink="../setting">Setting-Page</button>
+      <button style="display: flex; width: 50%; " mat-raised-button color="accent" routerLink="../setting">
+        Setting-Page
+      </button>
     </div>
-  }
-</div>
+  </div>
+}
+
+@if (activeAkiInstance?.isLoading) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+    <mat-spinner [diameter]="100"></mat-spinner>
+  </div>
+}
+
+
+@if (activeAkiInstance && !activeAkiInstance.isLoading) {
+  <div style="display: flex; flex-direction: row; height: 100%; width: 100%;">
+    <div style="display: flex; flex-direction: column; background: darkgray; height: 100%; width: 100%;">
+
+      @for (serverMod of activeAkiInstance.serverMods; track $index) {
+        <div>{{ serverMod.name }}</div>
+      }
+    </div>
+
+    <div style="display: flex; flex-direction: column; background: grey; height: 100%; width: 100%;">
+      @for (clientMod of activeAkiInstance.clientMods; track $index) {
+        <div>{{ clientMod.name }}</div>
+      }
+    </div>
+  </div>
+}
+
