@@ -1,6 +1,7 @@
 ﻿name: Release Virus Total Scan
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
