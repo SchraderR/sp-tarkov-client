@@ -12,6 +12,7 @@ export interface Mod {
   installProgress?: InstallProgress;
   supportedAkiVersion?: string;
   akiVersionColorCode?: string;
+  extended: boolean;
 }
 
 export interface InstallProgress {

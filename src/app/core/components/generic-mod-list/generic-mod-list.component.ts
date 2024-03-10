@@ -16,10 +16,11 @@ import { IsAlreadyInstalledDirective } from '../../directives/is-already-install
 import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { debounceTime, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
+import { modCardAnimation } from './modCardAnimation';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -42,9 +43,9 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatSelectModule,
     AsyncPipe,
   ],
+  animations: [modCardAnimation],
 })
 export default class GenericModListComponent implements AfterViewInit {
-  private paginatorSubscription: Subscription | undefined;
   private _sortField: GenericModListSortField | undefined;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
 
@@ -70,7 +71,7 @@ export default class GenericModListComponent implements AfterViewInit {
   isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
 
   ngAfterViewInit() {
-    this.paginatorSubscription = this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
+    this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
       if (!this._sortField) {
         return;
       }
@@ -83,6 +84,16 @@ export default class GenericModListComponent implements AfterViewInit {
 
   refresh() {
     this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
+  }
+
+  extendMod(mod: Mod) {
+    if (mod.extended) {
+      mod.extended = false;
+      return;
+    }
+
+    this.accumulatedModList.forEach(m => (m.extended = false));
+    mod.extended = !mod.extended;
   }
 
   addModToModList(mod: Mod) {

@@ -19,6 +19,10 @@ mat-card {
       border-top-left-radius: 4px;
     }
   }
+
+  &.extended {
+    flex: 0 0 calc(100% - 16px);
+  }
 }
 
 .image-shadow {

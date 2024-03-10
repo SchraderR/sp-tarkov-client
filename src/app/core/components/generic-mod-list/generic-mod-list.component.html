@@ -1,6 +1,5 @@
 @for (mod of accumulatedModList; track mod) {
-  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
-    [mod]="mod">
+  <mat-card [@modCardExtended]="mod.extended ? 'extended' : 'normal'" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
     <mat-card-content class="card-container">
       <div class="image-version-container">
         @if (mod.image) {
@@ -11,12 +10,15 @@
         }
         @if (mod.supportedAkiVersion) {
           <div [class]="mod.akiVersionColorCode"
-            class="font-small image-aki-version">{{ mod.supportedAkiVersion }}
+               class="font-small image-aki-version">{{ mod.supportedAkiVersion }}
           </div>
         }
       </div>
       <div class="mod-list-container">
-        <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+        <div style="display: flex; align-items: center;">
+          <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+          <mat-icon style="display: flex; justify-content: center; cursor: pointer;" (click)="extendMod(mod)">expand_more</mat-icon>
+        </div>
         <div class="mod-teaser">{{ mod.teaser }}</div>
         <span class="spacer"></span>
         <div style="display: flex">
@@ -29,7 +31,8 @@
               </mat-icon>
             } @else {
               @if (!alreadyInstalled.isInModList()) {
-                <button mat-icon-button (click)="addModToModList(mod)" [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
+                <button mat-icon-button (click)="addModToModList(mod)"
+                        [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
                   <mat-icon>add</mat-icon>
                 </button>
               } @else {
@@ -39,7 +42,8 @@
               }
             }
           } @else {
-            <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable additional functionality">
+            <mat-icon class="mod-install-instance-warning" color="warn"
+                      matTooltip="Add or activate an instance of SPT to enable additional functionality">
               warning
             </mat-icon>
           }
@@ -56,5 +60,6 @@
   <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
     <mat-icon>refresh</mat-icon>
   </button>
-  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
+                 [pageSize]="20" />
 </mat-toolbar>
