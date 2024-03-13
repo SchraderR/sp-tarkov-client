@@ -119,8 +119,8 @@ export class AppComponent {
             return;
           }
 
-          userSetting.clientMods = value.clientMods.args;
-          userSetting.serverMods = value.serverMods.args;
+          userSetting.clientMods = [];
+          userSetting.serverMods = [];
           userSetting.isLoading = false;
 
           this.#userSettingService.updateUserSetting();
@@ -137,8 +137,8 @@ export class AppComponent {
 
       return forkJoin({
         userSetting: of(userSetting),
-        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
-        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
+        serverMods: of([]), //this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
+        clientMods: of([]), //this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
       });
     });
   }

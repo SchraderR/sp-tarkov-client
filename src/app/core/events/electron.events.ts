@@ -17,6 +17,8 @@
   | 'tutorial-setting'
   | 'tutorial-toggle'
   | 'tarkov-start'
+  | 'mod-load-order'
+  | 'mod-load-order-save'
   | 'exp-function-setting'
   | 'exp-function-toggle';
 

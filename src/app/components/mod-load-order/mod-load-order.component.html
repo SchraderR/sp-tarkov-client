@@ -1,0 +1,5 @@
+<div cdkDropList class="mod-order-list" (cdkDropListDropped)="drop($event)">
+  @for (movie of modLoadOrder.order; let i = $index; track movie) {
+    <div class="mod-box" cdkDrag>{{i}}.{{movie}}</div>
+  }
+</div>
