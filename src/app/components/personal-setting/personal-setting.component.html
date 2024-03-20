@@ -4,25 +4,31 @@
       <mat-card-title>Aki-Instances ({{ userSettingSignal().length }})</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <mat-list style="display: flex; flex-direction: column; gap: 8px">
+      <mat-list>
         @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
           @if (settingModel.isLoading) {
-            <mat-list-item lines="2">
+            <mat-list-item #loading lines="2">
               <mat-spinner [diameter]="50"></mat-spinner>
             </mat-list-item>
           }
           @if (!settingModel.isLoading) {
             <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
                            (mouseleave)="hoveringInstance = ''">
-              <mat-icon matListItemAvatar class="active-star" [class.fill]="settingModel.isActive"
+              <mat-icon *ngIf="!settingModel.isError" matListItemAvatar class="active-star"
+                        [class.fill]="settingModel.isActive"
                         matTooltip="Set instance to active"
                         (click)="setActiveInstance(settingModel)">
                 star
               </mat-icon>
+              <mat-icon *ngIf="settingModel.isError" matListItemAvatar color="warn" class="warning"
+                        matTooltip="Error while accessing local Server/Client Paths. Make sure you started the AKI-Server at least once.">
+                warning
+              </mat-icon>
               <div matListItemTitle>{{ settingModel.akiCore.akiVersion }}</div>
               <div matListItemLine>{{ settingModel.akiRootDirectory }}</div>
               @if (settingModel.akiRootDirectory === hoveringInstance) {
-                <div @fadeInOut class="delete-button-container open-instance-button" (click)="openInstance(settingModel.akiRootDirectory)">
+                <div @fadeInOut class="delete-button-container open-instance-button"
+                     (click)="openInstance(settingModel.akiRootDirectory)">
                   <mat-icon>open_in_new</mat-icon>
                 </div>
 

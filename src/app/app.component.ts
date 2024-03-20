@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { concatAll, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, concatAll, forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -121,6 +121,7 @@ export class AppComponent {
 
           userSetting.clientMods = value.clientMods.args;
           userSetting.serverMods = value.serverMods.args;
+          userSetting.isError = value.userSetting.isError;
           userSetting.isLoading = false;
 
           this.#userSettingService.updateUserSetting();
@@ -139,7 +140,7 @@ export class AppComponent {
         userSetting: of(userSetting),
         serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
-      });
+      }).pipe(catchError(() => this.handleDirectoryPathError(userSetting)));
     });
   }
 
@@ -188,6 +189,16 @@ export class AppComponent {
             });
         }
       });
+    });
+  }
+
+  private handleDirectoryPathError(userSetting: UserSettingModel) {
+    userSetting.isError = true;
+
+    return of({
+      userSetting: userSetting,
+      serverMods: { args: [] },
+      clientMods: { args: [] },
     });
   }
 }
