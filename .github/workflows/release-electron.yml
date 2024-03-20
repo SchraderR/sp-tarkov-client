@@ -24,3 +24,13 @@ jobs:
           build_script_name: "build:prod"
           args: --publish=always
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: VirusTotal Scan
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          update_release_body: true
+          request_rate: 4
+          files: |
+            *.exe
