@@ -27,5 +27,17 @@
       "protocol": "https",
       "releaseType": "prerelease"
     }
+  },
+  "linux": {
+    "icon": "app/assets/icon.ico",
+    "target": ["nsis"],
+    "publish": {
+      "provider": "github",
+      "repo": "sp-tarkov-client",
+      "owner": "SchraderR",
+      "private": false,
+      "protocol": "https",
+      "releaseType": "prerelease"
+    }
   }
 }
