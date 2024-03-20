@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, ViewChildren } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { catchError, EMPTY, forkJoin, of, switchMap, tap } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatList, MatListItem, MatListModule } from '@angular/material/list';
+import { MatListItem, MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
@@ -20,7 +20,6 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { TrackedIncrementalBuildStrategy } from '@angular/compiler-cli/src/ngtsc/incremental';
 
 @Component({
   standalone: true,
