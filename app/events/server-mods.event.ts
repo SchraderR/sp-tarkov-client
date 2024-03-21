@@ -28,7 +28,7 @@ export const handleServerModsEvent = () => {
         event.sender.send('server-mod-completed', data);
       }
     } catch (error) {
-      console.error(error);
+      event.sender.send('server-mod-error', error);
     }
   });
 };

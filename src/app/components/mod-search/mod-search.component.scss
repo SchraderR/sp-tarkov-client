@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 
 .mat-mdc-option {
-  padding: 8px;
+  padding: unset;
 }
 
 ::ng-deep.search-input {
@@ -23,4 +23,9 @@
   flex-direction: column;
   padding-left: 8px;
   overflow: auto;
+}
+
+.search-item-container {
+  display: flex;
+  padding: 8px;
 }

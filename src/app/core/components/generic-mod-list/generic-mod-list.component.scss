@@ -5,10 +5,11 @@
   overflow: auto;
   gap: 16px;
   flex-wrap: wrap;
+  padding: 8px;
 }
 
 mat-card {
-  flex: 0 0 calc(33.333% - 16px);
+  flex: 1 0 calc(33.333% - 16px);
   max-height: 144px;
 
   mat-card-content {

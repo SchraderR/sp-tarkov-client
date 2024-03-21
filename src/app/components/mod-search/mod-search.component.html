@@ -4,7 +4,7 @@
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
     @for (mod of filteredModItems | async; track mod) {
       <mat-option [value]="mod.name" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
-        <div style="display: flex; width: 100%;">
+        <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
           @if (mod.image) {
             <img class="image-shadow" [ngSrc]="mod.image" width="50" height="50" alt="">
           }

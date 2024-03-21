@@ -12,6 +12,7 @@ export interface AkiInstance {
   isValid: boolean;
   isActive: boolean;
   isLoading: boolean;
+  isError: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }
