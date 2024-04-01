@@ -114,8 +114,7 @@ export default class PersonalSettingComponent {
           });
 
           return EMPTY;
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        })
       )
       .subscribe();
   }

@@ -1,0 +1,7 @@
+{
+  "/files": {
+    "target": "https://hub.sp-tarkov.com",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
