@@ -46,7 +46,7 @@ export const handleClientModsEvent = () => {
         event.sender.send('client-mod-completed', data);
       }
     } catch (error) {
-      console.error(error);
+      event.sender.send('client-mod-error', error);
     }
   });
 };

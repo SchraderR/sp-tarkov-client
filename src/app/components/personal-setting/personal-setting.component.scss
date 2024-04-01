@@ -15,6 +15,19 @@
   }
 }
 
+.mat-mdc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+  margin-bottom: 8px !important;
+}
+
+.mat-mdc-list-item {
+  min-height: 72px;
+}
+
 .fill {
   font-variation-settings: "FILL" 1;
 }
@@ -45,7 +58,7 @@
 
   &.open-instance-button {
     right: 72px;
-    background:  transparent;
+    background: transparent;
     border: 1px gray dashed;
   }
 }
@@ -56,6 +69,12 @@
   width: 40px;
   font-size: 40px;
   cursor: pointer;
+}
+
+.warning {
+  height: 40px;
+  width: 40px;
+  font-size: 40px;
 }
 
 .expansion-panel-container {

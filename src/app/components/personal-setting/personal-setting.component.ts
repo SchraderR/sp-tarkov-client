@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, ViewChildren } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { catchError, EMPTY, forkJoin, of, switchMap, tap } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatListModule } from '@angular/material/list';
+import { MatListItem, MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
@@ -46,6 +46,8 @@ import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-to
   animations: [fadeInFadeOutAnimation],
 })
 export default class PersonalSettingComponent {
+  @ViewChildren('loading') matList: QueryList<MatListItem> | undefined;
+
   #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
@@ -56,7 +58,7 @@ export default class PersonalSettingComponent {
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
-  hoveringInstance: string = '';
+  hoveringInstance = '';
 
   changeTheme(event: MatSelectChange) {
     this.#electronService.sendEvent('theme-toggle', event.value).subscribe(() => this.#userSettingsService.currentTheme.set(event.value));
@@ -78,17 +80,16 @@ export default class PersonalSettingComponent {
       .pipe(
         switchMap(result => {
           const newUserSetting: UserSettingModel = { ...result.args, isLoading: true };
-
-          console.log(this.#userSettingsService.userSettingSignal().length);
-
           this.#userSettingsService.addUserSetting(newUserSetting);
           this.#changeDetectorRef.detectChanges();
+
+          this.matList?.last?._elementRef.nativeElement.scrollIntoView({ behavior: 'smooth' });
 
           return forkJoin({
             userSetting: of(newUserSetting),
             serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.akiRootDirectory),
             clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.akiRootDirectory),
-          });
+          }).pipe(catchError(() => this.handleDirectoryPathError(result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
@@ -99,6 +100,7 @@ export default class PersonalSettingComponent {
 
             userSetting.clientMods = result.clientMods.args;
             userSetting.serverMods = result.serverMods.args;
+            userSetting.isError = result.userSetting.isError;
             userSetting.isLoading = false;
           });
         }),
@@ -112,8 +114,7 @@ export default class PersonalSettingComponent {
           });
 
           return EMPTY;
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        })
       )
       .subscribe();
   }
@@ -128,6 +129,7 @@ export default class PersonalSettingComponent {
       akiRootDirectory: settingModel.akiRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
+      isError: settingModel.isError,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,
     };
@@ -141,6 +143,27 @@ export default class PersonalSettingComponent {
         this.#userSettingsService.removeUserSetting(settingModel.akiRootDirectory);
         this.#userSettingsService.updateUserSetting();
       });
+    });
+  }
+
+  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
+    userSettingModel.isError = true;
+
+    this.#matSnackBar.open(
+      `Instance: ${userSettingModel.akiRootDirectory}\nServer/Client Paths not found.\nMake sure you started the AKI-Server at least one time.`,
+      '',
+      {
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center',
+        panelClass: ['snackbar-multiline'],
+      }
+    );
+
+    return of({
+      userSetting: userSettingModel,
+      serverMods: { args: [] },
+      clientMods: { args: [] },
     });
   }
 }
