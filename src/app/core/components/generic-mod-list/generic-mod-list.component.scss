@@ -6,6 +6,7 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 8px;
+  height: calc(100% - 16px);
 }
 
 mat-card {
@@ -114,7 +115,7 @@ mat-card {
   bottom: 0;
   color: white;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: 11px;
   border-radius: 4px 4px 4px 0;
 
   &.badge.label.green {

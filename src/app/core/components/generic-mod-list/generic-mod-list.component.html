@@ -1,3 +1,9 @@
+@if (loading) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+    <mat-spinner [diameter]="100"></mat-spinner>
+  </div>
+}
+
 @for (mod of accumulatedModList; track mod) {
   <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
     [mod]="mod">

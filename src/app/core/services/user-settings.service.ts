@@ -11,10 +11,6 @@ export class UserSettingsService {
   isExperimentalFunctionActive = signal<boolean>(false);
   isTutorialDone = signal<boolean | null>(null);
 
-  setUserSetting(userSetting: UserSettingModel[]) {
-    this.userSetting.set(userSetting);
-  }
-
   addUserSetting(settingModel: UserSettingModel) {
     if (this.userSetting().some(userSetting => userSetting.akiRootDirectory === settingModel.akiRootDirectory)) {
       return;
