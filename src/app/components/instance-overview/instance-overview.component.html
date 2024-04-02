@@ -1,4 +1,4 @@
-@if (!activeAkiInstance()) {
+@if (!activeAkiInstance) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <div style="display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center">
       There is no active Instance. Please go to the setting and activate an SPT-Instance.
@@ -9,23 +9,23 @@
   </div>
 }
 
-@if (activeAkiInstance()?.isLoading) {
+@if (activeAkiInstance?.isLoading) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <mat-spinner [diameter]="100"></mat-spinner>
   </div>
 }
 
-@if (activeAkiInstance() && !activeAkiInstance()?.isLoading) {
+@if (activeAkiInstance && !activeAkiInstance?.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
       <h2>Server-Mods</h2>
 
       <mat-list style="overflow: auto;">
-        @if (activeAkiInstance()?.serverMods?.length === 0) {
+        @if (activeAkiInstance?.serverMods?.length === 0) {
           <span>No Server-Mods installed!</span>
         }
 
-        @for (serverMod of activeAkiInstance()?.serverMods; track $index) {
+        @for (serverMod of activeAkiInstance?.serverMods; track $index) {
           <mat-list-item>
             <span matListItemTitle>{{ serverMod.name }}</span>
             <span matListItemLine>{{ serverMod.version }}</span>
@@ -55,10 +55,10 @@
     <div class="mod-list">
       <h2>Client-Mods</h2>
       <mat-list style="overflow: auto;">
-        @if (activeAkiInstance()?.clientMods?.length === 0) {
+        @if (activeAkiInstance?.clientMods?.length === 0) {
           <span>No Client-Mods installed!</span>
         }
-        @for (clientMod of activeAkiInstance()?.clientMods; track $index) {
+        @for (clientMod of activeAkiInstance?.clientMods; track $index) {
           <mat-list-item>
             <span matListItemTitle>{{ clientMod.name }}</span>
             <span matListItemLine>{{ clientMod.version }}</span>
