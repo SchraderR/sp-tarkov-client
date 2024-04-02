@@ -22,6 +22,7 @@ export class IsAlreadyInstalledDirective {
     lotus: 'Lotus Trader',
     'Fox-PineappleBlitz': 'Fox - PINEAPPLE BLITZ GRENADE (RE-UPLOAD)',
     'Skills Extended': '[BETA] Skills Extended',
+    Weapons: "Epic's Weapon Pack",
   };
 
   private alternativeClientModNames: { [key: string]: string } = {

@@ -20,6 +20,7 @@ import { debounceTime, Subscription } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -41,6 +42,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatToolbarModule,
     MatSelectModule,
     AsyncPipe,
+    MatProgressSpinner,
   ],
 })
 export default class GenericModListComponent implements AfterViewInit {
@@ -122,8 +124,8 @@ export default class GenericModListComponent implements AfterViewInit {
                 image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
                 icon: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon128')[1] ?? null,
                 teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
-                supportedAkiVersion: e.getElementsByClassName('badge label')[0].innerHTML ?? '',
-                akiVersionColorCode: e.getElementsByClassName('badge label')[0].className,
+                supportedAkiVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+                akiVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
                 kind: undefined,
               }) as Mod
           )
