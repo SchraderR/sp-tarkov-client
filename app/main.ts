@@ -16,6 +16,8 @@ import { handleTutorialEvents } from './events/tutorial.event';
 import { handleTarkovStartEvent } from './events/tarkov-start.event';
 import { handleExperimentalFunctionsEvents } from './events/experimental-functions.event';
 import { handleModLoadOrderEvents } from './events/mod-load-order.event';
+import * as log from 'electron-log';
+log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
