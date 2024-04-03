@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import ModLoadOrderComponent from './mod-load-order.component';
+import { ElectronService } from '../../core/services/electron.service';
+import { mockProvider } from '@ngneat/spectator';
+import { of } from 'rxjs';
 
 describe('ModLoadOrderComponent', () => {
   let component: ModLoadOrderComponent;
@@ -8,6 +11,7 @@ describe('ModLoadOrderComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ModLoadOrderComponent],
+      providers: [mockProvider(ElectronService, { sendEvent: () => of() })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ModLoadOrderComponent);
