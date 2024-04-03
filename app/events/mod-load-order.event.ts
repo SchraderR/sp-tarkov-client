@@ -5,8 +5,12 @@ import { modLoadOrderConfigPath } from '../constants';
 
 export const handleModLoadOrderEvents = () => {
   ipcMain.on('mod-load-order', (event, akiInstancePath: string) => {
-    const akiCoreJson = fs.readFileSync(path.join(akiInstancePath, modLoadOrderConfigPath), 'utf-8');
-
-    event.sender.send('mod-load-order-completed', akiCoreJson);
+    try {
+      const akiCoreJson = fs.readFileSync(path.join(akiInstancePath, modLoadOrderConfigPath), 'utf-8');
+      event.sender.send('mod-load-order-completed', akiCoreJson);
+    } catch (e) {
+      console.log(e);
+      event.sender.send('mod-load-order-completed', JSON.stringify({ order: [] }));
+    }
   });
 };

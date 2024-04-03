@@ -61,6 +61,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         });
 
         await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+        await timeout(1500);
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);
@@ -144,6 +145,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
       } catch (e) {
         event.sender.send('download-link-error', 0);
         await browser.close();
+        console.log(e);
       }
     })();
   });
@@ -231,4 +233,8 @@ async function getReleaseData({ tag, userName, repoName }: GithubLinkData, event
     console.error(error);
     return null;
   }
+}
+
+function timeout(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
