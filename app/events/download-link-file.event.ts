@@ -13,9 +13,10 @@ export interface GithubLinkData {
 }
 
 export const handleDownloadLinkEvent = (isServe: boolean) => {
-  ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
-    let downloadLink = null;
+  let downloadLink = null;
+  let browser: Browser;
 
+  ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
     await install({
       browser: Browsers.CHROME,
       buildId: '122.0.6257.0',
@@ -23,119 +24,127 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
     });
 
     await (async () => {
-      let browser: Browser;
+      try {
+        browser = await launch({
+          headless: 'new',
+          executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
+        });
 
-      browser = await launch({
-        headless: 'new',
-        executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
-      });
-
-      const page = await browser.newPage();
-      await page.setRequestInterception(true);
-      page.on('request', req => {
-        if (req.resourceType() === 'stylesheet' || req.resourceType() === 'font' || req.resourceType() === 'image' || req.resourceType() === 'media') {
-          req.abort();
-        } else {
-          req.continue();
-        }
-      });
-
-      await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-      await page.click('[name="confirm"]');
-      await page.click('div.formSubmit input[type="submit"]');
-
-      page.on('response', response => {
-        const status = response.status();
-        if (status >= 300 && status <= 399) {
-          if (response.headers()['location'].includes('dev.sp-tarkov.com/attachments')) {
-            downloadLink = response.headers()['location'];
-            event.sender.send('download-link-completed', downloadLink);
-            browser.close();
+        const page = await browser.newPage();
+        await page.setRequestInterception(true);
+        page.on('request', req => {
+          if (
+            req.resourceType() === 'stylesheet' ||
+            req.resourceType() === 'font' ||
+            req.resourceType() === 'image' ||
+            req.resourceType() === 'media'
+          ) {
+            req.abort();
+          } else {
+            req.continue();
           }
-        }
-      });
+        });
 
-      await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-      await page.click('a.button.buttonPrimary.externalURL');
+        await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+        await page.click('[name="confirm"]');
+        await page.click('div.formSubmit input[type="submit"]');
 
-      const newPagePromise = getNewPageWhenLoaded(browser);
-      const newPage: Page = await newPagePromise;
+        page.on('response', response => {
+          const status = response.status();
+          if (status >= 300 && status <= 399) {
+            if (response.headers()['location'].includes('dev.sp-tarkov.com/attachments')) {
+              downloadLink = response.headers()['location'];
+              event.sender.send('download-link-completed', downloadLink);
+              browser.close();
+            }
+          }
+        });
 
-      downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
-      if (!downloadLink) {
-        await browser.close();
-        return;
-      }
+        await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+        await page.click('a.button.buttonPrimary.externalURL');
 
-      const isDirectDllLink = isDirectDll(downloadLink);
-      if (isDirectDllLink) {
-        event.sender.send('download-link-completed', downloadLink);
-        await browser.close();
-        return;
-      }
+        const newPagePromise = getNewPageWhenLoaded(browser);
+        const newPage: Page = await newPagePromise;
 
-      const isDropBoxLink = isDropBox(downloadLink);
-      if (isDropBoxLink) {
-        downloadLink = downloadLink.replace('&dl=0', '&dl=1').replace('?dl=0', '?dl=1');
-        event.sender.send('download-link-completed', downloadLink);
-        await browser.close();
-        return;
-      }
-
-      const isGoogleDriveLink = isGoogleDrive(downloadLink);
-      if (isGoogleDriveLink) {
-        downloadLink = downloadLink.split('?')[0];
-        let regex;
-        if (downloadLink.includes('/file/d/')) {
-          regex = /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/;
-        } else if (downloadLink.includes('/folders/')) {
-          regex = /https:\/\/drive\.google\.com\/drive\/folders\/(.*?)(\/|$)/;
-        }
-
-        if (!regex) {
-          event.sender.send('download-link-error', 0);
+        downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
+        if (!downloadLink) {
           await browser.close();
           return;
         }
 
-        const match = downloadLink.match(regex);
-        const id = match ? match[1] : null;
-
-        if (id === null) {
-          event.sender.send('download-link-error', 0);
-          await browser.close();
-          return;
-        }
-
-        downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
-        event.sender.send('download-link-completed', downloadLink);
-        await browser.close();
-        return;
-      }
-
-      const isArchiveLink = isArchiveURL(downloadLink);
-      if (!isArchiveLink) {
-        const gitHubInformation = parseGitHubLink(downloadLink);
-        if (!gitHubInformation) {
+        const isDirectDllLink = isDirectDll(downloadLink);
+        if (isDirectDllLink) {
           event.sender.send('download-link-completed', downloadLink);
           await browser.close();
           return;
         }
 
-        await getReleaseData(gitHubInformation, event)
-          .then(async data => {
-            const githubDownloadLink = data?.assets?.[0].browser_download_url;
+        const isDropBoxLink = isDropBox(downloadLink);
+        if (isDropBoxLink) {
+          downloadLink = downloadLink.replace('&dl=0', '&dl=1').replace('?dl=0', '?dl=1');
+          event.sender.send('download-link-completed', downloadLink);
+          await browser.close();
+          return;
+        }
 
-            event.sender.send('download-link-completed', githubDownloadLink);
+        const isGoogleDriveLink = isGoogleDrive(downloadLink);
+        if (isGoogleDriveLink) {
+          downloadLink = downloadLink.split('?')[0];
+          let regex;
+          if (downloadLink.includes('/file/d/')) {
+            regex = /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/;
+          } else if (downloadLink.includes('/folders/')) {
+            regex = /https:\/\/drive\.google\.com\/drive\/folders\/(.*?)(\/|$)/;
+          }
+
+          if (!regex) {
+            event.sender.send('download-link-error', 0);
             await browser.close();
-
             return;
-          })
-          .catch(err => console.error(err));
-      }
+          }
 
-      event.sender.send('download-link-completed', downloadLink);
-      await browser.close();
+          const match = downloadLink.match(regex);
+          const id = match ? match[1] : null;
+
+          if (id === null) {
+            event.sender.send('download-link-error', 0);
+            await browser.close();
+            return;
+          }
+
+          downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
+          event.sender.send('download-link-completed', downloadLink);
+          await browser.close();
+          return;
+        }
+
+        const isArchiveLink = isArchiveURL(downloadLink);
+        if (!isArchiveLink) {
+          const gitHubInformation = parseGitHubLink(downloadLink);
+          if (!gitHubInformation) {
+            event.sender.send('download-link-completed', downloadLink);
+            await browser.close();
+            return;
+          }
+
+          await getReleaseData(gitHubInformation, event)
+            .then(async data => {
+              const githubDownloadLink = data?.assets?.[0].browser_download_url;
+
+              event.sender.send('download-link-completed', githubDownloadLink);
+              await browser.close();
+
+              return;
+            })
+            .catch(err => console.error(err));
+        }
+
+        event.sender.send('download-link-completed', downloadLink);
+        await browser.close();
+      } catch (e) {
+        event.sender.send('download-link-error', 0);
+        await browser.close();
+      }
     })();
   });
 };
@@ -202,7 +211,9 @@ function parseGitHubLink(url: string): GithubLinkData | null {
 }
 
 async function getReleaseData({ tag, userName, repoName }: GithubLinkData, event: Electron.IpcMainEvent) {
-  const url = tag ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split('/')[1]}` : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
+  const url = tag
+    ? `https://api.github.com/repos/${userName}/${repoName}/releases/tags/${tag.split('/')[1]}`
+    : `https://api.github.com/repos/${userName}/${repoName}/releases/latest`;
 
   try {
     const response = await axios.get<GithubRelease>(url);
