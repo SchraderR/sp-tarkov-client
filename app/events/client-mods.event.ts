@@ -2,6 +2,7 @@
 import * as path from 'path';
 import { clientModPath } from '../constants';
 import * as fs from 'fs';
+import * as log from 'electron-log';
 
 export const handleClientModsEvent = () => {
   ipcMain.on('client-mod', async (event, akiInstancePath: string) => {
@@ -47,6 +48,7 @@ export const handleClientModsEvent = () => {
       }
     } catch (error) {
       event.sender.send('client-mod-error', error);
+      log.error(error);
     }
   });
 };

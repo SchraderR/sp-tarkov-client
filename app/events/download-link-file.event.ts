@@ -5,6 +5,7 @@ import { GithubRelease } from '../../shared/models/github.model';
 import { LinkModel } from '../../shared/models/aki-core.model';
 import { Browser as Browsers, install } from '@puppeteer/browsers';
 import { GithubRateLimit } from '../../shared/models/download.model';
+import * as log from 'electron-log';
 
 export interface GithubLinkData {
   userName: string;
@@ -143,6 +144,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         event.sender.send('download-link-completed', downloadLink);
         await browser.close();
       } catch (e) {
+        log.error(e);
         event.sender.send('download-link-error', 0);
         await browser.close();
         console.log(e);

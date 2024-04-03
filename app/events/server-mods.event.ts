@@ -2,6 +2,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { serverModPath } from '../constants';
+import * as log from 'electron-log';
 
 export const handleServerModsEvent = () => {
   ipcMain.on('server-mod', async (event, akiInstancePath: string) => {
@@ -28,6 +29,7 @@ export const handleServerModsEvent = () => {
         event.sender.send('server-mod-completed', data);
       }
     } catch (error) {
+      log.error(error);
       event.sender.send('server-mod-error', error);
     }
   });
