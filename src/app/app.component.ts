@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, effect, inject, NgZone, ViewChild } from '@angular/core';
 import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { Router, RouterModule } from '@angular/router';
@@ -87,8 +87,14 @@ export class AppComponent {
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
-
     this.getGithubRateLimitInformation();
+
+    effect(() => {
+      const isTutorialDone = this.#userSettingService.isTutorialDone();
+      if (isTutorialDone === false) {
+        this.showTutorialSnackbar();
+      }
+    });
   }
 
   toggleDrawer = () => {
@@ -159,37 +165,54 @@ export class AppComponent {
   }
 
   private getCurrentTutorialSettings() {
-    this.#electronService.sendEvent<boolean>('tutorial-setting').subscribe(value => {
-      this.#ngZone.run(() => {
-        this.#userSettingService.isTutorialDone.set(value.args);
+    this.#electronService
+      .sendEvent<boolean>('tutorial-setting')
+      .subscribe(value => this.#ngZone.run(() => this.#userSettingService.isTutorialDone.set(value.args)));
+  }
 
-        if (!value.args) {
-          this.#matSnackBar
-            .openFromComponent(SnackbarTutorialHintComponent, { horizontalPosition: 'end' })
-            .afterDismissed()
-            .subscribe(selection => {
-              if (selection.dismissedByAction) {
-                this.#joyrideService
-                  .startTour({ steps: ['settingStepInstance@setting', 'sideNavStep', 'downloadStep', 'downloadOverviewStep@mod-list'] })
-                  .subscribe({
-                    next: step => {
-                      if (step.name === 'downloadStep') {
-                        this.#modListService.addFakeModForTutorial();
-                      }
-                    },
-                    complete: () => {
-                      this.#modListService.clearFakeTutorialMods();
-                      this.#electronService.sendEvent('tutorial-toggle').subscribe();
-                      this.#router.navigate(['/setting']);
-                    },
-                  });
-              } else {
-                this.#electronService.sendEvent('tutorial-toggle').subscribe();
-              }
+  private showTutorialSnackbar() {
+    let instanceSet = false;
+    this.#matSnackBar
+      .openFromComponent(SnackbarTutorialHintComponent, { horizontalPosition: 'end' })
+      .afterDismissed()
+      .subscribe(selection => {
+        if (selection.dismissedByAction) {
+          instanceSet = !!this.#userSettingService.userSettingSignal().length;
+
+          this.#joyrideService
+            .startTour({
+              steps: [
+                'settingStepInstance@setting',
+                'settingStepInstanceActive@setting',
+                'sideNavStep',
+                'downloadStep',
+                'downloadOverviewStep@mod-list',
+              ],
+            })
+            .subscribe({
+              next: step => {
+                if (step.name === 'downloadStep') {
+                  this.#modListService.addFakeModForTutorial();
+                }
+
+                if (step.name === 'settingStepInstance') {
+                  this.#userSettingService.checkInstanceOrFake();
+                }
+              },
+              complete: () => {
+                if (!instanceSet) {
+                  this.#userSettingService.clearFakeInstance();
+                }
+                this.#modListService.clearFakeTutorialMods();
+                this.#electronService.sendEvent('tutorial-toggle', true).subscribe();
+                this.#userSettingService.updateTutorialDone(true);
+                this.#router.navigate(['/setting']);
+              },
             });
+        } else {
+          this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
         }
       });
-    });
   }
 
   private handleDirectoryPathError(userSetting: UserSettingModel) {
