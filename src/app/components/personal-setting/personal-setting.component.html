@@ -1,6 +1,6 @@
 <div style="display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px">
   <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent"
-            [stepPosition]="userSettingSignal().length ? 'center' : 'bottom'">
+            [stepPosition]="!!userSettingSignal().length ? 'center' : 'bottom'">
     <mat-card-header>
       <mat-card-title>Aki-Instances ({{ userSettingSignal().length }})</mat-card-title>
     </mat-card-header>
