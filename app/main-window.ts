@@ -1,16 +1,23 @@
-﻿import { BrowserWindow, nativeTheme } from 'electron';
+﻿import { BrowserWindow, nativeTheme, Tray, Menu } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../shared/models/user-setting.model';
+import * as windowStateKeeper from 'electron-window-state';
 
 export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
+  let tray: Tray | null;
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 1200,
+    defaultHeight: 600,
+  });
+
   let browserWindow: BrowserWindow | null = new BrowserWindow({
-    x: 0,
-    y: 0,
-    width: 1345,
-    height: 590,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
     autoHideMenuBar: true,
     frame: true,
     icon: 'app/assets/icon.png',
@@ -21,6 +28,17 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       contextIsolation: false,
     },
   });
+  mainWindowState.manage(browserWindow);
+
+  tray = new Tray('app/assets/icon_tray.png');
+  //const contextMenu = Menu.buildFromTemplate([
+  //  { label: 'Item1', type: 'radio' },
+  //  { label: 'Item2', type: 'radio' },
+  //  { label: 'Item3', type: 'radio', checked: true },
+  //  { label: 'Item4', type: 'radio' },
+  //]);
+  tray.setToolTip('EFT-SP Management Tool');
+  //tray.setContextMenu(contextMenu);
 
   browserWindow.setMenu(null);
   browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
