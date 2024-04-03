@@ -8,6 +8,5 @@ export const handleModLoadOrderEvents = () => {
     const akiCoreJson = fs.readFileSync(path.join(akiInstancePath, modLoadOrderConfigPath), 'utf-8');
 
     event.sender.send('mod-load-order-completed', akiCoreJson);
-    console.log(akiCoreJson);
   });
 };
