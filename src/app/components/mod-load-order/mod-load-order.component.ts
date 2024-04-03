@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, NgZone, OnInit } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
