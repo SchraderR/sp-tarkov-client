@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import * as path from 'path';
 import * as child from 'child_process';
 import { spawn } from 'node:child_process';
+import * as log from 'electron-log';
 
 const exeName = 'Aki.Server.exe';
 
@@ -24,6 +25,7 @@ export const handleTarkovStartEvent = () => {
       child.on('exit', code => console.log(`Child exited with code ${code}`));
       child!.unref();
     } catch (e) {
+      log.error(e);
       console.log(e?.toString());
     }
 

@@ -7,6 +7,7 @@ import { Extractor } from 'node-unrar-js';
 import { extractFull, list } from 'node-7z';
 import { clientModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
+import * as log from 'electron-log';
 
 export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
@@ -40,6 +41,7 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
         await handleOtherArchive(archivePath, sevenBinPath, args, event);
       }
     } catch (error) {
+      log.error(error);
       console.error(error);
       event.sender.send('file-unzip-error', 3);
     }
@@ -51,7 +53,10 @@ async function handleRarArchive(archivePath: string, args: FileUnzipEvent, event
 
   const isRarWithSingleDll = await checkForRarWithSingleDll(extractorForFiles);
   if (isRarWithSingleDll) {
-    const extractorForDll = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, clientModPath) });
+    const extractorForDll = await unrar.createExtractorFromFile({
+      filepath: archivePath,
+      targetPath: path.join(args.akiInstancePath, clientModPath),
+    });
     extractorForDll.extract();
     event.sender.send('file-unzip-completed');
     return;
@@ -60,14 +65,22 @@ async function handleRarArchive(archivePath: string, args: FileUnzipEvent, event
   if (!isRarHappyPath) {
     switch (args.kind) {
       case 'client':
-        const extractorForClient = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, clientModPath) });
+        const extractorForClient = await unrar.createExtractorFromFile({
+          filepath: archivePath,
+          targetPath: path.join(args.akiInstancePath, clientModPath),
+        });
         const clientFiles = extractorForClient.extract().files;
-        for (const file of clientFiles) {} // this extracts the files. wtf
+        for (const file of clientFiles) {
+        } // this extracts the files. wtf
         break;
       case 'server':
-        const extractorForServer = await unrar.createExtractorFromFile({ filepath: archivePath, targetPath: path.join(args.akiInstancePath, serverModPath) });
+        const extractorForServer = await unrar.createExtractorFromFile({
+          filepath: archivePath,
+          targetPath: path.join(args.akiInstancePath, serverModPath),
+        });
         const serverFiles = extractorForServer.extract().files;
-        for (const file of serverFiles) {} // this extracts the files. wtf
+        for (const file of serverFiles) {
+        } // this extracts the files. wtf
         break;
       default:
         break;

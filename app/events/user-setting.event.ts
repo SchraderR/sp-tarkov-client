@@ -4,6 +4,7 @@ import * as Store from 'electron-store';
 import * as path from 'path';
 import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableAkiCoreConfigPath } from '../constants';
+import * as log from 'electron-log';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('user-settings', async event => {
@@ -74,6 +75,7 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         serverMods: akiInstance.serverMods ?? [],
       });
     } catch (e) {
+      log.error(e);
       // add to object and return a missing path error message
     }
   }

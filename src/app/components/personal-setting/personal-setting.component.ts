@@ -18,8 +18,8 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { JoyrideModule } from 'ngx-joyride';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   standalone: true,
@@ -40,8 +40,8 @@ import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-to
     ReactiveFormsModule,
     JoyrideModule,
     NgOptimizedImage,
-    MatProgressSpinner,
-    MatSlideToggle,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
   ],
   animations: [fadeInFadeOutAnimation],
 })
@@ -72,6 +72,10 @@ export default class PersonalSettingComponent {
 
   openInstance(akiRootDirectory: string) {
     this.#electronService.openPath(akiRootDirectory);
+  }
+
+  restartTutorial() {
+    this.#userSettingsService.updateTutorialDone(false);
   }
 
   getRootEftSpDirectory() {

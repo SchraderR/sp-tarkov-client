@@ -1,5 +1,6 @@
 <div style="display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px">
-  <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent">
+  <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent"
+            [stepPosition]="!!userSettingSignal().length ? 'center' : 'bottom'">
     <mat-card-header>
       <mat-card-title>Aki-Instances ({{ userSettingSignal().length }})</mat-card-title>
     </mat-card-header>
@@ -14,7 +15,8 @@
           @if (!settingModel.isLoading) {
             <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
                            (mouseleave)="hoveringInstance = ''">
-              <mat-icon *ngIf="!settingModel.isError" matListItemAvatar class="active-star"
+              <mat-icon joyrideStep="settingStepInstanceActive" [stepContent]="joyRideStepInstanceActiveContent"
+                        *ngIf="!settingModel.isError" matListItemAvatar class="active-star"
                         [class.fill]="settingModel.isActive"
                         matTooltip="Set instance to active"
                         (click)="setActiveInstance(settingModel)">
@@ -62,6 +64,9 @@
           <mat-option value="system">System</mat-option>
         </mat-select>
       </mat-form-field>
+      <button mat-raised-button color="primary" style="width: fit-content;" (click)="restartTutorial()">Restart
+        Tutorial
+      </button>
       <div>
         <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">
           Activate Experimental Function
@@ -85,5 +90,14 @@
     <p>
     After adding an instance, you can set it as the active instance by clicking on the star icon.<br>
     Mods will be installed in the active instance.<br>
+  </span>
+</ng-template>
+
+<ng-template #joyRideStepInstanceActiveContent>
+  <h4>Activate your instance:</h4>
+  <span>
+    With this "Star" you can set your instance active or inactive.
+    <p>
+    All actions will be executed for your active instance.
   </span>
 </ng-template>

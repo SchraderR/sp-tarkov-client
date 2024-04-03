@@ -13,6 +13,7 @@ import { EMPTY, map, Observable } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { DownloadService } from '../../core/services/download.service';
+import { environment } from '../../../environments/environment';
 
 export interface ModLicenseInformation {
   url: string;
@@ -51,8 +52,13 @@ export class ModCardComponent implements OnInit {
     if (!this.mod?.fileUrl) {
       return EMPTY;
     }
+    let path = this.mod.fileUrl;
 
-    return this.#httpClient.get(this.mod.fileUrl, { responseType: 'text' }).pipe(
+    if (!environment.production) {
+      path = this.mod.fileUrl.split('https://hub.sp-tarkov.com/')[1];
+    }
+
+    return this.#httpClient.get(path, { responseType: 'text' }).pipe(
       map(modHtml => {
         const modPageView = HtmlHelper.parseStringAsHtml(modHtml);
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');

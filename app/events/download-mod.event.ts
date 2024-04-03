@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import axios from 'axios';
 import { Browser, launch } from 'puppeteer';
+import * as log from 'electron-log';
 
 const DOWNLOAD_TIMEOUT = 60000;
 export const handleDownloadModEvent = () => {
@@ -47,6 +48,7 @@ export const handleDownloadModEvent = () => {
         onCancel: () => event.sender.send('download-mod-error', 1),
       });
     } catch (e) {
+      log.error(e);
       event.sender.send('download-mod-error', 1);
       await browser?.close();
     }

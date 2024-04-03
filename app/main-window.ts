@@ -1,76 +1,101 @@
-﻿import { BrowserWindow, nativeTheme } from 'electron';
+﻿import { BrowserWindow, nativeTheme, Tray } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../shared/models/user-setting.model';
+import * as log from 'electron-log';
+import * as windowStateKeeper from 'electron-window-state';
 
 export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
-  let browserWindow: BrowserWindow | null = new BrowserWindow({
-    x: 0,
-    y: 0,
-    width: 1345,
-    height: 590,
-    autoHideMenuBar: true,
-    frame: true,
-    icon: 'app/assets/icon.png',
-    titleBarStyle: 'hidden',
-    webPreferences: {
-      nodeIntegration: true,
-      allowRunningInsecureContent: isServe,
-      contextIsolation: false,
-    },
+  let tray: Tray | null;
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 1200,
+    defaultHeight: 600,
   });
 
-  browserWindow.setMenu(null);
-  browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-    callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-  });
-
-  browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        'Access-Control-Allow-Origin': ['*'],
-        'Access-Control-Allow-Headers': ['*'],
-        ...details.responseHeaders,
+  try {
+    let browserWindow: BrowserWindow | null = new BrowserWindow({
+      x: mainWindowState.x,
+      y: mainWindowState.y,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
+      autoHideMenuBar: true,
+      frame: true,
+      icon: 'app/assets/icon.png',
+      titleBarStyle: 'hidden',
+      webPreferences: {
+        nodeIntegration: true,
+        allowRunningInsecureContent: isServe,
+        contextIsolation: false,
       },
     });
-  });
+    mainWindowState.manage(browserWindow);
 
-  const theme = store.get('theme');
-  if (!theme) {
-    store.set('theme', 'system');
-  }
-  nativeTheme.themeSource = store.get('theme');
+    const iconPath = path.join(__dirname, 'assets/icon_tray.png');
+    tray = new Tray(iconPath);
+    //const contextMenu = Menu.buildFromTemplate([
+    //  { label: 'Item1', type: 'radio' },
+    //  { label: 'Item2', type: 'radio' },
+    //  { label: 'Item3', type: 'radio', checked: true },
+    //  { label: 'Item4', type: 'radio' },
+    //]);
+    tray.setToolTip('EFT-SP Management Tool');
+    //tray.setContextMenu(contextMenu);
 
-  const isTutorialDone = store.get('isTutorialDone');
-  if (!isTutorialDone) {
-    store.set('isTutorialDone', false);
-  }
+    browserWindow.setMenu(null);
+    browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+      callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
+    });
 
-  const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
-  if (!isExperimentalFunctionsActive) {
-    store.set('isExperimentalFunctionsActive', false);
-  }
+    browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          'Access-Control-Allow-Origin': ['*'],
+          'Access-Control-Allow-Headers': ['*'],
+          ...details.responseHeaders,
+        },
+      });
+    });
 
-  if (isServe) {
-    browserWindow.webContents.openDevTools();
-    const debug = require('electron-debug');
-    debug();
+    const theme = store.get('theme');
+    if (!theme) {
+      store.set('theme', 'system');
+    }
+    nativeTheme.themeSource = store.get('theme');
 
-    require('electron-reload');
-    browserWindow.loadURL('http://localhost:4200');
-  } else {
-    let pathIndex = './index.html';
-
-    if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
-      pathIndex = '../dist/index.html';
+    const isTutorialDone = store.get('isTutorialDone');
+    if (!isTutorialDone) {
+      store.set('isTutorialDone', false);
     }
 
-    const url = new URL(path.join('file:', __dirname, pathIndex));
-    void browserWindow.loadURL(url.href);
-  }
-  browserWindow.on('closed', () => (browserWindow = null));
+    const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
+    if (!isExperimentalFunctionsActive) {
+      store.set('isExperimentalFunctionsActive', false);
+    }
 
-  BrowserWindowSingleton.setInstance(browserWindow);
+    if (isServe) {
+      browserWindow.webContents.openDevTools();
+      const debug = require('electron-debug');
+      debug();
+
+      require('electron-reload');
+      browserWindow.loadURL('http://localhost:4200');
+    } else {
+      let pathIndex = './index.html';
+
+      if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
+        pathIndex = '../dist/index.html';
+      }
+
+      const url = new URL(path.join('file:', __dirname, pathIndex));
+      void browserWindow.loadURL(url.href);
+    }
+    browserWindow.on('closed', () => (browserWindow = null));
+
+    BrowserWindowSingleton.setInstance(browserWindow);
+  } catch (e) {
+    log.error(e);
+    log.error(e?.toString());
+  }
 };
