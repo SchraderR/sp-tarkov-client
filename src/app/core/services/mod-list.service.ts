@@ -61,7 +61,7 @@ export class ModListService {
       {
         name: "Amands's Graphics",
         fileUrl: null!,
-        image: 'https://hub.sp-tarkov.com/files/images/file/f4/813.png',
+        image: 'assets/images/813.png',
         teaser: 'Lighting and postprocessing overhaul',
         supportedAkiVersion: 'Empfohlen',
         kind: undefined,
@@ -71,7 +71,7 @@ export class ModListService {
       {
         name: "SAIN 2.0 - Solarint's AI Modifications - Full AI Combat System Replacement",
         fileUrl: null!,
-        image: 'https://hub.sp-tarkov.com/files/images/file/c6/1062.jpg',
+        image: 'assets/images/1062.jpg',
         teaser: "Bots that don't suck.",
         supportedAkiVersion: 'Empfohlen',
         kind: undefined,
@@ -81,7 +81,7 @@ export class ModListService {
       {
         name: 'SPT Realism Mod',
         fileUrl: null!,
-        image: 'https://hub.sp-tarkov.com/files/images/file/24/606.png',
+        image: 'assets/images/606.png',
         teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
         supportedAkiVersion: 'Empfohlen',
         kind: undefined,
