@@ -53,7 +53,10 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         page.on('response', response => {
           const status = response.status();
           if (status >= 300 && status <= 399) {
-            if (response.headers()['location'].includes('dev.sp-tarkov.com/attachments')) {
+            if (
+              response.headers()?.['location']?.includes('dev.sp-tarkov.com') ||
+              response.headers()?.['location']?.includes('dev.sp-tarkov.com/attachments')
+            ) {
               downloadLink = response.headers()['location'];
               event.sender.send('download-link-completed', downloadLink);
               browser.close();
@@ -62,7 +65,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         });
 
         await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-        await timeout(1500);
+        // await timeout(1000);
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);
