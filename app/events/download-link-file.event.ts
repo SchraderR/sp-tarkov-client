@@ -13,7 +13,7 @@ export interface GithubLinkData {
   tag: string;
 }
 
-export const handleDownloadLinkEvent = (isServe: boolean) => {
+export const handleDownloadLinkEvent = () => {
   let downloadLink = null;
   let browser: Browser;
 
@@ -27,7 +27,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
     await (async () => {
       try {
         browser = await launch({
-          headless: 'new',
+          headless: true,
           executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
         });
 
