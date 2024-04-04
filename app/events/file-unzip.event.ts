@@ -205,7 +205,7 @@ function isHappyPathArchive(archivePath: string, sevenBinPath: string): Promise<
     list(archivePath, { $bin: sevenBinPath })
       .on('data', data => {
         const filePath = data.file;
-        if (filePath.startsWith(clientModPath) || filePath.startsWith(serverModPath)) {
+        if (filePath.toLowerCase().startsWith(clientModPath.toLowerCase()) || filePath.toLowerCase().startsWith(serverModPath.toLowerCase())) {
           isHappyPath = true;
         }
       })
