@@ -1,6 +1,16 @@
 ﻿import { AkiCore } from './aki-core.model';
 
+export interface UpdateModMeta {
+  name: string;
+  version: string;
+  hubId: string;
+  imageIcon: string;
+  clientName: string;
+  serverName: string;
+}
+
 export interface UserSettingStoreModel {
+  modMetaData: UpdateModMeta[];
   akiInstances: AkiInstance[];
   theme: Theme;
   isTutorialDone: boolean;
