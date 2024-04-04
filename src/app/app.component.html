@@ -5,8 +5,10 @@
   </div>
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
-    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep" [stepContent]="joyRideStepDownloadButtonContent">
-      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false" matBadgeColor="accent">
+    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep"
+            [stepContent]="joyRideStepDownloadButtonContent">
+      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false"
+                matBadgeColor="accent">
         download
       </mat-icon>
     </button>
@@ -46,13 +48,19 @@
         <mat-icon matListItemIcon>manage_accounts</mat-icon>
         <div matListItemTitle>Active Instance</div>
       </mat-list-item>
-<!--
-      <mat-list-item routerLink="mod-load-order" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
-                     matTooltip="Mod Load Order">
-        <mat-icon matListItemIcon>reorder</mat-icon>
-        <div matListItemTitle>Mod Load Order</div>
+      <!--
+            <mat-list-item routerLink="mod-load-order" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                           matTooltip="Mod Load Order">
+              <mat-icon matListItemIcon>reorder</mat-icon>
+              <div matListItemTitle>Mod Load Order</div>
+            </mat-list-item>
+
+      <mat-list-item routerLink="mod-update-overview" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                     matTooltip="Mod Update Overview">
+        <mat-icon matListItemIcon>cloud_sync</mat-icon>
+        <div matListItemTitle>Mod Update Overview</div>
       </mat-list-item>
--->
+      -->
       <mat-divider />
       <div joyrideStep="sideNavStep" [stepContent]="joyRideStepContent">
         <mat-list-item routerLink="new" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
@@ -112,7 +120,7 @@
   </mat-sidenav-content>
 
   <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
-    @if(isTarkovInstanceRunExpanded) {
+    @if (isTarkovInstanceRunExpanded) {
       <app-tarkov-start />
     }
   </mat-sidenav>
