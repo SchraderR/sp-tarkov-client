@@ -1,5 +1,5 @@
 <mat-form-field color="accent" class="search-input" appearance="outline" subscriptSizing="dynamic">
-  <mat-label>Search for SP Aki Mods</mat-label>
+  <mat-label>Search Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
     @for (mod of filteredModItems | async; track mod) {
