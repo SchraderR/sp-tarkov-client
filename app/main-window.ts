@@ -1,4 +1,4 @@
-﻿import { BrowserWindow, nativeTheme, Tray } from 'electron';
+﻿import { BrowserWindow, nativeTheme } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
@@ -6,9 +6,9 @@ import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as log from 'electron-log';
 import * as windowStateKeeper from 'electron-window-state';
+import { Notification } from 'electron';
 
 export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
-  let tray: Tray | null;
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1200,
     defaultHeight: 600,
@@ -32,16 +32,9 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     });
     mainWindowState.manage(browserWindow);
 
-    const iconPath = path.join(__dirname, 'assets/icon_tray.png');
-    tray = new Tray(iconPath);
-    //const contextMenu = Menu.buildFromTemplate([
-    //  { label: 'Item1', type: 'radio' },
-    //  { label: 'Item2', type: 'radio' },
-    //  { label: 'Item3', type: 'radio', checked: true },
-    //  { label: 'Item4', type: 'radio' },
-    //]);
-    tray.setToolTip('EFT-SP Management Tool');
-    //tray.setContextMenu(contextMenu);
+    // const NOTIFICATION_TITLE = 'Basic Notification';
+    // const NOTIFICATION_BODY = 'Notification from the Main process';
+    // new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
 
     browserWindow.setMenu(null);
     browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
@@ -72,6 +65,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);
+    }
+
+    const modMetaData = store.get('modMetaData');
+    if (!modMetaData) {
+      store.set('modMetaData', []);
     }
 
     if (isServe) {

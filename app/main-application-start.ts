@@ -1,10 +1,13 @@
-﻿import { app } from 'electron';
+﻿import { app, Menu, Tray } from 'electron';
 import { createMainApiManagementWindow } from './main-window';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../shared/models/user-setting.model';
+import * as path from 'path';
 
 export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
+  let tray: Tray | null;
+  const iconPath = path.join(__dirname, 'assets/icon_tray.png');
   const browserWindow = BrowserWindowSingleton.getInstance();
   const instance = store.get('akiInstances');
   if (!instance) {
@@ -14,8 +17,30 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
     store.set('isExperimentalFunctionsActive', false);
   }
 
+  //if (process.platform === 'win32') {
+  //  app.setAppUserModelId('SP-EFT Manager');
+  //}
+
   try {
-    app.on('ready', () => setTimeout(() => createMainApiManagementWindow(isServe, store), 400));
+    app.on('ready', () =>
+      setTimeout(() => {
+        createMainApiManagementWindow(isServe, store);
+
+        tray = new Tray(iconPath);
+        //tray.on('double-click', () => {
+        //  const browserWindow = BrowserWindowSingleton.getInstance();
+        //  browserWindow.show();
+        //});
+        tray.setToolTip('EFT-SP Management Tool');
+
+        //const contextMenu = Menu.buildFromTemplate([
+        //  { label: '               ' },
+        //  { type: 'separator' },
+        //  { label: 'Close App', click: () => app.quit() },
+        //]);
+        //tray.setContextMenu(contextMenu);
+      }, 400)
+    );
     app.on('window-all-closed', () => {
       if (process.platform !== 'darwin') {
         app.quit();
