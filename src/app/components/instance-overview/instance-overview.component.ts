@@ -30,6 +30,6 @@ export default class InstanceOverviewComponent {
   }
 
   openSVMTool(modPath: string) {
-    this.#electronService.openPath(modPath + '/GFVE.exe');
+    this.#electronService.openPath(modPath + '/Greed.exe');
   }
 }

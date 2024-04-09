@@ -25,7 +25,7 @@ export const handleDownloadModEvent = () => {
 
       if (downloadModel.modFileUrl.includes('docs.google.com')) {
         browser = await launch({
-          headless: 'new',
+          headless: true,
           executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
         });
 
@@ -69,7 +69,7 @@ async function waitForDownload(downloadModel: DownloadModel, browser: Browser, e
       let downloadTimeoutId: any; // This will store the ID for the setTimeout call
 
       const page = await browser.newPage();
-      const client = await page.target().createCDPSession();
+      const client = await page.createCDPSession();
       await client.send('Browser.setDownloadBehavior', { behavior: 'allowAndName', downloadPath: ankiTempDownloadDir, eventsEnabled: true });
 
       client.on('Browser.downloadWillBegin', async event => (guids[event.guid] = event.suggestedFilename));

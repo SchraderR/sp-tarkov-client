@@ -13,7 +13,7 @@ export interface GithubLinkData {
   tag: string;
 }
 
-export const handleDownloadLinkEvent = (isServe: boolean) => {
+export const handleDownloadLinkEvent = () => {
   let downloadLink = null;
   let browser: Browser;
 
@@ -27,7 +27,7 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
     await (async () => {
       try {
         browser = await launch({
-          headless: 'new',
+          headless: true,
           executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
         });
 
@@ -53,7 +53,10 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
         page.on('response', response => {
           const status = response.status();
           if (status >= 300 && status <= 399) {
-            if (response.headers()['location'].includes('dev.sp-tarkov.com/attachments')) {
+            if (
+              response.headers()?.['location']?.includes('dev.sp-tarkov.com') ||
+              response.headers()?.['location']?.includes('dev.sp-tarkov.com/attachments')
+            ) {
               downloadLink = response.headers()['location'];
               event.sender.send('download-link-completed', downloadLink);
               browser.close();
@@ -61,8 +64,9 @@ export const handleDownloadLinkEvent = (isServe: boolean) => {
           }
         });
 
+        await timeout(2000);
         await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-        await timeout(1500);
+        await timeout(2000);
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);

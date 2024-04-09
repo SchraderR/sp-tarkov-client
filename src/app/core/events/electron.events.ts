@@ -20,7 +20,8 @@
   | 'mod-load-order'
   | 'mod-load-order-save'
   | 'exp-function-setting'
-  | 'exp-function-toggle';
+  | 'exp-function-toggle'
+  | 'update-mod-data';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
