@@ -11,7 +11,7 @@ import { ModListService } from '../services/mod-list.service';
 })
 export class IsAlreadyInstalledDirective {
   private alternativeServerModNames: { [key: string]: string } = {
-    SVM: 'KMC Server Value Modifier (SVM)',
+    SVM: 'Server Value Modifier [SVM]',
     SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
     'SWAG + DONUTS': 'SWAG + Donuts - Dynamic Spawn Waves and Custom Spawn Points',
     LPARedux: 'Lock Picking Attorney Redux',
@@ -23,10 +23,12 @@ export class IsAlreadyInstalledDirective {
     'Fox-PineappleBlitz': 'Fox - PINEAPPLE BLITZ GRENADE (RE-UPLOAD)',
     'Skills Extended': '[BETA] Skills Extended',
     Weapons: "Epic's Weapon Pack",
+    Priscilu: 'Priscilu: the trader',
+    AmmoStats: 'Ammo Stats in Description',
   };
 
   private alternativeClientModNames: { [key: string]: string } = {
-    SVM: 'KMC Server Value Modifier (SVM)',
+    SVM: 'Server Value Modifier [SVM]',
     SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
     'DrakiaXYZ-BigBrain': 'BigBrain',
     'skwizzy.LootingBots': 'Looting Bots',
@@ -40,6 +42,7 @@ export class IsAlreadyInstalledDirective {
     'CactusPie.MapLocation.Common': "CactusPie's Minimap",
     SkillsExtended: '[BETA] Skills Extended',
     BetterFolderBrowser: 'Minimalist Launcher',
+    SPTQuestingBots: 'Questing Bots',
   };
 
   #userSettingsService = inject(UserSettingsService);
