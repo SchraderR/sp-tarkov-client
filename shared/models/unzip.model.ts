@@ -1,6 +1,7 @@
 ﻿export interface FileUnzipEvent {
   akiInstancePath: string;
   filePath: string;
+  fileId: string;
   kind: Kind | undefined;
 }
 

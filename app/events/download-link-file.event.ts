@@ -6,6 +6,8 @@ import { LinkModel } from '../../shared/models/aki-core.model';
 import { Browser as Browsers, install } from '@puppeteer/browsers';
 import { GithubRateLimit } from '../../shared/models/download.model';
 import * as log from 'electron-log';
+import { UpdateModMeta, UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import * as Store from 'electron-store';
 
 export interface GithubLinkData {
   userName: string;
@@ -13,7 +15,7 @@ export interface GithubLinkData {
   tag: string;
 }
 
-export const handleDownloadLinkEvent = () => {
+export const handleDownloadLinkEvent = (store: Store<UserSettingStoreModel>) => {
   let downloadLink = null;
   let browser: Browser;
 
@@ -67,6 +69,13 @@ export const handleDownloadLinkEvent = () => {
         await timeout(2000);
         await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
         await timeout(2000);
+
+        const isAlreadySaved = store.get('modMetaData').find(i => i.hubId === linkModel.fileId);
+        if (!isAlreadySaved) {
+          const hubName = await page.$eval('h1.contentTitle span[itemprop="name"]', el => el.innerHTML);
+          store.set('modMetaData', [...store.get('modMetaData'), { url: page.url(), hubId: linkModel.fileId, hubName } as UpdateModMeta]);
+        }
+
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);

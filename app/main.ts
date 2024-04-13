@@ -18,6 +18,7 @@ import { handleExperimentalFunctionsEvents } from './events/experimental-functio
 import { handleModLoadOrderEvents } from './events/mod-load-order.event';
 import * as log from 'electron-log';
 import { handleUpdateModEvents } from './events/update-mod.event';
+import { handleNotificationEvents } from './events/notification.event';
 log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
@@ -26,7 +27,7 @@ void autoUpdater.checkForUpdatesAndNotify();
 
 mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
-handleDownloadLinkEvent();
+handleDownloadLinkEvent(store);
 handleDownloadModEvent();
 handleFileUnzipEvent(isServe);
 handleUserSettingStoreEvents(store);
@@ -40,3 +41,4 @@ handleTarkovStartEvent();
 handleExperimentalFunctionsEvents(store);
 handleModLoadOrderEvents();
 handleUpdateModEvents(store);
+handleNotificationEvents();

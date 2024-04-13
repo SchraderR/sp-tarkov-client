@@ -2,8 +2,10 @@
 
 export interface UpdateModMeta {
   name: string;
+  hubName: string;
   version: string;
   hubId: string;
+  url: string;
   imageIcon: string;
   clientName: string;
   serverName: string;
