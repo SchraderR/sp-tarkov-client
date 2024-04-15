@@ -19,10 +19,11 @@
     <div class="mod-container">
       <div class="mod-title" style="display: flex">
         <strong class="one-line-clamp">{{ mod.name }}</strong>
-        @if (modLicenseInformation$ | async; as modLicenseInformation) {
-          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;" (click)="openExternal(modLicenseInformation.url)">
+        @if (modInformation$ | async; as modInformation) {
+          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;" (click)="openExternal(modInformation.url)">
+            <span class="mod-version">{{ modInformation.version }}</span>
             <mat-icon style="font-size: 19px">license</mat-icon>
-            <span>{{ modLicenseInformation.text }}</span>
+            <span>{{ modInformation.license }}</span>
           </span>
         }
       </div>

@@ -64,6 +64,7 @@ export class DownloadService {
 
     this.#electronService.sendEvent('clear-temp', activeInstance.akiRootDirectory).subscribe();
     this.isDownloadAndInstallInProgress.next(false);
+    this.#modListService.saveInstalledModsToFile(); // Save the list of installed mods as a JSON file after all downloads are done
   }
 
   async downloadAndInstallSingle(mod: Mod): Promise<void> {
@@ -135,5 +136,6 @@ export class DownloadService {
     mod.installProgress!.unzipStep.progress = 1;
     mod.installProgress!.completed = true;
     this.#modListService.updateMod();
+    this.#modListService.markAsInstalled(mod.name); // Mark the mod as installed
   }
 }

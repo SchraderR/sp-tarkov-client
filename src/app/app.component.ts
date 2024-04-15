@@ -88,6 +88,7 @@ export class AppComponent {
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
     this.getGithubRateLimitInformation();
+    this.#modListService.loadInstalledMods();
 
     effect(() => {
       const isTutorialDone = this.#userSettingService.isTutorialDone();

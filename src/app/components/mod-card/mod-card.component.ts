@@ -15,9 +15,10 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { DownloadService } from '../../core/services/download.service';
 import { environment } from '../../../environments/environment';
 
-export interface ModLicenseInformation {
+export interface modInformation {
   url: string;
-  text: string;
+  license: string;
+  version: string;
 }
 
 @Component({
@@ -37,10 +38,10 @@ export class ModCardComponent implements OnInit {
   @Output() removeModEvent = new EventEmitter<Mod>();
 
   hovering = false;
-  modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
+  modInformation$: Observable<modInformation> | null = null;
 
   ngOnInit() {
-    this.modLicenseInformation$ = this.getModLicenseInformation();
+    this.modInformation$ = this.getModInformation();
   }
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
@@ -48,7 +49,7 @@ export class ModCardComponent implements OnInit {
 
   downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 
-  private getModLicenseInformation(): Observable<ModLicenseInformation> {
+  private getModInformation(): Observable<modInformation> {
     if (!this.mod?.fileUrl) {
       return EMPTY;
     }
@@ -62,10 +63,12 @@ export class ModCardComponent implements OnInit {
       map(modHtml => {
         const modPageView = HtmlHelper.parseStringAsHtml(modHtml);
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');
+        const modVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML;
 
         return {
           url: modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl,
-          text: modLicenceBox?.innerHTML ?? 'SP Hub-License',
+          license: modLicenceBox?.innerHTML ?? 'SP Hub-License',
+          version : modVersion,
         };
       })
     );

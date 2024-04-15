@@ -1,12 +1,15 @@
 import { Injectable, signal } from '@angular/core';
 import { InstallProgress, Mod } from '../models/mod';
+import { writeFile, promises as fsPromises } from 'fs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ModListService {
   private modList = signal<Mod[]>([]);
+  private installedMods = signal<Mod[]>([]);
   readonly modListSignal = this.modList.asReadonly();
+  readonly installedModsSignal = this.installedMods.asReadonly();
 
   addMod(mod: Mod) {
     if (this.modList().some(m => m.name === mod.name)) {
@@ -14,6 +17,7 @@ export class ModListService {
     }
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
+    this.removeInstalledMod(mod.name);
   }
 
   updateMod() {
@@ -26,6 +30,10 @@ export class ModListService {
 
   removeCompletedMods() {
     this.modList.update(() => [...this.modList().filter(m => !m.installProgress?.completed)]);
+  }
+
+  removeInstalledMod(name: string) {
+    this.installedMods.update(modItems => modItems.filter(mod => mod.name !== name));
   }
 
   initialInstallProgress(): InstallProgress {
@@ -89,5 +97,40 @@ export class ModListService {
         installProgress: null!,
       },
     ]);
+  }
+
+  markAsInstalled(name: string) {
+    const mod = this.modList().find(m => m.name === name && m.installProgress?.completed);
+    if (mod && !this.installedMods().some(m => m.name === mod.name)) {
+      this.installedMods.update(mods => [...mods, mod]);
+    }
+  }
+
+  saveInstalledModsToFile() {
+    const installedMods = this.installedMods();
+    const filePath = 'installedMods.json';
+    writeFile(filePath, JSON.stringify(installedMods, null, 2), (err) => {
+      if (err) {
+        console.error('Error saving installed mods:', err);
+      } else {
+        console.log('Installed mods saved to', filePath);
+      }
+    });
+  }
+
+  async loadInstalledMods() {
+    const filePath = 'installedMods.json';
+    try {
+      const data = await fsPromises.readFile(filePath, { encoding: 'utf8' });
+      const mods: Mod[] = JSON.parse(data);
+      this.installedMods.set(mods);
+      console.log('Installed mods loaded');
+    } catch (err) {
+      console.error('Error loading installed mods:', err);
+    }
+  }
+
+  getInstalledMods(): Mod[] {
+    return this.installedMods();
   }
 }

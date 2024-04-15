@@ -7,11 +7,14 @@ export interface Mod {
   icon?: string;
   fileUrl: string;
   kind: Kind | undefined;
+  lastUpdate?: Date | null;
   teaser?: string;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
   supportedAkiVersion?: string;
   akiVersionColorCode?: string;
+  isUpToDate?: boolean;
+  isInstalled?: boolean; 
 }
 
 export interface InstallProgress {
