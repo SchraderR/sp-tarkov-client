@@ -90,10 +90,6 @@ export class AppComponent {
     this.getCurrentExpFunctionSettings();
     this.getGithubRateLimitInformation();
 
-    inject(HttpClient)
-      .get(`${environment.githubConfigLink}/config.json`)
-      .subscribe(r => console.log(r));
-
     effect(() => {
       const isTutorialDone = this.#userSettingService.isTutorialDone();
       if (isTutorialDone === false) {
