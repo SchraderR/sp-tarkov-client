@@ -6,7 +6,7 @@
       <mat-option [value]="mod.name" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
         <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
           @if (mod.image) {
-            <img class="image-shadow" [ngSrc]="mod.image" width="50" height="50" alt="">
+            <img class="image-shadow" [ngSrc]="mod.image" width="60" height="60" alt="">
           }
           @if (mod.icon) {
             <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
