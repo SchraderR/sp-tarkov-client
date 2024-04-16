@@ -10,6 +10,7 @@ import { ModListService } from '../services/mod-list.service';
   exportAs: 'isAlreadyInstalled',
 })
 export class IsAlreadyInstalledDirective {
+  //'user/mods'
   private alternativeServerModNames: { [key: string]: string } = {
     SVM: 'Server Value Modifier [SVM]',
     SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
@@ -25,8 +26,10 @@ export class IsAlreadyInstalledDirective {
     Weapons: "Epic's Weapon Pack",
     Priscilu: 'Priscilu: the trader',
     AmmoStats: 'Ammo Stats in Description',
+    'WTT-PackNStrap': "WTT - Pack 'n' Strap",
   };
 
+  //'BepInEx/plugins'
   private alternativeClientModNames: { [key: string]: string } = {
     SVM: 'Server Value Modifier [SVM]',
     SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
@@ -43,6 +46,7 @@ export class IsAlreadyInstalledDirective {
     SkillsExtended: '[BETA] Skills Extended',
     BetterFolderBrowser: 'Minimalist Launcher',
     SPTQuestingBots: 'Questing Bots',
+    'WTT-PackNStrap': "WTT - Pack 'n' Strap",
   };
 
   #userSettingsService = inject(UserSettingsService);

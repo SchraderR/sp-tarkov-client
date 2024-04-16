@@ -49,48 +49,64 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
 };
 
 async function handleRarArchive(archivePath: string, args: FileUnzipEvent, event: Electron.IpcMainEvent) {
-  const extractorForFiles = await unrar.createExtractorFromFile({ filepath: archivePath });
+  try {
+    const extractorForFiles = await unrar.createExtractorFromFile({ filepath: archivePath });
 
-  const isRarWithSingleDll = await checkForRarWithSingleDll(extractorForFiles);
-  if (isRarWithSingleDll) {
-    const extractorForDll = await unrar.createExtractorFromFile({
-      filepath: archivePath,
-      targetPath: path.join(args.akiInstancePath, clientModPath),
-    });
-    extractorForDll.extract();
-    event.sender.send('file-unzip-completed');
-    return;
-  }
-  const isRarHappyPath = await isHappyPathRar(extractorForFiles);
-  if (!isRarHappyPath) {
-    switch (args.kind) {
-      case 'client':
-        const extractorForClient = await unrar.createExtractorFromFile({
-          filepath: archivePath,
-          targetPath: path.join(args.akiInstancePath, clientModPath),
-        });
-        const clientFiles = extractorForClient.extract().files;
-        for (const file of clientFiles) {
-        } // this extracts the files. wtf
-        break;
-      case 'server':
-        const extractorForServer = await unrar.createExtractorFromFile({
-          filepath: archivePath,
-          targetPath: path.join(args.akiInstancePath, serverModPath),
-        });
-        const serverFiles = extractorForServer.extract().files;
-        for (const file of serverFiles) {
-        } // this extracts the files. wtf
-        break;
-      default:
-        break;
+    const isRarWithSingleDll = await checkForRarWithSingleDll(extractorForFiles);
+    if (isRarWithSingleDll) {
+      const extractorForDll = await unrar.createExtractorFromFile({
+        filepath: archivePath,
+        targetPath: path.join(args.akiInstancePath, clientModPath),
+      });
+      extractorForDll.extract();
+      event.sender.send('file-unzip-completed');
+      return;
     }
+
+    const isRarHappyPath = await isHappyPathRar(extractorForFiles);
+    if (!isRarHappyPath) {
+      switch (args.kind) {
+        case 'client':
+          const extractorForClient = await unrar.createExtractorFromFile({
+            filepath: archivePath,
+            targetPath: path.join(args.akiInstancePath, clientModPath),
+          });
+          const clientFiles = extractorForClient.extract().files;
+          for (const file of clientFiles) {
+          } // this extracts the files. wtf
+          break;
+        case 'server':
+          const extractorForServer = await unrar.createExtractorFromFile({
+            filepath: archivePath,
+            targetPath: path.join(args.akiInstancePath, serverModPath),
+          });
+          const serverFiles = extractorForServer.extract().files;
+          for (const file of serverFiles) {
+          } // this extracts the files. wtf
+          break;
+        default:
+          event.sender.send('file-unzip-error', 3);
+          break;
+      }
+      event.sender.send('file-unzip-completed');
+      return;
+    }
+
+    if (isRarHappyPath) {
+      const extractorForHappyPath = await unrar.createExtractorFromFile({
+        filepath: archivePath,
+        targetPath: args.akiInstancePath,
+      });
+      const files = extractorForHappyPath.extract().files;
+      for (const file of files) {
+      } // this extracts the files. wtf
+    }
+
     event.sender.send('file-unzip-completed');
     return;
+  } catch (e) {
+    event.sender.send('file-unzip-error', 3);
   }
-
-  event.sender.send('file-unzip-completed');
-  return;
 }
 
 async function handleOtherArchive(archivePath: string, sevenBinPath: string, args: FileUnzipEvent, event: Electron.IpcMainEvent) {
