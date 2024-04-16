@@ -107,32 +107,3 @@ mat-card {
   position: relative;
   display: flex;
 }
-
-.image-aki-version {
-  display: flex;
-  position: absolute;
-  justify-content: center;
-  bottom: 0;
-  color: white;
-  padding: 2px 4px;
-  font-size: 11px;
-  border-radius: 4px 4px 4px 0;
-
-  &.badge.label.green {
-    background-color: #090;
-  }
-  &.badge.label.slightly-outdated {
-    background-color: #b1e433;
-    color: #323947;
-  }
-  &.badge.label.yellow {
-    background-color: #ff0;
-    color: #323947;
-  }
-  &.badge.label.red {
-    background-color: #c00;
-  }
-  &.badge.label.black {
-    background-color: black;
-  }
-}

@@ -15,6 +15,11 @@
       @if (mod.icon) {
         <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
       }
+      @if (mod.supportedAkiVersion) {
+        <div [class]="mod.akiVersionColorCode"
+             class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
+        </div>
+      }
     </div>
     <div class="mod-container">
       <div class="mod-title" style="display: flex">

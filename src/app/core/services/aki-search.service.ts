@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { catchError, EMPTY, map, Observable } from 'rxjs';
+import { from, map, mergeMap, Observable, toArray } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
@@ -30,7 +30,13 @@ export class AkiSearchService {
       )
       .pipe(
         map(response => this.extractModInformation(response)),
-        catchError(() => EMPTY)
+        mergeMap((mods: Mod[]) => from(mods)),
+        mergeMap(mod =>
+          this.getFileHubView(mod.fileUrl).pipe(
+            map(({ supportedAkiVersion, akiVersionColorCode }) => ({ ...mod, supportedAkiVersion, akiVersionColorCode }))
+          )
+        ),
+        toArray()
       );
   }
 
@@ -62,5 +68,18 @@ export class AkiSearchService {
         } as Mod; // Type assertion here
       })
       .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)));
+  }
+
+  private getFileHubView(modUrl: string): Observable<{ supportedAkiVersion: string; akiVersionColorCode: string }> {
+    return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)));
+  }
+
+  private extractSPVersion(modHub: string): { supportedAkiVersion: string; akiVersionColorCode: string } {
+    const searchResult = HtmlHelper.parseStringAsHtml(modHub);
+
+    return {
+      supportedAkiVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+      akiVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+    };
   }
 }

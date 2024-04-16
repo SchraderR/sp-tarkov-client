@@ -19,6 +19,10 @@
               <span class="font-x-small" *ngSwitchCase="'server'">Server Mod</span>
               <span class="font-x-small" *ngSwitchCase="'overhaul'">Overhaul Mod</span>
             </ng-container>
+            @if (mod.supportedAkiVersion) {
+              <span [class]="mod.akiVersionColorCode"
+                    class="font-x-small image-aki-version version-pill">{{ mod.supportedAkiVersion }}</span>
+            }
           </div>
           <span class="spacer"></span>
           @if (isActiveAkiInstanceAvailable()) {
