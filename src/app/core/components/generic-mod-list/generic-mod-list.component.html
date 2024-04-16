@@ -5,7 +5,7 @@
 }
 
 @for (mod of accumulatedModList; track mod) {
-  <mat-card [ngClass]="{'up-to-date': mod.isUpToDate, 'update-available': !mod.isUpToDate && mod.isInstalled}" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
+  <mat-card [ngClass]="{'up-to-date': mod.isUpToDate, 'update-available': !mod.isUpToDate && mod.downloadDate !== null}" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
     [mod]="mod">
     <mat-card-content class="card-container">
       <div class="image-version-container">
@@ -31,10 +31,10 @@
             @if (mod.isUpToDate) {
               <mat-icon class="already-installed-icon-container" matTooltip="Already up to date">done_all
               </mat-icon>
-            } @else if (mod.isInstalled && !mod.isUpToDate && !alreadyInstalled.isInModList()) {
-              <button mat-icon-button (click)="addModToModList(mod)" [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Update'">
-                <mat-icon>add</mat-icon>
-              </button>
+            } @else if (mod.downloadDate !== null && !mod.isUpToDate) {
+              <mat-icon class="already-installed-icon-container" matTooltip="Update available">
+                <mat-icon>update</mat-icon>
+              </mat-icon>
               } @else if (!alreadyInstalled.isInModList()) {
                 <button mat-icon-button (click)="addModToModList(mod)" [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
                   <mat-icon>add</mat-icon>

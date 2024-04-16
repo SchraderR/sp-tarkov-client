@@ -9,17 +9,12 @@ import { MatRippleModule } from '@angular/material/core';
 import { Mod } from '../../core/models/mod';
 import { HttpClient } from '@angular/common/http';
 import { HtmlHelper } from '../../core/helper/html-helper';
-import { EMPTY, map, Observable } from 'rxjs';
+import { EMPTY, map } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { DownloadService } from '../../core/services/download.service';
+import { ModListService } from '../../core/services/mod-list.service';
 import { environment } from '../../../environments/environment';
-
-export interface modInformation {
-  url: string;
-  license: string;
-  version: string;
-}
 
 @Component({
   standalone: true,
@@ -33,15 +28,15 @@ export class ModCardComponent implements OnInit {
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
   #downloadService = inject(DownloadService);
+  #modListService = inject(ModListService);
 
   @Input({ required: true }) mod!: Mod;
   @Output() removeModEvent = new EventEmitter<Mod>();
 
   hovering = false;
-  modInformation$: Observable<modInformation> | null = null;
 
   ngOnInit() {
-    this.modInformation$ = this.getModInformation();
+    this.getModInformation().subscribe();
   }
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
@@ -49,7 +44,7 @@ export class ModCardComponent implements OnInit {
 
   downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 
-  private getModInformation(): Observable<modInformation> {
+  private getModInformation() {
     if (!this.mod?.fileUrl) {
       return EMPTY;
     }
@@ -63,13 +58,14 @@ export class ModCardComponent implements OnInit {
       map(modHtml => {
         const modPageView = HtmlHelper.parseStringAsHtml(modHtml);
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');
-        const modVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML;
 
-        return {
-          url: modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl,
-          license: modLicenceBox?.innerHTML ?? 'SP Hub-License',
-          version : modVersion,
-        };
+        this.mod.licenseUrl = modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl;
+        this.mod.license = modLicenceBox?.innerHTML ?? 'SP Hub-License';
+        this.mod.lastVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? "";
+
+        if (this.mod.lastVersion !== this.mod.downloadVersion && this.mod.lastUpdate && this.mod.downloadDate && this.mod.lastUpdate > this.mod.downloadDate) {
+          this.mod.installProgress = this.#modListService.initialInstallProgress();
+        }
       })
     );
   }

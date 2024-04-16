@@ -7,9 +7,7 @@ import { writeFile, promises as fsPromises } from 'fs';
 })
 export class ModListService {
   private modList = signal<Mod[]>([]);
-  private installedMods = signal<Mod[]>([]);
   readonly modListSignal = this.modList.asReadonly();
-  readonly installedModsSignal = this.installedMods.asReadonly();
 
   addMod(mod: Mod) {
     if (this.modList().some(m => m.name === mod.name)) {
@@ -17,7 +15,6 @@ export class ModListService {
     }
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
-    this.removeInstalledMod(mod.name);
   }
 
   updateMod() {
@@ -30,10 +27,6 @@ export class ModListService {
 
   removeCompletedMods() {
     this.modList.update(() => [...this.modList().filter(m => !m.installProgress?.completed)]);
-  }
-
-  removeInstalledMod(name: string) {
-    this.installedMods.update(modItems => modItems.filter(mod => mod.name !== name));
   }
 
   initialInstallProgress(): InstallProgress {
@@ -99,20 +92,18 @@ export class ModListService {
     ]);
   }
 
-  markAsInstalled(name: string) {
-    const mod = this.modList().find(m => m.name === name && m.installProgress?.completed);
-    if (mod && !this.installedMods().some(m => m.name === mod.name)) {
-      this.installedMods.update(mods => [...mods, mod]);
-    }
-  }
-
   saveInstalledModsToFile() {
-    const installedMods = this.installedMods();
+    const modListWithoutProgress = this.modList().map(mod => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { installProgress, ...rest } = mod;
+      return rest;
+    });
     const filePath = 'installedMods.json';
-    writeFile(filePath, JSON.stringify(installedMods, null, 2), (err) => {
+    writeFile(filePath, JSON.stringify(modListWithoutProgress, null, 2), (err) => {
       if (err) {
         console.error('Error saving installed mods:', err);
       } else {
+
         console.log('Installed mods saved to', filePath);
       }
     });
@@ -123,14 +114,14 @@ export class ModListService {
     try {
       const data = await fsPromises.readFile(filePath, { encoding: 'utf8' });
       const mods: Mod[] = JSON.parse(data);
-      this.installedMods.set(mods);
-      console.log('Installed mods loaded');
+      this.modList.set(mods);
+      console.log('Installed mods loaded from', filePath);
     } catch (err) {
       console.error('Error loading installed mods:', err);
     }
   }
 
   getInstalledMods(): Mod[] {
-    return this.installedMods();
+    return this.modList();
   }
 }

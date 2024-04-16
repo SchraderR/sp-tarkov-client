@@ -19,13 +19,19 @@
     <div class="mod-container">
       <div class="mod-title" style="display: flex">
         <strong class="one-line-clamp">{{ mod.name }}</strong>
-        @if (modInformation$ | async; as modInformation) {
-          <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;" (click)="openExternal(modInformation.url)">
-            <span class="mod-version">{{ modInformation.version }}</span>
-            <mat-icon style="font-size: 19px">license</mat-icon>
-            <span>{{ modInformation.license }}</span>
+        <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;"
+          (click)="openExternal(mod.licenseUrl)">         
+          <span *ngIf="mod.downloadVersion" class="mod-version"
+            [matTooltip]="mod.lastVersion === mod.downloadVersion ? 'Up to date' : 'Update available: ' + mod.lastVersion"
+            [ngStyle]="{'color': mod.lastVersion === mod.downloadVersion ? 'green' : 'orange'}">
+            {{ mod.downloadVersion }}
           </span>
-        }
+          <span *ngIf="!mod.downloadVersion" class="mod-version">
+            {{ mod.lastVersion }}
+          </span>
+          <mat-icon style="font-size: 19px">license</mat-icon>
+          <span>{{ mod.license }}</span>
+        </span>
       </div>
       @if (!mod.installProgress?.linkStep?.start) {
         <div class="mod-teaser">{{ mod.teaser }}</div>

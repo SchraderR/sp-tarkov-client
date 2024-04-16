@@ -4,10 +4,15 @@
   }
 </div>
 
-@if (modListSignal().length) {
+@if (modListSignal().length && hasNew()) {
   <div class="button-container">
-    <button mat-icon-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModCompleted()" (click)="removeCompletedMods()" matTooltip="Remove all completed Mods"><mat-icon>scan_delete</mat-icon></button>
     <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstallAll()">Download / Install</button>
+  </div>
+}
+
+@if (isUpdateAvailable() && !hasNew()) {
+  <div class="button-container">
+    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstallAll()">Update / Install</button>
   </div>
 }
 
@@ -25,3 +30,4 @@
 <span class="licence-text">
   *By using this application, you agree to and accept the respective open source licenses for any mods you download
 </span>
+

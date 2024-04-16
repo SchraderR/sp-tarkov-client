@@ -29,8 +29,11 @@ export default class ModListComponent implements OnInit {
   modListSignal = this.#modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
   isModCompleted = computed(() => this.modListSignal().some(m => m.installProgress?.completed));
+  hasNew = computed(() => this.modListSignal().some(m => m.downloadDate === null));
+  isUpdateAvailable = computed(() => this.modListSignal().some(m => m.downloadVersion !== null && m.lastVersion !== m.downloadVersion));
   isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
   emote = '';
+
 
   constructor() {
     this.#downloadService.downloadProgressEvent

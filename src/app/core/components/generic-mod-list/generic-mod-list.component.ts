@@ -155,15 +155,18 @@ export default class GenericModListComponent implements AfterViewInit {
               kind: undefined,
               lastUpdate: date,
               isUpToDate: false,
-              isInstalled: false
+              downloadDate: date
             };
           })
           .filter(e => this.filterCoreMods(e))
           .map(mod => {
             const installedMod = this.#modListService.getInstalledMods().find(m => m.name === mod.name);
             if (installedMod) {
-              mod.isUpToDate = !!installedMod.lastUpdate && !!mod.lastUpdate && new Date(installedMod.lastUpdate).getTime() === new Date(mod.lastUpdate).getTime();
-              mod.isInstalled = true;
+              mod.downloadDate = installedMod?.downloadDate ?? null;
+              mod.isUpToDate = !!installedMod.downloadDate && !!mod.lastUpdate && new Date(installedMod.downloadDate).getTime() === new Date(mod.lastUpdate).getTime();
+            }
+            else{
+              mod.downloadDate = null;              
             }
             
             return mod;
