@@ -4,4 +4,5 @@ export const environment = {
   githubIssueUrl: 'https://github.com/SchraderR/sp-tarkov-client/issues',
   akiHubEftManagerLink: 'https://hub.sp-tarkov.com/files/file/1702-sp-eft-manager/',
   akiFileBaseLink: '/files',
+  githubConfigLink: '/sp-tarkov-client-configuration',
 };

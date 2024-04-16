@@ -28,6 +28,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackbarTutorialHintComponent } from './components/snackbar-tutorial-hint/snackbar-tutorial-hint.component';
 import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   standalone: true,
@@ -88,6 +89,10 @@ export class AppComponent {
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
     this.getGithubRateLimitInformation();
+
+    inject(HttpClient)
+      .get(`${environment.githubConfigLink}/config.json`)
+      .subscribe(r => console.log(r));
 
     effect(() => {
       const isTutorialDone = this.#userSettingService.isTutorialDone();
