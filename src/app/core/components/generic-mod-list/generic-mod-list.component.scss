@@ -51,6 +51,11 @@ mat-card {
   padding: 0 8px;
   padding-bottom: 2px;
   font-style: italic;
+  font-size: small;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .mod-teaser {
@@ -76,7 +81,6 @@ mat-card {
 
 .card-button-container {
   display: flex;
-  max-height: 44px;
 }
 
 .action-container {

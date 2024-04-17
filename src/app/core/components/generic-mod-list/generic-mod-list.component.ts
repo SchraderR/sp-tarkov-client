@@ -153,7 +153,7 @@ export default class GenericModListComponent implements AfterViewInit {
               supportedAkiVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
               akiVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
               kind: undefined,
-              lastUpdate: date
+              lastUpdate: this.getLastUpdateText(date)
             } as Mod;
           })
         .filter(e => this.filterCoreMods(e));      

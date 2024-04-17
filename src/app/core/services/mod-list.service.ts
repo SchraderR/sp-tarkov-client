@@ -67,7 +67,6 @@ export class ModListService {
         kind: undefined,
         akiVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
-        lastUpdate: new Date()
       },
       {
         name: "SAIN 2.0 - Solarint's AI Modifications - Full AI Combat System Replacement",
@@ -78,7 +77,6 @@ export class ModListService {
         kind: undefined,
         akiVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
-        lastUpdate: new Date()
       },
       {
         name: 'SPT Realism Mod',
@@ -89,7 +87,6 @@ export class ModListService {
         kind: undefined,
         akiVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
-        lastUpdate: new Date()
       },
     ]);
   }
