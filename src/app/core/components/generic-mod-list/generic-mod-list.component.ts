@@ -99,6 +99,29 @@ export default class GenericModListComponent implements AfterViewInit {
     void this.#electronService.shell.openExternal(modFileUrl);
   }
 
+  getLastUpdateText(lastUpdate: Date | undefined): string {
+    if (!lastUpdate) {
+      return 'Unknown';
+    }
+
+    const now: Date = new Date();
+    const diff: number = now.getTime() - lastUpdate.getTime();
+    const seconds: number = Math.floor(diff / 1000);
+    const minutes: number = Math.floor(seconds / 60);
+    const hours: number = Math.floor(minutes / 60);
+    const days: number = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return days === 1 ? 'Yesterday, ' + lastUpdate.toLocaleTimeString() : `${days} days ago`;
+    } else if (hours > 0) {
+      return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+    } else if (minutes > 0) {
+      return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+    } else {
+      return 'Just now';
+    }
+  }
+
   private filterCoreMods(mod: Mod) {
     return !restrictedModList.includes(mod.name);
   }
@@ -116,20 +139,24 @@ export default class GenericModListComponent implements AfterViewInit {
         const pageNumbers = Array.from(elements).map(li => parseInt(li.textContent ?? ''));
 
         this.accumulatedModList = Array.from(modList)
-          .map(
-            e =>
-              ({
-                name: e.getElementsByClassName('filebaseFileSubject')[0].getElementsByTagName('span')[0].innerHTML,
-                fileUrl: e.getElementsByTagName('a')[0].href,
-                image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
-                icon: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon128')[1] ?? null,
-                teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
-                supportedAkiVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
-                akiVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
-                kind: undefined,
-              }) as Mod
-          )
-          .filter(e => this.filterCoreMods(e));
+        .map(
+          e => {
+            const datetimeAttribute = e.querySelector('.filebaseFileMetaData .datetime')?.getAttribute('datetime');
+            const date = datetimeAttribute ? new Date(datetimeAttribute) : undefined;
+      
+            return {
+              name: e.getElementsByClassName('filebaseFileSubject')[0].getElementsByTagName('span')[0].innerHTML,
+              fileUrl: e.getElementsByTagName('a')[0].href,
+              image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
+              icon: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon128')[1] ?? null,
+              teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
+              supportedAkiVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+              akiVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+              kind: undefined,
+              lastUpdate: date
+            } as Mod;
+          })
+        .filter(e => this.filterCoreMods(e));      
 
         this.pageNumber = pageNumber;
         this.pageSize = this.accumulatedModList.length;

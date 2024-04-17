@@ -8,6 +8,7 @@ export interface Mod {
   fileUrl: string;
   kind: Kind | undefined;
   teaser?: string;
+  lastUpdate?: Date;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
   supportedAkiVersion?: string;
