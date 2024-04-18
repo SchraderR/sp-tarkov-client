@@ -15,7 +15,8 @@ mat-card {
 
   mat-card-content {
     padding: unset;
-
+    height: 100%;
+    
     > img {
       border-bottom-left-radius: 4px;
       border-top-left-radius: 4px;
