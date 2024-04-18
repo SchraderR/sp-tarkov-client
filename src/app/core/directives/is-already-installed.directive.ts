@@ -3,9 +3,6 @@ import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { firstValueFrom } from 'rxjs';
 
 @Directive({
   standalone: true,
