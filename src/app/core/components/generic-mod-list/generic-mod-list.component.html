@@ -8,7 +8,7 @@
   <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
     [mod]="mod">
     <mat-card-content class="card-container">
-      <div class="image-version-container">
+      <div>
         @if (mod.image) {
           <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
         }
@@ -23,9 +23,10 @@
       </div>
       <div class="mod-list-container">
         <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+        <div class="mod-version">Last update: {{ mod.lastUpdate }}</div>
         <div class="mod-teaser">{{ mod.teaser }}</div>
         <span class="spacer"></span>
-        <div style="display: flex">
+        <div class="card-button-container">
           @if (isActiveAkiInstanceAvailable()) {
             @if (alreadyInstalled.isAlreadyInstalled()) {
               <mat-icon

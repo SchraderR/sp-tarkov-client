@@ -15,7 +15,8 @@ mat-card {
 
   mat-card-content {
     padding: unset;
-
+    height: 100%;
+    
     > img {
       border-bottom-left-radius: 4px;
       border-top-left-radius: 4px;
@@ -40,11 +41,22 @@ mat-card {
 
 .mod-name {
   justify-content: center;
-  padding-top: 8px;
+  padding-top: 4px;
   padding-left: 8px;
   padding-right: 8px;
-  margin-bottom: 8px;
+  padding-bottom: 2px;
   min-width: 140px;
+}
+
+.mod-version {
+  padding: 0 8px;
+  padding-bottom: 2px;
+  font-style: italic;
+  font-size: small;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .mod-teaser {
@@ -68,6 +80,9 @@ mat-card {
   flex-direction: row;
 }
 
+.card-button-container {
+  display: flex;
+}
 
 .action-container {
   display: flex;
@@ -100,10 +115,4 @@ mat-card {
     border-top-right-radius: 4px;
     z-index: 100;
   }
-}
-
-
-.image-version-container {
-  position: relative;
-  display: flex;
 }
