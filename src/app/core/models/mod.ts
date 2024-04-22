@@ -7,6 +7,7 @@ export interface Mod {
   icon?: string;
   fileUrl: string;
   kind: Kind | undefined;
+  notSupported: boolean;
   teaser?: string;
   lastUpdate?: string;
   isAlreadyInModList?: boolean;

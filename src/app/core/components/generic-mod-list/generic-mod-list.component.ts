@@ -21,6 +21,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ConfigurationService } from '../../services/configuration.service';
+import { FileHelper } from '../../helper/file-helper';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -63,6 +65,7 @@ export default class GenericModListComponent implements AfterViewInit {
   #userSettingsService = inject(UserSettingsService);
   #destroyRef = inject(DestroyRef);
   #downloadService = inject(DownloadService);
+  #configurationService = inject(ConfigurationService);
 
   accumulatedModList: Mod[] = [];
   pageSize = 0;
@@ -128,6 +131,8 @@ export default class GenericModListComponent implements AfterViewInit {
 
   private loadData(sortValue: GenericModListSortField, pageNumber = 0) {
     this.loading = true;
+    const config = this.#configurationService.configSignal();
+
     this.#httpClient
       .get(`${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}`, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.#destroyRef))
@@ -139,11 +144,10 @@ export default class GenericModListComponent implements AfterViewInit {
         const pageNumbers = Array.from(elements).map(li => parseInt(li.textContent ?? ''));
 
         this.accumulatedModList = Array.from(modList)
-        .map(
-          e => {
+          .map(e => {
             const datetimeAttribute = e.querySelector('.filebaseFileMetaData .datetime')?.getAttribute('datetime');
             const date = datetimeAttribute ? new Date(datetimeAttribute) : undefined;
-      
+
             return {
               name: e.getElementsByClassName('filebaseFileSubject')[0].getElementsByTagName('span')[0].innerHTML,
               fileUrl: e.getElementsByTagName('a')[0].href,
@@ -153,10 +157,24 @@ export default class GenericModListComponent implements AfterViewInit {
               supportedAkiVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
               akiVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
               kind: undefined,
-              lastUpdate: this.getLastUpdateText(date)
+              notSupported: false,
+              lastUpdate: this.getLastUpdateText(date),
             } as Mod;
           })
-        .filter(e => this.filterCoreMods(e));      
+          .filter(e => this.filterCoreMods(e))
+          .map(e => {
+            if (!config) {
+              return e;
+            }
+
+            const fileId = FileHelper.extractFileIdFromUrl(e.fileUrl);
+            if (!fileId) {
+              return e;
+            }
+
+            e.notSupported = !!config.notSupported.find(f => f === +fileId);
+            return e;
+          });
 
         this.pageNumber = pageNumber;
         this.pageSize = this.accumulatedModList.length;

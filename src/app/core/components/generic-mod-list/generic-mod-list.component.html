@@ -5,8 +5,7 @@
 }
 
 @for (mod of accumulatedModList; track mod) {
-  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
-    [mod]="mod">
+  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
     <mat-card-content class="card-container">
       <div>
         @if (mod.image) {
@@ -17,7 +16,7 @@
         }
         @if (mod.supportedAkiVersion) {
           <div [class]="mod.akiVersionColorCode"
-            class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
+               class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
           </div>
         }
       </div>
@@ -28,25 +27,33 @@
         <span class="spacer"></span>
         <div class="card-button-container">
           @if (isActiveAkiInstanceAvailable()) {
-            @if (alreadyInstalled.isAlreadyInstalled()) {
-              <mat-icon
-                class="already-installed-icon-container"
-                matTooltip="Already installed"
-                color="accent">done_all
+            @if(mod.notSupported) {
+              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Mod installation not supported">
+                warning
               </mat-icon>
             } @else {
-              @if (!alreadyInstalled.isInModList()) {
-                <button mat-icon-button (click)="addModToModList(mod)" [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
-                  <mat-icon>add</mat-icon>
-                </button>
+              @if (alreadyInstalled.isAlreadyInstalled()) {
+                <mat-icon
+                  class="already-installed-icon-container"
+                  matTooltip="Already installed"
+                  color="accent">done_all
+                </mat-icon>
               } @else {
-                <button mat-icon-button (click)="removeModFromModList(mod)">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (!alreadyInstalled.isInModList()) {
+                  <button mat-icon-button (click)="addModToModList(mod)"
+                          [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                } @else {
+                  <button mat-icon-button (click)="removeModFromModList(mod)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               }
             }
           } @else {
-            <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable additional functionality">
+            <mat-icon class="mod-install-instance-warning" color="warn"
+                      matTooltip="Add or activate an instance of SPT to enable additional functionality">
               warning
             </mat-icon>
           }
@@ -63,5 +70,6 @@
   <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
     <mat-icon>refresh</mat-icon>
   </button>
-  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
+                 [pageSize]="20" />
 </mat-toolbar>

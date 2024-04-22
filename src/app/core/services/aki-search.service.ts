@@ -5,6 +5,8 @@ import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
 import { Kind } from '../../../../shared/models/unzip.model';
 import { environment } from '../../../environments/environment';
+import { FileHelper } from '../helper/file-helper';
+import { ConfigurationService } from './configuration.service';
 
 interface SearchResponse {
   template: string;
@@ -17,6 +19,7 @@ export class AkiSearchService {
   private restrictedModKinds = ['Community support'];
 
   #httpClient = inject(HttpClient);
+  #configurationService = inject(ConfigurationService);
   modSearchUrl = environment.production ? 'https://hub.sp-tarkov.com/files/extended-search/' : '/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
 
@@ -44,6 +47,7 @@ export class AkiSearchService {
   private extractModInformation(searchResponse: SearchResponse): Mod[] {
     const searchResult = HtmlHelper.parseStringAsHtml(searchResponse.template);
     const modListSection = searchResult.body?.querySelectorAll('.section:nth-child(2) div.sectionTitle + ul .extendedNotificationItem');
+    const config = this.#configurationService.configSignal();
 
     if (!modListSection) {
       return [];
@@ -68,7 +72,20 @@ export class AkiSearchService {
           kind: kind,
         } as Mod; // Type assertion here
       })
-      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)));
+      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)))
+      .map(e => {
+        if (!config) {
+          return e;
+        }
+
+        const fileId = FileHelper.extractFileIdFromUrl(e.fileUrl);
+        if (!fileId) {
+          return e;
+        }
+
+        e.notSupported = !!config.notSupported.find(f => f === +fileId);
+        return e;
+      });
   }
 
   private getFileHubView(modUrl: string): Observable<{ supportedAkiVersion: string; akiVersionColorCode: string }> {

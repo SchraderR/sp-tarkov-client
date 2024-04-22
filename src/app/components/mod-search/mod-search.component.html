@@ -26,25 +26,31 @@
           </div>
           <span class="spacer"></span>
           @if (isActiveAkiInstanceAvailable()) {
-            @if (alreadyInstalled.isAlreadyInstalled()) {
-              <div class="already-installed-icon-container" matTooltip="Already installed">
-                <mat-icon color="accent" style="margin: unset">done_all</mat-icon>
-              </div>
-            }
-            @if (!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
-              <button
-                class="icon-end"
-                mat-icon-button
-                (click)="addModToModList($event, mod)"
-                [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
-              >
-                <mat-icon>add</mat-icon>
-              </button>
-            }
-            @if (alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
-              <button class="icon-end" mat-icon-button (click)="removeModFromModList($event, mod)">
-                <mat-icon>delete</mat-icon>
-              </button>
+            @if(mod.notSupported) {
+              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Mod installation not supported">
+                warning
+              </mat-icon>
+            } @else {
+              @if (alreadyInstalled.isAlreadyInstalled()) {
+                <div class="already-installed-icon-container" matTooltip="Already installed">
+                  <mat-icon color="accent" style="margin: unset">done_all</mat-icon>
+                </div>
+              }
+              @if (!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
+                <button
+                  class="icon-end"
+                  mat-icon-button
+                  (click)="addModToModList($event, mod)"
+                  [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
+                >
+                  <mat-icon>add</mat-icon>
+                </button>
+              }
+              @if (alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
+                <button class="icon-end" mat-icon-button (click)="removeModFromModList($event, mod)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             }
           } @else {
             <mat-icon

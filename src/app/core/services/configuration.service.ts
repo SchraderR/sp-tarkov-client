@@ -6,6 +6,7 @@ import { tap } from 'rxjs';
 export interface Configuration {
   alternativeClientModNames: { [key: string]: string };
   alternativeServerModNames: { [key: string]: string };
+  notSupported: number[];
 }
 
 @Injectable({
