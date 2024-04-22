@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
 import { Kind } from '../../../../shared/models/unzip.model';
+import { environment } from '../../../environments/environment';
 
 interface SearchResponse {
   template: string;
@@ -16,7 +17,7 @@ export class AkiSearchService {
   private restrictedModKinds = ['Community support'];
 
   #httpClient = inject(HttpClient);
-  modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
+  modSearchUrl = environment.production ? 'https://hub.sp-tarkov.com/files/extended-search/' : '/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
 
   searchMods(searchArgument: string): Observable<Mod[]> {
@@ -71,6 +72,7 @@ export class AkiSearchService {
   }
 
   private getFileHubView(modUrl: string): Observable<{ supportedAkiVersion: string; akiVersionColorCode: string }> {
+    modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
     return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)));
   }
 
