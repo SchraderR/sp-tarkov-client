@@ -3,6 +3,7 @@ import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
+import { Configuration, ConfigurationService } from '../services/configuration.service';
 
 @Directive({
   standalone: true,
@@ -10,7 +11,7 @@ import { ModListService } from '../services/mod-list.service';
   exportAs: 'isAlreadyInstalled',
 })
 export class IsAlreadyInstalledDirective {
-  private alternativeServerModNames: { [key: string]: string } = {
+  private backupServerModNames: { [key: string]: string } = {
     SVM: 'Server Value Modifier [SVM]',
     SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
     'SWAG + DONUTS': 'SWAG + Donuts - Dynamic Spawn Waves and Custom Spawn Points',
@@ -27,13 +28,13 @@ export class IsAlreadyInstalledDirective {
     AmmoStats: 'Ammo Stats in Description',
   };
 
-  private alternativeClientModNames: { [key: string]: string } = {
+  private backupClientModNames: { [key: string]: string } = {
     SVM: 'Server Value Modifier [SVM]',
     SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
     'DrakiaXYZ-BigBrain': 'BigBrain',
     'skwizzy.LootingBots': 'Looting Bots',
     'dvize.BushNoESP': 'No Bush ESP',
-    'DrakiaXYZ-Waypoints': 'Waypoints - Expanded Bot Patrols and Navmesh',
+    'DrakiaXYZ-Waypoints': 'Waypoints - Expanded Navmesh',
     FOVFix: "Fontaine's FOV Fix & Variable Optics",
     'SamSWAT.FOV': "SamSwat's INCREASED FOV - Reupload",
     'IcyClawz.ItemSellPrice': 'Item Sell Price',
@@ -46,8 +47,8 @@ export class IsAlreadyInstalledDirective {
   };
 
   #userSettingsService = inject(UserSettingsService);
+  #configurationService = inject(ConfigurationService);
   #modListService = inject(ModListService);
-  // #httpClient = inject(HttpClient);
 
   @Input({ required: true }) mod!: Mod;
 
@@ -55,16 +56,8 @@ export class IsAlreadyInstalledDirective {
   isInModList = computed(() => this.checkModInModList());
 
   private checkModAlreadyInstalled() {
-    // TODO outsource in service -> use angular initialize and fetch configuration
-    // const config: any = this.#httpClient.get(`${environment.githubConfigLink}/config.json`);
-    // console.log(config);
-    //
-    // let alternativeServerModNames = config['alternativeServerModNames'];
-    // let alternativeClientModNames = config['alternativeClientModNames'];
-
-    // console.log(alternativeClientModNames);
-
     const modName = this.mod.name;
+    let config = this.#configurationService.configSignal();
     const activeInstance = this.#userSettingsService.getActiveInstance();
     if (!this.mod || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
       return false;
@@ -74,15 +67,19 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
+    if (!config) {
+      config = { alternativeClientModNames: this.backupClientModNames, alternativeServerModNames: this.backupServerModNames } as Configuration;
+    }
+
     for (const serverMod of activeInstance.serverMods) {
-      if (Object.prototype.hasOwnProperty.call(this.alternativeServerModNames, serverMod.name)) {
-        serverMod.alternativeName = this.alternativeServerModNames[serverMod.name] as string;
+      if (Object.prototype.hasOwnProperty.call(config.alternativeServerModNames, serverMod.name)) {
+        serverMod.alternativeName = config.alternativeServerModNames[serverMod.name] as string;
       }
     }
 
     for (const clientMod of activeInstance.clientMods) {
-      if (Object.prototype.hasOwnProperty.call(this.alternativeClientModNames, clientMod.name)) {
-        clientMod.alternativeName = this.alternativeClientModNames[clientMod.name];
+      if (Object.prototype.hasOwnProperty.call(config.alternativeClientModNames, clientMod.name)) {
+        clientMod.alternativeName = config.alternativeClientModNames[clientMod.name];
       }
     }
 

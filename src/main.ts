@@ -1,4 +1,4 @@
-import { enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
+import { APP_INITIALIZER, enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -9,6 +9,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { JoyrideModule } from 'ngx-joyride';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
+import { ConfigurationService } from './app/core/services/configuration.service';
 
 if (environment.production) {
   enableProdMode();
@@ -24,11 +25,20 @@ bootstrapApplication(AppComponent, {
       config: {
         availableLangs: ['en'],
         defaultLang: 'en',
-        // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
       },
       loader: TranslocoHttpLoader,
     }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configurationServiceFactory,
+      deps: [ConfigurationService],
+      multi: true,
+    },
   ],
 }).catch(err => console.error(err));
+
+function configurationServiceFactory(configurationService: ConfigurationService) {
+  return () => configurationService.getCurrentConfiguration();
+}
