@@ -83,6 +83,11 @@
           <mat-icon matListItemIcon>keyboard_double_arrow_down</mat-icon>
           <div matListItemTitle>Most loaded Mods</div>
         </mat-list-item>
+        <mat-list-item routerLink="tags" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+                       matTooltip="Search mods by tags">
+          <mat-icon matListItemIcon>sell</mat-icon>
+          <div matListItemTitle>Search mods by tags</div>
+        </mat-list-item>
         <mat-divider />
       </div>
       <mat-list-item routerLink="setting" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"

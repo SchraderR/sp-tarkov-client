@@ -69,15 +69,36 @@
     <mat-icon>refresh</mat-icon>
   </button>
 
+  @if (tags) {
+    <ng-container *ngTemplateOutlet="akiTagsForm"></ng-container>
+  } @else {
+    <ng-container *ngTemplateOutlet="akiVersionForm"></ng-container>
+  }
+
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
+</mat-toolbar>
+
+
+<ng-template #akiVersionForm>
   <mat-form-field class="version-select" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Aki Version</mat-label>
     <mat-select [formControl]="akiVersionFormField">
       <mat-option [value]=""></mat-option>
       @for (version of akiVersionSignal(); track version) {
-        <mat-option [value]="version">{{version.innerText}}</mat-option>
+        <mat-option [value]="version">{{ version.innerText }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
+</ng-template>
 
-  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
-</mat-toolbar>
+<ng-template #akiTagsForm>
+  <mat-form-field class="version-select" appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Tags</mat-label>
+    <input matInput aria-label="Number" [formControl]="akiTagFormField" [matAutocomplete]="auto">
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      @for (tag of filteredOptions | async; track tag) {
+        <mat-option [value]="tag.innerText">{{ tag.innerText }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</ng-template>

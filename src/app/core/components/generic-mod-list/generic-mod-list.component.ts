@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncPipe, NgOptimizedImage } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,14 +16,16 @@ import { IsAlreadyInstalledDirective } from '../../directives/is-already-install
 import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { debounceTime, Subscription } from 'rxjs';
+import { debounceTime, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { AkiVersion, ConfigurationService } from '../../services/configuration.service';
+import { AkiTag, AkiVersion, ConfigurationService } from '../../services/configuration.service';
 import { FileHelper } from '../../helper/file-helper';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatInput } from '@angular/material/input';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -47,6 +49,10 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     AsyncPipe,
     MatProgressSpinner,
     ReactiveFormsModule,
+    NgTemplateOutlet,
+    MatAutocomplete,
+    MatInput,
+    MatAutocompleteTrigger,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
@@ -60,6 +66,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   @Input() sortOrder: GenericModListSortOrder = 'DESC';
+  @Input() tags = false;
 
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
@@ -70,6 +77,9 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   #configurationService = inject(ConfigurationService);
 
   akiVersionFormField = new FormControl<AkiVersion | null>(null);
+  akiTagFormField = new FormControl(null);
+  filteredOptions: Observable<AkiTag[]> | undefined;
+
   accumulatedModList: Mod[] = [];
   pageSize = 0;
   pageLength = 0;
@@ -78,9 +88,17 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
 
   akiVersionSignal = this.#configurationService.versionSignal;
+  akiTagsSignal = this.#configurationService.tagsSignal;
 
   ngOnInit() {
     this.akiVersionFormField.valueChanges.subscribe(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber));
+
+    this.filteredOptions = this.akiTagFormField.valueChanges.pipe(
+      startWith(''),
+      debounceTime(500),
+      map(value => this.filterAkiTags(value || '')),
+      tap(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber))
+    );
   }
 
   ngAfterViewInit() {
@@ -141,12 +159,24 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   private loadData(sortValue: GenericModListSortField, pageNumber = 0) {
     this.loading = true;
     const config = this.#configurationService.configSignal();
+    let basePath = '';
+
+    if (this.tags) {
+      const akiTag = this.akiTagsSignal()?.find(t => t.innerText === this.akiTagFormField.value);
+      if (!akiTag) {
+        this.loading = false;
+        return;
+      }
+
+      basePath = `${environment.akiFileTagBaseLink}${akiTag?.tagPath}?objectType=com.woltlab.filebase.file`;
+    } else {
+      basePath = `${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.akiVersionFormField.value?.dataLabelId}`;
+    }
+
+    this.accumulatedModList = [];
 
     this.#httpClient
-      .get(
-        `${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.akiVersionFormField.value?.dataLabelId}`,
-        { responseType: 'text' }
-      )
+      .get(basePath, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(pestRatedViewString => {
         const modView = HtmlHelper.parseStringAsHtml(pestRatedViewString);
@@ -193,5 +223,14 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
         this.pageLength = !!pageNumbers.length ? pageNumbers[pageNumbers.length - 1] * 20 : this.accumulatedModList.length;
         this.loading = false;
       });
+  }
+
+  private filterAkiTags(value: string): AkiTag[] {
+    const filterValue = value.toLowerCase();
+    if (!this.akiTagsSignal()?.length) {
+      return [];
+    }
+
+    return this.akiTagsSignal()!.filter(option => option.innerText.toLowerCase().includes(filterValue));
   }
 }

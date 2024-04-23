@@ -27,4 +27,9 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
     data: { sortField: 'downloads', sortOrder: 'DESC' },
   },
+  {
+    path: 'tags',
+    loadComponent: () => import('./core/components/generic-mod-list/generic-mod-list.component'),
+    data: { tags: true },
+  },
 ];
