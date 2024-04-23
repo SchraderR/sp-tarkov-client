@@ -4,6 +4,12 @@
   </div>
 }
 
+@if (tags && accumulatedModList.length === 0) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+    <span>Select a tag to start the search.</span>
+  </div>
+}
+
 @for (mod of accumulatedModList; track mod) {
   <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
     <mat-card-content class="card-container">

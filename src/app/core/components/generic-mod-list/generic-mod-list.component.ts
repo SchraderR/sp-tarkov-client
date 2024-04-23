@@ -62,11 +62,10 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
   @Input() set sortField(sortValue: GenericModListSortField) {
     this._sortField = sortValue;
-    this.loadData(sortValue);
   }
 
   @Input() sortOrder: GenericModListSortOrder = 'DESC';
-  @Input() tags = false;
+  @Input() tags: boolean | undefined;
 
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
@@ -99,6 +98,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       map(value => this.filterAkiTags(value || '')),
       tap(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber))
     );
+
+    this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
   }
 
   ngAfterViewInit() {
@@ -165,6 +166,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       const akiTag = this.akiTagsSignal()?.find(t => t.innerText === this.akiTagFormField.value);
       if (!akiTag) {
         this.loading = false;
+        this.accumulatedModList = [];
         return;
       }
 
