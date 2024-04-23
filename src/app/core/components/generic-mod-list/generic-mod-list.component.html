@@ -28,9 +28,7 @@
         <div class="card-button-container">
           @if (isActiveAkiInstanceAvailable()) {
             @if (mod.notSupported) {
-              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Mod installation not supported">
-                warning
-              </mat-icon>
+              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Mod installation not supported">info</mat-icon>
             } @else {
               @if (alreadyInstalled.isAlreadyInstalled()) {
                 <mat-icon
