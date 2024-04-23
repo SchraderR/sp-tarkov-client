@@ -39,7 +39,7 @@ export class ConfigurationService {
 
   getCurrentTags() {
     return this.#httpClient
-      .get(`${environment.akiFileBaseLink}`, { responseType: 'text' })
+      .get(`${environment.akiFileTagBaseLink}1-quests/?objectType=com.woltlab.filebase.file`, { responseType: 'text' })
       .pipe(tap(text => this.extractAndSaveAkiVersionAndTags(text)));
   }
 
