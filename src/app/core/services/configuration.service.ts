@@ -73,8 +73,8 @@ export class ConfigurationService {
     const regex = /\/tagged\/([\w-]*)\//;
 
     tagItems.forEach(item => {
-      let innerHtmlText = item.innerHTML;
-      let matches = regex.exec((item as HTMLAnchorElement).href);
+      const innerHtmlText = item.innerHTML;
+      const matches = regex.exec((item as HTMLAnchorElement).href);
 
       if (matches && matches[1]) {
         tagList.push({ innerText: innerHtmlText, tagPath: `/${matches[1]}/` });

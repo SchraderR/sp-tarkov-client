@@ -218,7 +218,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.pageNumber = pageNumber;
         this.pageSize = this.accumulatedModList.length;
-        this.pageLength = !!pageNumbers.length ? pageNumbers[pageNumbers.length - 1] * 20 : this.accumulatedModList.length;
+        this.pageLength = pageNumbers.length !== 0 ? pageNumbers[pageNumbers.length - 1] * 20 : this.accumulatedModList.length;
         this.loading = false;
       });
   }
