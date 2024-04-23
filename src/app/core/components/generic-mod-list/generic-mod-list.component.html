@@ -27,7 +27,7 @@
         <span class="spacer"></span>
         <div class="card-button-container">
           @if (isActiveAkiInstanceAvailable()) {
-            @if(mod.notSupported) {
+            @if (mod.notSupported) {
               <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Mod installation not supported">
                 warning
               </mat-icon>
@@ -70,6 +70,16 @@
   <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
     <mat-icon>refresh</mat-icon>
   </button>
-  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
-                 [pageSize]="20" />
+
+  <mat-form-field class="version-select" appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Aki Version</mat-label>
+    <mat-select [formControl]="akiVersionFormField">
+      <mat-option [value]=""></mat-option>
+      @for (version of akiVersionSignal(); track version) {
+        <mat-option [value]="version">{{version.innerText}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
 </mat-toolbar>

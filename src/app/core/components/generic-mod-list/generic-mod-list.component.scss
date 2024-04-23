@@ -6,7 +6,10 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 8px;
-  height: calc(100% - 16px);
+}
+
+::ng-deep.version-select {
+  @include mat.form-field-density(-5);
 }
 
 mat-card {
@@ -16,7 +19,7 @@ mat-card {
   mat-card-content {
     padding: unset;
     height: 100%;
-    
+
     > img {
       border-bottom-left-radius: 4px;
       border-top-left-radius: 4px;

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,8 +21,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { ConfigurationService } from '../../services/configuration.service';
+import { AkiVersion, ConfigurationService } from '../../services/configuration.service';
 import { FileHelper } from '../../helper/file-helper';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -45,9 +46,10 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatSelectModule,
     AsyncPipe,
     MatProgressSpinner,
+    ReactiveFormsModule,
   ],
 })
-export default class GenericModListComponent implements AfterViewInit {
+export default class GenericModListComponent implements OnInit, AfterViewInit {
   private paginatorSubscription: Subscription | undefined;
   private _sortField: GenericModListSortField | undefined;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
@@ -67,12 +69,19 @@ export default class GenericModListComponent implements AfterViewInit {
   #downloadService = inject(DownloadService);
   #configurationService = inject(ConfigurationService);
 
+  akiVersionFormField = new FormControl<AkiVersion | null>(null);
   accumulatedModList: Mod[] = [];
   pageSize = 0;
   pageLength = 0;
   pageNumber = 0;
   loading = false;
   isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
+
+  akiVersionSignal = this.#configurationService.versionSignal;
+
+  ngOnInit() {
+    this.akiVersionFormField.valueChanges.subscribe(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber));
+  }
 
   ngAfterViewInit() {
     this.paginatorSubscription = this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
@@ -134,7 +143,10 @@ export default class GenericModListComponent implements AfterViewInit {
     const config = this.#configurationService.configSignal();
 
     this.#httpClient
-      .get(`${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}`, { responseType: 'text' })
+      .get(
+        `${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.akiVersionFormField.value?.dataLabelId}`,
+        { responseType: 'text' }
+      )
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(pestRatedViewString => {
         const modView = HtmlHelper.parseStringAsHtml(pestRatedViewString);
@@ -178,7 +190,7 @@ export default class GenericModListComponent implements AfterViewInit {
 
         this.pageNumber = pageNumber;
         this.pageSize = this.accumulatedModList.length;
-        this.pageLength = pageNumbers[pageNumbers.length - 1] * 20;
+        this.pageLength = !!pageNumbers.length ? pageNumbers[pageNumbers.length - 1] * 20 : this.accumulatedModList.length;
         this.loading = false;
       });
   }

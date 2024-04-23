@@ -10,6 +10,7 @@ import { JoyrideModule } from 'ngx-joyride';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
+import { forkJoin } from 'rxjs';
 
 if (environment.production) {
   enableProdMode();
@@ -40,5 +41,5 @@ bootstrapApplication(AppComponent, {
 }).catch(err => console.error(err));
 
 function configurationServiceFactory(configurationService: ConfigurationService) {
-  return () => configurationService.getCurrentConfiguration();
+  return () => forkJoin([configurationService.getCurrentConfiguration(), configurationService.getCurrentTags()]);
 }
