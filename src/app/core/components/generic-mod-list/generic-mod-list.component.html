@@ -34,7 +34,7 @@
         <div class="card-button-container">
           @if (isActiveAkiInstanceAvailable()) {
             @if (mod.notSupported) {
-              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Mod installation not supported">info</mat-icon>
+              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">info</mat-icon>
             } @else {
               @if (alreadyInstalled.isAlreadyInstalled()) {
                 <mat-icon
@@ -86,7 +86,7 @@
 
 
 <ng-template #akiVersionForm>
-  <mat-form-field class="version-select" appearance="outline" subscriptSizing="dynamic">
+  <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Aki Version</mat-label>
     <mat-select [formControl]="akiVersionFormField">
       <mat-option [value]=""></mat-option>
@@ -98,7 +98,7 @@
 </ng-template>
 
 <ng-template #akiTagsForm>
-  <mat-form-field class="version-select" appearance="outline" subscriptSizing="dynamic">
+  <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Tags</mat-label>
     <input matInput aria-label="Number" [formControl]="akiTagFormField" [matAutocomplete]="auto">
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
