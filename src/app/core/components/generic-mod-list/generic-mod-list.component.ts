@@ -26,6 +26,7 @@ import { FileHelper } from '../../helper/file-helper';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
+import { ErrorStateMatcher } from '@angular/material/core';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -57,7 +58,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
   private paginatorSubscription: Subscription | undefined;
-  private _sortField: GenericModListSortField | undefined;
+  private _sortField: GenericModListSortField = 'cumulativeLikes';
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
 
   @Input() set sortField(sortValue: GenericModListSortField) {
@@ -90,25 +91,21 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   akiTagsSignal = this.#configurationService.tagsSignal;
 
   ngOnInit() {
-    this.akiVersionFormField.valueChanges.subscribe(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber));
+    this.akiVersionFormField.valueChanges.subscribe(() => this.loadData(this._sortField, this.pageNumber));
     this.filteredOptions = this.akiTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
       map(value => this.filterAkiTags(value || '')),
-      tap(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber))
+      tap(() => this.loadData(this._sortField, this.pageNumber))
     );
 
-    this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
+    this.loadData(this._sortField, this.pageNumber);
   }
 
   ngAfterViewInit() {
-    this.paginatorSubscription = this.paginator?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef)).subscribe((event: PageEvent) => {
-      if (!this._sortField) {
-        return;
-      }
-
-      this.loadData(this._sortField, event.pageIndex);
-    });
+    this.paginatorSubscription = this.paginator?.page
+      .pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef))
+      .subscribe((event: PageEvent) => this.loadData(this._sortField, event.pageIndex));
   }
 
   isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
@@ -169,7 +166,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      basePath = `${environment.akiFileTagBaseLink}${akiTag?.tagPath}?objectType=com.woltlab.filebase.file`;
+      basePath = `${environment.akiFileTagBaseLink}${akiTag?.tagPath}?objectType=com.woltlab.filebase.file&pageNo=${pageNumber + 1}`;
     } else {
       basePath = `${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.akiVersionFormField.value?.dataLabelId}`;
     }
@@ -219,6 +216,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
             return e;
           });
 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         this.pageNumber = pageNumber;
         this.pageSize = this.accumulatedModList.length;
         this.pageLength = !!pageNumbers.length ? pageNumbers[pageNumbers.length - 1] * 20 : this.accumulatedModList.length;
