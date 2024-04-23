@@ -37,20 +37,18 @@ export class ConfigurationService {
     return this.#httpClient.get<Configuration>(`${environment.githubConfigLink}/config.json`).pipe(tap(config => this.#config.set(config)));
   }
 
+  getCurrentVersion() {
+    return this.#httpClient.get(`${environment.akiFileBaseLink}`, { responseType: 'text' }).pipe(tap(text => this.handleAkiVersion(text)));
+  }
+
   getCurrentTags() {
     return this.#httpClient
       .get(`${environment.akiFileTagBaseLink}1-quests/?objectType=com.woltlab.filebase.file`, { responseType: 'text' })
-      .pipe(tap(text => this.extractAndSaveAkiVersionAndTags(text)));
+      .pipe(tap(text => this.handleAkiTags(text)));
   }
 
-  private extractAndSaveAkiVersionAndTags(modHub: string): void {
+  private handleAkiVersion(modHub: string) {
     const searchResult = HtmlHelper.parseStringAsHtml(modHub);
-
-    this.handleAkiVersion(searchResult);
-    this.handleAkiTags(searchResult);
-  }
-
-  private handleAkiVersion(searchResult: Document) {
     const versionItems = searchResult.querySelectorAll('ul.scrollableDropdownMenu li');
     const versionList: AkiVersion[] = [];
 
@@ -68,7 +66,8 @@ export class ConfigurationService {
     this.#version.set(versionList);
   }
 
-  private handleAkiTags(searchResult: Document) {
+  private handleAkiTags(modHub: string) {
+    const searchResult = HtmlHelper.parseStringAsHtml(modHub);
     const tagItems = searchResult.querySelectorAll('.tagList a');
     const tagList: AkiTag[] = [];
     const regex = /\/tagged\/([\w-]*)\//;

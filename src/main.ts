@@ -41,5 +41,6 @@ bootstrapApplication(AppComponent, {
 }).catch(err => console.error(err));
 
 function configurationServiceFactory(configurationService: ConfigurationService) {
-  return () => forkJoin([configurationService.getCurrentConfiguration(), configurationService.getCurrentTags()]);
+  return () =>
+    forkJoin([configurationService.getCurrentConfiguration(), configurationService.getCurrentVersion(), configurationService.getCurrentTags()]);
 }

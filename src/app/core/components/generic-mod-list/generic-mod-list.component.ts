@@ -91,7 +91,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.akiVersionFormField.valueChanges.subscribe(() => this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber));
-
     this.filteredOptions = this.akiTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
