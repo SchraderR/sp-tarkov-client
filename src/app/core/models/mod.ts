@@ -12,7 +12,7 @@ export interface Mod {
   lastUpdate?: string;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
-  supportedAkiVersion?: string;
+  supportedAkiVersion: string;
   akiVersionColorCode?: string;
 }
 
