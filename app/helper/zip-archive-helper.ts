@@ -131,7 +131,7 @@ export class ZipArchiveHelper {
    * @param {boolean} isRecursive - Whether to extract files recursively from subdirectories.
    * @return {Promise<boolean>} - A Promise that resolves to a boolean indicating whether any files were extracted.
    */
-  extractFilesArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any, isRecursive = false): Promise<boolean> {
+  extractFilesArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any, isRecursive: boolean = false): Promise<boolean> {
     let hasFiles = false;
     return new Promise((resolve, reject) => {
       extract(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [], recursive: isRecursive })
@@ -148,7 +148,7 @@ export class ZipArchiveHelper {
    * @param {FileUnzipEvent} args - The file unzip event object.
    * @return {boolean} - True if the archivePath refers to a single DLL file, false otherwise.
    */
-  checkForSingleDll(archivePath: string, args: FileUnzipEvent) {
+  checkForSingleDll(archivePath: string, args: FileUnzipEvent): boolean {
     const isSingleDll = archivePath.endsWith('.dll');
     if (!isSingleDll) {
       return false;
