@@ -122,6 +122,7 @@ export class DownloadService {
           const test: FileUnzipEvent = {
             filePath: downloadFilePath?.args,
             akiInstancePath: activeInstance.akiRootDirectory,
+            hubId: fileId,
             kind: mod.kind,
           };
 

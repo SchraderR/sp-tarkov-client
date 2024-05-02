@@ -28,7 +28,7 @@ mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
 handleDownloadLinkEvent();
 handleDownloadModEvent();
-handleFileUnzipEvent(isServe);
+handleFileUnzipEvent();
 handleUserSettingStoreEvents(store);
 handleClientModsEvent();
 handleServerModsEvent();
