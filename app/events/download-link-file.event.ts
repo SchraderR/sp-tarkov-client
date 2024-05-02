@@ -151,7 +151,6 @@ export const handleDownloadLinkEvent = () => {
         log.error(e);
         event.sender.send('download-link-error', 0);
         await browser.close();
-        console.log(e);
       }
     })();
   });

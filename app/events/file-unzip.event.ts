@@ -74,11 +74,6 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
       return;
     }
 
-    const isServerMod = await zipArchiveHelper.determineServerMod(archivePath, sevenBinPath);
-    const isClientMod = await zipArchiveHelper.determineClientMod(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isServerMod: ${isServerMod}`);
-    log.log(`FileId:${args.hubId} - isClientMod: ${isClientMod}`);
-
     const isServerModWithDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isServerModWithDirectory: ${isServerModWithDirectory}`);
     if (isServerModWithDirectory) {
@@ -86,6 +81,14 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
       event.sender.send('file-unzip-completed');
       return;
     }
+
+    const isServerMod = await zipArchiveHelper.determineServerMod(archivePath, sevenBinPath);
+    const isClientMod = await zipArchiveHelper.determineClientMod(archivePath, sevenBinPath);
+    log.log(`FileId:${args.hubId} - isServerMod: ${isServerMod}`);
+    log.log(`FileId:${args.hubId} - isClientMod: ${isClientMod}`);
+
+    // export const clientModPath = 'BepInEx/plugins';
+    // export const serverModPath = 'user/mods';
 
     // const clientModExtraction = extractArchive(archivePath, args.akiInstancePath, sevenBinPath, [`${clientModPath}/*`]);
     // const serverModExtraction = extractArchive(archivePath, args.akiInstancePath, sevenBinPath, [`${serverModPath}/*`]);
