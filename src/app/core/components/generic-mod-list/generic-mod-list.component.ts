@@ -93,7 +93,9 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   akiTagsSignal = this.#configurationService.tagsSignal;
 
   ngOnInit() {
-    this.akiVersionFormField.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe(() => this.loadData(this._sortField, this.pageNumber));
+    this.akiVersionFormField.valueChanges
+      .pipe(debounceTime(500), takeUntilDestroyed(this.#destroyRef))
+      .subscribe(() => this.loadData(this._sortField, this.pageNumber));
 
     this.filteredOptions = this.akiTagFormField.valueChanges.pipe(
       startWith(''),
