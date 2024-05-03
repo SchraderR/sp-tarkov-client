@@ -18,3 +18,13 @@ export interface LinkModel {
   fileId: string;
   akiInstancePath: string;
 }
+
+export interface AkiVersion {
+  dataLabelId: string;
+  innerText: string;
+}
+
+export interface AkiTag {
+  tagPath: string;
+  innerText: string;
+}

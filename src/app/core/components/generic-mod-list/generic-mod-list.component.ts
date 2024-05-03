@@ -21,11 +21,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { AkiTag, AkiVersion, ConfigurationService } from '../../services/configuration.service';
+import { ConfigurationService } from '../../services/configuration.service';
 import { FileHelper } from '../../helper/file-helper';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
+import { AkiTag, AkiVersion } from '../../../../../shared/models/aki-core.model';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';

@@ -1,8 +1,10 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { tap } from 'rxjs';
+import { map, of, switchMap, tap } from 'rxjs';
 import { HtmlHelper } from '../helper/html-helper';
+import { AkiTag, AkiVersion } from '../../../../shared/models/aki-core.model';
+import { ElectronService } from './electron.service';
 
 export interface Configuration {
   alternativeClientModNames: { [key: string]: string };
@@ -10,21 +12,12 @@ export interface Configuration {
   notSupported: number[];
 }
 
-export interface AkiVersion {
-  dataLabelId: string;
-  innerText: string;
-}
-
-export interface AkiTag {
-  tagPath: string;
-  innerText: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigurationService {
   #httpClient = inject(HttpClient);
+  #electronService = inject(ElectronService);
   #config = signal<Configuration | null>(null);
   #version = signal<AkiVersion[]>([]);
   #tags = signal<AkiTag[] | null>([]);
@@ -37,14 +30,39 @@ export class ConfigurationService {
     return this.#httpClient.get<Configuration>(`${environment.githubConfigLink}/config.json`).pipe(tap(config => this.#config.set(config)));
   }
 
-  getCurrentVersion() {
-    return this.#httpClient.get(`${environment.akiFileBaseLink}`, { responseType: 'text' }).pipe(tap(text => this.handleAkiVersion(text)));
+  getAkiVersion() {
+    return this.#electronService.sendEvent<AkiVersion[]>('aki-versions').pipe(
+      switchMap(akiVersions => {
+        console.log(akiVersions.args);
+        if (!!akiVersions?.args?.length) {
+          this.#version.set(akiVersions.args);
+          return of(void 0);
+        }
+
+        return this.#httpClient.get(`${environment.akiFileBaseLink}?cacheBust=${Date.now()}`, { responseType: 'text' }).pipe(
+          map(text => this.handleAkiVersion(text)),
+          switchMap(versionList => this.#electronService.sendEvent<AkiVersion[], AkiVersion[]>('aki-versions-save', versionList))
+        );
+      })
+    );
   }
 
   getCurrentTags() {
-    return this.#httpClient
-      .get(`${environment.akiFileTagBaseLink}1-quests/?objectType=com.woltlab.filebase.file`, { responseType: 'text' })
-      .pipe(tap(text => this.handleAkiTags(text)));
+    return this.#electronService.sendEvent<AkiTag[]>('aki-tags').pipe(
+      switchMap(akiTags => {
+        if (!!akiTags?.args?.length) {
+          this.#tags.set(akiTags.args);
+          return of(void 0);
+        }
+
+        return this.#httpClient
+          .get(`${environment.akiFileTagBaseLink}1-quests/?objectType=com.woltlab.filebase.file&cacheBust=${Date.now()}`, { responseType: 'text' })
+          .pipe(
+            map(text => this.handleAkiTags(text)),
+            switchMap(tagList => this.#electronService.sendEvent<AkiTag[], AkiTag[]>('aki-tags-save', tagList))
+          );
+      })
+    );
   }
 
   private handleAkiVersion(modHub: string) {
@@ -64,6 +82,7 @@ export class ConfigurationService {
     });
 
     this.#version.set(versionList);
+    return versionList;
   }
 
   private handleAkiTags(modHub: string) {
@@ -82,5 +101,6 @@ export class ConfigurationService {
     });
 
     this.#tags.set(tagList);
+    return tagList;
   }
 }

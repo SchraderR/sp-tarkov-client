@@ -72,6 +72,16 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('modMetaData', []);
     }
 
+    const akiTags = store.get('akiTags');
+    if (!akiTags) {
+      store.set('akiTags', []);
+    }
+
+    const akiVersions = store.get('akiVersions');
+    if (!akiVersions) {
+      store.set('akiVersions', []);
+    }
+
     if (isServe) {
       browserWindow.webContents.openDevTools();
       const debug = require('electron-debug');

@@ -1,4 +1,4 @@
-﻿import { AkiCore } from './aki-core.model';
+﻿import { AkiCore, AkiTag, AkiVersion } from './aki-core.model';
 
 export interface UpdateModMeta {
   name: string;
@@ -15,6 +15,8 @@ export interface UserSettingStoreModel {
   theme: Theme;
   isTutorialDone: boolean;
   isExperimentalFunctionsActive: boolean;
+  akiVersions: AkiVersion[];
+  akiTags: AkiTag[];
 }
 
 export interface AkiInstance {

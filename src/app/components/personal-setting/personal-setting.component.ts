@@ -78,6 +78,14 @@ export default class PersonalSettingComponent {
     this.#userSettingsService.updateTutorialDone(false);
   }
 
+  clearAkiVersionCache() {
+    this.#electronService.sendEvent('aki-versions-save', []).subscribe(() => this.cacheClearToast('Aki-Versions'));
+  }
+
+  clearAkiTagsCache() {
+    this.#electronService.sendEvent('aki-tags-save', []).subscribe(() => this.cacheClearToast('Aki-Tags'));
+  }
+
   getRootEftSpDirectory() {
     this.#electronService
       .sendEvent<UserSettingModel>('open-directory')
@@ -168,6 +176,16 @@ export default class PersonalSettingComponent {
       userSetting: userSettingModel,
       serverMods: { args: [] },
       clientMods: { args: [] },
+    });
+  }
+
+  private cacheClearToast(type: 'Aki-Versions' | 'Aki-Tags'): void {
+    this.#ngZone.run(() => {
+      this.#matSnackBar.open(`${type} cache was cleared. ${type} will be fetched on the next startup.`, '', {
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center',
+      });
     });
   }
 }
