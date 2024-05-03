@@ -20,10 +20,12 @@ export class DownloadService {
   #modListService = inject(ModListService);
   activeModList = this.#modListService.modListSignal;
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
+  isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
 
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
+    this.isDownloadProcessCompleted.next(false);
     const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
     if (!activeInstance) {
       return;
@@ -64,6 +66,7 @@ export class DownloadService {
 
     this.#electronService.sendEvent('clear-temp', activeInstance.akiRootDirectory).subscribe();
     this.isDownloadAndInstallInProgress.next(false);
+    this.isDownloadProcessCompleted.next(true);
   }
 
   async downloadAndInstallSingle(mod: Mod): Promise<void> {
