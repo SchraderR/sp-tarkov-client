@@ -15,6 +15,11 @@ export const handleFileUnzipEvent = () => {
       fs.mkdirSync(ankiTempDownloadDir);
     }
 
+    if (!fs.existsSync(archivePath)) {
+      event.sender.send('file-unzip-error', 2);
+      return;
+    }
+
     await handleArchive(archivePath, args, ankiTempDownloadDir, event);
   });
 };
