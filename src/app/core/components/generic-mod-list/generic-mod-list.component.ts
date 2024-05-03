@@ -16,7 +16,7 @@ import { IsAlreadyInstalledDirective } from '../../directives/is-already-install
 import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { debounceTime, map, Observable, startWith, Subscription, tap } from 'rxjs';
+import { debounceTime, EMPTY, map, Observable, startWith, Subscription, switchMap, tap } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
@@ -58,6 +58,8 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
   private paginatorSubscription: Subscription | undefined;
+  private fetchModSubscription: Subscription | undefined;
+
   private _sortField: GenericModListSortField = 'cumulativeLikes';
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
 
@@ -91,7 +93,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   akiTagsSignal = this.#configurationService.tagsSignal;
 
   ngOnInit() {
-    this.akiVersionFormField.valueChanges.subscribe(() => this.loadData(this._sortField, this.pageNumber));
+    this.akiVersionFormField.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe(() => this.loadData(this._sortField, this.pageNumber));
+
     this.filteredOptions = this.akiTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
@@ -173,7 +176,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
     this.accumulatedModList = [];
 
-    this.#httpClient
+    this.fetchModSubscription?.unsubscribe();
+    this.fetchModSubscription = this.#httpClient
       .get(basePath, { responseType: 'text' })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(pestRatedViewString => {
