@@ -33,8 +33,8 @@ export class ConfigurationService {
   getAkiVersion() {
     return this.#electronService.sendEvent<AkiVersion[]>('aki-versions').pipe(
       switchMap(akiVersions => {
-        console.log(akiVersions.args);
-        if (!!akiVersions?.args?.length) {
+        console.log(akiVersions?.args?.length);
+        if (akiVersions?.args?.length) {
           this.#version.set(akiVersions.args);
           return of(void 0);
         }
@@ -50,7 +50,8 @@ export class ConfigurationService {
   getCurrentTags() {
     return this.#electronService.sendEvent<AkiTag[]>('aki-tags').pipe(
       switchMap(akiTags => {
-        if (!!akiTags?.args?.length) {
+        console.log(akiTags?.args?.length);
+        if (akiTags?.args?.length) {
           this.#tags.set(akiTags.args);
           return of(void 0);
         }
