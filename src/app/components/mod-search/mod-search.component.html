@@ -2,7 +2,10 @@
   <mat-label>Search Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
-    @for (mod of filteredModItems | async; track mod) {
+    <mat-option class="search-loading" *ngIf="isLoading && filteredModItems.length === 0">
+      <mat-spinner [diameter]="50"></mat-spinner>
+    </mat-option>
+    @for (mod of filteredModItems; track mod) {
       <mat-option [value]="mod.name" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
         <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
           @if (mod.image) {
@@ -26,7 +29,7 @@
           </div>
           <span class="spacer"></span>
           @if (isActiveAkiInstanceAvailable()) {
-            @if(mod.notSupported) {
+            @if (mod.notSupported) {
               <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">info</mat-icon>
             } @else {
               @if (alreadyInstalled.isAlreadyInstalled()) {

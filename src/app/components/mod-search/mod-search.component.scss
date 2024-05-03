@@ -4,6 +4,13 @@
   padding: unset;
 }
 
+::ng-deep.search-loading {
+  .mdc-list-item__primary-text {
+    display: flex;
+    justify-content: center;
+  }
+}
+
 ::ng-deep.search-input {
   @include mat.form-field-density(-5);
   width: 100%;
