@@ -34,7 +34,7 @@ export const handleFileUnzipEvent = () => {
  * @param {Electron.IpcMainEvent}*/
 async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTempDownloadDir: string, event: Electron.IpcMainEvent) {
   try {
-    const sevenBinPath = path.join(__dirname, '../public/7zip/7z.exe');
+    const sevenBinPath = path.join(process.resourcesPath, 'app/public/7zip/7z.exe');
     const zipArchiveHelper = new ZipArchiveHelper();
     log.log(`----------------------------------`);
     log.log(`FileId:${args.hubId} - Start Unzip`);
