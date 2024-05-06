@@ -6,7 +6,7 @@ import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as log from 'electron-log';
 import { ZipArchiveHelper } from '../helper/zip-archive-helper';
 
-export const handleFileUnzipEvent = () => {
+export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
     const ankiTempDownloadDir = path.join(args.akiInstancePath, '_temp');
     const archivePath = args.filePath;
@@ -20,21 +20,23 @@ export const handleFileUnzipEvent = () => {
       return;
     }
 
-    await handleArchive(archivePath, args, ankiTempDownloadDir, event);
+    await handleArchive(archivePath, args, ankiTempDownloadDir, isServe, event);
   });
 };
 
 /**
- * Handles the extraction of files from an archive with various scenarios.
+ * Handles the archive file by performing various extraction operations based on the file content and arguments.
  *
- * @param {string} archivePath - The path of the archive to handle.
- * @param {boolean} isServe - Indicates whether the application is in serve mode.
- * @param {FileUnzipEvent} args - The event arguments for the file unzip.
+ * @param {string} archivePath - The path of the archive file to handle.
+ * @param {FileUnzipEvent} args - The arguments for handling the archive file.
  * @param {string} ankiTempDownloadDir - The temporary download directory for Anki.
- * @param {Electron.IpcMainEvent}*/
-async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTempDownloadDir: string, event: Electron.IpcMainEvent) {
+ * @param {boolean} isServe - Specifies if the handleArchive method is invoked by the server.
+ * @param {Electron.IpcMainEvent} event - The event object for communicating with the main process.
+ */
+async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTempDownloadDir: string, isServe: boolean, event: Electron.IpcMainEvent) {
   try {
-    const sevenBinPath = path.join(process.resourcesPath, 'app/public/7zip/7z.exe');
+    const sevenBinPath = isServe ? path.join(__dirname, '../public/7zip/7z.exe') : path.join(process.resourcesPath, 'app/public/7zip/7z.exe');
+
     const zipArchiveHelper = new ZipArchiveHelper();
     log.log(`----------------------------------`);
     log.log(`FileId:${args.hubId} - Start Unzip`);

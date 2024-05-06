@@ -30,7 +30,7 @@ mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
 handleDownloadLinkEvent();
 handleDownloadModEvent();
-handleFileUnzipEvent();
+handleFileUnzipEvent(isServe);
 handleUserSettingStoreEvents(store);
 handleClientModsEvent();
 handleServerModsEvent();

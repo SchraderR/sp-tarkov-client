@@ -23,7 +23,7 @@ export const handleDownloadModEvent = () => {
         return;
       }
 
-      if (downloadModel.modFileUrl.includes('docs.google.com')) {
+      if (downloadModel.modFileUrl.includes('docs.google.com') || downloadModel.modFileUrl.includes('dropbox')) {
         browser = await launch({
           headless: true,
           executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,

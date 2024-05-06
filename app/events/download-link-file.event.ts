@@ -64,9 +64,7 @@ export const handleDownloadLinkEvent = () => {
           }
         });
 
-        // await timeout(2000);
         await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-        // await timeout(2000);
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);
@@ -74,6 +72,7 @@ export const handleDownloadLinkEvent = () => {
 
         downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
         if (!downloadLink) {
+          event.sender.send('download-link-error', 0);
           await browser.close();
           return;
         }

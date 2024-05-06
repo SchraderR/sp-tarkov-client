@@ -172,14 +172,15 @@ export class ZipArchiveHelper {
   checkForArchiveWithSingleDll(archivePath: string, sevenBinPath: string): Promise<boolean> {
     let dllFound = false;
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath, $cherryPick: ['*.dll'] })
         .on('data', data => {
           if (!data.file.includes('/')) {
             dllFound = true;
           }
         })
-        .on('end', () => resolve(dllFound));
+        .on('end', () => resolve(dllFound))
+        .on('error', reject);
     });
   }
 
@@ -194,7 +195,7 @@ export class ZipArchiveHelper {
     let dllFound = false;
     let fileCount = 0;
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath })
         .on('data', data => {
           if (data?.attributes?.[0] !== 'D') {
@@ -206,7 +207,8 @@ export class ZipArchiveHelper {
             }
           }
         })
-        .on('end', () => resolve(fileCount === 1 && dllFound));
+        .on('end', () => resolve(fileCount === 1 && dllFound))
+        .on('error', reject);
     });
   }
 }
