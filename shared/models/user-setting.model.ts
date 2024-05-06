@@ -9,6 +9,16 @@ export interface UpdateModMeta {
   serverName: string;
 }
 
+export interface ModCache {
+  name: string;
+  fileUrl: string;
+  supportedAkiVersion: string;
+  image?: string;
+  icon?: string;
+  teaser?: string;
+  akiVersionColorCode?: string;
+}
+
 export interface UserSettingStoreModel {
   modMetaData: UpdateModMeta[];
   akiInstances: AkiInstance[];
@@ -17,6 +27,7 @@ export interface UserSettingStoreModel {
   isExperimentalFunctionsActive: boolean;
   akiVersions: AkiVersion[];
   akiTags: AkiTag[];
+  modCache: ModCache[];
 }
 
 export interface AkiInstance {

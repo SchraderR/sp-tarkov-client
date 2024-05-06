@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModCache, ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -29,6 +29,7 @@ import { SnackbarTutorialHintComponent } from './components/snackbar-tutorial-hi
 import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 import { DownloadService } from './core/services/download.service';
+import { Mod } from './core/models/mod';
 
 @Component({
   standalone: true,
@@ -92,6 +93,7 @@ export class AppComponent {
       )
       .subscribe(() => this.getCurrentPersonalSettings());
 
+    this.getCachedModList();
     this.getCurrentPersonalSettings();
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
@@ -177,6 +179,19 @@ export class AppComponent {
     this.#electronService
       .sendEvent<boolean>('tutorial-setting')
       .subscribe(value => this.#ngZone.run(() => this.#userSettingService.isTutorialDone.set(value.args)));
+  }
+
+  private getCachedModList() {
+    this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
+      this.#ngZone.run(() => {
+        value.args.forEach(modCache => {
+          const mod: Mod = { ...modCache, supportedAkiVersion: `C*${modCache.supportedAkiVersion}`, kind: undefined, notSupported: false };
+          this.#modListService.addMod(mod);
+        });
+
+        console.log(value);
+      })
+    );
   }
 
   private showTutorialSnackbar() {

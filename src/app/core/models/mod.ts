@@ -3,16 +3,16 @@ import { Kind } from '../../../../shared/models/unzip.model';
 
 export interface Mod {
   name: string;
-  image?: string;
-  icon?: string;
   fileUrl: string;
   kind: Kind | undefined;
   notSupported: boolean;
+  supportedAkiVersion: string;
+  image?: string;
+  icon?: string;
   teaser?: string;
   lastUpdate?: string;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
-  supportedAkiVersion: string;
   akiVersionColorCode?: string;
 }
 

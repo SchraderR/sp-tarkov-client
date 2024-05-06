@@ -40,7 +40,7 @@ export class ModCardComponent implements OnInit {
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
 
   ngOnInit() {
-    this.modLicenseInformation$ = this.getModLicenseInformation();
+    this.modLicenseInformation$ = this.getModVersionAndLicenseInformation();
   }
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
@@ -48,7 +48,7 @@ export class ModCardComponent implements OnInit {
 
   downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 
-  private getModLicenseInformation(): Observable<ModLicenseInformation> {
+  private getModVersionAndLicenseInformation(): Observable<ModLicenseInformation> {
     if (!this.mod?.fileUrl) {
       return EMPTY;
     }
@@ -61,8 +61,10 @@ export class ModCardComponent implements OnInit {
     return this.#httpClient.get(path, { responseType: 'text' }).pipe(
       map(modHtml => {
         const modPageView = HtmlHelper.parseStringAsHtml(modHtml);
+        const supportedVersion = modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '';
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');
 
+        this.mod.supportedAkiVersion = supportedVersion;
         return {
           url: modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl,
           text: modLicenceBox?.innerHTML ?? 'SP Hub-License',

@@ -82,6 +82,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('akiVersions', []);
     }
 
+    const modCache = store.get('modCache');
+    if (!modCache) {
+      store.set('modCache', []);
+    }
+
     if (isServe) {
       browserWindow.webContents.openDevTools();
       const debug = require('electron-debug');

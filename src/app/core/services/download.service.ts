@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
 import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
@@ -44,6 +44,7 @@ export class DownloadService {
 
       try {
         await this.installProcess(mod, fileId, activeInstance);
+        await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
       } catch (error) {
         mod.installProgress.error = true;
         switch (error) {

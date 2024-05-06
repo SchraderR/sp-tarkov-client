@@ -11,6 +11,8 @@ import { DownloadService } from '../../core/services/download.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { JoyrideModule } from 'ngx-joyride';
+import { firstValueFrom } from 'rxjs';
+import { ElectronService } from '../../core/services/electron.service';
 
 @Component({
   standalone: true,
@@ -23,6 +25,7 @@ import { JoyrideModule } from 'ngx-joyride';
 export default class ModListComponent implements OnInit {
   #modListService = inject(ModListService);
   #downloadService = inject(DownloadService);
+  #electronService = inject(ElectronService);
   ngZone = inject(NgZone);
   changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -44,8 +47,9 @@ export default class ModListComponent implements OnInit {
 
   downloadAndInstallAll = () => this.#downloadService.downloadAndInstallAll();
 
-  removeMod(mod: Mod) {
+  async removeMod(mod: Mod) {
     this.#modListService.removeMod(mod.name);
+    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
   }
 
   removeCompletedMods() {

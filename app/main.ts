@@ -20,6 +20,7 @@ import * as log from 'electron-log';
 import { handleUpdateModEvents } from './events/update-mod.event';
 import { handleAkiTagEvents } from './events/aki-tag.event';
 import { handleAkiVersionEvents } from './events/aki-version.event';
+import { handleModCacheEvents } from './events/mod-list-cache.event';
 log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
@@ -44,3 +45,4 @@ handleModLoadOrderEvents();
 handleUpdateModEvents(store);
 handleAkiTagEvents(store);
 handleAkiVersionEvents(store);
+handleModCacheEvents(store);

@@ -25,7 +25,10 @@
   | 'aki-versions'
   | 'aki-versions-save'
   | 'aki-tags'
-  | 'aki-tags-save';
+  | 'aki-tags-save'
+  | 'mod-list-cache'
+  | 'add-mod-list-cache'
+  | 'remove-mod-list-cache';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';

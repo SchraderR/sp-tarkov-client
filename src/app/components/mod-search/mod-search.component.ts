@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, EMPTY, filter, map, startWith, switchMap } from 'rxjs';
+import { debounceTime, EMPTY, filter, firstValueFrom, map, startWith, switchMap } from 'rxjs';
 import { AkiSearchService } from '../../core/services/aki-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,7 @@ import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ElectronService } from '../../core/services/electron.service';
 import { DownloadService } from '../../core/services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ModCache } from '../../../../shared/models/user-setting.model';
 
 @Component({
   standalone: true,
@@ -79,15 +80,27 @@ export class ModSearchComponent {
 
   openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
 
-  addModToModList(event: Event, mod: Mod) {
+  async addModToModList(event: Event, mod: Mod) {
     event.stopPropagation();
 
+    const modCacheItem: ModCache = {
+      name: mod.name,
+      icon: mod.icon,
+      image: mod.image,
+      fileUrl: mod.fileUrl,
+      teaser: mod.teaser,
+      supportedAkiVersion: mod.supportedAkiVersion,
+      akiVersionColorCode: mod.akiVersionColorCode,
+    };
+
     this.#modListService.addMod(mod);
+    await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
-  removeModFromModList(event: MouseEvent, mod: Mod) {
+  async removeModFromModList(event: MouseEvent, mod: Mod) {
     event.stopPropagation();
 
     this.#modListService.removeMod(mod.name);
+    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
   }
 }

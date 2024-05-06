@@ -16,7 +16,7 @@ import { IsAlreadyInstalledDirective } from '../../directives/is-already-install
 import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { debounceTime, map, Observable, startWith, Subscription, tap } from 'rxjs';
+import { debounceTime, firstValueFrom, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
@@ -27,6 +27,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
 import { AkiTag, AkiVersion } from '../../../../../shared/models/aki-core.model';
+import { ModCache } from '../../../../../shared/models/user-setting.model';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -119,12 +120,24 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
   }
 
-  addModToModList(mod: Mod) {
+  async addModToModList(mod: Mod) {
+    const modCacheItem: ModCache = {
+      name: mod.name,
+      icon: mod.icon,
+      image: mod.image,
+      fileUrl: mod.fileUrl,
+      teaser: mod.teaser,
+      supportedAkiVersion: mod.supportedAkiVersion,
+      akiVersionColorCode: mod.akiVersionColorCode,
+    };
+
     this.#modListService.addMod(mod);
+    await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
-  removeModFromModList(mod: Mod) {
+  async removeModFromModList(mod: Mod) {
     this.#modListService.removeMod(mod.name);
+    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
   }
 
   openExternal(modFileUrl: string) {
