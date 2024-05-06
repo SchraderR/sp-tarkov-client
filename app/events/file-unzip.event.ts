@@ -36,7 +36,7 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
 async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTempDownloadDir: string, isServe: boolean, event: Electron.IpcMainEvent) {
   try {
     const sevenBinPath = isServe
-      ? path.join(__dirname, '../public/7zip/7z.exe')
+      ? 'app\\node_modules\\node-7z-archive\\binaries\\win32\\7z.exe'
       : 'resources\\app.asar.unpacked\\node_modules\\node-7z-archive\\binaries\\win32\\7z.exe';
 
     const zipArchiveHelper = new ZipArchiveHelper();
