@@ -16,7 +16,7 @@ import { IsAlreadyInstalledDirective } from '../../directives/is-already-install
 import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { debounceTime, EMPTY, map, Observable, startWith, Subscription, switchMap, tap } from 'rxjs';
+import { debounceTime, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { DownloadService } from '../../services/download.service';
