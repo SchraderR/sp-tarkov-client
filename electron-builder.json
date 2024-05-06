@@ -16,6 +16,9 @@
       "filter": ["**/*"]
     }
   ],
+  "extraResources": [
+    "app/public/7zip"
+  ],
   "win": {
     "icon": "app/assets/icon.ico",
     "target": ["nsis"],

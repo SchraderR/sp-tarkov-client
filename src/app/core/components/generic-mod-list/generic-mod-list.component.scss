@@ -6,7 +6,10 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 8px;
-  height: calc(100% - 16px);
+}
+
+::ng-deep.version-select {
+  @include mat.form-field-density(-5);
 }
 
 mat-card {
@@ -15,6 +18,7 @@ mat-card {
 
   mat-card-content {
     padding: unset;
+    height: 100%;
 
     > img {
       border-bottom-left-radius: 4px;
@@ -40,11 +44,22 @@ mat-card {
 
 .mod-name {
   justify-content: center;
-  padding-top: 8px;
+  padding-top: 4px;
   padding-left: 8px;
   padding-right: 8px;
-  margin-bottom: 8px;
+  padding-bottom: 2px;
   min-width: 140px;
+}
+
+.mod-version {
+  padding: 0 8px;
+  padding-bottom: 2px;
+  font-style: italic;
+  font-size: small;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .mod-teaser {
@@ -68,6 +83,9 @@ mat-card {
   flex-direction: row;
 }
 
+.card-button-container {
+  display: flex;
+}
 
 .action-container {
   display: flex;
@@ -99,40 +117,5 @@ mat-card {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     z-index: 100;
-  }
-}
-
-
-.image-version-container {
-  position: relative;
-  display: flex;
-}
-
-.image-aki-version {
-  display: flex;
-  position: absolute;
-  justify-content: center;
-  bottom: 0;
-  color: white;
-  padding: 2px 4px;
-  font-size: 11px;
-  border-radius: 4px 4px 4px 0;
-
-  &.badge.label.green {
-    background-color: #090;
-  }
-  &.badge.label.slightly-outdated {
-    background-color: #b1e433;
-    color: #323947;
-  }
-  &.badge.label.yellow {
-    background-color: #ff0;
-    color: #323947;
-  }
-  &.badge.label.red {
-    background-color: #c00;
-  }
-  &.badge.label.black {
-    background-color: black;
   }
 }

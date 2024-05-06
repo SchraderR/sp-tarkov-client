@@ -1,9 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { catchError, EMPTY, map, Observable } from 'rxjs';
+import { from, map, mergeMap, Observable, toArray } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
 import { Kind } from '../../../../shared/models/unzip.model';
+import { environment } from '../../../environments/environment';
+import { FileHelper } from '../helper/file-helper';
+import { ConfigurationService } from './configuration.service';
 
 interface SearchResponse {
   template: string;
@@ -16,7 +19,8 @@ export class AkiSearchService {
   private restrictedModKinds = ['Community support'];
 
   #httpClient = inject(HttpClient);
-  modSearchUrl = 'https://hub.sp-tarkov.com/files/extended-search/';
+  #configurationService = inject(ConfigurationService);
+  modSearchUrl = environment.production ? 'https://hub.sp-tarkov.com/files/extended-search/' : '/files/extended-search/';
   #placeholderImagePath = 'assets/images/placeholder.png';
 
   searchMods(searchArgument: string): Observable<Mod[]> {
@@ -30,13 +34,20 @@ export class AkiSearchService {
       )
       .pipe(
         map(response => this.extractModInformation(response)),
-        catchError(() => EMPTY)
+        mergeMap((mods: Mod[]) => from(mods)),
+        mergeMap(mod =>
+          this.getFileHubView(mod.fileUrl).pipe(
+            map(({ supportedAkiVersion, akiVersionColorCode }) => ({ ...mod, supportedAkiVersion, akiVersionColorCode }))
+          )
+        ),
+        toArray()
       );
   }
 
   private extractModInformation(searchResponse: SearchResponse): Mod[] {
     const searchResult = HtmlHelper.parseStringAsHtml(searchResponse.template);
     const modListSection = searchResult.body?.querySelectorAll('.section:nth-child(2) div.sectionTitle + ul .extendedNotificationItem');
+    const config = this.#configurationService.configSignal();
 
     if (!modListSection) {
       return [];
@@ -61,6 +72,33 @@ export class AkiSearchService {
           kind: kind,
         } as Mod; // Type assertion here
       })
-      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)));
+      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)))
+      .map(e => {
+        if (!config) {
+          return e;
+        }
+
+        const fileId = FileHelper.extractFileIdFromUrl(e.fileUrl);
+        if (!fileId) {
+          return e;
+        }
+
+        e.notSupported = !!config.notSupported.find(f => f === +fileId);
+        return e;
+      });
+  }
+
+  private getFileHubView(modUrl: string): Observable<{ supportedAkiVersion: string; akiVersionColorCode: string }> {
+    modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
+    return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)));
+  }
+
+  private extractSPVersion(modHub: string): { supportedAkiVersion: string; akiVersionColorCode: string } {
+    const searchResult = HtmlHelper.parseStringAsHtml(modHub);
+
+    return {
+      supportedAkiVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+      akiVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+    };
   }
 }

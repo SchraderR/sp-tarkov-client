@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { SpTarkovDevService } from './sp-tarkov-dev.service';
+import { ConfigurationService } from './configuration.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-describe('SpTarkovDevService', () => {
-  let service: SpTarkovDevService;
+describe('ConfigurationService', () => {
+  let service: ConfigurationService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
-    service = TestBed.inject(SpTarkovDevService);
+    service = TestBed.inject(ConfigurationService);
   });
 
   it('should be created', () => {

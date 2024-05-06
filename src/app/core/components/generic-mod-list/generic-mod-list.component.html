@@ -4,11 +4,16 @@
   </div>
 }
 
+@if (tags && accumulatedModList.length === 0) {
+  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+    <span>Select a tag to start the search.</span>
+  </div>
+}
+
 @for (mod of accumulatedModList; track mod) {
-  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
-    [mod]="mod">
+  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
     <mat-card-content class="card-container">
-      <div class="image-version-container">
+      <div>
         @if (mod.image) {
           <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
         }
@@ -17,35 +22,42 @@
         }
         @if (mod.supportedAkiVersion) {
           <div [class]="mod.akiVersionColorCode"
-            class="font-small image-aki-version">{{ mod.supportedAkiVersion }}
+               class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
           </div>
         }
       </div>
       <div class="mod-list-container">
         <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+        <div class="mod-version">Last update: {{ mod.lastUpdate }}</div>
         <div class="mod-teaser">{{ mod.teaser }}</div>
         <span class="spacer"></span>
-        <div style="display: flex">
+        <div class="card-button-container">
           @if (isActiveAkiInstanceAvailable()) {
-            @if (alreadyInstalled.isAlreadyInstalled()) {
-              <mat-icon
-                class="already-installed-icon-container"
-                matTooltip="Already installed"
-                color="accent">done_all
-              </mat-icon>
+            @if (mod.notSupported) {
+              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">info</mat-icon>
             } @else {
-              @if (!alreadyInstalled.isInModList()) {
-                <button mat-icon-button (click)="addModToModList(mod)" [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
-                  <mat-icon>add</mat-icon>
-                </button>
+              @if (alreadyInstalled.isAlreadyInstalled()) {
+                <mat-icon
+                  class="already-installed-icon-container"
+                  matTooltip="Already installed"
+                  color="accent">done_all
+                </mat-icon>
               } @else {
-                <button mat-icon-button (click)="removeModFromModList(mod)">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (!alreadyInstalled.isInModList()) {
+                  <button mat-icon-button (click)="addModToModList(mod)"
+                          [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                } @else {
+                  <button mat-icon-button (click)="removeModFromModList(mod)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               }
             }
           } @else {
-            <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Add or activate an instance of SPT to enable additional functionality">
+            <mat-icon class="mod-install-instance-warning" color="warn"
+                      matTooltip="Add or activate an instance of SPT to enable additional functionality">
               warning
             </mat-icon>
           }
@@ -62,5 +74,37 @@
   <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
     <mat-icon>refresh</mat-icon>
   </button>
+
+  @if (tags) {
+    <ng-container *ngTemplateOutlet="akiTagsForm"></ng-container>
+  } @else {
+    <ng-container *ngTemplateOutlet="akiVersionForm"></ng-container>
+  }
+
   <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
 </mat-toolbar>
+
+
+<ng-template #akiVersionForm>
+  <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Aki Version</mat-label>
+    <mat-select [formControl]="akiVersionFormField">
+      <mat-option [value]=""></mat-option>
+      @for (version of akiVersionSignal(); track version) {
+        <mat-option [value]="version">{{ version.innerText }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</ng-template>
+
+<ng-template #akiTagsForm>
+  <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Tags</mat-label>
+    <input matInput aria-label="Number" [formControl]="akiTagFormField" [matAutocomplete]="auto">
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      @for (tag of filteredOptions | async; track tag) {
+        <mat-option [value]="tag.innerText">{{ tag.innerText }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</ng-template>

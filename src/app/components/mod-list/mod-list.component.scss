@@ -1,5 +1,5 @@
 $button-size: 48px;
-$button-padding: 8px;
+$button-padding: 24px;
 $text-space: 12px;
 
 .mod-list {
@@ -40,7 +40,7 @@ button {
   .emote {
     user-select: none;
     color: gray;
-    font-size: 128px;
+    font-size: 10vw;
     position: absolute;
     opacity: 0.04
   }

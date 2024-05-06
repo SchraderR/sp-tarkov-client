@@ -1,4 +1,4 @@
-﻿import { AkiCore } from './aki-core.model';
+﻿import { AkiCore, AkiTag, AkiVersion } from './aki-core.model';
 
 export interface UpdateModMeta {
   name: string;
@@ -9,12 +9,25 @@ export interface UpdateModMeta {
   serverName: string;
 }
 
+export interface ModCache {
+  name: string;
+  fileUrl: string;
+  supportedAkiVersion: string;
+  image?: string;
+  icon?: string;
+  teaser?: string;
+  akiVersionColorCode?: string;
+}
+
 export interface UserSettingStoreModel {
   modMetaData: UpdateModMeta[];
   akiInstances: AkiInstance[];
   theme: Theme;
   isTutorialDone: boolean;
   isExperimentalFunctionsActive: boolean;
+  akiVersions: AkiVersion[];
+  akiTags: AkiTag[];
+  modCache: ModCache[];
 }
 
 export interface AkiInstance {

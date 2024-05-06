@@ -2,11 +2,14 @@
   <mat-label>Search Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
-    @for (mod of filteredModItems | async; track mod) {
+    <mat-option class="search-loading" *ngIf="isLoading && filteredModItems.length === 0">
+      <mat-spinner [diameter]="50"></mat-spinner>
+    </mat-option>
+    @for (mod of filteredModItems; track mod) {
       <mat-option [value]="mod.name" appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
         <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
           @if (mod.image) {
-            <img class="image-shadow" [ngSrc]="mod.image" width="50" height="50" alt="">
+            <img class="image-shadow" [ngSrc]="mod.image" width="60" height="60" alt="">
           }
           @if (mod.icon) {
             <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
@@ -19,28 +22,36 @@
               <span class="font-x-small" *ngSwitchCase="'server'">Server Mod</span>
               <span class="font-x-small" *ngSwitchCase="'overhaul'">Overhaul Mod</span>
             </ng-container>
+            @if (mod.supportedAkiVersion) {
+              <span [class]="mod.akiVersionColorCode"
+                    class="font-x-small image-aki-version version-pill">{{ mod.supportedAkiVersion }}</span>
+            }
           </div>
           <span class="spacer"></span>
           @if (isActiveAkiInstanceAvailable()) {
-            @if (alreadyInstalled.isAlreadyInstalled()) {
-              <div class="already-installed-icon-container" matTooltip="Already installed">
-                <mat-icon color="accent" style="margin: unset">done_all</mat-icon>
-              </div>
-            }
-            @if (!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
-              <button
-                class="icon-end"
-                mat-icon-button
-                (click)="addModToModList($event, mod)"
-                [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
-              >
-                <mat-icon>add</mat-icon>
-              </button>
-            }
-            @if (alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
-              <button class="icon-end" mat-icon-button (click)="removeModFromModList($event, mod)">
-                <mat-icon>delete</mat-icon>
-              </button>
+            @if (mod.notSupported) {
+              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">info</mat-icon>
+            } @else {
+              @if (alreadyInstalled.isAlreadyInstalled()) {
+                <div class="already-installed-icon-container" matTooltip="Already installed">
+                  <mat-icon color="accent" style="margin: unset">done_all</mat-icon>
+                </div>
+              }
+              @if (!alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
+                <button
+                  class="icon-end"
+                  mat-icon-button
+                  (click)="addModToModList($event, mod)"
+                  [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
+                >
+                  <mat-icon>add</mat-icon>
+                </button>
+              }
+              @if (alreadyInstalled.isInModList() && !alreadyInstalled.isAlreadyInstalled()) {
+                <button class="icon-end" mat-icon-button (click)="removeModFromModList($event, mod)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             }
           } @else {
             <mat-icon

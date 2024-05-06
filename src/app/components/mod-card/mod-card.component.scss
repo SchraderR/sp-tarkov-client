@@ -10,7 +10,7 @@ mat-progress-bar {
 
 mat-card {
   width: 100%;
-  max-height: 100px;
+  max-height: 120px;
 
   mat-card-content {
     padding: unset;
@@ -27,8 +27,8 @@ mat-card {
 }
 
 .mod-icon {
-  min-height: 100px;
-  min-width: 100px;
+  min-height: 120px;
+  min-width: 120px;
   justify-content: center;
   display: flex;
   color: #c9c9c9;

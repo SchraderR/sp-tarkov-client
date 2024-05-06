@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModCache, ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { catchError, concatAll, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, concatAll, filter, forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -28,6 +28,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackbarTutorialHintComponent } from './components/snackbar-tutorial-hint/snackbar-tutorial-hint.component';
 import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
+import { DownloadService } from './core/services/download.service';
+import { Mod } from './core/models/mod';
 
 @Component({
   standalone: true,
@@ -61,6 +63,7 @@ export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
   #electronService = inject(ElectronService);
   #userSettingService = inject(UserSettingsService);
+  #downloadService = inject(DownloadService);
   #destroyRef = inject(DestroyRef);
   #modListService = inject(ModListService);
   #joyrideService = inject(JoyrideService);
@@ -83,6 +86,14 @@ export class AppComponent {
 
   constructor() {
     this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+    this.#downloadService.isDownloadProcessCompleted
+      .pipe(
+        filter(r => r),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.getCurrentPersonalSettings());
+
+    this.getCachedModList();
     this.getCurrentPersonalSettings();
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
@@ -116,7 +127,7 @@ export class AppComponent {
       .pipe(
         switchMap(res => res && this.getServerMods(res.args)),
         concatAll(),
-        takeUntilDestroyed()
+        takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe(value => {
         this.#ngZone.run(() => {
@@ -168,6 +179,19 @@ export class AppComponent {
     this.#electronService
       .sendEvent<boolean>('tutorial-setting')
       .subscribe(value => this.#ngZone.run(() => this.#userSettingService.isTutorialDone.set(value.args)));
+  }
+
+  private getCachedModList() {
+    this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
+      this.#ngZone.run(() => {
+        value.args.forEach(modCache => {
+          const mod: Mod = { ...modCache, supportedAkiVersion: `C*${modCache.supportedAkiVersion}`, kind: undefined, notSupported: false };
+          this.#modListService.addMod(mod);
+        });
+
+        console.log(value);
+      })
+    );
   }
 
   private showTutorialSnackbar() {

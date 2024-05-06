@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
 import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
@@ -20,10 +20,12 @@ export class DownloadService {
   #modListService = inject(ModListService);
   activeModList = this.#modListService.modListSignal;
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
+  isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
 
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
+    this.isDownloadProcessCompleted.next(false);
     const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
     if (!activeInstance) {
       return;
@@ -42,6 +44,7 @@ export class DownloadService {
 
       try {
         await this.installProcess(mod, fileId, activeInstance);
+        await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
       } catch (error) {
         mod.installProgress.error = true;
         switch (error) {
@@ -64,6 +67,7 @@ export class DownloadService {
 
     this.#electronService.sendEvent('clear-temp', activeInstance.akiRootDirectory).subscribe();
     this.isDownloadAndInstallInProgress.next(false);
+    this.isDownloadProcessCompleted.next(true);
   }
 
   async downloadAndInstallSingle(mod: Mod): Promise<void> {
@@ -122,6 +126,7 @@ export class DownloadService {
           const test: FileUnzipEvent = {
             filePath: downloadFilePath?.args,
             akiInstancePath: activeInstance.akiRootDirectory,
+            hubId: fileId,
             kind: mod.kind,
           };
 

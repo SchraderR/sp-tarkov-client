@@ -64,9 +64,17 @@
           <mat-option value="system">System</mat-option>
         </mat-select>
       </mat-form-field>
-      <button mat-raised-button color="primary" style="width: fit-content;" (click)="restartTutorial()">Restart
-        Tutorial
-      </button>
+      <div style="display: flex; gap: 8px">
+        <button mat-raised-button color="primary" style="width: fit-content;" (click)="restartTutorial()">
+          Restart Tutorial
+        </button>
+        <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearAkiVersionCache()">
+          Clear Aki-Version Cache
+        </button>
+        <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearAkiTagsCache()">
+          Clear Aki-Tags Cache
+        </button>
+      </div>
       <div>
         <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">
           Activate Experimental Function

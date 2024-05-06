@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, filter, Observable, of, startWith, switchMap } from 'rxjs';
+import { debounceTime, EMPTY, filter, firstValueFrom, map, startWith, switchMap } from 'rxjs';
 import { AkiSearchService } from '../../core/services/aki-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +16,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ElectronService } from '../../core/services/electron.service';
 import { DownloadService } from '../../core/services/download.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ModCache } from '../../../../shared/models/user-setting.model';
 
 @Component({
   standalone: true,
@@ -32,6 +34,7 @@ import { DownloadService } from '../../core/services/download.service';
     MatIconModule,
     IsAlreadyInstalledDirective,
     MatTooltipModule,
+    MatProgressSpinner,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
@@ -45,30 +48,59 @@ export class ModSearchComponent {
 
   isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
+  isLoading = false;
   searchControl = new FormControl('', Validators.minLength(2));
-  filteredModItems: Observable<Mod[]>;
+  filteredModItems: Mod[] = [];
   isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
 
   constructor() {
-    this.filteredModItems = this.searchControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(500),
-      filter(() => this.searchControl.valid),
-      switchMap(searchArgument => (searchArgument?.trim() ? this.#akiSearchService.searchMods(searchArgument!) : of([])))
-    );
+    this.searchControl.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(500),
+        filter(() => this.searchControl.valid),
+        switchMap(searchArgument => {
+          this.filteredModItems = [];
+
+          if (searchArgument?.trim()) {
+            this.isLoading = true;
+            return this.#akiSearchService.searchMods(searchArgument!);
+          } else {
+            this.isLoading = false;
+            return EMPTY;
+          }
+        }),
+        map(mods => {
+          this.isLoading = false;
+          this.filteredModItems = mods.sort((a, b) => b.supportedAkiVersion.localeCompare(a.supportedAkiVersion));
+        })
+      )
+      .subscribe();
   }
 
   openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
 
-  addModToModList(event: Event, mod: Mod) {
+  async addModToModList(event: Event, mod: Mod) {
     event.stopPropagation();
 
+    const modCacheItem: ModCache = {
+      name: mod.name,
+      icon: mod.icon,
+      image: mod.image,
+      fileUrl: mod.fileUrl,
+      teaser: mod.teaser,
+      supportedAkiVersion: mod.supportedAkiVersion,
+      akiVersionColorCode: mod.akiVersionColorCode,
+    };
+
     this.#modListService.addMod(mod);
+    await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
-  removeModFromModList(event: MouseEvent, mod: Mod) {
+  async removeModFromModList(event: MouseEvent, mod: Mod) {
     event.stopPropagation();
 
     this.#modListService.removeMod(mod.name);
+    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
   }
 }

@@ -4,6 +4,13 @@
   padding: unset;
 }
 
+::ng-deep.search-loading {
+  .mdc-list-item__primary-text {
+    display: flex;
+    justify-content: center;
+  }
+}
+
 ::ng-deep.search-input {
   @include mat.form-field-density(-5);
   width: 100%;
@@ -28,4 +35,10 @@
 .search-item-container {
   display: flex;
   padding: 8px;
+}
+
+.version-pill {
+  width: fit-content;
+  border-radius: 4px;
+  padding: 0 4px;
 }

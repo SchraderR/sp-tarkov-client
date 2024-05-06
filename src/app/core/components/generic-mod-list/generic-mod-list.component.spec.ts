@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import GenericModListComponent from './generic-mod-list.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('GenericModListComponent', () => {
   let component: GenericModListComponent;
@@ -8,7 +9,7 @@ describe('GenericModListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GenericModListComponent, HttpClientTestingModule],
+      imports: [NoopAnimationsModule, GenericModListComponent, HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GenericModListComponent);

@@ -3,5 +3,15 @@
     "target": "https://hub.sp-tarkov.com",
     "secure": false,
     "changeOrigin": true
+  },
+  "/tagged": {
+    "target": "https://hub.sp-tarkov.com",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/sp-tarkov-client-configuration": {
+    "target": "https://schraderr.github.io",
+    "secure": false,
+    "changeOrigin": true
   }
 }

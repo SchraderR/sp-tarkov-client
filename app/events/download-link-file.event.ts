@@ -46,9 +46,9 @@ export const handleDownloadLinkEvent = () => {
           }
         });
 
-        await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-        await page.click('[name="confirm"]');
-        await page.click('div.formSubmit input[type="submit"]');
+        // await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+        // await page.click('[name="confirm"]');
+        // await page.click('div.formSubmit input[type="submit"]');
 
         page.on('response', response => {
           const status = response.status();
@@ -64,9 +64,7 @@ export const handleDownloadLinkEvent = () => {
           }
         });
 
-        await timeout(2000);
         await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-        await timeout(2000);
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);
@@ -74,6 +72,14 @@ export const handleDownloadLinkEvent = () => {
 
         downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
         if (!downloadLink) {
+          event.sender.send('download-link-error', 0);
+          await browser.close();
+          return;
+        }
+
+        const isMediaFireLink = isMediaFire(downloadLink);
+        if (isMediaFireLink) {
+          event.sender.send('download-link-error', 0);
           await browser.close();
           return;
         }
@@ -151,7 +157,6 @@ export const handleDownloadLinkEvent = () => {
         log.error(e);
         event.sender.send('download-link-error', 0);
         await browser.close();
-        console.log(e);
       }
     })();
   });
@@ -190,6 +195,10 @@ function isDirectDll(downloadLink: string) {
 
 function isDropBox(downloadLink: string) {
   return downloadLink.includes('dropbox');
+}
+
+function isMediaFire(downloadLink: string) {
+  return downloadLink.includes('mediafire');
 }
 
 function isGoogleDrive(downloadLink: string) {
@@ -236,7 +245,8 @@ async function getReleaseData({ tag, userName, repoName }: GithubLinkData, event
 
     return response.data;
   } catch (error) {
-    console.error(error);
+    log.error(error);
+    event.sender.send('download-link-error', 0);
     return null;
   }
 }
