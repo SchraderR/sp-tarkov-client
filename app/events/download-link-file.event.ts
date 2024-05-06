@@ -64,7 +64,7 @@ export const handleDownloadLinkEvent = () => {
           }
         });
 
-        await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+        await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2', timeout: 60000 });
         await page.click('a.button.buttonPrimary.externalURL');
 
         const newPagePromise = getNewPageWhenLoaded(browser);
