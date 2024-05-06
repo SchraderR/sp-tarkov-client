@@ -30,12 +30,14 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
  * @param {string} archivePath - The path of the archive file to handle.
  * @param {FileUnzipEvent} args - The arguments for handling the archive file.
  * @param {string} ankiTempDownloadDir - The temporary download directory for Anki.
- * @param {boolean} isServe - Specifies if the handleArchive method is invoked by the server.
+ * @param {boolean} isServe - Specifies if the server invokes the handleArchive method.
  * @param {Electron.IpcMainEvent} event - The event object for communicating with the main process.
  */
 async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTempDownloadDir: string, isServe: boolean, event: Electron.IpcMainEvent) {
   try {
-    const sevenBinPath = isServe ? path.join(__dirname, '../public/7zip/7z.exe') : path.join(process.resourcesPath, 'app/public/7zip/7z.exe');
+    const sevenBinPath = isServe
+      ? 'app\\node_modules\\node-7z-archive\\binaries\\win32\\7z.exe'
+      : 'resources\\app.asar.unpacked\\node_modules\\node-7z-archive\\binaries\\win32\\7z.exe';
 
     const zipArchiveHelper = new ZipArchiveHelper();
     log.log(`----------------------------------`);
