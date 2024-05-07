@@ -6,8 +6,14 @@ import { InstallProgress, Mod } from '../models/mod';
 })
 export class ModListService {
   private modList = signal<Mod[]>([]);
+  private useIndexedMods = signal<boolean>(false);
   readonly modListSignal = this.modList.asReadonly();
+  readonly useIndexedModsSignal = this.useIndexedMods.asReadonly();
 
+  setUseIndexedMods(value: boolean) {
+    this.useIndexedMods.set(value);
+  }
+  
   addMod(mod: Mod) {
     if (this.modList().some(m => m.name === mod.name)) {
       return;

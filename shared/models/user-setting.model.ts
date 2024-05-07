@@ -28,6 +28,7 @@ export interface UserSettingStoreModel {
   akiVersions: AkiVersion[];
   akiTags: AkiTag[];
   modCache: ModCache[];
+  useIndexedMods: boolean;
 }
 
 export interface AkiInstance {

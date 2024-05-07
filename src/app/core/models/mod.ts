@@ -3,7 +3,7 @@ import { Kind } from '../../../../shared/models/unzip.model';
 
 export interface Mod {
   name: string;
-  version?: string;
+  modVersion?: string;
   fileUrl: string;
   kind: Kind | undefined;
   notSupported: boolean;
