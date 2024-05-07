@@ -65,6 +65,8 @@ export class ModCardComponent implements OnInit {
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');
 
         this.mod.supportedAkiVersion = supportedVersion;
+        this.mod.version = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? "";
+        
         return {
           url: modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl,
           text: modLicenceBox?.innerHTML ?? 'SP Hub-License',

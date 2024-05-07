@@ -14,80 +14,83 @@ export interface GithubLinkData {
 }
 
 export const handleDownloadLinkEvent = () => {
-  let downloadLink = null;
   let browser: Browser;
 
   ipcMain.on('download-link', async (event, linkModel: LinkModel) => {
+    let downloadLink: string | null = null;
+
     await install({
       browser: Browsers.CHROME,
       buildId: '122.0.6257.0',
       cacheDir: `${app.getPath('home')}/.local-chromium`,
     });
 
+    if (linkModel.downloadUrl !== '') {
+      downloadLink = linkModel.downloadUrl;
+    }
+
     await (async () => {
       try {
-        browser = await launch({
-          headless: true,
-          executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
-        });
-
-        const page = await browser.newPage();
-        await page.setRequestInterception(true);
-        page.on('request', req => {
-          if (
-            req.resourceType() === 'stylesheet' ||
-            req.resourceType() === 'font' ||
-            req.resourceType() === 'image' ||
-            req.resourceType() === 'media'
-          ) {
-            req.abort();
-          } else {
-            req.continue();
-          }
-        });
-
-        // await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
-        // await page.click('[name="confirm"]');
-        // await page.click('div.formSubmit input[type="submit"]');
-
-        page.on('response', response => {
-          const status = response.status();
-          if (status >= 300 && status <= 399) {
-            if (
-              response.headers()?.['location']?.includes('dev.sp-tarkov.com') ||
-              response.headers()?.['location']?.includes('dev.sp-tarkov.com/attachments')
-            ) {
-              downloadLink = response.headers()['location'];
-              event.sender.send('download-link-completed', downloadLink);
-              browser.close();
-            }
-          }
-        });
-
-        await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2', timeout: 60000 });
-        await page.click('a.button.buttonPrimary.externalURL');
-
-        const newPagePromise = getNewPageWhenLoaded(browser);
-        const newPage: Page = await newPagePromise;
-
-        downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
         if (!downloadLink) {
-          event.sender.send('download-link-error', 0);
-          await browser.close();
-          return;
+          browser = await launch({
+            headless: true,
+            executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
+          });
+
+          const page = await browser.newPage();
+          await page.setRequestInterception(true);
+          page.on('request', req => {
+            if (
+              req.resourceType() === 'stylesheet' ||
+              req.resourceType() === 'font' ||
+              req.resourceType() === 'image' ||
+              req.resourceType() === 'media'
+            ) {
+              req.abort();
+            } else {
+              req.continue();
+            }
+          });
+
+          // await page.goto(`https://hub.sp-tarkov.com/files/license/${linkModel.fileId}`, { waitUntil: 'networkidle2' });
+          // await page.click('[name="confirm"]');
+          // await page.click('div.formSubmit input[type="submit"]');
+
+          page.on('response', response => {
+            const status = response.status();
+            if (status >= 300 && status <= 399) {
+              if (
+                response.headers()?.['location']?.includes('dev.sp-tarkov.com') ||
+                response.headers()?.['location']?.includes('dev.sp-tarkov.com/attachments')
+              ) {
+                downloadLink = response.headers()['location'];
+                event.sender.send('download-link-completed', downloadLink);
+              }
+            }
+          });
+
+          await page.goto(`https://hub.sp-tarkov.com/files/file/${linkModel.fileId}`, { waitUntil: 'networkidle2', timeout: 60000 });
+          await page.click('a.button.buttonPrimary.externalURL');
+
+          const newPagePromise = getNewPageWhenLoaded(browser);
+          const newPage: Page = await newPagePromise;
+
+          downloadLink = await newPage.$eval('a[href]', e => e.getAttribute('href'));
+          if (!downloadLink) {
+            event.sender.send('download-link-error', 0);
+            return;
+          }
         }
 
         const isMediaFireLink = isMediaFire(downloadLink);
         if (isMediaFireLink) {
           event.sender.send('download-link-error', 0);
-          await browser.close();
           return;
         }
 
         const isDirectDllLink = isDirectDll(downloadLink);
         if (isDirectDllLink) {
           event.sender.send('download-link-completed', downloadLink);
-          await browser.close();
           return;
         }
 
@@ -95,7 +98,6 @@ export const handleDownloadLinkEvent = () => {
         if (isDropBoxLink) {
           downloadLink = downloadLink.replace('&dl=0', '&dl=1').replace('?dl=0', '?dl=1');
           event.sender.send('download-link-completed', downloadLink);
-          await browser.close();
           return;
         }
 
@@ -111,7 +113,6 @@ export const handleDownloadLinkEvent = () => {
 
           if (!regex) {
             event.sender.send('download-link-error', 0);
-            await browser.close();
             return;
           }
 
@@ -120,13 +121,11 @@ export const handleDownloadLinkEvent = () => {
 
           if (id === null) {
             event.sender.send('download-link-error', 0);
-            await browser.close();
             return;
           }
 
           downloadLink = `https://docs.google.com/uc?export=download&id=${id}`;
           event.sender.send('download-link-completed', downloadLink);
-          await browser.close();
           return;
         }
 
@@ -135,7 +134,6 @@ export const handleDownloadLinkEvent = () => {
           const gitHubInformation = parseGitHubLink(downloadLink);
           if (!gitHubInformation) {
             event.sender.send('download-link-completed', downloadLink);
-            await browser.close();
             return;
           }
 
@@ -144,7 +142,6 @@ export const handleDownloadLinkEvent = () => {
               const githubDownloadLink = data?.assets?.[0].browser_download_url;
 
               event.sender.send('download-link-completed', githubDownloadLink);
-              await browser.close();
 
               return;
             })
@@ -152,11 +149,14 @@ export const handleDownloadLinkEvent = () => {
         }
 
         event.sender.send('download-link-completed', downloadLink);
-        await browser.close();
       } catch (e) {
         log.error(e);
         event.sender.send('download-link-error', 0);
-        await browser.close();
+      }
+      finally {
+        if (browser) {
+          await browser.close();
+        }
       }
     })();
   });

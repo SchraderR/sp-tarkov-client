@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, switchMap, Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
@@ -10,6 +12,18 @@ import { DownloadProgress } from '../../../../shared/models/download.model';
 import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
 import { Mod } from '../models/mod';
 import { UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { environment } from '../../../environments/environment';
+
+export interface ModData {
+  id: string;
+  name: string;
+  description: string;
+  version: string;
+  link: string;
+  featured: string;
+  downloads: string;
+  versionLabel: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -18,10 +32,25 @@ export class DownloadService {
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
+  #httpClient = inject(HttpClient);
+  mods: ModData[] = [];
   activeModList = this.#modListService.modListSignal;
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
+
+  getModData(): Observable<ModData[]> {
+    return this.#httpClient.get<{ mod_data: ModData[] }>(environment.akiHubModsJson).pipe(
+      map(response => {
+        this.mods = response.mod_data;
+        return this.mods;
+      }),
+      catchError(error => {
+        console.error('Failed to load mods:', error);
+        return throwError(() => new Error('Failed to load mods'));
+      })
+    );
+  }
 
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
@@ -29,6 +58,12 @@ export class DownloadService {
     const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
     if (!activeInstance) {
       return;
+    }
+
+    try {
+      await firstValueFrom(this.getModData());
+    } catch (error) {
+      console.error('Error loading mod data from hub json:', error);
     }
 
     for (let i = 0; i < this.activeModList().length; i++) {
@@ -105,7 +140,12 @@ export class DownloadService {
       this.downloadProgressEvent.next();
     });
 
-    const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
+    const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory, downloadUrl: '' };
+
+    const modData = this.mods.find(modItem => modItem.name === mod.name);
+    if (modData && modData.version === mod.version) {
+      linkModel.downloadUrl = modData.link;
+    }
 
     await this.#electronService
       .sendEvent<string, LinkModel>('download-link', linkModel)

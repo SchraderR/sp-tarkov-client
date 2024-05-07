@@ -1,4 +1,10 @@
 {
+  "/mods.json": {
+    "target": "https://hub.sp-tarkov.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
   "/files": {
     "target": "https://hub.sp-tarkov.com",
     "secure": false,
