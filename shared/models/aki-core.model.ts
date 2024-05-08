@@ -17,6 +17,7 @@ export interface DownloadModel {
 export interface LinkModel {
   fileId: string;
   akiInstancePath: string;
+  downloadUrl: string;
 }
 
 export interface AkiVersion {

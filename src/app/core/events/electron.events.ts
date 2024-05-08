@@ -28,7 +28,9 @@
   | 'aki-tags-save'
   | 'mod-list-cache'
   | 'add-mod-list-cache'
-  | 'remove-mod-list-cache';
+  | 'remove-mod-list-cache'
+  | 'use-indexed-mods'
+  | 'use-indexed-mods-save';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';

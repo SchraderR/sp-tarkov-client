@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
 import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
@@ -10,18 +11,49 @@ import { DownloadProgress } from '../../../../shared/models/download.model';
 import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
 import { Mod } from '../models/mod';
 import { UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { environment } from '../../../environments/environment';
+
+export interface IndexedMods {
+  name?: string;
+  version?: string;
+  link?: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class DownloadService {
+  private readonly MAX_CACHE_DURATION = 3600000; // 1 hour in milliseconds
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
+  #httpClient = inject(HttpClient);
+  mods: IndexedMods[] = [];
+  lastFetchTime: Date | null = null;
   activeModList = this.#modListService.modListSignal;
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
+
+  async getModData(): Promise<IndexedMods[]> {
+    const currentTime = new Date();
+    if (this.lastFetchTime && (currentTime.getTime() - this.lastFetchTime.getTime()) < this.MAX_CACHE_DURATION && this.mods && this.mods.length > 0) {
+      console.log("Using cached indexed mods data");
+      return this.mods;
+    }
+
+    console.log("Fetching indexed mods data from hub json");
+
+    try {
+      const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.akiHubModsJson));
+      this.mods = response.mod_data;
+      this.lastFetchTime = new Date();
+      return this.mods;
+    } catch (error) {
+      console.error('Failed to load mods:', error);
+      throw new Error('Failed to load mods');
+    }
+  }
 
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
@@ -30,6 +62,8 @@ export class DownloadService {
     if (!activeInstance) {
       return;
     }
+
+    await this.getModData();
 
     for (let i = 0; i < this.activeModList().length; i++) {
       const mod = this.activeModList()[i];
@@ -105,7 +139,13 @@ export class DownloadService {
       this.downloadProgressEvent.next();
     });
 
-    const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory };
+    const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory, downloadUrl: '' };
+
+    const modData = this.mods.find(modItem => modItem.name === mod.name);
+    if (modData && (this.#modListService.useIndexedModsSignal() || modData.version === mod.modVersion)) {
+      console.log("Using indexed mod link: ", modData.link);
+      linkModel.downloadUrl = modData.link ?? '';
+    }
 
     await this.#electronService
       .sendEvent<string, LinkModel>('download-link', linkModel)

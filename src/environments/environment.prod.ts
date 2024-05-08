@@ -6,4 +6,5 @@ export const environment = {
   akiFileBaseLink: 'https://hub.sp-tarkov.com/files',
   akiFileTagBaseLink: 'https://hub.sp-tarkov.com/tagged/',
   githubConfigLink: 'https://schraderr.github.io/sp-tarkov-client-configuration',
+  akiHubModsJson: 'https://hub.sp-tarkov.com/mods.json'
 };
