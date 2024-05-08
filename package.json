@@ -21,10 +21,6 @@
     "start": "npm-run-all -p electron:serve ng:serve",
     "ng:serve": "ng serve -c web",
     "build": "npm run electron:serve-tsc && ng build --base-href ./",
-    "build:dev": "npm run build -- -c dev",
-    "build:prod": "npm run build -- -c production",
-    "web:build": "npm run build -- -c web-production",
-    "electron": "electron",
     "electron:serve-tsc": "tsc -p tsconfig.serve.json",
     "electron:serve": "wait-on tcp:4200 && npm run electron:serve-tsc && electron . --serve",
     "electron:local": "npm run build:prod && electron .",
@@ -70,17 +66,14 @@
     "@types/jasmine": "5.1.4",
     "@types/jasminewd2": "2.0.13",
     "@types/node": "18.16.9",
+    "@types/fast-levenshtein": "0.0.4",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
     "auto-changelog": "*",
-    "conventional-changelog-cli": "2.2.2",
     "electron": "29.2.0",
     "electron-debug": "3.2.0",
     "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^8.57.0",
-    "eslint-plugin-import": "2.27.5",
-    "eslint-plugin-jsdoc": "44.2.3",
-    "eslint-plugin-prefer-arrow": "1.2.3",
     "font-awesome": "4.7.0",
     "jasmine-core": "5.1.2",
     "jasmine-spec-reporter": "7.0.0",
@@ -95,7 +88,6 @@
     "prettier": "3.2.5",
     "ts-node": "10.9.2",
     "typescript": "~5.2.2",
-    "wait-on": "7.2.0",
-    "webdriver-manager": "12.1.9"
+    "wait-on": "7.2.0"
   }
 }
