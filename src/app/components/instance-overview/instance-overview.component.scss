@@ -24,3 +24,17 @@
     user-select: none;
   }
 }
+
+mat-expansion-panel {
+  background: unset;
+  box-shadow: unset !important;
+
+  mat-expansion-panel-header {
+    padding-left: unset;
+  }
+
+  ::ng-deep.mat-expansion-panel-content .mat-expansion-panel-body {
+    padding: unset !important;
+  }
+}
+

@@ -59,15 +59,32 @@
           <span>No Client-Mods installed!</span>
         }
         @for (clientMod of activeAkiInstance?.clientMods; track $index) {
-          <mat-list-item>
-            <span matListItemTitle>{{ clientMod.name }}</span>
-            <span matListItemLine>{{ clientMod.version }}</span>
-
-            <button class="list-item-button" matListItemMeta mat-icon-button
-                    (click)="openExternal(clientMod.modPath)">
-              <mat-icon>open_in_new</mat-icon>
-            </button>
-          </mat-list-item>
+          @if (clientMod.isDirectory && clientMod.subMods?.length > 1) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-list-item>
+                  <span matListItemTitle>{{ clientMod.name }}</span>
+                </mat-list-item>
+              </mat-expansion-panel-header>
+              @for (subMod of clientMod.subMods; track subMod) {
+                <mat-list-item>
+                  <span matListItemTitle>{{ subMod.name }}</span>
+                  <span matListItemLine>{{ subMod.version }}</span>
+                  <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(subMod.modPath)">
+                    <mat-icon>open_in_new</mat-icon>
+                  </button>
+                </mat-list-item>
+              }
+            </mat-expansion-panel>
+          } @else {
+            <mat-list-item>
+              <span matListItemTitle>{{ clientMod.name }}</span>
+              <span matListItemLine>{{ clientMod.version }}</span>
+              <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(clientMod.modPath)">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </mat-list-item>
+          }
         }
       </mat-list>
     </div>

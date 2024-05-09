@@ -7,13 +7,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from '../../core/services/electron.service';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   standalone: true,
   selector: 'app-instance-overview',
   templateUrl: './instance-overview.component.html',
   styleUrl: './instance-overview.component.scss',
-  imports: [CommonModule, RouterLink, MatButtonModule, MatProgressSpinnerModule, MatListModule, MatIconModule],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatProgressSpinnerModule, MatListModule, MatIconModule, MatExpansionModule],
 })
 export default class InstanceOverviewComponent {
   #userSettingsService = inject(UserSettingsService);

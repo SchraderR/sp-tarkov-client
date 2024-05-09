@@ -4,6 +4,7 @@ import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
 import { Configuration, ConfigurationService } from '../services/configuration.service';
+import { ModMeta } from '../../../../shared/models/user-setting.model';
 
 @Directive({
   standalone: true,
@@ -83,16 +84,14 @@ export class IsAlreadyInstalledDirective {
       }
     }
 
-    const closestServerModName = closest(
-      modName,
-      activeInstance.serverMods.flatMap(m => [m.name, m.alternativeName ?? ''])
-    );
-    const closestClientModName = closest(
-      modName,
-      activeInstance.clientMods.flatMap(m => [m.name, m.alternativeName ?? ''])
-    );
+    const closestServerModName = closest(modName, this.flattenSubMods(activeInstance.serverMods));
+    const closestClientModName = closest(modName, this.flattenSubMods(activeInstance.clientMods));
 
     return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
+  }
+
+  private flattenSubMods(mods: ModMeta[]): any[] {
+    return mods.flatMap(mod => [mod.name, mod.alternativeName ?? '', ...this.flattenSubMods(mod.subMods ?? [])]);
   }
 
   private isMatchBasedOnLevenshtein(stringA = '', stringB = '', threshold = 0.2): boolean {

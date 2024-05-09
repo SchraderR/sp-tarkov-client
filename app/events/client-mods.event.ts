@@ -15,15 +15,15 @@ export const handleClientModsEvent = () => {
           .filter(file => file.isFile() && path.extname(file.name) === '.dll')
           .map((f: any) => f);
 
-        const rootDirectories = fs
-          .readdirSync(rootServerPath, { withFileTypes: true })
-          .filter(dirent => dirent.isDirectory() && dirent.name !== 'spt')
-          .map(dirent => dirent.name);
-
         for (const file of rootDllFiles) {
           const version = await getVersion(path.join(file.path, file.name));
           data.push({ name: file.name.split('.dll')[0], version, modPath: rootServerPath });
         }
+
+        const rootDirectories = fs
+          .readdirSync(rootServerPath, { withFileTypes: true })
+          .filter(dirent => dirent.isDirectory() && dirent.name !== 'spt')
+          .map(dirent => dirent.name);
 
         for (let dir of rootDirectories) {
           const directoryDll = fs
@@ -38,12 +38,24 @@ export const handleClientModsEvent = () => {
           const filePath = path.join(directoryDll[0].path, directoryDll[0].name);
           const version = await getVersion(filePath);
           data.push({
-            name: directoryDll[0].name.split('.dll')[0],
+            isDirectory: true,
+            name: dir,
             version,
             modPath: directoryDll[0].path,
+            subMods: await Promise.all(
+              directoryDll.map(async m => {
+                const subModPath = path.join(directoryDll[0].path, m.name);
+                return {
+                  version: await getVersion(subModPath),
+                  modPath: directoryDll[0].path,
+                  name: m.name.split('.dll')[0],
+                };
+              })
+            ),
           });
         }
 
+        console.log(data);
         event.sender.send('client-mod-completed', data);
       }
     } catch (error) {
