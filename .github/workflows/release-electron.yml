@@ -15,10 +15,10 @@ jobs:
       - name: Node Setup
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Release Electron
-        uses: samuelmeuli/action-electron-builder@v1.6.0
+        uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.github_token }}
           build_script_name: "build:prod"
