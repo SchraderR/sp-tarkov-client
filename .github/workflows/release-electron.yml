@@ -18,7 +18,7 @@ jobs:
           node-version: '20'
 
       - name: Release Electron
-        uses: samuelmeuli/action-electron-builder@v1
+        uses: Yan-Jobs/action-electron-builder@v1.7.0
         with:
           github_token: ${{ secrets.github_token }}
           build_script_name: "build:prod"
