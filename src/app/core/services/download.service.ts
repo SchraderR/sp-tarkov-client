@@ -144,7 +144,7 @@ export class DownloadService {
     const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory, downloadUrl: '' };
 
     const modData = this.mods.find(modItem => modItem.name === mod.name);
-    if (modData && (this.#modListService.useIndexedModsSignal() || modData.version === mod.modVersion)) {
+    if (this.#modListService.useIndexedModsSignal() && modData) {
       console.log('Using indexed mod link: ', modData.link);
       linkModel.downloadUrl = modData.link ?? '';
     }
