@@ -1,24 +1,29 @@
 <div class="mod-list" [class.full]="modListSignal().length">
   @for (mod of modListSignal(); track mod.name) {
-    <app-mod-card @fadeInOut [mod]="mod" (removeModEvent)="removeMod($event)"/>
+    <app-mod-card @fadeInOut [mod]="mod" (removeModEvent)="removeMod($event)" />
   }
 </div>
 
 @if (modListSignal().length) {
   <div class="button-container">
-    <button mat-icon-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModCompleted()" (click)="removeCompletedMods()" matTooltip="Remove all completed Mods"><mat-icon>scan_delete</mat-icon></button>
-    <mat-slide-toggle 
-    [formControl]="useIndexedModsControl"  (change)="onUseIndexedModsToggle($event)"  matTooltipClass="tooltip-multiline" 
-    [matTooltip]="'Use information from an indexed list. The normal process will be used as a fallback.\n\nThis mod list is updated every hour and might not be in sync with the hub.\n\nUse with caution.'">Use indexed mods</mat-slide-toggle>
-    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()" (click)="downloadAndInstallAll()">Download / Install</button>
+    <button mat-icon-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModCompleted()"
+            (click)="removeCompletedMods()" matTooltip="Remove all completed Mods">
+      <mat-icon>scan_delete</mat-icon>
+    </button>
+    <mat-slide-toggle
+      [formControl]="useIndexedModsControl" (change)="onUseIndexedModsToggle($event)"
+      matTooltipClass="tooltip-multiline"
+      [matTooltip]="'Use information from an indexed list. The normal process will be used as a fallback.\n\nThis mod list is updated every hour and mod version might not be in sync with the hub.\n\nUse with caution.'">
+      Use indexed mods
+    </mat-slide-toggle>
+    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()"
+            (click)="downloadAndInstallAll()">Download / Install
+    </button>
   </div>
 }
 
 @if (!modListSignal().length) {
-  <div
-    @fadeInOut
-    class="no-mod-emote-container"
-    >
+  <div @fadeInOut class="no-mod-emote-container">
     <span class="emote">{{ emote }}</span>
     <span class="no-mods-text">No mods detected!</span>
     <span class="no-mods-subtext">Add some mods to proceed with the installation</span>

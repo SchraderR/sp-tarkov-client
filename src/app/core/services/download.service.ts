@@ -28,21 +28,23 @@ export class DownloadService {
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
   #httpClient = inject(HttpClient);
+
   mods: IndexedMods[] = [];
   lastFetchTime: Date | null = null;
   activeModList = this.#modListService.modListSignal;
+
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
 
   async getModData(): Promise<IndexedMods[]> {
     const currentTime = new Date();
-    if (this.lastFetchTime && (currentTime.getTime() - this.lastFetchTime.getTime()) < this.MAX_CACHE_DURATION && this.mods && this.mods.length > 0) {
-      console.log("Using cached indexed mods data");
+    if (this.lastFetchTime && currentTime.getTime() - this.lastFetchTime.getTime() < this.MAX_CACHE_DURATION && this.mods && this.mods.length > 0) {
+      console.log('Using cached indexed mods data');
       return this.mods;
     }
 
-    console.log("Fetching indexed mods data from hub json");
+    console.log('Fetching indexed mods data from hub json');
 
     try {
       const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.akiHubModsJson));
@@ -142,8 +144,8 @@ export class DownloadService {
     const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory, downloadUrl: '' };
 
     const modData = this.mods.find(modItem => modItem.name === mod.name);
-    if (modData && (this.#modListService.useIndexedModsSignal() || modData.version === mod.modVersion)) {
-      console.log("Using indexed mod link: ", modData.link);
+    if (this.#modListService.useIndexedModsSignal() && modData) {
+      console.log('Using indexed mod link: ', modData.link);
       linkModel.downloadUrl = modData.link ?? '';
     }
 
