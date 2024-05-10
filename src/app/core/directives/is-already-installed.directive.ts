@@ -35,7 +35,7 @@ export class IsAlreadyInstalledDirective {
     }
 
     if (!config) {
-      config = { alternativeModNames: alternativeModNames } as unknown as Configuration;
+      config = { alternativeModNames: alternativeModNames.alternativeModNames } as unknown as Configuration;
     }
 
     this.assignAlternativeNames(activeInstance.serverMods, config.alternativeModNames);
@@ -73,8 +73,8 @@ export class IsAlreadyInstalledDirective {
 
   private assignAlternativeNames(mods: ModMeta[], alternativeNames: { [key: string]: string }) {
     for (const mod of mods) {
-      if (Object.prototype.hasOwnProperty.call(alternativeNames, mod.name)) {
-        mod.alternativeName = alternativeNames[mod.name];
+      if (Object.prototype.hasOwnProperty.call(alternativeNames, mod.name.trim())) {
+        mod.alternativeName = alternativeNames[mod.name.trim()];
       }
 
       if (mod.subMods) {
