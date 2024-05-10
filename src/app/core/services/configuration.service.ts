@@ -7,8 +7,7 @@ import { AkiTag, AkiVersion } from '../../../../shared/models/aki-core.model';
 import { ElectronService } from './electron.service';
 
 export interface Configuration {
-  alternativeClientModNames: { [key: string]: string };
-  alternativeServerModNames: { [key: string]: string };
+  alternativeModNames: { [key: string]: string };
   notSupported: number[];
 }
 
