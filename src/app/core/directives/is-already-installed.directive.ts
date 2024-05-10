@@ -47,7 +47,7 @@ export class IsAlreadyInstalledDirective {
     return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
   }
 
-  private flattenSubMods(mods: ModMeta[]): any[] {
+  private flattenSubMods(mods: ModMeta[]): string[] {
     return mods.flatMap(mod => [
       ...(mod.name ? [mod.name] : []),
       ...(mod.alternativeName ? [mod.alternativeName] : []),
@@ -71,7 +71,7 @@ export class IsAlreadyInstalledDirective {
     return this.#modListService.modListSignal().some(m => m.name === this.mod.name);
   }
 
-  private assignAlternativeNames(mods: any[], alternativeNames: { [key: string]: string }) {
+  private assignAlternativeNames(mods: ModMeta[], alternativeNames: { [key: string]: string }) {
     for (const mod of mods) {
       if (Object.prototype.hasOwnProperty.call(alternativeNames, mod.name)) {
         mod.alternativeName = alternativeNames[mod.name];
