@@ -43,7 +43,7 @@
               }
 
               <button class="list-item-button" mat-icon-button (click)="openExternal(serverMod.modPath)">
-                <mat-icon>open_in_new</mat-icon>
+                <mat-icon>folder_open</mat-icon>
               </button>
             </div>
 
@@ -71,7 +71,7 @@
                   <span matListItemTitle>{{ subMod.name }}</span>
                   <span matListItemLine>{{ subMod.version }}</span>
                   <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(subMod.modPath)">
-                    <mat-icon>open_in_new</mat-icon>
+                    <mat-icon>folder_open</mat-icon>
                   </button>
                 </mat-list-item>
               }
@@ -81,7 +81,7 @@
               <span matListItemTitle>{{ clientMod.name }}</span>
               <span matListItemLine>{{ clientMod.version }}</span>
               <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(clientMod.modPath)">
-                <mat-icon>open_in_new</mat-icon>
+                <mat-icon>folder_open</mat-icon>
               </button>
             </mat-list-item>
           }
