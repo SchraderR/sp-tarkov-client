@@ -9,6 +9,7 @@ import { ElectronService } from './electron.service';
 export interface Configuration {
   alternativeModNames: { [key: string]: string };
   notSupported: number[];
+  restrictedMods: string[];
 }
 
 @Injectable({
