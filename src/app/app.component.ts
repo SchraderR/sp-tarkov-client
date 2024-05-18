@@ -30,6 +30,7 @@ import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
+import { DirectoryError } from './core/models/directory-error';
 
 @Component({
   standalone: true,
@@ -139,6 +140,7 @@ export class AppComponent {
           userSetting.clientMods = value.clientMods.args;
           userSetting.serverMods = value.serverMods.args;
           userSetting.isError = value.userSetting.isError;
+          userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
           userSetting.isLoading = false;
 
           this.#userSettingService.updateUserSetting();
@@ -157,7 +159,7 @@ export class AppComponent {
         userSetting: of(userSetting),
         serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
-      }).pipe(catchError(() => this.handleDirectoryPathError(userSetting)));
+      }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
     });
   }
 
@@ -233,17 +235,21 @@ export class AppComponent {
                 this.#router.navigate(['/setting']);
               },
             });
-        } else {
           this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
         }
       });
   }
 
-  private handleDirectoryPathError(userSetting: UserSettingModel) {
-    userSetting.isError = true;
+  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
+    console.log(error);
+    if (error.isPowerShellIssue) {
+      userSettingModel.isPowerShellIssue = true;
+    } else {
+      userSettingModel.isError = true;
+    }
 
     return of({
-      userSetting: userSetting,
+      userSetting: userSettingModel,
       serverMods: { args: [] },
       clientMods: { args: [] },
     });

@@ -37,6 +37,7 @@ export interface AkiInstance {
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
+  isPowerShellIssue: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }

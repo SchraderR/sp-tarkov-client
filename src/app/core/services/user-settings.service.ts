@@ -44,6 +44,7 @@ export class UserSettingsService {
           serverMods: [],
           clientMods: [],
           isActive: false,
+          isPowerShellIssue: false,
           akiCore: {
             akiVersion: '4.0.0',
           } as unknown as AkiCore,

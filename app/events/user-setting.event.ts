@@ -70,6 +70,7 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         isValid: akiInstance.isValid,
         isActive: akiInstance.isActive,
         isLoading: akiInstance.isLoading,
+        isPowerShellIssue: akiInstance.isPowerShellIssue,
         isError: akiInstance.isError,
         clientMods: akiInstance.clientMods ?? [],
         serverMods: akiInstance.serverMods ?? [],

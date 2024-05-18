@@ -57,20 +57,24 @@ export const handleClientModsEvent = () => {
 
         event.sender.send('client-mod-completed', data);
       }
-    } catch (error) {
-      event.sender.send('client-mod-error', error);
+    } catch (error: any) {
+      event.sender.send('client-mod-error', { error, isPowerShellIssue: error.isPowerShellIssue });
       log.error(error);
     }
   });
 };
 
 async function getVersion(dllFilePath: string) {
-  const exec = require('util').promisify(require('child_process').exec);
-  const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
+  try {
+    const exec = require('util').promisify(require('child_process').exec);
+    const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
 
-  if (stderr) {
-    return stderr;
+    if (stderr) {
+      return stderr;
+    }
+
+    return stdout;
+  } catch (error) {
+    throw { error, isPowerShellIssue: true };
   }
-
-  return stdout;
 }
