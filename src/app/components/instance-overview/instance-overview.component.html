@@ -40,7 +40,7 @@
                 <mat-icon>expand_circle_right</mat-icon>
               </button>
             }
-            <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="serverMod.isEnabled" (click)="toggleModState(serverMod)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
+            <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="serverMod.isEnabled" (click)="toggleModState(serverMod, true)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
             <button mat-icon-button matListItemMeta (click)="openExternal(serverMod.modPath)">
               <mat-icon>folder_open</mat-icon>
             </button>

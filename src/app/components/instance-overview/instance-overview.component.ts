@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ModMeta } from '../../../../shared/models/user-setting.model';
 import { NgPipesModule } from 'ngx-pipes';
+import { ToggleModStateModel } from '../../../../shared/models/toggle-mod-state.model';
 
 @Component({
   standalone: true,
@@ -32,6 +33,8 @@ import { NgPipesModule } from 'ngx-pipes';
 export default class InstanceOverviewComponent {
   #userSettingsService = inject(UserSettingsService);
   #electronService = inject(ElectronService);
+  #ngZone = inject(NgZone);
+  #changeDetectorRef = inject(ChangeDetectorRef);
 
   activeAkiInstance = this.#userSettingsService.getActiveInstance();
 
@@ -47,8 +50,22 @@ export default class InstanceOverviewComponent {
     this.#electronService.openPath(modPath + '/Greed.exe');
   }
 
-  toggleModState(mod: ModMeta) {
-    mod.isEnabled = !mod.isEnabled;
-    console.log(mod);
+  toggleModState(mod: ModMeta, isServerMod = false) {
+    if (!this.activeAkiInstance) {
+      return;
+    }
+
+    const toggleModState: ToggleModStateModel = {
+      isServerMod: isServerMod,
+      akiInstancePath: this.activeAkiInstance.akiRootDirectory,
+      modPath: mod.modPath,
+    };
+
+    this.#electronService.sendEvent<boolean, ToggleModStateModel>('toggle-mod-state', toggleModState).subscribe(() => {
+      this.#ngZone.run(() => {
+        console.log(mod);
+        mod.isEnabled = !mod.isEnabled;
+      });
+    });
   }
 }
