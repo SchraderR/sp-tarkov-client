@@ -37,6 +37,7 @@ export interface AkiInstance {
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
+  isPowerShellIssue: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }
@@ -50,6 +51,11 @@ export interface ModMeta {
   version: string;
   alternativeName?: string;
   modPath: string;
+  modOriginalPath: string;
+  modOriginalName: string;
+  isDirectory?: boolean;
+  subMods?: ModMeta[];
+  isEnabled: boolean;
 }
 
 export enum Theme {

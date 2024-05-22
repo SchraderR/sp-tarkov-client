@@ -8,9 +8,7 @@ const exeName = 'Aki.Server.exe';
 
 export const handleTarkovStartEvent = () => {
   ipcMain.on('tarkov-start', (event, akiInstancePath: string) => {
-    console.log(akiInstancePath);
     let child: child.ChildProcess;
-    console.log(path.join(akiInstancePath, exeName));
 
     try {
       child = spawn(path.join(akiInstancePath, exeName), [], {
@@ -26,7 +24,6 @@ export const handleTarkovStartEvent = () => {
       child!.unref();
     } catch (e) {
       log.error(e);
-      console.log(e?.toString());
     }
 
     event.sender.send('tarkov-start-completed');

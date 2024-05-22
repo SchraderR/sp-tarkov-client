@@ -11,7 +11,6 @@ import { ElectronService } from '../../services/electron.service';
 import { ModListService } from '../../services/mod-list.service';
 import { UserSettingsService } from '../../services/user-settings.service';
 import { Mod } from '../../models/mod';
-import { restrictedModList } from '../../../constants';
 import { IsAlreadyInstalledDirective } from '../../directives/is-already-installed.directive';
 import { environment } from '../../../../environments/environment';
 import { HtmlHelper } from '../../helper/html-helper';
@@ -168,7 +167,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   private filterCoreMods(mod: Mod) {
-    return !restrictedModList.includes(mod.name);
+    return !this.#configurationService.configSignal()?.restrictedMods?.includes(mod.name);
   }
 
   private loadData(sortValue: GenericModListSortField, pageNumber = 0) {
