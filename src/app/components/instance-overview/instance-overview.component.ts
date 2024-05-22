@@ -62,11 +62,23 @@ export default class InstanceOverviewComponent {
       modWillBeDisabled: mod.isEnabled,
     };
 
-    this.#electronService.sendEvent<boolean, ToggleModStateModel>('toggle-mod-state', toggleModState).subscribe(() => {
-      this.#ngZone.run(() => {
-        console.log(mod);
-        mod.isEnabled = !mod.isEnabled;
+    this.#electronService
+      .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
+      .subscribe(disabledMod => {
+        this.#ngZone.run(() => {
+          const activeInstance = this.#userSettingsService.getActiveInstance();
+          if (!activeInstance) {
+            return;
+          }
+
+          mod.modOriginalPath = disabledMod.args.path;
+          mod.modPath = disabledMod.args.path;
+          mod.isEnabled = disabledMod.args.isEnabled;
+          mod.subMods?.map(m => (m.modPath = disabledMod.args.path));
+
+          this.#userSettingsService.updateUserSetting();
+          this.#changeDetectorRef.detectChanges();
+        });
       });
-    });
   }
 }

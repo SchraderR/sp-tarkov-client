@@ -118,7 +118,7 @@ function checkForDisabledClientMods(data: any[], akiInstancePath: string): Promi
             version,
             modPath: instanceClientDisabledModPath,
             modOriginalPath: path.join(instanceClientDisabledModPath, mod.name),
-            modOriginalName: mod,
+            modOriginalName: mod.name,
             isEnabled: false,
           });
         } else if (mod.isDirectory()) {
@@ -137,7 +137,7 @@ function checkForDisabledClientMods(data: any[], akiInstancePath: string): Promi
             name: mod.name,
             modPath: filePath,
             modOriginalPath: filePath,
-            modOriginalName: mod,
+            modOriginalName: mod.name,
             isEnabled: false,
             isDirectory: true,
             subMods: subModObjects,

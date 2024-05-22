@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ToggleModStateModel } from '../../shared/models/toggle-mod-state.model';
 import * as log from 'electron-log';
 import { moveSync, existsSync, mkdirSync, ensureDirSync } from 'fs-extra';
+import { clientModPath, serverModPath } from '../constants';
 
 export const toggleModStateEvent = () => {
   ipcMain.on('toggle-mod-state', (event, toggleModStateModel: ToggleModStateModel) => {
@@ -22,21 +23,29 @@ export const toggleModStateEvent = () => {
 
     const instanceClientDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'client');
     const instanceServerDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'server');
+    let newModPath: string | null = null;
 
     ensureDirSync(instanceClientDisabledModPath);
     ensureDirSync(instanceServerDisabledModPath);
 
     if (toggleModStateModel.modWillBeDisabled) {
-      moveSync(
-        toggleModStateModel.modOriginalPath,
-        toggleModStateModel.isServerMod
-          ? path.join(instanceServerDisabledModPath, toggleModStateModel.modOriginalName)
-          : path.join(instanceClientDisabledModPath, toggleModStateModel.modOriginalName)
-      );
+      newModPath = toggleModStateModel.isServerMod
+        ? path.join(instanceServerDisabledModPath, toggleModStateModel.modOriginalName)
+        : path.join(instanceClientDisabledModPath, toggleModStateModel.modOriginalName);
+
+      moveSync(toggleModStateModel.modOriginalPath, newModPath);
     } else {
+      newModPath = toggleModStateModel.isServerMod
+        ? path.join(toggleModStateModel.akiInstancePath, serverModPath, toggleModStateModel.modOriginalName)
+        : path.join(toggleModStateModel.akiInstancePath, clientModPath, toggleModStateModel.modOriginalName);
+
+      moveSync(toggleModStateModel.modOriginalPath, newModPath);
     }
 
-    console.log(toggleModStateModel);
-    event.sender.send('toggle-mod-state-completed');
+    event.sender.send('toggle-mod-state-completed', {
+      name: toggleModStateModel.modOriginalName,
+      path: newModPath,
+      isEnabled: !toggleModStateModel.modWillBeDisabled,
+    });
   });
 };
