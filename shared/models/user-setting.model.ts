@@ -51,8 +51,11 @@ export interface ModMeta {
   version: string;
   alternativeName?: string;
   modPath: string;
+  modOriginalPath: string;
+  modOriginalName: string;
   isDirectory?: boolean;
   subMods?: ModMeta[];
+  isEnabled: boolean;
 }
 
 export enum Theme {

@@ -22,6 +22,7 @@ import { handleAkiTagEvents } from './events/aki-tag.event';
 import { handleAkiVersionEvents } from './events/aki-version.event';
 import { handleModCacheEvents } from './events/mod-list-cache.event';
 import { handleIndexedModsEvents } from './events/indexed-mods.event';
+import { toggleModStateEvent } from './events/toggle-mod-state.event';
 log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
@@ -48,3 +49,4 @@ handleAkiTagEvents(store);
 handleAkiVersionEvents(store);
 handleModCacheEvents(store);
 handleIndexedModsEvents(store);
+toggleModStateEvent();

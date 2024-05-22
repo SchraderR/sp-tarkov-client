@@ -25,32 +25,30 @@
           <span>No Server-Mods installed!</span>
         }
 
-        @for (serverMod of activeAkiInstance?.serverMods; track $index) {
+        @for (serverMod of activeAkiInstance?.serverMods | orderBy:'name'; track $index) {
           <mat-list-item>
             <span matListItemTitle>{{ serverMod.name }}</span>
             <span matListItemLine>{{ serverMod.version }}</span>
-
-            <div style="display: flex;" matListItemMeta>
-              @if (serverMod.name === 'SPT Realism Mod') {
-                <button class="list-item-button" mat-icon-button (click)="openRealismTool(serverMod.modPath)">
-                  <mat-icon>expand_circle_right</mat-icon>
-                </button>
-              }
-              @if (serverMod.name === 'SVM') {
-                <button class="list-item-button" mat-icon-button (click)="openSVMTool(serverMod.modPath)">
-                  <mat-icon>expand_circle_right</mat-icon>
-                </button>
-              }
-
-              <button class="list-item-button" mat-icon-button (click)="openExternal(serverMod.modPath)">
-                <mat-icon>folder_open</mat-icon>
+            @if (serverMod.name === 'SPT Realism Mod') {
+              <button class="list-item-button" mat-icon-button (click)="openRealismTool(serverMod.modPath)">
+                <mat-icon>expand_circle_right</mat-icon>
               </button>
-            </div>
-
+            }
+            @if (serverMod.name === 'SVM') {
+              <button class="list-item-button" mat-icon-button (click)="openSVMTool(serverMod.modPath)">
+                <mat-icon>expand_circle_right</mat-icon>
+              </button>
+            }
+            <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="serverMod.isEnabled" (click)="toggleModState(serverMod, true)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
+            <button mat-icon-button matListItemMeta (click)="openExternal(serverMod.modPath)">
+              <mat-icon>folder_open</mat-icon>
+            </button>
           </mat-list-item>
         }
       </mat-list>
     </div>
+
+    <mat-divider [vertical]="true"/>
 
     <div class="mod-list">
       <h2>Client-Mods</h2>
@@ -58,19 +56,20 @@
         @if (activeAkiInstance?.clientMods?.length === 0) {
           <span>No Client-Mods installed!</span>
         }
-        @for (clientMod of activeAkiInstance?.clientMods; track $index) {
-          @if (clientMod.isDirectory && clientMod?.subMods?.length > 1) {
+        @for (clientMod of activeAkiInstance?.clientMods | orderBy:'name'; track $index) {
+          @if (clientMod.isDirectory && clientMod?.subMods?.length ?? 0 > 1) {
             <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-list-item>
                   <span matListItemTitle>{{ clientMod.name }}</span>
+                  <mat-slide-toggle class="list-slider-item" matListItemMeta (click)="$event.stopPropagation(); toggleModState(clientMod)" [checked]="clientMod.isEnabled">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
                 </mat-list-item>
               </mat-expansion-panel-header>
               @for (subMod of clientMod.subMods; track subMod) {
                 <mat-list-item>
                   <span matListItemTitle>{{ subMod.name }}</span>
                   <span matListItemLine>{{ subMod.version }}</span>
-                  <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(subMod.modPath)">
+                  <button matListItemMeta mat-icon-button (click)="openExternal(subMod.modPath)">
                     <mat-icon>folder_open</mat-icon>
                   </button>
                 </mat-list-item>
@@ -80,7 +79,8 @@
             <mat-list-item>
               <span matListItemTitle>{{ clientMod.name }}</span>
               <span matListItemLine>{{ clientMod.version }}</span>
-              <button class="list-item-button" matListItemMeta mat-icon-button (click)="openExternal(clientMod.modPath)">
+              <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="clientMod.isEnabled" (click)="toggleModState(clientMod)">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
+              <button mat-icon-button matListItemMeta (click)="openExternal(clientMod.modPath)">
                 <mat-icon>folder_open</mat-icon>
               </button>
             </mat-list-item>
