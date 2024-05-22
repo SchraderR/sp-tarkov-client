@@ -8,13 +8,23 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from '../../core/services/electron.service';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   standalone: true,
   selector: 'app-instance-overview',
   templateUrl: './instance-overview.component.html',
   styleUrl: './instance-overview.component.scss',
-  imports: [CommonModule, RouterLink, MatButtonModule, MatProgressSpinnerModule, MatListModule, MatIconModule, MatExpansionModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatIconModule,
+    MatExpansionModule,
+    MatSlideToggleModule,
+  ],
 })
 export default class InstanceOverviewComponent {
   #userSettingsService = inject(UserSettingsService);

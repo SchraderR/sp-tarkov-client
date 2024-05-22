@@ -53,6 +53,7 @@ export interface ModMeta {
   modPath: string;
   isDirectory?: boolean;
   subMods?: ModMeta[];
+  isEnabled: boolean;
 }
 
 export enum Theme {
