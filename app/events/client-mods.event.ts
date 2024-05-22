@@ -17,7 +17,7 @@ export const handleClientModsEvent = () => {
 
         for (const file of rootDllFiles) {
           const version = await getVersion(path.join(file.path, file.name));
-          data.push({ name: file.name.split('.dll')[0], version, modPath: rootServerPath });
+          data.push({ name: file.name.split('.dll')[0], version, modPath: rootServerPath, isEnabled: true });
         }
 
         const rootDirectories = fs
@@ -41,6 +41,7 @@ export const handleClientModsEvent = () => {
             isDirectory: true,
             name: dir,
             version,
+            isEnabled: true,
             modPath: directoryDll[0].path,
             subMods: await Promise.all(
               directoryDll.map(async m => {

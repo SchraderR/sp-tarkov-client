@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from '../../core/services/electron.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ModMeta } from '../../../../shared/models/user-setting.model';
+import { NgPipesModule } from 'ngx-pipes';
 
 @Component({
   standalone: true,
@@ -24,6 +26,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatIconModule,
     MatExpansionModule,
     MatSlideToggleModule,
+    NgPipesModule,
   ],
 })
 export default class InstanceOverviewComponent {
@@ -42,5 +45,10 @@ export default class InstanceOverviewComponent {
 
   openSVMTool(modPath: string) {
     this.#electronService.openPath(modPath + '/Greed.exe');
+  }
+
+  toggleModState(mod: ModMeta) {
+    mod.isEnabled = !mod.isEnabled;
+    console.log(mod);
   }
 }
