@@ -1,14 +1,16 @@
-﻿import { ipcMain } from 'electron';
+﻿import { app, ipcMain } from 'electron';
 import * as path from 'path';
 import { clientModPath } from '../constants';
 import * as fs from 'fs';
 import * as log from 'electron-log';
+import { ensureDirSync } from 'fs-extra';
+import { readdirSync } from 'node:fs';
 
 export const handleClientModsEvent = () => {
   ipcMain.on('client-mod', async (event, akiInstancePath: string) => {
     try {
       if (fs.existsSync(akiInstancePath)) {
-        const data = [];
+        let data = [];
         const rootServerPath = path.join(akiInstancePath, clientModPath);
         const rootDllFiles = fs
           .readdirSync(rootServerPath, { withFileTypes: true })
@@ -65,6 +67,8 @@ export const handleClientModsEvent = () => {
           });
         }
 
+        data = await checkForDisabledClientMods(data, akiInstancePath);
+
         event.sender.send('client-mod-completed', data);
       }
     } catch (error: any) {
@@ -87,4 +91,63 @@ async function getVersion(dllFilePath: string) {
   } catch (error) {
     throw { error, isPowerShellIssue: true };
   }
+}
+
+function checkForDisabledClientMods(data: any[], akiInstancePath: string): Promise<any[]> {
+  return new Promise<any[]>(async (resolve, reject) => {
+    try {
+      const appPath = app.getPath('userData');
+      const instanceName = akiInstancePath.split('\\').pop();
+      if (!instanceName) {
+        return data;
+      }
+
+      const instanceClientDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'client');
+      ensureDirSync(instanceClientDisabledModPath);
+
+      const disabledClientMods = readdirSync(instanceClientDisabledModPath, { withFileTypes: true });
+      for (const mod of disabledClientMods) {
+        const filePath = path.join(instanceClientDisabledModPath, mod.name);
+        let version = '';
+
+        if (mod.isFile()) {
+          version = await getVersion(filePath);
+
+          data.push({
+            name: mod.name.split('.dll')[0],
+            version,
+            modPath: instanceClientDisabledModPath,
+            modOriginalPath: path.join(instanceClientDisabledModPath, mod.name),
+            modOriginalName: mod,
+            isEnabled: false,
+          });
+        } else if (mod.isDirectory()) {
+          const subMods = readdirSync(filePath, { withFileTypes: true });
+          const subModObjects = await Promise.all(
+            subMods
+              .filter(file => file.isFile() && path.extname(file.name) === '.dll')
+              .map(async m => ({
+                version: await getVersion(path.join(filePath, m.name)),
+                modPath: filePath,
+                name: m.name.split('.dll')[0],
+              }))
+          );
+
+          data.push({
+            name: mod.name,
+            modPath: filePath,
+            modOriginalPath: filePath,
+            modOriginalName: mod,
+            isEnabled: false,
+            isDirectory: true,
+            subMods: subModObjects,
+          });
+        }
+      }
+
+      resolve(data);
+    } catch (e) {
+      console.log(e);
+    }
+  });
 }
