@@ -21,7 +21,15 @@ export const handleServerModsEvent = () => {
             const packageJson = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             const { name, version, akiVersion } = packageJson;
             if (name && version && akiVersion) {
-              data.push({ name, version, akiVersion, modPath: path.join(rootServerPath, dir), isEnabled: true });
+              data.push({
+                name,
+                version,
+                akiVersion,
+                modPath: path.join(rootServerPath, dir),
+                modOriginalPath: path.join(rootServerPath, dir),
+                modOriginalName: dir,
+                isEnabled: true,
+              });
             }
           }
         }

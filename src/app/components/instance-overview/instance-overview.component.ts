@@ -54,11 +54,12 @@ export default class InstanceOverviewComponent {
     if (!this.activeAkiInstance) {
       return;
     }
-
     const toggleModState: ToggleModStateModel = {
       isServerMod: isServerMod,
       akiInstancePath: this.activeAkiInstance.akiRootDirectory,
-      modPath: mod.modPath,
+      modOriginalPath: mod.modOriginalPath,
+      modOriginalName: mod.modOriginalName,
+      modWillBeDisabled: mod.isEnabled,
     };
 
     this.#electronService.sendEvent<boolean, ToggleModStateModel>('toggle-mod-state', toggleModState).subscribe(() => {

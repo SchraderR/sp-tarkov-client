@@ -58,7 +58,7 @@
           <span>No Client-Mods installed!</span>
         }
         @for (clientMod of activeAkiInstance?.clientMods | orderBy:'name'; track $index) {
-          @if (clientMod.isDirectory && clientMod?.subMods?.length > 1) {
+          @if (clientMod.isDirectory && clientMod?.subMods?.length ?? 0 > 1) {
             <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-list-item>
