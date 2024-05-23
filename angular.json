@@ -101,7 +101,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "proxyConfig": "proxy.conf.json",
             "buildTarget": "angular-electron:build"
@@ -128,7 +128,7 @@
           }
         },
         "test": {
-          "builder": "@angular-builders/custom-webpack:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills-test.ts",
@@ -143,11 +143,7 @@
             "styles": [
               "src/styles.scss",
               "node_modules/font-awesome/css/font-awesome.css"
-            ],
-            "customWebpackConfig": {
-              "path": "./angular.webpack.js",
-              "replaceDuplicatePlugins": true
-            }
+            ]
           }
         },
         "lint": {
