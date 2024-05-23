@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModCardComponent } from './mod-card.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ModCardComponent', () => {
   let component: ModCardComponent;
@@ -8,8 +9,9 @@ describe('ModCardComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ModCardComponent, HttpClientTestingModule],
-    }).compileComponents();
+    imports: [ModCardComponent],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
 
     fixture = TestBed.createComponent(ModCardComponent);
     component = fixture.componentInstance;
