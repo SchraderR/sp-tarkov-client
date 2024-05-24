@@ -13,7 +13,7 @@ export class ModListService {
   setUseIndexedMods(value: boolean) {
     this.useIndexedMods.set(value);
   }
-  
+
   addMod(mod: Mod) {
     if (this.modList().some(m => m.name === mod.name)) {
       return;

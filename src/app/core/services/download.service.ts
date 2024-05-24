@@ -166,6 +166,7 @@ export class DownloadService {
         }),
         switchMap(downloadFilePath => {
           const test: FileUnzipEvent = {
+            fileId: fileId,
             filePath: downloadFilePath?.args,
             akiInstancePath: activeInstance.akiRootDirectory,
             hubId: fileId,

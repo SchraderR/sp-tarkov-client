@@ -21,7 +21,6 @@
   | 'mod-load-order-save'
   | 'exp-function-setting'
   | 'exp-function-toggle'
-  | 'update-mod-data'
   | 'aki-versions'
   | 'aki-versions-save'
   | 'aki-tags'
@@ -31,7 +30,9 @@
   | 'remove-mod-list-cache'
   | 'use-indexed-mods'
   | 'use-indexed-mods-save'
-  | 'toggle-mod-state';
+  | 'toggle-mod-state'
+  | 'update-mod-data'
+  | 'publish-notification';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';

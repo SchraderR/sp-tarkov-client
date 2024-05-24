@@ -1,1 +1,6 @@
 <p>mod-update-overview works!</p>
+
+@for (versionMod of accumulatedVersionList; track versionMod) {
+  <div>{{ versionMod.name }}</div>
+  <div>{{ versionMod.version }}</div>
+}
