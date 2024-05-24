@@ -21,7 +21,18 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
   selector: 'app-mod-list',
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent, JoyrideModule, MatSlideToggleModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    NgOptimizedImage,
+    ModCardComponent,
+    JoyrideModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+  ],
   animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent implements OnInit {
@@ -46,7 +57,6 @@ export default class ModListComponent implements OnInit {
 
   ngOnInit() {
     this.selectRandomEmote();
-    this.loadUseIndexedModsSettings();
   }
 
   downloadAndInstallAll = () => this.#downloadService.downloadAndInstallAll();
@@ -68,22 +78,6 @@ export default class ModListComponent implements OnInit {
         this.changeDetectorRef.detectChanges();
       });
     });
-  }
-
-  private loadUseIndexedModsSettings() {
-    this.#electronService.sendEvent<boolean>('use-indexed-mods')
-      .subscribe({
-        next: (response) => {
-          this.#modListService.setUseIndexedMods(response.args);
-          this.ngZone.run(() => {
-            this.useIndexedModsControl.setValue(response.args, { emitEvent: false });
-            this.changeDetectorRef.detectChanges();
-          });
-        },
-        error: (error) => {
-          console.error('Error fetching indexed mods usage:', error);
-        }
-      });
   }
 
   private selectRandomEmote() {

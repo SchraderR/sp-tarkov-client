@@ -23,39 +23,15 @@ export interface IndexedMods {
   providedIn: 'root',
 })
 export class DownloadService {
-  private readonly MAX_CACHE_DURATION = 3600000; // 1 hour in milliseconds
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
-  #httpClient = inject(HttpClient);
 
-  mods: IndexedMods[] = [];
-  lastFetchTime: Date | null = null;
   activeModList = this.#modListService.modListSignal;
 
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
-
-  async getModData(): Promise<IndexedMods[]> {
-    const currentTime = new Date();
-    if (this.lastFetchTime && currentTime.getTime() - this.lastFetchTime.getTime() < this.MAX_CACHE_DURATION && this.mods && this.mods.length > 0) {
-      console.log('Using cached indexed mods data');
-      return this.mods;
-    }
-
-    console.log('Fetching indexed mods data from hub json');
-
-    try {
-      const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.akiHubModsJson));
-      this.mods = response.mod_data;
-      this.lastFetchTime = new Date();
-      return this.mods;
-    } catch (error) {
-      console.error('Failed to load mods:', error);
-      throw new Error('Failed to load mods');
-    }
-  }
 
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
@@ -64,8 +40,6 @@ export class DownloadService {
     if (!activeInstance) {
       return;
     }
-
-    await this.getModData();
 
     for (let i = 0; i < this.activeModList().length; i++) {
       const mod = this.activeModList()[i];
@@ -143,7 +117,7 @@ export class DownloadService {
 
     const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory, downloadUrl: '' };
 
-    const modData = this.mods.find(modItem => modItem.name === mod.name);
+    const modData = (await this.#modListService.getModData()).find(modItem => modItem.name === mod.name);
     if (this.#modListService.useIndexedModsSignal() && modData) {
       console.log('Using indexed mod link: ', modData.link);
       linkModel.downloadUrl = modData.link ?? '';
@@ -166,7 +140,6 @@ export class DownloadService {
         }),
         switchMap(downloadFilePath => {
           const test: FileUnzipEvent = {
-            fileId: fileId,
             filePath: downloadFilePath?.args,
             akiInstancePath: activeInstance.akiRootDirectory,
             hubId: fileId,
