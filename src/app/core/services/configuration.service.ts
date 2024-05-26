@@ -10,6 +10,7 @@ export interface Configuration {
   alternativeModNames: { [key: string]: string };
   notSupported: number[];
   restrictedMods: string[];
+  modMetaData: { name: string; hubId: string }[];
 }
 
 @Injectable({

@@ -53,5 +53,5 @@ function configurationServiceFactory(configurationService: ConfigurationService)
 }
 
 function modDataLoaderFactory(modListService: ModListService) {
-  return () => forkJoin([modListService.loadIndexedMods(), modListService.loadUseIndexedModsSettings(), modListService.getModData()]);
+  return () => forkJoin([modListService.loadIndexedMods(), modListService.loadUseIndexedModsSettings()]);
 }
