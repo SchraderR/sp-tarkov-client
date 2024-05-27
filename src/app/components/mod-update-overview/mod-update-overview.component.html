@@ -1,27 +1,10 @@
 Server - Mods
-@for (serverMod of activeAkiInstance?.serverMods; track serverMod) {
+@for (mod of isInModList(); track mod) {
   <div style="display: flex">
-    <div>{{ serverMod.name }} - {{ serverMod.version }}</div>
-    <div>HubID: {{ serverMod?.hubId }}</div>
+    <div>{{ mod.name }} - {{ mod.version }}</div>
+    <div>HubID: {{ mod?.hubId }}</div>
   </div>
-}
-<br/>
-Client - Mods
-@for (clientMod of activeAkiInstance?.clientMods; track clientMod) {
-  <div style="display: flex">
-    <div>{{ clientMod.name }} - {{ clientMod.version }}</div>
-    <div>HubID: {{ clientMod?.hubId }}</div>
-  </div>
-}
 
+  <button (click)="checkForUpdate(mod)">Check Update</button>
+}
 <br/>
-<br/>
-<mat-slide-toggle
-  [formControl]="useIndexedModsControl"
-  matTooltipClass="tooltip-multiline"
-  [matTooltip]="
-    'Use information from an indexed list. The normal process will be used as a fallback.\n\nThis mod list is updated every hour and mod version might not be in sync with the hub.\n\nUse with caution.'
-  "
->
-  Use indexed mods
-</mat-slide-toggle>
