@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
-import { ModMeta } from '../../../../shared/models/user-setting.model';
+import { ModMeta, UpdateModMeta } from '../../../../shared/models/user-setting.model';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -15,13 +15,14 @@ import { closest } from 'fastest-levenshtein';
 import { IndexedMods } from '../../core/services/download.service';
 import { NgArrayPipesModule } from 'ngx-pipes';
 import { LevenshteinService } from '../../core/services/levenshtein.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   standalone: true,
   selector: 'app-mod-update-overview',
   templateUrl: './mod-update-overview.component.html',
   styleUrl: './mod-update-overview.component.scss',
-  imports: [MatSlideToggle, ReactiveFormsModule, MatTooltip, MatIcon, MatIconButton, MatListItemMeta, NgArrayPipesModule],
+  imports: [MatCardModule, MatSlideToggle, ReactiveFormsModule, MatTooltip, MatIcon, MatIconButton, MatListItemMeta, NgArrayPipesModule],
   providers: [ModUpdateService],
 })
 export default class ModUpdateOverviewComponent {
@@ -38,7 +39,7 @@ export default class ModUpdateOverviewComponent {
       return [];
     }
 
-    return [...activeInstance.serverMods, ...activeInstance.clientMods];
+    return [...activeInstance.serverMods, ...activeInstance.clientMods] as UpdateModMeta[];
   });
 
   constructor() {
@@ -65,7 +66,7 @@ export default class ModUpdateOverviewComponent {
   }
 
   private handleMod(
-    mod: ModMeta,
+    mod: UpdateModMeta,
     indexedMods: IndexedMods[],
     // modMetaData: {
     //   name: string;
@@ -76,13 +77,19 @@ export default class ModUpdateOverviewComponent {
     const indexedModAlternativeName = indexedMods.find(m => m.name === mod.alternativeName);
     const indexedModModName = indexedMods.find(m => m.name === mod.name);
 
+    console.log(mod.name);
     if (!!indexedModAlternativeName || !!indexedModModName) {
+      console.log(indexedModAlternativeName);
+      console.log(indexedModModName);
+
       mod.hubId = indexedModAlternativeName?.id ?? indexedModModName?.id;
+      mod.updateVersion = indexedModAlternativeName?.version ?? indexedModModName?.version;
 
       mod.subMods?.forEach(subMod => {
         this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
         if (subMod.hubId && !mod.hubId) {
           mod.hubId = subMod.hubId;
+          mod.updateVersion = indexedModAlternativeName?.version ?? indexedModModName?.version;
         }
       });
 
@@ -92,18 +99,23 @@ export default class ModUpdateOverviewComponent {
     const closestAlternativeName = closest(mod.alternativeName ?? '', flattenModNames);
     const closestModName = closest(mod.name, flattenModNames);
 
-    const isHubNameBasedOnLevenshtein = closestAlternativeName
-      ? this.#levenshteinService.isMatchBasedOnLevenshtein(closestAlternativeName, mod.alternativeName)
-      : false;
-    const isModNameBasedOnLLevenshtein = closestModName ? this.#levenshteinService.isMatchBasedOnLevenshtein(closestModName, mod.name) : false;
+    const isHubNameBasedOnLevenshtein = this.#levenshteinService.isMatchBasedOnLevenshtein(closestAlternativeName, mod.alternativeName);
+    const isModNameBasedOnLLevenshtein = this.#levenshteinService.isMatchBasedOnLevenshtein(closestModName, mod.name);
 
+    console.log(isHubNameBasedOnLevenshtein);
+    console.log(isModNameBasedOnLLevenshtein);
     if (isHubNameBasedOnLevenshtein) {
       const item = indexedMods?.find(m => m.name === closestAlternativeName);
+      console.log(item);
+
       mod.hubId = item?.id;
+      mod.updateVersion = item?.version;
+
       mod.subMods?.forEach(subMod => {
         this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
         if (subMod.hubId && !mod.hubId) {
           mod.hubId = subMod.hubId;
+          mod.updateVersion = item?.version;
         }
       });
       return;
@@ -112,10 +124,13 @@ export default class ModUpdateOverviewComponent {
     if (isModNameBasedOnLLevenshtein) {
       const item = indexedMods?.find(m => m.name === closestModName);
       mod.hubId = item?.id;
+      mod.updateVersion = item?.version;
+
       mod.subMods?.forEach(subMod => {
         this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
         if (subMod.hubId && !mod.hubId) {
           mod.hubId = subMod.hubId;
+          mod.updateVersion = item?.version;
         }
       });
       return;
