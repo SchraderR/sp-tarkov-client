@@ -29,6 +29,7 @@
           <mat-list-item>
             <span matListItemTitle>{{ serverMod.name }}</span>
             <span matListItemLine>{{ serverMod.version }}</span>
+            <!--
             @if (serverMod.name === 'SPT Realism Mod') {
               <button class="list-item-button" mat-icon-button (click)="openRealismTool(serverMod.modPath)">
                 <mat-icon>expand_circle_right</mat-icon>
@@ -39,6 +40,7 @@
                 <mat-icon>expand_circle_right</mat-icon>
               </button>
             }
+            -->
             <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="serverMod.isEnabled" (click)="toggleModState(serverMod, true)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
             <button mat-icon-button matListItemMeta (click)="openExternal(serverMod.modPath)">
               <mat-icon>folder_open</mat-icon>

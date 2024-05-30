@@ -1,14 +1,5 @@
 ﻿import { AkiCore, AkiTag, AkiVersion } from './aki-core.model';
 
-export interface UpdateModMeta {
-  name: string;
-  version: string;
-  hubId: string;
-  imageIcon: string;
-  clientName: string;
-  serverName: string;
-}
-
 export interface ModCache {
   name: string;
   fileUrl: string;
@@ -20,7 +11,6 @@ export interface ModCache {
 }
 
 export interface UserSettingStoreModel {
-  modMetaData: UpdateModMeta[];
   akiInstances: AkiInstance[];
   theme: Theme;
   isTutorialDone: boolean;
@@ -49,6 +39,7 @@ export interface UserSettingModel extends AkiInstance {
 export interface ModMeta {
   name: string;
   version: string;
+  hubId?: string;
   alternativeName?: string;
   modPath: string;
   modOriginalPath: string;
@@ -56,6 +47,10 @@ export interface ModMeta {
   isDirectory?: boolean;
   subMods?: ModMeta[];
   isEnabled: boolean;
+}
+
+export interface UpdateModMeta extends ModMeta {
+  updateVersion?: string;
 }
 
 export enum Theme {

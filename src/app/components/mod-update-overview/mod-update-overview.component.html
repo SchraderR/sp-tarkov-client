@@ -1,1 +1,15 @@
-<p>mod-update-overview works!</p>
+<div style="flex-direction: column; gap: 8px; display: flex;">
+  @for (mod of isInModList(); track mod) {
+    @if (mod?.hubId) {
+      <mat-card>
+        <mat-card-header>{{ mod.name }} - {{ mod?.hubId }}</mat-card-header>
+        <mat-card-content>
+          <br>
+          <div>Current Version: {{ mod.version }}</div>
+          <div>New Version: {{ mod?.updateVersion }}</div>
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</div>
+

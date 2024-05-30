@@ -31,10 +31,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     });
     mainWindowState.manage(browserWindow);
 
-    // const NOTIFICATION_TITLE = 'Basic Notification';
-    // const NOTIFICATION_BODY = 'Notification from the Main process';
-    // new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
-
     browserWindow.setMenu(null);
     browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
       callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
@@ -64,11 +60,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);
-    }
-
-    const modMetaData = store.get('modMetaData');
-    if (!modMetaData) {
-      store.set('modMetaData', []);
     }
 
     const akiTags = store.get('akiTags');

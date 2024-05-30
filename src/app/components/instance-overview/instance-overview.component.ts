@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, NgZone } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
