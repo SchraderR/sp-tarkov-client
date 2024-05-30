@@ -62,11 +62,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('isExperimentalFunctionsActive', false);
     }
 
-    const modMetaData = store.get('modMetaData');
-    if (!modMetaData) {
-      store.set('modMetaData', []);
-    }
-
     const akiTags = store.get('akiTags');
     if (!akiTags) {
       store.set('akiTags', []);
