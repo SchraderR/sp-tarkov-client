@@ -12,5 +12,8 @@
   'SPT Quick Launcher',
   'LOE (Load Order Editor)',
   'Unity Assets Bundle Extractor Avalonia',
+  'Unity Bundle CAB-ID Changer',
   'DebugPlus',
+  'Load Order Editor Drag-Drop',
+  'AKI Mods Installer',
 ];
