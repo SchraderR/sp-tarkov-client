@@ -23,7 +23,7 @@
     "node-7z": "^3.0.0",
     "node-7z-archive": "^1.1.7",
     "node-powershell": "^5.0.1",
-    "puppeteer": "22.8.0",
+    "puppeteer": "22.11.2",
     "ts-node": "10.9.2",
     "util": "^0.12.5"
   },
