@@ -45,6 +45,6 @@ export class TarkovStartComponent implements OnInit {
       return;
     }
 
-    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.akiRootDirectory).subscribe();
+    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory).subscribe();
   }
 }

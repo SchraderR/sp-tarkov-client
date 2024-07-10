@@ -49,7 +49,7 @@ bootstrapApplication(AppComponent, {
 
 function configurationServiceFactory(configurationService: ConfigurationService) {
   return () =>
-    forkJoin([configurationService.getCurrentConfiguration(), configurationService.getAkiVersion(), configurationService.getCurrentTags()]);
+    forkJoin([configurationService.getCurrentConfiguration(), configurationService.getSptVersion(), configurationService.getCurrentTags()]);
 }
 
 function modDataLoaderFactory(downloadService: DownloadService) {

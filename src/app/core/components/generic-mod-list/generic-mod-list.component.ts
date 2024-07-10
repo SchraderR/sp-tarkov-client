@@ -26,7 +26,7 @@ import { FileHelper } from '../../helper/file-helper';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
-import { AkiTag, AkiVersion } from '../../../../../shared/models/aki-core.model';
+import { SptTag, SptVersion } from '../../../../../shared/models/spt-core.model';
 import { ModCache } from '../../../../../shared/models/user-setting.model';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
@@ -79,9 +79,9 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   #downloadService = inject(DownloadService);
   #configurationService = inject(ConfigurationService);
 
-  akiVersionFormField = new FormControl<AkiVersion | null>(null);
-  akiTagFormField = new FormControl(null);
-  filteredOptions: Observable<AkiTag[]> | undefined;
+  sptVersionFormField = new FormControl<SptVersion | null>(null);
+  sptTagFormField = new FormControl(null);
+  filteredOptions: Observable<SptTag[]> | undefined;
 
   accumulatedModList: Mod[] = [];
   pageSize = 0;
@@ -90,15 +90,15 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   loading = false;
   isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
 
-  akiVersionSignal = this.#configurationService.versionSignal;
-  akiTagsSignal = this.#configurationService.tagsSignal;
+  sptVersionSignal = this.#configurationService.versionSignal;
+  sptTagsSignal = this.#configurationService.tagsSignal;
 
   ngOnInit() {
-    this.akiVersionFormField.valueChanges
+    this.sptVersionFormField.valueChanges
       .pipe(debounceTime(500), takeUntilDestroyed(this.#destroyRef))
       .subscribe(() => this.loadData(this._sortField, this.pageNumber));
 
-    this.filteredOptions = this.akiTagFormField.valueChanges.pipe(
+    this.filteredOptions = this.sptTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
       map(value => this.filterAkiTags(value || '')),
@@ -114,7 +114,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       .subscribe((event: PageEvent) => this.loadData(this._sortField, event.pageIndex));
   }
 
-  isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
+  isActiveSptInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   refresh() {
     this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
@@ -127,8 +127,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       image: mod.image,
       fileUrl: mod.fileUrl,
       teaser: mod.teaser,
-      supportedAkiVersion: mod.supportedAkiVersion,
-      akiVersionColorCode: mod.akiVersionColorCode,
+      supportedSptVersion: mod.supportedSptVersion,
+      sptVersionColorCode: mod.sptVersionColorCode,
     };
 
     this.#modListService.addMod(mod);
@@ -177,16 +177,16 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     let basePath = '';
 
     if (this.tags) {
-      const akiTag = this.akiTagsSignal()?.find(t => t.innerText === this.akiTagFormField.value);
+      const akiTag = this.sptTagsSignal()?.find(t => t.innerText === this.sptTagFormField.value);
       if (!akiTag) {
         this.loading = false;
         this.accumulatedModList = [];
         return;
       }
 
-      basePath = `${environment.akiFileTagBaseLink}${akiTag?.tagPath}?objectType=com.woltlab.filebase.file&pageNo=${pageNumber + 1}`;
+      basePath = `${environment.sptFileTagBaseLink}${akiTag?.tagPath}?objectType=com.woltlab.filebase.file&pageNo=${pageNumber + 1}`;
     } else {
-      basePath = `${environment.akiFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.akiVersionFormField.value?.dataLabelId}`;
+      basePath = `${environment.sptFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.sptVersionFormField.value?.dataLabelId}`;
     }
 
     this.accumulatedModList = [];
@@ -213,8 +213,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
               image: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
               icon: e.getElementsByClassName('filebaseFileIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon128')[1] ?? null,
               teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
-              supportedAkiVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
-              akiVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+              supportedSptVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+              sptVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
               kind: undefined,
               notSupported: false,
               lastUpdate: this.getLastUpdateText(date),
@@ -243,12 +243,12 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private filterAkiTags(value: string): AkiTag[] {
+  private filterAkiTags(value: string): SptTag[] {
     const filterValue = value.toLowerCase();
-    if (!this.akiTagsSignal()?.length) {
+    if (!this.sptTagsSignal()?.length) {
       return [];
     }
 
-    return this.akiTagsSignal()!.filter(option => option.innerText.toLowerCase().includes(filterValue));
+    return this.sptTagsSignal()!.filter(option => option.innerText.toLowerCase().includes(filterValue));
   }
 }

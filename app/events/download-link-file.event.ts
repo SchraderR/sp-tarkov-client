@@ -2,7 +2,7 @@
 import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
-import { LinkModel } from '../../shared/models/aki-core.model';
+import { LinkModel } from '../../shared/models/spt-core.model';
 import { Browser as Browsers, install } from '@puppeteer/browsers';
 import { GithubRateLimit } from '../../shared/models/download.model';
 import * as log from 'electron-log';
@@ -152,8 +152,7 @@ export const handleDownloadLinkEvent = () => {
       } catch (e) {
         log.error(e);
         event.sender.send('download-link-error', 0);
-      }
-      finally {
+      } finally {
         if (browser) {
           await browser.close();
         }

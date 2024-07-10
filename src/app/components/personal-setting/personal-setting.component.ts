@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, Vi
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { AkiInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { SptInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -70,20 +70,20 @@ export default class PersonalSettingComponent {
     });
   }
 
-  openInstance(akiRootDirectory: string) {
-    this.#electronService.openPath(akiRootDirectory);
+  openInstance(rootDirectory: string) {
+    this.#electronService.openPath(rootDirectory);
   }
 
   restartTutorial() {
     this.#userSettingsService.updateTutorialDone(false);
   }
 
-  clearAkiVersionCache() {
-    this.#electronService.sendEvent('aki-versions-save', []).subscribe(() => this.cacheClearToast('Aki-Versions'));
+  clearSptVersionCache() {
+    this.#electronService.sendEvent('spt-versions-save', []).subscribe(() => this.cacheClearToast('Spt-Versions'));
   }
 
-  clearAkiTagsCache() {
-    this.#electronService.sendEvent('aki-tags-save', []).subscribe(() => this.cacheClearToast('Aki-Tags'));
+  clearSptTagsCache() {
+    this.#electronService.sendEvent('spt-tags-save', []).subscribe(() => this.cacheClearToast('Spt-Tags'));
   }
 
   getRootEftSpDirectory() {
@@ -99,13 +99,13 @@ export default class PersonalSettingComponent {
 
           return forkJoin({
             userSetting: of(newUserSetting),
-            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.akiRootDirectory),
-            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.akiRootDirectory),
+            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
+            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
           }).pipe(catchError(() => this.handleDirectoryPathError(result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
-            const userSetting = this.#userSettingsService.userSettingSignal().find(s => s.akiRootDirectory === result.userSetting.akiRootDirectory);
+            const userSetting = this.#userSettingsService.userSettingSignal().find(s => s.sptRootDirectory === result.userSetting.sptRootDirectory);
             if (!userSetting) {
               return;
             }
@@ -136,9 +136,9 @@ export default class PersonalSettingComponent {
     settingModel.isActive = true;
     this.#userSettingsService.updateUserSetting();
 
-    const akiInstance: AkiInstance = {
+    const sptInstance: SptInstance = {
       isActive: settingModel.isActive,
-      akiRootDirectory: settingModel.akiRootDirectory,
+      sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
       isError: settingModel.isError,
@@ -146,13 +146,13 @@ export default class PersonalSettingComponent {
       serverMods: settingModel.serverMods,
     };
 
-    this.#electronService.sendEvent('user-settings-update', akiInstance).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+    this.#electronService.sendEvent('user-settings-update', sptInstance).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
   }
 
   removeInstance(settingModel: UserSettingModel) {
-    this.#electronService.sendEvent('user-settings-remove', settingModel.akiRootDirectory).subscribe(() => {
+    this.#electronService.sendEvent('user-settings-remove', settingModel.sptRootDirectory).subscribe(() => {
       this.#ngZone.run(() => {
-        this.#userSettingsService.removeUserSetting(settingModel.akiRootDirectory);
+        this.#userSettingsService.removeUserSetting(settingModel.sptRootDirectory);
         this.#userSettingsService.updateUserSetting();
       });
     });
@@ -162,7 +162,7 @@ export default class PersonalSettingComponent {
     userSettingModel.isError = true;
 
     this.#matSnackBar.open(
-      `Instance: ${userSettingModel.akiRootDirectory}\nServer/Client Paths not found.\nMake sure you started the AKI-Server at least one time.`,
+      `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`,
       '',
       {
         duration: 3000,
@@ -179,7 +179,7 @@ export default class PersonalSettingComponent {
     });
   }
 
-  private cacheClearToast(type: 'Aki-Versions' | 'Aki-Tags'): void {
+  private cacheClearToast(type: 'Spt-Versions' | 'Spt-Tags'): void {
     this.#ngZone.run(() => {
       this.#matSnackBar.open(`${type} cache was cleared. ${type} will be fetched on the next startup.`, '', {
         duration: 3000,

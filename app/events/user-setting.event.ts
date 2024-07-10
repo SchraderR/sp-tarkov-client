@@ -2,8 +2,8 @@
 import * as fs from 'fs';
 import * as Store from 'electron-store';
 import * as path from 'path';
-import { AkiInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { stableAkiCoreConfigPath } from '../constants';
+import { SptInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import { stableSptCoreConfigPath } from '../constants';
 import * as log from 'electron-log';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
@@ -11,7 +11,7 @@ export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>
     await handleUserSettingStoreEvent(event, store);
   });
 
-  ipcMain.on('user-settings-update', (event, akiInstance: AkiInstance) => {
+  ipcMain.on('user-settings-update', (event, akiInstance: SptInstance) => {
     handleUpdateUserSettingStoreEvent(event, store, akiInstance);
   });
 
@@ -21,34 +21,34 @@ export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>
 };
 
 function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiRootDirectory: string) {
-  const index = store.get('akiInstances').findIndex(i => i.akiRootDirectory === akiRootDirectory);
+  const index = store.get('sptInstances').findIndex(i => i.sptRootDirectory === akiRootDirectory);
   if (index === -1) {
     // TODO Exception
     return;
   }
 
-  const currentSetting = store.get('akiInstances').filter(i => i.akiRootDirectory !== akiRootDirectory);
-  store.set('akiInstances', currentSetting);
+  const currentSetting = store.get('sptInstances').filter(i => i.sptRootDirectory !== akiRootDirectory);
+  store.set('sptInstances', currentSetting);
   event.sender.send('user-settings-remove-completed');
 }
 
-function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiInstance: AkiInstance) {
-  const currentIndex = store.get('akiInstances').findIndex(i => i.akiRootDirectory === akiInstance.akiRootDirectory);
+function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiInstance: SptInstance) {
+  const currentIndex = store.get('sptInstances').findIndex(i => i.sptRootDirectory === akiInstance.sptRootDirectory);
   if (currentIndex === -1) {
     // TODO Exception
     return;
   }
 
-  const instances = store.get('akiInstances');
-  instances.forEach(i => (i.isActive = i.akiRootDirectory === akiInstance.akiRootDirectory));
-  store.set('akiInstances', instances);
+  const instances = store.get('sptInstances');
+  instances.forEach(i => (i.isActive = i.sptRootDirectory === akiInstance.sptRootDirectory));
+  store.set('sptInstances', instances);
 
   event.sender.send('user-settings-update-completed');
 }
 
 async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>) {
-  const akiInstances = store.get('akiInstances');
-  if (!akiInstances || akiInstances.length === 0) {
+  const sptInstances = store.get('sptInstances');
+  if (!sptInstances || sptInstances.length === 0) {
     // TODO ERROR HANDLING
     event.sender.send('user-settings-completed', []);
     return;
@@ -56,23 +56,34 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
 
   const userSettingModelResult: UserSettingModel[] = [];
 
-  for (const akiInstance of akiInstances) {
+  for (const sptInstance of sptInstances) {
     try {
-      const akiCoreJson = fs.readFileSync(path.join(akiInstance.akiRootDirectory, stableAkiCoreConfigPath), 'utf-8');
-      if (!akiCoreJson) {
+      let sptCoreJson: string = '';
+
+      stableSptCoreConfigPath.forEach(sptCorePath => {
+        if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptCorePath))) {
+          log.error(`${sptCorePath} not available.`);
+          return;
+        }
+
+        sptCoreJson = fs.readFileSync(path.join(sptInstance.sptRootDirectory, sptCorePath), 'utf-8');
+        // fs.readFileSync(path.join(selectedPath, stableSptCoreConfigPath), 'utf-8');
+      });
+
+      if (!sptCoreJson) {
         // TODO ERROR HANDLING
-        console.error(akiCoreJson);
+        console.error(sptCoreJson);
         return;
       }
       userSettingModelResult.push({
-        akiRootDirectory: akiInstance.akiRootDirectory,
-        akiCore: JSON.parse(akiCoreJson),
-        isValid: akiInstance.isValid,
-        isActive: akiInstance.isActive,
-        isLoading: akiInstance.isLoading,
-        isError: akiInstance.isError,
-        clientMods: akiInstance.clientMods ?? [],
-        serverMods: akiInstance.serverMods ?? [],
+        sptRootDirectory: sptInstance.sptRootDirectory,
+        sptCore: JSON.parse(sptCoreJson),
+        isValid: sptInstance.isValid,
+        isActive: sptInstance.isActive,
+        isLoading: sptInstance.isLoading,
+        isError: sptInstance.isError,
+        clientMods: sptInstance.clientMods ?? [],
+        serverMods: sptInstance.serverMods ?? [],
       });
     } catch (e) {
       log.error(e);

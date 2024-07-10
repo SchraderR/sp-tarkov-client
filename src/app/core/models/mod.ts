@@ -7,14 +7,14 @@ export interface Mod {
   fileUrl: string;
   kind: Kind | undefined;
   notSupported: boolean;
-  supportedAkiVersion: string;
+  supportedSptVersion: string;
   image?: string;
   icon?: string;
   teaser?: string;
   lastUpdate?: string;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
-  akiVersionColorCode?: string;
+  sptVersionColorCode?: string;
 }
 
 export interface InstallProgress {
@@ -22,7 +22,6 @@ export interface InstallProgress {
   started?: Date;
   finished?: Date;
   error?: boolean;
-
   linkStep: StepProgress;
   downloadStep: DownloadProgress;
   unzipStep: StepProgress;

@@ -15,7 +15,7 @@ interface SearchResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class AkiSearchService {
+export class SptSearchService {
   private restrictedModKinds = ['Community support'];
 
   #httpClient = inject(HttpClient);
@@ -37,7 +37,7 @@ export class AkiSearchService {
         mergeMap((mods: Mod[]) => from(mods)),
         mergeMap(mod =>
           this.getFileHubView(mod.fileUrl).pipe(
-            map(({ supportedAkiVersion, akiVersionColorCode }) => ({ ...mod, supportedAkiVersion, akiVersionColorCode }))
+            map(({ supportedSptVersion, sptVersionColorCode }) => ({ ...mod, supportedSptVersion, sptVersionColorCode }))
           )
         ),
         toArray()
@@ -88,17 +88,17 @@ export class AkiSearchService {
       });
   }
 
-  private getFileHubView(modUrl: string): Observable<{ supportedAkiVersion: string; akiVersionColorCode: string }> {
+  private getFileHubView(modUrl: string): Observable<{ supportedSptVersion: string; sptVersionColorCode: string }> {
     modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
     return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)));
   }
 
-  private extractSPVersion(modHub: string): { supportedAkiVersion: string; akiVersionColorCode: string } {
+  private extractSPVersion(modHub: string): { supportedSptVersion: string; sptVersionColorCode: string } {
     const searchResult = HtmlHelper.parseStringAsHtml(modHub);
 
     return {
-      supportedAkiVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
-      akiVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+      supportedSptVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+      sptVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
     };
   }
 }

@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-
-import { AkiSearchService } from './aki-search.service';
+import { SptSearchService } from './spt-search.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-describe('AkiSearchService', () => {
-  let service: AkiSearchService;
+describe('SptSearchService', () => {
+  let service: SptSearchService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
-    service = TestBed.inject(AkiSearchService);
+    service = TestBed.inject(SptSearchService);
   });
 
   it('should be created', () => {

@@ -21,9 +21,9 @@
           @if (mod.icon) {
             <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
           }
-          @if (mod.supportedAkiVersion) {
-            <div [class]="mod.akiVersionColorCode"
-                 class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
+          @if (mod.supportedSptVersion) {
+            <div [class]="mod.sptVersionColorCode"
+                 class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
             </div>
           }
         </div>
@@ -33,7 +33,7 @@
           <div class="mod-teaser">{{ mod.teaser }}</div>
           <span class="spacer"></span>
           <div class="card-button-container">
-            @if (isActiveAkiInstanceAvailable()) {
+            @if (isActiveSptInstanceAvailable()) {
               @if (mod.notSupported) {
                 <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">
                   info
@@ -80,31 +80,31 @@
   </button>
 
   @if (tags) {
-    <ng-container *ngTemplateOutlet="akiTagsForm"></ng-container>
+    <ng-container *ngTemplateOutlet="sptTagsForm"></ng-container>
   } @else {
-    <ng-container *ngTemplateOutlet="akiVersionForm"></ng-container>
+    <ng-container *ngTemplateOutlet="sptVersionForm"></ng-container>
   }
 
   <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
 </mat-toolbar>
 
 
-<ng-template #akiVersionForm>
+<ng-template #sptVersionForm>
   <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
-    <mat-label>Aki Version</mat-label>
-    <mat-select [formControl]="akiVersionFormField">
+    <mat-label>SPT Version</mat-label>
+    <mat-select [formControl]="sptVersionFormField">
       <mat-option [value]=""></mat-option>
-      @for (version of akiVersionSignal(); track version) {
+      @for (version of sptVersionSignal(); track version) {
         <mat-option [value]="version">{{ version.innerText }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 </ng-template>
 
-<ng-template #akiTagsForm>
+<ng-template #sptTagsForm>
   <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Tags</mat-label>
-    <input matInput aria-label="Number" [formControl]="akiTagFormField" [matAutocomplete]="auto">
+    <input matInput aria-label="Number" [formControl]="sptTagFormField" [matAutocomplete]="auto">
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
       @for (tag of filteredOptions | async; track tag) {
         <mat-option [value]="tag.innerText">{{ tag.innerText }}</mat-option>

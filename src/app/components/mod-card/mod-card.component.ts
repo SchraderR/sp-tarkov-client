@@ -64,9 +64,9 @@ export class ModCardComponent implements OnInit {
         const supportedVersion = modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '';
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');
 
-        this.mod.supportedAkiVersion = supportedVersion;
-        this.mod.modVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? "";
-        
+        this.mod.supportedSptVersion = supportedVersion;
+        this.mod.modVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? '';
+
         return {
           url: modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl,
           text: modLicenceBox?.innerHTML ?? 'SP Hub-License',

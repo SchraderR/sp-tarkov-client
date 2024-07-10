@@ -2,18 +2,18 @@
   <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent"
             [stepPosition]="!!userSettingSignal().length ? 'center' : 'bottom'">
     <mat-card-header>
-      <mat-card-title>Aki-Instances ({{ userSettingSignal().length }})</mat-card-title>
+      <mat-card-title>SPT-Instances ({{ userSettingSignal().length }})</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <mat-list>
-        @for (settingModel of userSettingSignal(); track settingModel.akiRootDirectory) {
+        @for (settingModel of userSettingSignal(); track settingModel.sptRootDirectory) {
           @if (settingModel.isLoading) {
             <mat-list-item #loading lines="2">
               <mat-spinner [diameter]="50"></mat-spinner>
             </mat-list-item>
           }
           @if (!settingModel.isLoading) {
-            <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.akiRootDirectory"
+            <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.sptRootDirectory"
                            (mouseleave)="hoveringInstance = ''">
               <mat-icon joyrideStep="settingStepInstanceActive" [stepContent]="joyRideStepInstanceActiveContent"
                         *ngIf="!settingModel.isError" matListItemAvatar class="active-star"
@@ -23,14 +23,14 @@
                 star
               </mat-icon>
               <mat-icon *ngIf="settingModel.isError" matListItemAvatar color="warn" class="warning"
-                        matTooltip="Error while accessing local Server/Client Paths. Make sure you started the AKI-Server at least once.">
+                        matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.">
                 warning
               </mat-icon>
-              <div matListItemTitle>{{ settingModel.akiCore.akiVersion }}</div>
-              <div matListItemLine>{{ settingModel.akiRootDirectory }}</div>
-              @if (settingModel.akiRootDirectory === hoveringInstance) {
+              <div matListItemTitle>{{ settingModel.sptCore.sptVersion ?? settingModel.sptCore.akiVersion }}</div>
+              <div matListItemLine>{{ settingModel.sptRootDirectory  ?? settingModel.akiRootDirectory}}</div>
+              @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
-                     (click)="openInstance(settingModel.akiRootDirectory)">
+                     (click)="openInstance(settingModel.sptRootDirectory)">
                   <mat-icon>open_in_new</mat-icon>
                 </div>
 
@@ -68,11 +68,11 @@
         <button mat-raised-button color="primary" style="width: fit-content;" (click)="restartTutorial()">
           Restart Tutorial
         </button>
-        <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearAkiVersionCache()">
-          Clear Aki-Version Cache
+        <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearSptVersionCache()">
+          Clear Spt-Version cache
         </button>
-        <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearAkiTagsCache()">
-          Clear Aki-Tags Cache
+        <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearSptTagsCache()">
+          Clear Spt-Tags cache
         </button>
       </div>
       <div>
@@ -93,7 +93,7 @@
   <span>
     First, you will need to add an instance.
     <p>
-    To do this, navigate through the file dialog and point it to the root directory that contains both your AKI Server and AKI Launcher.
+    To do this, navigate through the file dialog and point it to the root directory that contains both your SPT Server and SPT Launcher.
     This process will help the system to recognize these elements and work accordingly.
     <p>
     After adding an instance, you can set it as the active instance by clicking on the star icon.<br>

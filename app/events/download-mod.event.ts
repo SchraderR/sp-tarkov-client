@@ -1,7 +1,7 @@
 ﻿import { app, ipcMain } from 'electron';
 import { download } from 'electron-dl';
 import { BrowserWindowSingleton } from '../browserWindow';
-import { DownloadModel } from '../../shared/models/aki-core.model';
+import { DownloadModel } from '../../shared/models/spt-core.model';
 import * as path from 'path';
 import * as fs from 'fs';
 import axios from 'axios';
@@ -13,7 +13,7 @@ export const handleDownloadModEvent = () => {
   ipcMain.on('download-mod', async (event, downloadModel: DownloadModel) => {
     let browser: Browser | null = null;
     try {
-      const ankiTempDownloadDir = path.join(downloadModel.akiInstancePath, '_temp');
+      const ankiTempDownloadDir = path.join(downloadModel.sptInstancePath, '_temp');
       if (!fs.existsSync(ankiTempDownloadDir)) {
         fs.mkdirSync(ankiTempDownloadDir);
       }
