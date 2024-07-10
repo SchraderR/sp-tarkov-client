@@ -5,10 +5,10 @@ import { serverModPath } from '../constants';
 import * as log from 'electron-log';
 
 export const handleServerModsEvent = () => {
-  ipcMain.on('server-mod', async (event, akiInstancePath: string) => {
+  ipcMain.on('server-mod', async (event, instancePath: string) => {
     try {
-      if (fs.existsSync(akiInstancePath)) {
-        const rootServerPath = path.join(akiInstancePath, serverModPath);
+      if (fs.existsSync(instancePath)) {
+        const rootServerPath = path.join(instancePath, serverModPath);
         const dirs = fs
           .readdirSync(rootServerPath, { withFileTypes: true })
           .filter(dirent => dirent.isDirectory() && dirent.name !== 'spt')
@@ -19,9 +19,9 @@ export const handleServerModsEvent = () => {
           const filePath = path.join(rootServerPath, dir, 'package.json');
           if (fs.existsSync(filePath)) {
             const packageJson = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-            const { name, version, akiVersion } = packageJson;
-            if (name && version && akiVersion) {
-              data.push({ name, version, akiVersion, modPath: path.join(rootServerPath, dir) });
+            const { name, version, akiVersion, sptVersion } = packageJson;
+            if (name && version && (akiVersion || sptVersion)) {
+              data.push({ name, version, sptVersion: sptVersion ?? akiVersion, modPath: path.join(rootServerPath, dir) });
             }
           }
         }

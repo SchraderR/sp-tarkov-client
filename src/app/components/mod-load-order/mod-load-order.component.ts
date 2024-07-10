@@ -26,7 +26,7 @@ export default class ModLoadOrderComponent implements OnInit {
 
   ngOnInit() {
     this.#electronService
-      .sendEvent<string, string>('mod-load-order', this.#userSettingsService.getActiveInstance()?.akiRootDirectory)
+      .sendEvent<string, string>('mod-load-order', this.#userSettingsService.getActiveInstance()?.sptRootDirectory)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(modLoadOrder => this.#ngZone.run(() => (this.modLoadOrder = JSON.parse(modLoadOrder.args))));
   }

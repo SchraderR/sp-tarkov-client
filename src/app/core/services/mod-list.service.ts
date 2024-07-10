@@ -13,7 +13,7 @@ export class ModListService {
   setUseIndexedMods(value: boolean) {
     this.useIndexedMods.set(value);
   }
-  
+
   addMod(mod: Mod) {
     if (this.modList().some(m => m.name === mod.name)) {
       return;
@@ -69,10 +69,10 @@ export class ModListService {
         fileUrl: null!,
         image: 'assets/images/813.png',
         teaser: 'Lighting and postprocessing overhaul',
-        supportedAkiVersion: 'SPT-AKI 5.0.0',
+        supportedSptVersion: 'SPT 5.0.0',
         kind: undefined,
         notSupported: false,
-        akiVersionColorCode: 'badge label green jsLabelFeatured',
+        sptVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
       },
       {
@@ -80,10 +80,10 @@ export class ModListService {
         fileUrl: null!,
         image: 'assets/images/1062.jpg',
         teaser: "Bots that don't suck.",
-        supportedAkiVersion: 'SPT-AKI 5.0.0',
+        supportedSptVersion: 'SPT 5.0.0',
         kind: undefined,
         notSupported: false,
-        akiVersionColorCode: 'badge label green jsLabelFeatured',
+        sptVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
       },
       {
@@ -91,10 +91,10 @@ export class ModListService {
         fileUrl: null!,
         image: 'assets/images/606.png',
         teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
-        supportedAkiVersion: 'SPT-AKI 5.0.0',
+        supportedSptVersion: 'SPT 5.0.0',
         kind: undefined,
         notSupported: false,
-        akiVersionColorCode: 'badge label green jsLabelFeatured',
+        sptVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
       },
     ]);

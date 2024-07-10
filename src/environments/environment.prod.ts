@@ -2,9 +2,9 @@ export const environment = {
   production: true,
   environment: 'PROD',
   githubIssueUrl: 'https://github.com/SchraderR/sp-tarkov-client/issues',
-  akiHubEftManagerLink: 'https://hub.sp-tarkov.com/files/file/1702-sp-eft-manager/',
-  akiFileBaseLink: 'https://hub.sp-tarkov.com/files',
-  akiFileTagBaseLink: 'https://hub.sp-tarkov.com/tagged/',
+  sptHubEftManagerLink: 'https://hub.sp-tarkov.com/files/file/1702-sp-eft-manager/',
+  sptFileBaseLink: 'https://hub.sp-tarkov.com/files',
+  sptFileTagBaseLink: 'https://hub.sp-tarkov.com/tagged/',
   githubConfigLink: 'https://schraderr.github.io/sp-tarkov-client-configuration',
-  akiHubModsJson: 'https://hub.sp-tarkov.com/mods.json'
+  sptHubModsJson: 'https://hub.sp-tarkov.com/mods.json',
 };

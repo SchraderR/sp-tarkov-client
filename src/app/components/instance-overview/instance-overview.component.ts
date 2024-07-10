@@ -19,7 +19,7 @@ export default class InstanceOverviewComponent {
   #userSettingsService = inject(UserSettingsService);
   #electronService = inject(ElectronService);
 
-  activeAkiInstance = this.#userSettingsService.getActiveInstance();
+  activeSptInstance = this.#userSettingsService.getActiveInstance();
 
   openExternal(modPath: string) {
     this.#electronService.openPath(modPath);

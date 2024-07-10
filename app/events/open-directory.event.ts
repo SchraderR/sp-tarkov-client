@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { stableAkiCoreConfigPath, stableAkiServerName } from '../constants';
+import { stableSptCoreConfigPath, stableSptServerName } from '../constants';
 import { BrowserWindowSingleton } from '../browserWindow';
 import * as log from 'electron-log';
 
@@ -17,21 +17,33 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
 
         if (fs.existsSync(selectedPath)) {
           const files = fs.readdirSync(selectedPath);
-          const isAKiRootDirectorySoftCheck = files.some(f => f === stableAkiServerName);
-          const isNewInstance = store.get('akiInstances').find(i => i.akiRootDirectory === selectedPath);
+          const isSptRootDirectorySoftCheck = files.some(f => stableSptServerName.includes(f));
+          const isNewInstance = store.get('sptInstances').find(i => i.sptRootDirectory === selectedPath);
           if (isNewInstance) {
             event.sender.send('open-directory-error', {
               message: 'Instance with this directory already exists.',
             });
             return;
           }
-          const akiCoreJson = fs.readFileSync(path.join(selectedPath, stableAkiCoreConfigPath), 'utf-8');
 
-          if (isAKiRootDirectorySoftCheck) {
-            store.set('akiInstances', [...store.get('akiInstances'), { akiRootDirectory: selectedPath }]);
+          let coreJson: string = '';
+
+          stableSptCoreConfigPath.forEach(corePath => {
+            console.log(corePath);
+
+            if (!fs.existsSync(path.join(selectedPath, corePath))) {
+              log.error(`${corePath} not available.`);
+              return;
+            }
+
+            coreJson = fs.readFileSync(path.join(selectedPath, corePath), 'utf-8');
+          });
+
+          if (isSptRootDirectorySoftCheck) {
+            store.set('sptInstances', [...store.get('sptInstances'), { sptRootDirectory: selectedPath }]);
             event.sender.send('open-directory-completed', {
-              akiRootDirectory: selectedPath,
-              akiCore: JSON.parse(akiCoreJson),
+              sptRootDirectory: selectedPath,
+              sptCore: JSON.parse(coreJson.trim()),
               isValid: true,
               isActive: false,
               clientMods: [],
