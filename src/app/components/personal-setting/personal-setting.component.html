@@ -26,8 +26,8 @@
                         matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.">
                 warning
               </mat-icon>
-              <div matListItemTitle>{{ settingModel.sptCore.sptVersion ?? settingModel.sptCore.akiVersion }}</div>
-              <div matListItemLine>{{ settingModel.sptRootDirectory  ?? settingModel.akiRootDirectory}}</div>
+               <div matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}</div>
+              <div matListItemLine>{{ settingModel.sptRootDirectory ?? settingModel.akiRootDirectory}}</div>
               @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
                      (click)="openInstance(settingModel.sptRootDirectory)">
