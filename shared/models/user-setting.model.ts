@@ -46,7 +46,7 @@ export interface SptInstance {
 }
 
 export interface UserSettingModel extends SptInstance {
-  sptCore: SptCore;
+  sptCore?: SptCore;
 }
 
 export interface ModMeta {

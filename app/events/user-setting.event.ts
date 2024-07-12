@@ -61,24 +61,18 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
       let sptCoreJson: string = '';
 
       stableSptCoreConfigPath.forEach(sptCorePath => {
-        if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptCorePath))) {
-          log.error(`${sptCorePath} not available.`);
+        if (!fs.existsSync(path.join(sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory, sptCorePath))) {
+          log.error(`${sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory}/${sptCorePath} not available.`);
           return;
         }
 
-        sptCoreJson = fs.readFileSync(path.join(sptInstance.sptRootDirectory, sptCorePath), 'utf-8');
-        // fs.readFileSync(path.join(selectedPath, stableSptCoreConfigPath), 'utf-8');
+        sptCoreJson = fs.readFileSync(path.join(sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory, sptCorePath), 'utf-8');
       });
 
-      if (!sptCoreJson) {
-        // TODO ERROR HANDLING
-        console.error(sptCoreJson);
-        return;
-      }
       userSettingModelResult.push({
-        sptRootDirectory: sptInstance.sptRootDirectory,
-        sptCore: JSON.parse(sptCoreJson),
-        isValid: sptInstance.isValid,
+        sptRootDirectory: sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory,
+        sptCore: sptCoreJson ? JSON.parse(sptCoreJson) : null,
+        isValid: !!sptCoreJson,
         isActive: sptInstance.isActive,
         isLoading: sptInstance.isLoading,
         isError: sptInstance.isError,
@@ -87,7 +81,6 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
       });
     } catch (e) {
       log.error(e);
-      // add to object and return a missing path error message
     }
   }
   event.sender.send('user-settings-completed', userSettingModelResult);

@@ -153,6 +153,14 @@ export class AppComponent {
       this.#userSettingService.addUserSetting(newUserSetting);
       this.#changeDetectorRef.detectChanges();
 
+      if(!newUserSetting.isValid) {
+        return of({
+          userSetting: { ...userSetting, isError: true },
+          serverMods: { args: [] },
+          clientMods: { args: [] },
+        });
+      }
+
       return forkJoin({
         userSetting: of(userSetting),
         serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
