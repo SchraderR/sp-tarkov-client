@@ -64,7 +64,7 @@ export class ModSearchComponent {
 
           if (searchArgument?.trim()) {
             this.isLoading = true;
-            return this.#sptSearchService.searchMods(searchArgument!);
+            return this.#sptSearchService.searchMods(searchArgument);
           } else {
             this.isLoading = false;
             return EMPTY;

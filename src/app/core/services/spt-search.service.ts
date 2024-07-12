@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { from, map, mergeMap, Observable, toArray } from 'rxjs';
+import { catchError, concatMap, delay, from, map, mergeMap, Observable, of, toArray } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
@@ -34,7 +34,7 @@ export class SptSearchService {
       )
       .pipe(
         map(response => this.extractModInformation(response)),
-        mergeMap((mods: Mod[]) => from(mods)),
+        mergeMap((mods: Mod[]) => from(mods).pipe(concatMap(mod => of(mod).pipe(delay(500))))),
         mergeMap(mod =>
           this.getFileHubView(mod.fileUrl).pipe(
             map(({ supportedSptVersion, sptVersionColorCode }) => ({ ...mod, supportedSptVersion, sptVersionColorCode }))
@@ -90,12 +90,18 @@ export class SptSearchService {
 
   private getFileHubView(modUrl: string): Observable<{ supportedSptVersion: string; sptVersionColorCode: string }> {
     modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
-    return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)));
+    return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)), catchError(() => {
+      return of({
+        supportedSptVersion: "Error while fetching version. Use with caution.",
+        sptVersionColorCode: "badge label red"
+    });
+    }));
   }
 
   private extractSPVersion(modHub: string): { supportedSptVersion: string; sptVersionColorCode: string } {
     const searchResult = HtmlHelper.parseStringAsHtml(modHub);
 
+    console.log(searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className);
     return {
       supportedSptVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
       sptVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
