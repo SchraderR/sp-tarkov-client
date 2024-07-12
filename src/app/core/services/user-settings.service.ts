@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Theme, UserSettingModel } from '../../../../shared/models/user-setting.model';
-import { AkiCore } from '../../../../shared/models/aki-core.model';
+import { SptCore } from '../../../../shared/models/spt-core.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class UserSettingsService {
   isTutorialDone = signal<boolean | null>(null);
 
   addUserSetting(settingModel: UserSettingModel) {
-    if (this.userSetting().some(userSetting => userSetting.akiRootDirectory === settingModel.akiRootDirectory)) {
+    if (this.userSetting().some(userSetting => userSetting.sptRootDirectory === settingModel.sptRootDirectory)) {
       return;
     }
 
@@ -29,7 +29,7 @@ export class UserSettingsService {
   }
 
   removeUserSetting(akiRootDirectory: string) {
-    this.userSetting.update(() => [...this.userSetting().filter(m => m.akiRootDirectory !== akiRootDirectory)]);
+    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== akiRootDirectory)]);
   }
 
   getActiveInstance(): UserSettingModel | undefined {
@@ -40,14 +40,14 @@ export class UserSettingsService {
     if (!this.userSettingSignal().length) {
       this.userSetting.set([
         {
-          akiRootDirectory: 'C://TutorialPath/SPT',
+          sptRootDirectory: 'C://TutorialPath/SPT',
           serverMods: [],
           clientMods: [],
           isActive: false,
           isPowerShellIssue: false,
-          akiCore: {
-            akiVersion: '4.0.0',
-          } as unknown as AkiCore,
+          sptCore: {
+            sptVersion: '4.0.0',
+          } as unknown as SptCore,
           isLoading: false,
           isError: false,
           isValid: true,

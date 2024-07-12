@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { map, of, switchMap, tap } from 'rxjs';
 import { HtmlHelper } from '../helper/html-helper';
-import { AkiTag, AkiVersion } from '../../../../shared/models/aki-core.model';
+import { SptTag, SptVersion } from '../../../../shared/models/spt-core.model';
 import { ElectronService } from './electron.service';
 
 export interface Configuration {
@@ -19,8 +19,8 @@ export class ConfigurationService {
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
   #config = signal<Configuration | null>(null);
-  #version = signal<AkiVersion[]>([]);
-  #tags = signal<AkiTag[] | null>([]);
+  #version = signal<SptVersion[]>([]);
+  #tags = signal<SptTag[] | null>([]);
 
   readonly configSignal = this.#config.asReadonly();
   readonly versionSignal = this.#version.asReadonly();
@@ -30,44 +30,44 @@ export class ConfigurationService {
     return this.#httpClient.get<Configuration>(`${environment.githubConfigLink}/config.json`).pipe(tap(config => this.#config.set(config)));
   }
 
-  getAkiVersion() {
-    return this.#electronService.sendEvent<AkiVersion[]>('aki-versions').pipe(
-      switchMap(akiVersions => {
-        if (akiVersions?.args?.length) {
-          this.#version.set(akiVersions.args);
+  getSptVersion() {
+    return this.#electronService.sendEvent<SptVersion[]>('spt-versions').pipe(
+      switchMap(sptVersions => {
+        if (sptVersions?.args?.length) {
+          this.#version.set(sptVersions.args);
           return of(void 0);
         }
 
-        return this.#httpClient.get(`${environment.akiFileBaseLink}?cacheBust=${Date.now()}`, { responseType: 'text' }).pipe(
-          map(text => this.handleAkiVersion(text)),
-          switchMap(versionList => this.#electronService.sendEvent<AkiVersion[], AkiVersion[]>('aki-versions-save', versionList))
+        return this.#httpClient.get(`${environment.sptFileBaseLink}?cacheBust=${Date.now()}`, { responseType: 'text' }).pipe(
+          map(text => this.handleSptVersion(text)),
+          switchMap(versionList => this.#electronService.sendEvent<SptVersion[], SptVersion[]>('spt-versions-save', versionList))
         );
       })
     );
   }
 
   getCurrentTags() {
-    return this.#electronService.sendEvent<AkiTag[]>('aki-tags').pipe(
-      switchMap(akiTags => {
-        if (akiTags?.args?.length) {
-          this.#tags.set(akiTags.args);
+    return this.#electronService.sendEvent<SptTag[]>('spt-tags').pipe(
+      switchMap(sptTags => {
+        if (sptTags?.args?.length) {
+          this.#tags.set(sptTags.args);
           return of(void 0);
         }
 
         return this.#httpClient
-          .get(`${environment.akiFileTagBaseLink}1-quests/?objectType=com.woltlab.filebase.file&cacheBust=${Date.now()}`, { responseType: 'text' })
+          .get(`${environment.sptFileTagBaseLink}1-quests/?objectType=com.woltlab.filebase.file&cacheBust=${Date.now()}`, { responseType: 'text' })
           .pipe(
-            map(text => this.handleAkiTags(text)),
-            switchMap(tagList => this.#electronService.sendEvent<AkiTag[], AkiTag[]>('aki-tags-save', tagList))
+            map(text => this.handleSptTags(text)),
+            switchMap(tagList => this.#electronService.sendEvent<SptTag[], SptTag[]>('spt-tags-save', tagList))
           );
       })
     );
   }
 
-  private handleAkiVersion(modHub: string) {
+  private handleSptVersion(modHub: string) {
     const searchResult = HtmlHelper.parseStringAsHtml(modHub);
     const versionItems = searchResult.querySelectorAll('ul.scrollableDropdownMenu li');
-    const versionList: AkiVersion[] = [];
+    const versionList: SptVersion[] = [];
 
     versionItems.forEach(item => {
       const dataLabelId = item.getAttribute('data-label-id');
@@ -84,10 +84,10 @@ export class ConfigurationService {
     return versionList;
   }
 
-  private handleAkiTags(modHub: string) {
+  private handleSptTags(modHub: string) {
     const searchResult = HtmlHelper.parseStringAsHtml(modHub);
     const tagItems = searchResult.querySelectorAll('.tagList a');
-    const tagList: AkiTag[] = [];
+    const tagList: SptTag[] = [];
     const regex = /\/tagged\/([\w-]*)\//;
 
     tagItems.forEach(item => {

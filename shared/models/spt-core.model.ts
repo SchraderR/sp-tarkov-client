@@ -1,5 +1,6 @@
-﻿export interface AkiCore {
-  akiVersion: string;
+﻿export interface SptCore {
+  akiVersion?: string; //obsolete
+  sptVersion: string;
   projectName: string;
   compatibleTarkovVersion: string;
   serverName: string;
@@ -11,21 +12,21 @@ export interface DownloadModel {
   name?: string;
   fileId: string;
   modFileUrl: string;
-  akiInstancePath: string;
+  sptInstancePath: string;
 }
 
 export interface LinkModel {
   fileId: string;
-  akiInstancePath: string;
+  sptInstancePath: string;
   downloadUrl: string;
 }
 
-export interface AkiVersion {
+export interface SptVersion {
   dataLabelId: string;
   innerText: string;
 }
 
-export interface AkiTag {
+export interface SptTag {
   tagPath: string;
   innerText: string;
 }

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../shared/models/user-setting.model';
+import { SptInstance, UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as log from 'electron-log';
 import * as windowStateKeeper from 'electron-window-state';
 
@@ -66,19 +66,24 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('isExperimentalFunctionsActive', false);
     }
 
+    const sptInstances = store.get('sptInstances');
+    if (!sptInstances) {
+      store.set('sptInstances', []);
+    }
+
     const modMetaData = store.get('modMetaData');
     if (!modMetaData) {
       store.set('modMetaData', []);
     }
 
-    const akiTags = store.get('akiTags');
-    if (!akiTags) {
-      store.set('akiTags', []);
+    const sptTags = store.get('sptTags');
+    if (!sptTags) {
+      store.set('sptTags', []);
     }
 
-    const akiVersions = store.get('akiVersions');
-    if (!akiVersions) {
-      store.set('akiVersions', []);
+    const sptVersions = store.get('sptVersions');
+    if (!sptVersions) {
+      store.set('sptVersions', []);
     }
 
     const modCache = store.get('modCache');
@@ -91,6 +96,8 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     if (!fs.existsSync(appInstancePath)) {
       fs.mkdirSync(appInstancePath);
     }
+
+    migrateData(store);
 
     if (isServe) {
       browserWindow.webContents.openDevTools();
@@ -117,3 +124,26 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     log.error(e?.toString());
   }
 };
+
+function migrateData(store: Store<UserSettingStoreModel>): void {
+  const oldAkiInstances = store.get('akiInstances');
+  if (oldAkiInstances) {
+    store.set(
+      'sptInstances',
+      oldAkiInstances.map(i => ({ sptRootDirectory: i.akiRootDirectory, isActive: i.isActive }))
+    );
+    store.delete('akiInstances');
+  }
+
+  const oldAkiTags = store.get('akiTags');
+  if (oldAkiTags) {
+    store.set('sptTags', oldAkiTags);
+    store.delete('akiTags');
+  }
+
+  const oldAkiVersions = store.get('akiVersions');
+  if (oldAkiVersions) {
+    store.set('sptVersions', oldAkiVersions);
+    store.delete('akiVersions');
+  }
+}

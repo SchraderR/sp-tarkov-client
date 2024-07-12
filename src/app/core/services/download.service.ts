@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
 import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
-import { DownloadModel, LinkModel } from '../../../../shared/models/aki-core.model';
+import { DownloadModel, LinkModel } from '../../../../shared/models/spt-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
 import { UserSettingsService } from './user-settings.service';
@@ -47,7 +47,7 @@ export class DownloadService {
     console.log('Fetching indexed mods data from hub json');
 
     try {
-      const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.akiHubModsJson));
+      const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.sptHubModsJson));
       this.mods = response.mod_data;
       this.lastFetchTime = new Date();
       return this.mods;
@@ -101,7 +101,7 @@ export class DownloadService {
       }
     }
 
-    this.#electronService.sendEvent('clear-temp', activeInstance.akiRootDirectory).subscribe();
+    this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
     this.isDownloadAndInstallInProgress.next(false);
     this.isDownloadProcessCompleted.next(true);
   }
@@ -141,7 +141,7 @@ export class DownloadService {
       this.downloadProgressEvent.next();
     });
 
-    const linkModel: LinkModel = { fileId, akiInstancePath: activeInstance.akiRootDirectory, downloadUrl: '' };
+    const linkModel: LinkModel = { fileId, sptInstancePath: activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory, downloadUrl: '' };
 
     const modData = this.mods.find(modItem => modItem.name === mod.name);
     if (this.#modListService.useIndexedModsSignal() && modData) {
@@ -158,7 +158,7 @@ export class DownloadService {
           const downloadModel: DownloadModel = {
             fileId,
             name: mod.name,
-            akiInstancePath: activeInstance.akiRootDirectory,
+            sptInstancePath: activeInstance.sptRootDirectory,
             modFileUrl: downloadLinkEvent!.args,
           };
 
@@ -167,7 +167,7 @@ export class DownloadService {
         switchMap(downloadFilePath => {
           const test: FileUnzipEvent = {
             filePath: downloadFilePath?.args,
-            akiInstancePath: activeInstance.akiRootDirectory,
+            sptInstancePath: activeInstance.sptRootDirectory,
             hubId: fileId,
             kind: mod.kind,
           };

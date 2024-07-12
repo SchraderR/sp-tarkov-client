@@ -1,5 +1,5 @@
 <mat-form-field color="accent" class="search-input" appearance="outline" subscriptSizing="dynamic">
-  <mat-label>Search Mods</mat-label>
+  <mat-label>Search for Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
     <mat-option class="search-loading" *ngIf="isLoading && filteredModItems.length === 0">
@@ -22,13 +22,13 @@
               <span class="font-x-small" *ngSwitchCase="'server'">Server Mod</span>
               <span class="font-x-small" *ngSwitchCase="'overhaul'">Overhaul Mod</span>
             </ng-container>
-            @if (mod.supportedAkiVersion) {
-              <span [class]="mod.akiVersionColorCode"
-                    class="font-x-small image-aki-version version-pill">{{ mod.supportedAkiVersion }}</span>
+            @if (mod.supportedSptVersion) {
+              <span [class]="mod.sptVersionColorCode"
+                    class="font-x-small image-spt-version version-pill">{{ mod.supportedSptVersion }}</span>
             }
           </div>
           <span class="spacer"></span>
-          @if (isActiveAkiInstanceAvailable()) {
+          @if (isActiveSptInstanceAvailable()) {
             @if (mod.notSupported) {
               <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">info</mat-icon>
             } @else {

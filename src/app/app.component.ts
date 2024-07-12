@@ -132,7 +132,7 @@ export class AppComponent {
       )
       .subscribe(value => {
         this.#ngZone.run(() => {
-          const userSetting = this.#userSettingService.userSettingSignal().find(s => s.akiRootDirectory === value.userSetting.akiRootDirectory);
+          const userSetting = this.#userSettingService.userSettingSignal().find(s => s.sptRootDirectory === value.userSetting.sptRootDirectory);
           if (!userSetting) {
             return;
           }
@@ -155,11 +155,19 @@ export class AppComponent {
       this.#userSettingService.addUserSetting(newUserSetting);
       this.#changeDetectorRef.detectChanges();
 
+      if(!newUserSetting.isValid) {
+        return of({
+          userSetting: { ...userSetting, isError: true },
+          serverMods: { args: [] },
+          clientMods: { args: [] },
+        });
+      }
+
       return forkJoin({
         userSetting: of(userSetting),
-        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.akiRootDirectory),
-        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.akiRootDirectory),
-      }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
+        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
+        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
+      }).pipe(catchError(() => this.handleDirectoryPathError(error, userSetting)));
     });
   }
 
@@ -187,7 +195,7 @@ export class AppComponent {
     this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
       this.#ngZone.run(() => {
         value.args.forEach(modCache => {
-          const mod: Mod = { ...modCache, supportedAkiVersion: `C*${modCache.supportedAkiVersion}`, kind: undefined, notSupported: false };
+          const mod: Mod = { ...modCache, supportedSptVersion: `C*${modCache.supportedSptVersion}`, kind: undefined, notSupported: false };
           this.#modListService.addMod(mod);
         });
 
@@ -232,7 +240,7 @@ export class AppComponent {
                 this.#modListService.clearFakeTutorialMods();
                 this.#electronService.sendEvent('tutorial-toggle', true).subscribe();
                 this.#userSettingService.updateTutorialDone(true);
-                this.#router.navigate(['/setting']);
+                void this.#router.navigate(['/setting']);
               },
             });
           this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));

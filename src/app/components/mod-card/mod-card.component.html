@@ -15,9 +15,9 @@
       @if (mod.icon) {
         <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
       }
-      @if (mod.supportedAkiVersion) {
-        <div [class]="mod.akiVersionColorCode"
-             class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
+      @if (mod.supportedSptVersion) {
+        <div [class]="mod.sptVersionColorCode"
+             class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
         </div>
       }
     </div>

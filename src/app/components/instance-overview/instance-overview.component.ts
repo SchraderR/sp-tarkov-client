@@ -36,7 +36,7 @@ export default class InstanceOverviewComponent {
   #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
 
-  activeAkiInstance = this.#userSettingsService.getActiveInstance();
+  activeSptInstance = this.#userSettingsService.getActiveInstance();
 
   openExternal(modPath: string) {
     this.#electronService.openPath(modPath);
