@@ -1,6 +1,6 @@
 ﻿import { ipcMain } from 'electron';
 import * as path from 'path';
-import { clientModPath } from '../constants';
+import { clientPatcherModPath, clientPluginModPath } from '../constants';
 import * as fs from 'fs';
 import * as log from 'electron-log';
 
@@ -9,25 +9,41 @@ export const handleClientModsEvent = () => {
     try {
       if (fs.existsSync(akiInstancePath)) {
         const data = [];
-        const rootServerPath = path.join(akiInstancePath, clientModPath);
+        const rootClientPluginPath = path.join(akiInstancePath, clientPluginModPath);
+        const rootClientPatchersPath = path.join(akiInstancePath, clientPatcherModPath);
+
         const rootDllFiles = fs
-          .readdirSync(rootServerPath, { withFileTypes: true })
+          .readdirSync(rootClientPluginPath, { withFileTypes: true })
           .filter(file => file.isFile() && path.extname(file.name) === '.dll')
           .map((f: any) => f);
 
         const rootDirectories = fs
-          .readdirSync(rootServerPath, { withFileTypes: true })
+          .readdirSync(rootClientPluginPath, { withFileTypes: true })
           .filter(dirent => dirent.isDirectory() && dirent.name !== 'spt')
           .map(dirent => dirent.name);
 
         for (const file of rootDllFiles) {
-          const version = await getVersion(path.join(file.path, file.name));
-          data.push({ name: file.name.split('.dll')[0], version, modPath: rootServerPath });
+          const version = await getVersion(path.join(rootClientPluginPath, file.name));
+          const patcherFiles = getPatcherFiles(rootClientPatchersPath, file.name);
+
+          patcherFiles.forEach((patcherFile) => {
+            data.push({
+              name: patcherFile.name.split('.dll')[0],
+              version,
+              modPath: rootClientPatchersPath
+            });
+          })
+
+          data.push({
+            name: file.name.split('.dll')[0],
+            version,
+            modPath: rootClientPluginPath,
+          });
         }
 
         for (let dir of rootDirectories) {
           const directoryDll = fs
-            .readdirSync(path.join(rootServerPath, dir), { withFileTypes: true })
+            .readdirSync(path.join(rootClientPluginPath, dir), { withFileTypes: true })
             .filter(file => file.isFile() && path.extname(file.name) === '.dll')
             .map((f: any) => f);
 
@@ -35,12 +51,22 @@ export const handleClientModsEvent = () => {
             continue;
           }
 
-          const filePath = path.join(directoryDll[0].path, directoryDll[0].name);
-          const version = await getVersion(filePath);
+          const dllFilePath = path.join(rootClientPluginPath, dir, directoryDll[0].name);
+          const version = await getVersion(dllFilePath);
+          const patcherFiles = getPatcherFiles(rootClientPatchersPath, directoryDll[0].name);
+
+          patcherFiles.forEach((patcherFile) => {
+            data.push({
+              name: patcherFile.name.split('.dll')[0],
+              version,
+              modPath: rootClientPatchersPath
+            });
+          })
+
           data.push({
             name: directoryDll[0].name.split('.dll')[0],
             version,
-            modPath: directoryDll[0].path,
+            modPath: path.join(rootClientPluginPath, dir),
           });
         }
 
@@ -62,4 +88,17 @@ async function getVersion(dllFilePath: string) {
   }
 
   return stdout;
+}
+
+function getPatcherFiles(rootClientPatchersPath: string, dllFileName: string) {
+  const baseName = dllFileName.split('.dll')[0];
+  return fs
+    .readdirSync(rootClientPatchersPath, { withFileTypes: true })
+    .filter(
+      file =>
+        file.isFile() &&
+        file.name.startsWith(baseName) &&
+        file.name.toLowerCase().includes('.prepatch.') &&
+        path.extname(file.name) === '.dll'
+    )
 }
