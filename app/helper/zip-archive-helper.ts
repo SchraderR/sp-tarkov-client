@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { extract, extractFull, list } from 'node-7z';
-import { clientModPath, serverModPath } from '../constants';
+import { clientPluginModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 
 export class ZipArchiveHelper {
@@ -94,7 +94,7 @@ export class ZipArchiveHelper {
     let hasFiles = false;
 
     return new Promise((resolve, reject) => {
-      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientModPath}/*`, `${serverModPath}/*`] })
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientPluginModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`] })
         .on('data', () => (hasFiles = true))
         .on('end', () => resolve(hasFiles))
         .on('error', error => reject(error));
@@ -157,7 +157,7 @@ export class ZipArchiveHelper {
     const fileName = path.basename(archivePath);
     const newFileName = fileName.replace(/\(\d+\)/g, '');
 
-    fs.copyFileSync(archivePath, path.join(args.sptInstancePath, clientModPath, newFileName));
+    fs.copyFileSync(archivePath, path.join(args.sptInstancePath, clientPluginModPath, newFileName));
 
     return true;
   }
