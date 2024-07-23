@@ -1,7 +1,7 @@
 {
   "name": "sp-tarkov-client",
   "description": "EFT-SP Management Tool",
-  "version": "0.2.17",
+  "version": "0.2.18",
   "main": "main.js",
   "private": true,
   "author": {
