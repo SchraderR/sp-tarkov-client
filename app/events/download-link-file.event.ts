@@ -103,12 +103,13 @@ export const handleDownloadLinkEvent = () => {
 
         const isGoogleDriveLink = isGoogleDrive(downloadLink);
         if (isGoogleDriveLink) {
-          downloadLink = downloadLink.split('?')[0];
           let regex;
           if (downloadLink.includes('/file/d/')) {
             regex = /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/;
           } else if (downloadLink.includes('/folders/')) {
             regex = /https:\/\/drive\.google\.com\/drive\/folders\/(.*?)(\/|$)/;
+          } else if (downloadLink.includes('uc?export=download&id=')) {
+            regex = /https:\/\/drive\.google\.com\/uc\?export=download&id=(.*?)(\/|$)/;
           }
 
           if (!regex) {
