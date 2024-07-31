@@ -2,11 +2,11 @@
 import * as path from 'path';
 import { ToggleModStateModel } from '../../shared/models/toggle-mod-state.model';
 import * as log from 'electron-log';
-import { moveSync, existsSync, mkdirSync, ensureDirSync } from 'fs-extra';
-import { clientModPath, serverModPath } from '../constants';
+import { existsSync, mkdirSync, ensureDirSync, move } from 'fs-extra';
+import { clientPluginModPath, serverModPath } from '../constants';
 
 export const toggleModStateEvent = () => {
-  ipcMain.on('toggle-mod-state', (event, toggleModStateModel: ToggleModStateModel) => {
+  ipcMain.on('toggle-mod-state', async (event, toggleModStateModel: ToggleModStateModel) => {
     const appPath = app.getPath('userData');
     const appInstancePath = path.join(appPath, 'instances');
     if (!existsSync(appInstancePath)) {
@@ -14,7 +14,7 @@ export const toggleModStateEvent = () => {
       mkdirSync(appInstancePath);
     }
 
-    const instanceName = toggleModStateModel.akiInstancePath.split('\\').pop();
+    const instanceName = toggleModStateModel.sptInstancePath.split('\\').pop();
     if (!instanceName) {
       log.error('Instance name cannot be fetched');
       event.sender.send('toggle-mod-state-error');
@@ -32,20 +32,18 @@ export const toggleModStateEvent = () => {
       newModPath = toggleModStateModel.isServerMod
         ? path.join(instanceServerDisabledModPath, toggleModStateModel.modOriginalName)
         : path.join(instanceClientDisabledModPath, toggleModStateModel.modOriginalName);
-
-      moveSync(toggleModStateModel.modOriginalPath, newModPath);
     } else {
       newModPath = toggleModStateModel.isServerMod
-        ? path.join(toggleModStateModel.akiInstancePath, serverModPath, toggleModStateModel.modOriginalName)
-        : path.join(toggleModStateModel.akiInstancePath, clientModPath, toggleModStateModel.modOriginalName);
-
-      moveSync(toggleModStateModel.modOriginalPath, newModPath);
+        ? path.join(toggleModStateModel.sptInstancePath, serverModPath, toggleModStateModel.modOriginalName)
+        : path.join(toggleModStateModel.sptInstancePath, clientPluginModPath, toggleModStateModel.modOriginalName);
     }
 
-    event.sender.send('toggle-mod-state-completed', {
-      name: toggleModStateModel.modOriginalName,
-      path: newModPath,
-      isEnabled: !toggleModStateModel.modWillBeDisabled,
+    move(toggleModStateModel.modOriginalPath, newModPath).then(() => {
+      event.sender.send('toggle-mod-state-completed', {
+        name: toggleModStateModel.modOriginalName,
+        path: newModPath,
+        isEnabled: !toggleModStateModel.modWillBeDisabled,
+      });
     });
   });
 };
