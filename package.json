@@ -49,6 +49,7 @@
     "fastest-levenshtein": "1.0.16",
     "material-symbols": "^0.17.4",
     "ngx-joyride": "2.5.0",
+    "ngx-pipes": "3.2.2",
     "rxjs": "7.8.1",
     "tslib": "^2.5.0",
     "zone.js": "~0.14.2"
