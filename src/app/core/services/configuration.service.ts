@@ -27,7 +27,7 @@ export class ConfigurationService {
   readonly tagsSignal = this.#tags.asReadonly();
 
   getCurrentConfiguration() {
-    return this.#httpClient.get<Configuration>(`${environment.githubConfigLink}/config.json`).pipe(tap(config => this.#config.set(config)));
+    return this.#httpClient.get<Configuration>(`${environment.githubConfigLink}/config.json?cacheBust=${Date.now()}`).pipe(tap(config => this.#config.set(config)));
   }
 
   getSptVersion() {

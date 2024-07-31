@@ -1,7 +1,7 @@
 ﻿import { ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { clientModPath, serverModPath } from '../constants';
+import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as log from 'electron-log';
 import { ZipArchiveHelper } from '../helper/zip-archive-helper';
@@ -53,7 +53,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isArchiveWithSingleDll = await zipArchiveHelper.checkForArchiveWithSingleDll(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
     if (isArchiveWithSingleDll) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientModPath), sevenBinPath);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath);
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -61,7 +61,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isArchiveWithSingleDllInsideDirectory = await zipArchiveHelper.checkForArchiveWithSingleDllInsideDirectory(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
     if (isArchiveWithSingleDllInsideDirectory) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientModPath), sevenBinPath, ['**\\*.dll'], true);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath, ['**\\*.dll'], true);
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -69,7 +69,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isHappyPath = await zipArchiveHelper.isHappyPathArchive(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isHappyPath: ${isHappyPath}`);
     if (isHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, args.sptInstancePath, sevenBinPath, [`${clientModPath}/*`, `${serverModPath}/*`]);
+      await zipArchiveHelper.extractFullArchive(archivePath, args.sptInstancePath, sevenBinPath, [`${clientPatcherModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`]);
       event.sender.send('file-unzip-completed');
       return;
     }
