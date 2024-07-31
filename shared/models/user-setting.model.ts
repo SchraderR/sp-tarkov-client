@@ -60,6 +60,7 @@ export interface ModMeta {
   isDirectory?: boolean;
   subMods?: ModMeta[];
   isEnabled: boolean;
+  isMoving?: boolean;
 }
 
 export enum Theme {
