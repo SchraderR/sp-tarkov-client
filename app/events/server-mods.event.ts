@@ -19,7 +19,7 @@ export const handleServerModsEvent = () => {
           const filePath = path.join(rootServerPath, dir, 'package.json');
           if (existsSync(filePath)) {
             const packageJson = JSON.parse(readFileSync(filePath, 'utf8'));
-            const { name, version, akiVersion } = packageJson;
+            const { name, version, akiVersion, sptVersion } = packageJson;
             if (name && version && (akiVersion || sptVersion)) {
               data.push({
                 name,
@@ -61,13 +61,13 @@ export const handleServerModsEvent = () => {
           const filePath = path.join(instanceServerDisabledModPath, mod.name, 'package.json');
           if (existsSync(filePath)) {
             const packageJson = JSON.parse(readFileSync(filePath, 'utf8'));
-            const { name, version, akiVersion } = packageJson;
+            const { name, version, akiVersion, sptVersion } = packageJson;
 
-            if (name && version && akiVersion) {
+            if (name && version && (akiVersion || sptVersion)) {
               data.push({
                 name,
                 version,
-                akiVersion,
+                sptVersion: sptVersion ?? akiVersion,
                 modPath: path.join(instanceServerDisabledModPath, mod.name),
                 modOriginalPath: path.join(instanceServerDisabledModPath, mod.name),
                 modOriginalName: mod.name,

@@ -7,12 +7,12 @@ import { ensureDirSync } from 'fs-extra';
 import { readdirSync } from 'node:fs';
 
 export const handleClientModsEvent = () => {
-  ipcMain.on('client-mod', async (event, akiInstancePath: string) => {
+  ipcMain.on('client-mod', async (event, sptInstancePath: string) => {
     try {
-      if (fs.existsSync(akiInstancePath)) {
+      if (fs.existsSync(sptInstancePath)) {
         let data = [];
-        const rootClientPluginPath = path.join(akiInstancePath, clientPluginModPath);
-        const rootClientPatchersPath = path.join(akiInstancePath, clientPatcherModPath);
+        const rootClientPluginPath = path.join(sptInstancePath, clientPluginModPath);
+        const rootClientPatchersPath = path.join(sptInstancePath, clientPatcherModPath);
 
         const rootDllFiles = fs
           .readdirSync(rootClientPluginPath, { withFileTypes: true })
@@ -20,7 +20,20 @@ export const handleClientModsEvent = () => {
           .map((f: any) => f);
 
         for (const file of rootDllFiles) {
-          const version = await getVersion(path.join(file.path, file.name));
+          const version = await getVersion(path.join(rootClientPluginPath, file.name));
+          const patcherFiles = getPatcherFiles(rootClientPatchersPath, file.name);
+
+          patcherFiles.forEach((patcherFile) => {
+            data.push({
+              name: patcherFile.name.split('.dll')[0],
+              version,
+              modPath: rootClientPatchersPath,
+              modOriginalPath: path.join(file.path, file.name),
+              modOriginalName: file.name,
+              isEnabled: true,
+            });
+          })
+
           data.push({
             name: file.name.split('.dll')[0],
             version,
@@ -35,25 +48,6 @@ export const handleClientModsEvent = () => {
           .readdirSync(rootClientPluginPath, { withFileTypes: true })
           .filter(dirent => dirent.isDirectory() && dirent.name !== 'spt')
           .map(dirent => dirent.name);
-
-        for (const file of rootDllFiles) {
-          const version = await getVersion(path.join(rootClientPluginPath, file.name));
-          const patcherFiles = getPatcherFiles(rootClientPatchersPath, file.name);
-
-          patcherFiles.forEach((patcherFile) => {
-            data.push({
-              name: patcherFile.name.split('.dll')[0],
-              version,
-              modPath: rootClientPatchersPath
-            });
-          })
-
-          data.push({
-            name: file.name.split('.dll')[0],
-            version,
-            modPath: rootClientPluginPath,
-          });
-        }
 
         for (let dir of rootDirectories) {
           const directoryDll = fs
@@ -98,7 +92,7 @@ export const handleClientModsEvent = () => {
           });
         }
 
-        data = await checkForDisabledClientMods(data, akiInstancePath);
+        data = await checkForDisabledClientMods(data, sptInstancePath);
 
         event.sender.send('client-mod-completed', data);
       }
@@ -124,11 +118,11 @@ async function getVersion(dllFilePath: string) {
   }
 }
 
-function checkForDisabledClientMods(data: any[], akiInstancePath: string): Promise<any[]> {
+function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promise<any[]> {
   return new Promise<any[]>(async (resolve, reject) => {
     try {
       const appPath = app.getPath('userData');
-      const instanceName = akiInstancePath.split('\\').pop();
+      const instanceName = sptInstancePath.split('\\').pop();
       if (!instanceName) {
         return data;
       }
@@ -137,6 +131,7 @@ function checkForDisabledClientMods(data: any[], akiInstancePath: string): Promi
       ensureDirSync(instanceClientDisabledModPath);
 
       const disabledClientMods = readdirSync(instanceClientDisabledModPath, { withFileTypes: true });
+      console.log(disabledClientMods);
       for (const mod of disabledClientMods) {
         const filePath = path.join(instanceClientDisabledModPath, mod.name);
         let version = '';
