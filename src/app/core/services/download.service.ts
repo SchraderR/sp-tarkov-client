@@ -101,7 +101,7 @@ export class DownloadService {
       }
     }
 
-    this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
+    // this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
     this.isDownloadAndInstallInProgress.next(false);
     this.isDownloadProcessCompleted.next(true);
   }
