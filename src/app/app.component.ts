@@ -167,7 +167,7 @@ export class AppComponent {
         userSetting: of(userSetting),
         serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
-      }).pipe(catchError(() => this.handleDirectoryPathError(error, userSetting)));
+      }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
     });
   }
 
