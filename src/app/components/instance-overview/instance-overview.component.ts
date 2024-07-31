@@ -38,7 +38,16 @@ export default class InstanceOverviewComponent {
 
   activeSptInstance = this.#userSettingsService.getActiveInstance();
 
-  openExternal(modPath: string) {
+  openExternal(mod: ModMeta) {
+    console.log(mod);
+
+    let modPath = mod.modPath;
+    if (modPath.endsWith(mod.modOriginalName)) {
+      modPath = modPath.split(mod.modOriginalName)[0];
+    }
+
+    console.log(modPath);
+
     this.#electronService.openPath(modPath);
   }
 
@@ -51,21 +60,30 @@ export default class InstanceOverviewComponent {
   }
 
   toggleModState(mod: ModMeta, isServerMod = false) {
-    if (!this.activeAkiInstance) {
+    console.log(mod.isMoving);
+    if (!this.activeSptInstance || mod.isMoving) {
       return;
     }
+
     const toggleModState: ToggleModStateModel = {
       isServerMod: isServerMod,
-      akiInstancePath: this.activeAkiInstance.akiRootDirectory,
+      sptInstancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
       modOriginalPath: mod.modOriginalPath,
       modOriginalName: mod.modOriginalName,
       modWillBeDisabled: mod.isEnabled,
     };
 
+    mod.isMoving = true;
+
     this.#electronService
-      .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
+      .sendEvent<{
+        path: string;
+        name: string;
+        isEnabled: boolean
+      }, ToggleModStateModel>('toggle-mod-state', toggleModState)
       .subscribe(disabledMod => {
         this.#ngZone.run(() => {
+          mod.isMoving = false
           const activeInstance = this.#userSettingsService.getActiveInstance();
           if (!activeInstance) {
             return;

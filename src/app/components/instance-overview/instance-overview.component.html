@@ -29,18 +29,8 @@
           <mat-list-item>
             <span matListItemTitle>{{ serverMod.name }}</span>
             <span matListItemLine>{{ serverMod.version }}</span>
-            @if (serverMod.name === 'SPT Realism Mod') {
-              <button class="list-item-button" mat-icon-button (click)="openRealismTool(serverMod.modPath)">
-                <mat-icon>expand_circle_right</mat-icon>
-              </button>
-            }
-            @if (serverMod.name === 'SVM') {
-              <button class="list-item-button" mat-icon-button (click)="openSVMTool(serverMod.modPath)">
-                <mat-icon>expand_circle_right</mat-icon>
-              </button>
-            }
-            <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="serverMod.isEnabled" (click)="toggleModState(serverMod, true)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
-            <button mat-icon-button matListItemMeta (click)="openExternal(serverMod.modPath)">
+            <mat-slide-toggle class="list-slider-item" matListItemMeta [disabled]="serverMod.isMoving" [checked]="serverMod.isEnabled" (click)="toggleModState(serverMod, true)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
+            <button mat-icon-button matListItemMeta (click)="openExternal(serverMod)">
               <mat-icon>folder_open</mat-icon>
             </button>
           </mat-list-item>
@@ -62,14 +52,14 @@
               <mat-expansion-panel-header>
                 <mat-list-item>
                   <span matListItemTitle>{{ clientMod.name }}</span>
-                  <mat-slide-toggle class="list-slider-item" matListItemMeta (click)="$event.stopPropagation(); toggleModState(clientMod)" [checked]="clientMod.isEnabled">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
+                  <mat-slide-toggle class="list-slider-item" matListItemMeta [disabled]="clientMod.isMoving" (click)="$event.stopPropagation(); toggleModState(clientMod)" [checked]="clientMod.isEnabled">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
                 </mat-list-item>
               </mat-expansion-panel-header>
               @for (subMod of clientMod.subMods; track subMod) {
                 <mat-list-item>
                   <span matListItemTitle>{{ subMod.name }}</span>
                   <span matListItemLine>{{ subMod.version }}</span>
-                  <button matListItemMeta mat-icon-button (click)="openExternal(subMod.modPath)">
+                  <button matListItemMeta mat-icon-button (click)="openExternal(subMod)">
                     <mat-icon>folder_open</mat-icon>
                   </button>
                 </mat-list-item>
@@ -79,8 +69,8 @@
             <mat-list-item>
               <span matListItemTitle>{{ clientMod.name }}</span>
               <span matListItemLine>{{ clientMod.version }}</span>
-              <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="clientMod.isEnabled" (click)="toggleModState(clientMod)">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
-              <button mat-icon-button matListItemMeta (click)="openExternal(clientMod.modPath)">
+              <mat-slide-toggle class="list-slider-item" matListItemMeta [disabled]="clientMod.isMoving" [checked]="clientMod.isEnabled" (click)="toggleModState(clientMod)">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}</mat-slide-toggle>
+              <button mat-icon-button matListItemMeta (click)="openExternal(clientMod)">
                 <mat-icon>folder_open</mat-icon>
               </button>
             </mat-list-item>
