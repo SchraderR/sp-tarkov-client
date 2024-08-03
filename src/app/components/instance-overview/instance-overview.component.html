@@ -18,7 +18,7 @@
 @if (activeSptInstance && !activeSptInstance?.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
-      <h2>Server-Mods</h2>
+      <h2>Server-Mods ({{activeSptInstance?.serverMods?.length}})</h2>
 
       <mat-list style="overflow: auto;">
         @if (activeSptInstance?.serverMods?.length === 0) {
@@ -41,7 +41,7 @@
     <mat-divider [vertical]="true"/>
 
     <div class="mod-list">
-      <h2>Client-Mods</h2>
+      <h2>Client-Mods ({{activeSptInstance?.clientMods?.length}})</h2>
       <mat-list style="overflow: auto;">
         @if (activeSptInstance?.clientMods?.length === 0) {
           <span>No Client-Mods installed!</span>
