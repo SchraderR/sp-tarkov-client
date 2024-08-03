@@ -83,7 +83,10 @@ export class SptSearchService {
           return e;
         }
 
-        e.notSupported = !!config.notSupported.find(f => f === +fileId);
+        if (environment.production) {
+          e.notSupported = !!config.notSupported.find(f => f === +fileId);
+        }
+
         return e;
       });
   }

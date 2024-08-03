@@ -37,6 +37,7 @@ export default class InstanceOverviewComponent {
   #changeDetectorRef = inject(ChangeDetectorRef);
 
   activeSptInstance = this.#userSettingsService.getActiveInstance();
+  isWorking = false;
 
   openExternal(mod: ModMeta) {
     console.log(mod);
@@ -51,17 +52,8 @@ export default class InstanceOverviewComponent {
     this.#electronService.openPath(modPath);
   }
 
-  openRealismTool(modPath: string) {
-    this.#electronService.openPath(modPath + '/RealismModConfig.exe');
-  }
-
-  openSVMTool(modPath: string) {
-    this.#electronService.openPath(modPath + '/Greed.exe');
-  }
-
   toggleModState(mod: ModMeta, isServerMod = false) {
-    console.log(mod.isMoving);
-    if (!this.activeSptInstance || mod.isMoving) {
+    if (!this.activeSptInstance || this.isWorking) {
       return;
     }
 
@@ -73,7 +65,7 @@ export default class InstanceOverviewComponent {
       modWillBeDisabled: mod.isEnabled,
     };
 
-    mod.isMoving = true;
+    this.isWorking = true;
 
     this.#electronService
       .sendEvent<{
@@ -83,7 +75,7 @@ export default class InstanceOverviewComponent {
       }, ToggleModStateModel>('toggle-mod-state', toggleModState)
       .subscribe(disabledMod => {
         this.#ngZone.run(() => {
-          mod.isMoving = false
+          this.isWorking = false;
           const activeInstance = this.#userSettingsService.getActiveInstance();
           if (!activeInstance) {
             return;

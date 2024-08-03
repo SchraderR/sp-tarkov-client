@@ -37,6 +37,9 @@ export class ElectronService {
     return new Observable<{ event: unknown; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
+        this.ipcRenderer.removeAllListeners(`${eventName}-completed`);
+        this.ipcRenderer.removeAllListeners(`${eventName}-error`);
+        this.ipcRenderer.removeAllListeners(eventName);
         observer.next({ event, args: argsParsed });
         observer.complete();
       };
@@ -44,7 +47,12 @@ export class ElectronService {
       this.ipcRenderer.send(eventName, parameter);
 
       this.ipcRenderer.once(`${eventName}-completed`, handler);
-      this.ipcRenderer.once(`${eventName}-error`, (_, error: ApplicationElectronFileError) => observer.error(error));
+      this.ipcRenderer.once(`${eventName}-error`, (_, error: ApplicationElectronFileError) => {
+        this.ipcRenderer.removeAllListeners(`${eventName}-completed`);
+        this.ipcRenderer.removeAllListeners(`${eventName}-error`);
+        this.ipcRenderer.removeAllListeners(eventName);
+        observer.error(error);
+      });
     });
   }
 
