@@ -30,7 +30,8 @@
   | 'add-mod-list-cache'
   | 'remove-mod-list-cache'
   | 'use-indexed-mods'
-  | 'use-indexed-mods-save';
+  | 'use-indexed-mods-save'
+  | 'toggle-mod-state';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';

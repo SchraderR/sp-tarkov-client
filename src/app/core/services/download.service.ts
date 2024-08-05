@@ -97,6 +97,7 @@ export class DownloadService {
             mod.installProgress.linkStep.progress = 1;
             break;
         }
+        this.#modListService.updateMod();
         continue;
       }
     }
@@ -130,6 +131,7 @@ export class DownloadService {
     }
 
     mod.installProgress.linkStep.start = true;
+    this.#modListService.updateMod();
 
     this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
       if (mod.installProgress!.error) {

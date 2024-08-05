@@ -26,12 +26,16 @@
                         matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.">
                 warning
               </mat-icon>
-               <div matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}</div>
+              <mat-icon *ngIf="settingModel.isPowerShellIssue" matListItemAvatar color="warn" class="warning"
+                        matTooltip="There was an issue with PowerShell. Installed Client-Mods of the current instance will not be loaded.">
+                warning
+              </mat-icon>
+              <div matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}</div>
               <div matListItemLine>{{ settingModel.sptRootDirectory ?? settingModel.akiRootDirectory}}</div>
               @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
                      (click)="openInstance(settingModel.sptRootDirectory)">
-                  <mat-icon>open_in_new</mat-icon>
+                  <mat-icon>folder_open</mat-icon>
                 </div>
 
                 <div @fadeInOut class="delete-button-container" (click)="removeInstance(settingModel)">

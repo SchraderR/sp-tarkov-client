@@ -21,7 +21,7 @@ export const handleDownloadLinkEvent = () => {
 
     await install({
       browser: Browsers.CHROME,
-      buildId: '122.0.6257.0',
+      buildId: '127.0.6533.88',
       cacheDir: `${app.getPath('home')}/.local-chromium`,
     });
 
@@ -34,7 +34,7 @@ export const handleDownloadLinkEvent = () => {
         if (!downloadLink) {
           browser = await launch({
             headless: true,
-            executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
+            executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-127.0.6533.88/chrome-win64/chrome.exe`,
           });
 
           const page = await browser.newPage();

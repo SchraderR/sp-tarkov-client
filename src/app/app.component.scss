@@ -117,6 +117,14 @@ mat-sidenav[style].visible {
   flex-direction: column;
   height: 100%;
   padding: 0;
+
+  > .mat-mdc-list-item {
+    min-height: 56px;
+  }
+
+  > div {
+    overflow: auto;
+  }
 }
 
 .mdc-list-item__secondary-text {
@@ -130,6 +138,7 @@ mat-sidenav[style].visible {
   justify-content: center;
   padding-bottom: 8px;
   position: relative;
+  min-height: 8px;
 
   > span {
     position: absolute;

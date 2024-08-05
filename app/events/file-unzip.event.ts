@@ -78,7 +78,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     log.log(`FileId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
     if (isNestedServerModHappyPath) {
       await zipArchiveHelper.extractFullArchive(archivePath, ankiTempDownloadDir, sevenBinPath);
-      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}`, args.sptInstancePath, { recursive: true });
+      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(args.sptInstancePath, serverModPath), { recursive: true });
       event.sender.send('file-unzip-completed');
       return;
     }

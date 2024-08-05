@@ -20,6 +20,7 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { DirectoryError } from '../../core/models/directory-error';
 
 @Component({
   standalone: true,
@@ -101,7 +102,7 @@ export default class PersonalSettingComponent {
             userSetting: of(newUserSetting),
             serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
             clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
-          }).pipe(catchError(() => this.handleDirectoryPathError(result.args)));
+          }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
@@ -141,6 +142,7 @@ export default class PersonalSettingComponent {
       sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
+      isPowerShellIssue: settingModel.isPowerShellIssue,
       isError: settingModel.isError,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,
@@ -158,8 +160,12 @@ export default class PersonalSettingComponent {
     });
   }
 
-  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
-    userSettingModel.isError = true;
+  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
+    if (error.isPowerShellIssue) {
+      userSettingModel.isPowerShellIssue = true;
+    } else {
+      userSettingModel.isError = true;
+    }
 
     this.#matSnackBar.open(
       `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`,

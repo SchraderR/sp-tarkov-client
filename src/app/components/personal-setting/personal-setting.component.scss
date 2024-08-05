@@ -75,6 +75,14 @@
   }
 }
 
+mat-icon.warning {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  &:last-of-type {
+    margin-right: 16px !important;
+  }
+}
+
 .warning {
   height: 40px;
   width: 40px;
