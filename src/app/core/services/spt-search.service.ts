@@ -3,7 +3,6 @@ import { catchError, concatMap, delay, from, map, mergeMap, Observable, of, toAr
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
-import { Kind } from '../../../../shared/models/unzip.model';
 import { environment } from '../../../environments/environment';
 import { FileHelper } from '../helper/file-helper';
 import { ConfigurationService } from './configuration.service';
@@ -55,24 +54,14 @@ export class SptSearchService {
 
     return Array.from(modListSection)
       .map(e => {
-        const rawKind = e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML;
-        let kind: Kind | undefined;
-        if (rawKind.startsWith('Client mods')) {
-          kind = Kind.client;
-        } else if (rawKind.startsWith('Server mods')) {
-          kind = Kind.server;
-        } else if (rawKind.startsWith('Overhaul')) {
-          kind = Kind.overhaul;
-        }
-
         return {
           name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
           image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
           fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-          kind: kind,
+          kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
         } as Mod; // Type assertion here
       })
-      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)))
+      .filter(m => !this.restrictedModKinds.some(r => m.kind?.includes(r)))
       .map(e => {
         if (!config) {
           return e;

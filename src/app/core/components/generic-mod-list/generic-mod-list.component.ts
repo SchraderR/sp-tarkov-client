@@ -214,7 +214,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
               teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
               supportedSptVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
               sptVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
-              kind: undefined,
+              kind: "",
               notSupported: false,
               lastUpdate: this.getLastUpdateText(date),
             } as Mod;

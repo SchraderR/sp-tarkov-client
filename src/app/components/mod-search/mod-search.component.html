@@ -17,11 +17,7 @@
           <div class="mod-information-container">
             <span class="text-ellipsis">{{ mod.name }}</span>
             <span class="spacer"></span>
-            <ng-container [ngSwitch]="mod.kind">
-              <span class="font-x-small" *ngSwitchCase="'client'">Client Mod</span>
-              <span class="font-x-small" *ngSwitchCase="'server'">Server Mod</span>
-              <span class="font-x-small" *ngSwitchCase="'overhaul'">Overhaul Mod</span>
-            </ng-container>
+            <span class="font-x-small">{{ mod.kind }}</span>
             @if (mod.supportedSptVersion) {
               <span [class]="mod.sptVersionColorCode"
                     class="font-x-small image-spt-version version-pill">{{ mod.supportedSptVersion }}</span>

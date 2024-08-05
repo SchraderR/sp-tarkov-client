@@ -195,7 +195,7 @@ export class AppComponent {
     this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
       this.#ngZone.run(() => {
         value.args.forEach(modCache => {
-          const mod: Mod = { ...modCache, supportedSptVersion: `C*${modCache.supportedSptVersion}`, kind: undefined, notSupported: false };
+           const mod: Mod = { ...modCache, supportedSptVersion: `C*${modCache.supportedSptVersion}`, kind: "", notSupported: false };
           this.#modListService.addMod(mod);
         });
 
