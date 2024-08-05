@@ -27,6 +27,7 @@ import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autoc
 import { MatInput } from '@angular/material/input';
 import { SptTag, SptVersion } from '../../../../../shared/models/spt-core.model';
 import { ModCache } from '../../../../../shared/models/user-setting.model';
+import { IsAlreadyStartedDirective } from '../../directives/is-already-started.directive';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -54,6 +55,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatAutocomplete,
     MatInput,
     MatAutocompleteTrigger,
+    IsAlreadyStartedDirective,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
