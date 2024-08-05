@@ -3,5 +3,6 @@
   modOriginalPath: string;
   modOriginalName: string;
   isServerMod: boolean;
+  isPrePatcherMod?: boolean;
   modWillBeDisabled: boolean;
 }

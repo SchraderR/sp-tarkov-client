@@ -14,6 +14,25 @@ export const handleClientModsEvent = () => {
         const rootClientPluginPath = path.join(sptInstancePath, clientPluginModPath);
         const rootClientPatchersPath = path.join(sptInstancePath, clientPatcherModPath);
 
+        const patcherDllFiles = fs
+          .readdirSync(rootClientPatchersPath, { withFileTypes: true })
+          .filter(file => file.isFile() && file.name.toLowerCase().includes('.prepatch.') && path.extname(file.name) === '.dll')
+          .map((f: any) => f);
+
+        for (const file of patcherDllFiles) {
+          const version = await getVersion(path.join(rootClientPatchersPath, file.name));
+
+          data.push({
+            name: file.name.split('.dll')[0],
+            version,
+            isPrePatcherMod: true,
+            modPath: rootClientPatchersPath,
+            modOriginalPath: path.join(file.path, file.name),
+            modOriginalName: file.name,
+            isEnabled: true,
+          });
+        }
+
         const rootDllFiles = fs
           .readdirSync(rootClientPluginPath, { withFileTypes: true })
           .filter(file => file.isFile() && path.extname(file.name) === '.dll')
@@ -21,22 +40,11 @@ export const handleClientModsEvent = () => {
 
         for (const file of rootDllFiles) {
           const version = await getVersion(path.join(rootClientPluginPath, file.name));
-          const patcherFiles = getPatcherFiles(rootClientPatchersPath, file.name);
-
-          patcherFiles.forEach((patcherFile) => {
-            data.push({
-              name: patcherFile.name.split('.dll')[0],
-              version,
-              modPath: rootClientPatchersPath,
-              modOriginalPath: path.join(file.path, file.name),
-              modOriginalName: file.name,
-              isEnabled: true,
-            });
-          })
 
           data.push({
             name: file.name.split('.dll')[0],
             version,
+            isPrePatcherMod: false,
             modPath: rootClientPluginPath,
             modOriginalPath: path.join(file.path, file.name),
             modOriginalName: file.name,
@@ -61,21 +69,13 @@ export const handleClientModsEvent = () => {
 
           const dllFilePath = path.join(rootClientPluginPath, dir, directoryDll[0].name);
           const version = await getVersion(dllFilePath);
-          const patcherFiles = getPatcherFiles(rootClientPatchersPath, directoryDll[0].name);
-
-          patcherFiles.forEach((patcherFile) => {
-            data.push({
-              name: patcherFile.name.split('.dll')[0],
-              version,
-              modPath: rootClientPatchersPath
-            });
-          })
 
           data.push({
             isDirectory: true,
             name: dir,
             version,
             isEnabled: true,
+            isPrePatcherMod: false,
             modOriginalPath: directoryDll[0].path,
             modOriginalName: dir,
             modPath: directoryDll[0].path,
@@ -87,7 +87,7 @@ export const handleClientModsEvent = () => {
                   modPath: directoryDll[0].path,
                   name: m.name.split('.dll')[0],
                 };
-              })
+              }),
             ),
           });
         }
@@ -106,7 +106,10 @@ export const handleClientModsEvent = () => {
 async function getVersion(dllFilePath: string) {
   try {
     const exec = require('util').promisify(require('child_process').exec);
-    const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
+    const {
+      stderr,
+      stdout,
+    } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
 
     if (stderr) {
       return stderr;
@@ -131,7 +134,6 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
       ensureDirSync(instanceClientDisabledModPath);
 
       const disabledClientMods = readdirSync(instanceClientDisabledModPath, { withFileTypes: true });
-      console.log(disabledClientMods);
       for (const mod of disabledClientMods) {
         const filePath = path.join(instanceClientDisabledModPath, mod.name);
         let version = '';
@@ -156,7 +158,7 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
                 version: await getVersion(path.join(filePath, m.name)),
                 modPath: filePath,
                 name: m.name.split('.dll')[0],
-              }))
+              })),
           );
 
           data.push({
@@ -178,15 +180,3 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
   });
 }
 
-function getPatcherFiles(rootClientPatchersPath: string, dllFileName: string) {
-  const baseName = dllFileName.split('.dll')[0];
-  return fs
-    .readdirSync(rootClientPatchersPath, { withFileTypes: true })
-    .filter(
-      file =>
-        file.isFile() &&
-        file.name.startsWith(baseName) &&
-        file.name.toLowerCase().includes('.prepatch.') &&
-        path.extname(file.name) === '.dll'
-    )
-}

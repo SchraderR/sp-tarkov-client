@@ -11,6 +11,7 @@ export class UserSettingsService {
   currentTheme = signal<Theme | null>(null);
   isExperimentalFunctionActive = signal<boolean>(false);
   isTutorialDone = signal<boolean | null>(null);
+  wasInstanceOverviewReviewed = signal<boolean>(false);
 
   addUserSetting(settingModel: UserSettingModel) {
     if (this.userSetting().some(userSetting => userSetting.sptRootDirectory === settingModel.sptRootDirectory)) {
