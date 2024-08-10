@@ -80,11 +80,6 @@ export class ModSearchComponent {
       .subscribe();
   }
 
-  checkModInModListIsStarted(modName: string) {
-    console.log(this.#modListService.modListSignal().some(m => m.name === modName && m.installProgress?.linkStep.start));
-    return this.#modListService.modListSignal().some(m => m.name === modName && m.installProgress?.linkStep.start);
-  }
-
   openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
@@ -100,7 +95,7 @@ export class ModSearchComponent {
       sptVersionColorCode: mod.sptVersionColorCode,
     };
 
-    this.#modListService.addMod(mod);
+    await this.#modListService.addMod(mod);
     await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
