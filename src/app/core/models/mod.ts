@@ -10,7 +10,10 @@ export interface Mod {
   image?: string;
   icon?: string;
   teaser?: string;
+  isDependenciesLoading: boolean;
+  dependencies: Mod[];
   lastUpdate?: string;
+  isInvalid: boolean;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
   sptVersionColorCode?: string;

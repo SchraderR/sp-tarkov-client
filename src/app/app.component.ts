@@ -155,7 +155,7 @@ export class AppComponent {
       this.#userSettingService.addUserSetting(newUserSetting);
       this.#changeDetectorRef.detectChanges();
 
-      if(!newUserSetting.isValid) {
+      if (!newUserSetting.isValid) {
         return of({
           userSetting: { ...userSetting, isError: true },
           serverMods: { args: [] },
@@ -194,9 +194,17 @@ export class AppComponent {
   private getCachedModList() {
     this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
       this.#ngZone.run(() => {
-        value.args.forEach(modCache => {
-           const mod: Mod = { ...modCache, supportedSptVersion: `C*${modCache.supportedSptVersion}`, kind: "", notSupported: false };
-          this.#modListService.addMod(mod);
+        value.args.forEach(async modCache => {
+          const mod: Mod = {
+            ...modCache,
+            supportedSptVersion: `C*${modCache.supportedSptVersion}`,
+            kind: '',
+            notSupported: false,
+            isInvalid: false,
+            dependencies: [],
+            isDependenciesLoading: false,
+          };
+          await this.#modListService.addMod(mod);
         });
 
         console.log(value);
