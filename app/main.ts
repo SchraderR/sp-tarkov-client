@@ -23,6 +23,8 @@ import { handleSptVersionEvents } from './events/spt-version.event';
 import { handleModCacheEvents } from './events/mod-list-cache.event';
 import { handleIndexedModsEvents } from './events/indexed-mods.event';
 import { toggleModStateEvent } from './events/toggle-mod-state.event';
+import { handleModPageEvents } from './events/mod-page.event';
+
 log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
@@ -50,3 +52,4 @@ handleSptVersionEvents(store);
 handleModCacheEvents(store);
 handleIndexedModsEvents(store);
 toggleModStateEvent();
+handleModPageEvents();
