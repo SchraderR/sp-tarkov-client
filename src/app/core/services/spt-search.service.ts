@@ -29,17 +29,21 @@ export class SptSearchService {
       .post<SearchResponse>(
         this.modSearchUrl,
         `searchString=${searchArgument}&searchParameters[0][name]=types[]&searchParameters[0][value]=everywhere`,
-        { headers: headers }
+        { headers: headers },
       )
       .pipe(
         map(response => this.extractModInformation(response)),
         mergeMap((mods: Mod[]) => from(mods).pipe(concatMap(mod => of(mod).pipe(delay(500))))),
         mergeMap(mod =>
           this.getFileHubView(mod.fileUrl).pipe(
-            map(({ supportedSptVersion, sptVersionColorCode }) => ({ ...mod, supportedSptVersion, sptVersionColorCode }))
-          )
+            map(({ supportedSptVersion, sptVersionColorCode }) => ({
+              ...mod,
+              supportedSptVersion,
+              sptVersionColorCode,
+            })),
+          ),
         ),
-        toArray()
+        toArray(),
       );
   }
 
@@ -82,11 +86,12 @@ export class SptSearchService {
 
   private getFileHubView(modUrl: string): Observable<{ supportedSptVersion: string; sptVersionColorCode: string }> {
     modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
+    console.log(modUrl);
     return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)), catchError(() => {
       return of({
-        supportedSptVersion: "Error while fetching version. Use with caution.",
-        sptVersionColorCode: "badge label red"
-    });
+        supportedSptVersion: 'Error while fetching version. Use with caution.',
+        sptVersionColorCode: 'badge label red',
+      });
     }));
   }
 
