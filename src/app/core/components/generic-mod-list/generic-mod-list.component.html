@@ -15,6 +15,7 @@
     <mat-card
       appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
       appIsAlreadyStarted #alreadyStarted="isAlreadyStarted"
+      appCheckModDependency #modDependencies="hasModDependencies"
       [mod]="mod">
       <mat-card-content class="card-container">
         <div>
@@ -76,6 +77,12 @@
             <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
               <mat-icon>open_in_new</mat-icon>
             </button>
+            <span class="spacer"></span>
+            @if (modDependencies.hasModDependencies()) {
+              <mat-icon class="mod-install-instance-warning warning-color" matTooltip="Mod dependency">
+                info
+              </mat-icon>
+            }
           </div>
         </div>
       </mat-card-content>

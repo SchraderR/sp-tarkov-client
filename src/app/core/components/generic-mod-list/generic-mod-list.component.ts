@@ -28,6 +28,7 @@ import { MatInput } from '@angular/material/input';
 import { SptTag, SptVersion } from '../../../../../shared/models/spt-core.model';
 import { ModCache } from '../../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../directives/is-already-started.directive';
+import { CheckModDependencyDirective } from '../../directives/check-mod-dependency.directive';
 
 export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTime' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -56,6 +57,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatInput,
     MatAutocompleteTrigger,
     IsAlreadyStartedDirective,
+    CheckModDependencyDirective,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
@@ -132,7 +134,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       sptVersionColorCode: mod.sptVersionColorCode,
     };
 
-    this.#modListService.addMod(mod);
+    await this.#modListService.addMod(mod);
     await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
@@ -216,7 +218,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
               teaser: e.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
               supportedSptVersion: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
               sptVersionColorCode: e.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
-              kind: "",
+              kind: '',
               notSupported: false,
               lastUpdate: this.getLastUpdateText(date),
             } as Mod;
