@@ -54,6 +54,14 @@ body {
   height: 48px !important;
   width: 48px !important;
   margin: unset !important;
+
+  &.warning-color {
+    @media (prefers-color-scheme: light) {
+      color: orangered;
+    }
+
+    color: yellow;
+  }
 }
 
 mat-icon {
