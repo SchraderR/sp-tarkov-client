@@ -33,23 +33,23 @@ export class ElectronService {
   openExternal = (url: string) => void this.shell.openExternal(url);
   openPath = (path: string) => void this.shell.openPath(path);
 
-  sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, isResponseJson = false) {
+  sendEvent<T, C = never>(eventName: applicationElectronEventNames, parameter?: C, id?: string, isResponseJson = false) {
     return new Observable<{ event: unknown; args: T }>(observer => {
       const handler = (event: IpcRendererEvent, args: T) => {
         const argsParsed = isResponseJson ? (JSON.parse(args as string) as T) : args;
-        this.ipcRenderer.removeAllListeners(`${eventName}-completed`);
-        this.ipcRenderer.removeAllListeners(`${eventName}-error`);
+        this.ipcRenderer.removeAllListeners(`${eventName}-completed${id ? `-${id}` : ''}`);
+        this.ipcRenderer.removeAllListeners(`${eventName}-error${id ? `-${id}` : ''}`);
         this.ipcRenderer.removeAllListeners(eventName);
         observer.next({ event, args: argsParsed });
         observer.complete();
       };
 
-      this.ipcRenderer.send(eventName, parameter);
+      this.ipcRenderer.send(eventName, parameter, id);
 
-      this.ipcRenderer.once(`${eventName}-completed`, handler);
-      this.ipcRenderer.once(`${eventName}-error`, (_, error: ApplicationElectronFileError) => {
-        this.ipcRenderer.removeAllListeners(`${eventName}-completed`);
-        this.ipcRenderer.removeAllListeners(`${eventName}-error`);
+      this.ipcRenderer.once(`${eventName}-completed${id ? `-${id}` : ''}`, handler);
+      this.ipcRenderer.once(`${eventName}-error${id ? `-${id}` : ''}`, (_, error: ApplicationElectronFileError) => {
+        this.ipcRenderer.removeAllListeners(`${eventName}-completed${id ? `-${id}` : ''}`);
+        this.ipcRenderer.removeAllListeners(`${eventName}-error${id ? `-${id}` : ''}`);
         this.ipcRenderer.removeAllListeners(eventName);
         observer.error(error);
       });
