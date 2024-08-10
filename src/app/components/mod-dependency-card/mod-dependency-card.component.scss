@@ -1,0 +1,46 @@
+:host {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+}
+
+mat-card {
+  width: 90%;
+  display: flex;
+}
+
+.arrow-container {
+  z-index: -1;
+  position: relative;
+  width: 100px;
+  height: 50px;
+
+  > div {
+    background-color: black;
+  }
+}
+
+.line-down {
+  top: -40px;
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  height: 65px;
+}
+
+.line-right {
+  position: absolute;
+  top: 25px;
+  left: calc(50%);
+  width: 35px;
+  height: 2px;
+}
+
+.line-right::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  border: 5px solid transparent;
+  border-left: 10px solid black;
+}
