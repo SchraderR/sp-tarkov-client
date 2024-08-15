@@ -21,6 +21,7 @@ import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DirectoryError } from '../../core/models/directory-error';
+import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
   standalone: true,
@@ -59,6 +60,8 @@ export default class PersonalSettingComponent {
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
+  keepTempDownloadDirectory = new FormControl(this.#userSettingsService.keepTempDownloadDirectory());
+  currentTempDirectorySize = this.#userSettingsService.keepTempDownloadDirectorySize;
   hoveringInstance = '';
 
   changeTheme(event: MatSelectChange) {
@@ -69,6 +72,47 @@ export default class PersonalSettingComponent {
     this.#electronService.sendEvent('exp-function-toggle', event.checked).subscribe(() => {
       this.#ngZone.run(() => this.#userSettingsService.isExperimentalFunctionActive.set(event.checked));
     });
+  }
+
+  toggleKeepTempDirectory(event: MatSlideToggleChange) {
+    this.#electronService.sendEvent('keep-temp-dir-setting-toggle', event.checked).subscribe(() => {
+      this.#ngZone.run(() => this.#userSettingsService.keepTempDownloadDirectory.set(event.checked));
+    });
+  }
+
+  openTemporaryDownloadDirectory() {
+    const activeInstance = this.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    if (this.currentTempDirectorySize().size > 0) {
+      this.#electronService.openPath(`${activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory}/_temp`);
+    }
+  }
+
+  clearTemporaryDownloadDirectory() {
+    const activeInstance = this.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService
+      .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .pipe(
+        switchMap(() =>
+          this.#electronService.sendEvent<number, string>('keep-temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+        )
+      )
+      .subscribe(value => {
+        this.#ngZone.run(() => {
+          this.#userSettingsService.keepTempDownloadDirectorySize.set({
+            size: value.args,
+            text: FileHelper.fileSize(value.args),
+          });
+          this.#changeDetectorRef.detectChanges();
+        });
+      });
   }
 
   openInstance(rootDirectory: string) {

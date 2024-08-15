@@ -1,4 +1,4 @@
- import { computed, Directive, inject, Input } from '@angular/core';
+import { computed, Directive, inject, Input } from '@angular/core';
 import { ConfigurationService } from '../services/configuration.service';
 import { Mod } from '../models/mod';
 import { FileHelper } from '../helper/file-helper';
@@ -24,11 +24,9 @@ export class CheckModDependencyDirective {
     }
 
     const modDependencySetting = config.modDependency.find(d => d.hubId === fileId);
-     if (!modDependencySetting) {
+    if (!modDependencySetting) {
       return false;
     }
-
-    console.log(modDependencySetting);
 
     return !!modDependencySetting;
   }

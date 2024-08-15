@@ -61,6 +61,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('isTutorialDone', false);
     }
 
+    const keepTempDownloadDirectory = store.get('keepTempDownloadDirectory');
+    if (!keepTempDownloadDirectory) {
+      store.set('keepTempDownloadDirectory', false);
+    }
+
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);

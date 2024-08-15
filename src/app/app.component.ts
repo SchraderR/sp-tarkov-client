@@ -31,6 +31,7 @@ import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.com
 import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
 import { DirectoryError } from './core/models/directory-error';
+import { FileHelper } from './core/helper/file-helper';
 
 @Component({
   standalone: true,
@@ -99,6 +100,7 @@ export class AppComponent {
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
+    this.getCurrentTempDownloadDirectorySettings();
     this.getGithubRateLimitInformation();
 
     effect(() => {
@@ -106,6 +108,12 @@ export class AppComponent {
       if (isTutorialDone === false) {
         this.showTutorialSnackbar();
       }
+
+      const activeInstance = this.#userSettingService.userSettingSignal().find(i => i.isActive);
+      if (!activeInstance) {
+        return;
+      }
+      this.getCurrentTempDownloadDirectorySize(activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory);
     });
   }
 
@@ -183,6 +191,21 @@ export class AppComponent {
     this.#electronService
       .sendEvent<boolean>('exp-function-setting')
       .subscribe(value => this.#userSettingService.isExperimentalFunctionActive.set(value.args));
+  }
+
+  private getCurrentTempDownloadDirectorySettings() {
+    this.#electronService
+      .sendEvent<boolean>('keep-temp-dir-setting')
+      .subscribe(value => this.#userSettingService.keepTempDownloadDirectory.set(value.args));
+  }
+
+  private getCurrentTempDownloadDirectorySize(instancePath: string) {
+    this.#electronService.sendEvent<number, string>('keep-temp-dir-size', instancePath).subscribe(value =>
+      this.#userSettingService.keepTempDownloadDirectorySize.set({
+        size: value.args,
+        text: FileHelper.fileSize(value.args),
+      })
+    );
   }
 
   private getCurrentTutorialSettings() {

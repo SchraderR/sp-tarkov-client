@@ -31,7 +31,7 @@
                 warning
               </mat-icon>
               <div matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}</div>
-              <div matListItemLine>{{ settingModel.sptRootDirectory ?? settingModel.akiRootDirectory}}</div>
+              <div matListItemLine>{{ settingModel.sptRootDirectory ?? settingModel.akiRootDirectory }}</div>
               @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
                      (click)="openInstance(settingModel.sptRootDirectory)">
@@ -57,7 +57,7 @@
 
   <mat-card>
     <mat-card-header>
-      <mat-card-title>General Settings</mat-card-title>
+      <mat-card-title style="padding-bottom: 8px">General Settings</mat-card-title>
     </mat-card-header>
     <mat-card-content style="display: flex; flex-direction: column; gap: 16px;">
       <mat-form-field color="accent" class="theme-select" appearance="outline" subscriptSizing="dynamic">
@@ -68,24 +68,40 @@
           <mat-option value="system">System</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <button mat-raised-button color="primary" style="width: fit-content;" (click)="restartTutorial()">
+        Restart Tutorial
+      </button>
+
       <div style="display: flex; gap: 8px">
-        <button mat-raised-button color="primary" style="width: fit-content;" (click)="restartTutorial()">
-          Restart Tutorial
-        </button>
         <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearSptVersionCache()">
-          Clear Spt-Version cache
+          Clear Spt-Versions
         </button>
         <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearSptTagsCache()">
-          Clear Spt-Tags cache
+          Clear Spt-Tags
         </button>
       </div>
-      <div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
         <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">
           Activate Experimental Function
         </mat-slide-toggle>
         @if (experimentalFunctionsActive.value) {
           <p style="color: orangered; font-size: small">Text about warning and such things</p>
         }
+
+        <mat-slide-toggle [formControl]="keepTempDownloadDirectory" (change)="toggleKeepTempDirectory($event)">
+          Keep download directory <span style="font-size: small; color: gray">~{{ currentTempDirectorySize().text }}</span>
+        </mat-slide-toggle>
+
+        <div style="display: flex; gap: 8px">
+          <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearTemporaryDownloadDirectory()">
+            Clear download directory
+          </button>
+          <button mat-raised-button color="primary" style="width: fit-content;" (click)="openTemporaryDownloadDirectory()">
+            Open temp directory
+          </button>
+        </div>
       </div>
     </mat-card-content>
   </mat-card>

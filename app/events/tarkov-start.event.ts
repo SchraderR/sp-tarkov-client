@@ -9,20 +9,20 @@ const exeNameAki = 'Aki.Server.exe';
 const exeNameSpt = 'SPT.Server.exe';
 
 export const handleTarkovStartEvent = () => {
-  ipcMain.on('tarkov-start', (event, akiInstancePath: string) => {
+  ipcMain.on('tarkov-start', (event, sptInstancePath: string) => {
     let child: child.ChildProcess;
 
     try {
-      let filePath = path.join(akiInstancePath, exeNameAki);
+      let filePath = path.join(sptInstancePath, exeNameAki);
       console.log(filePath);
       console.log(existsSync(filePath));
       if (!existsSync(filePath)) {
-        filePath = path.join(akiInstancePath, exeNameSpt);
+        filePath = path.join(sptInstancePath, exeNameSpt);
       }
       console.log(filePath);
 
       child = spawn(filePath, [], {
-        cwd: akiInstancePath,
+        cwd: sptInstancePath,
         detached: false, // run the child process in the background as a service
         windowsHide: true, // hide the console window on Windows
       });

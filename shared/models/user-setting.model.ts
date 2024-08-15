@@ -29,6 +29,7 @@ export interface UserSettingStoreModel {
   sptTags: SptTag[];
   modCache: ModCache[];
   useIndexedMods: boolean;
+  keepTempDownloadDirectory: boolean;
   akiInstances: SptInstance[]; // obsolete
   akiVersions: SptVersion[]; // obsolete
   akiTags: SptTag[]; // obsolete

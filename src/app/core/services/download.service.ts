@@ -32,6 +32,7 @@ export class DownloadService {
   mods: IndexedMods[] = [];
   lastFetchTime: Date | null = null;
   activeModList = this.#modListService.modListSignal;
+  keepTemporaryDownloadDirectory = this.#userSettingsService.keepTempDownloadDirectory;
 
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
@@ -135,7 +136,9 @@ export class DownloadService {
       }
     }
 
-    this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
+    if (!this.keepTemporaryDownloadDirectory()) {
+      this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
+    }
     this.isDownloadAndInstallInProgress.next(false);
     this.isDownloadProcessCompleted.next(true);
   }
@@ -176,11 +179,14 @@ export class DownloadService {
       this.downloadProgressEvent.next();
     });
 
-    const linkModel: LinkModel = { fileId, sptInstancePath: activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory, downloadUrl: '' };
+    const linkModel: LinkModel = {
+      fileId,
+      sptInstancePath: activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory,
+      downloadUrl: '',
+    };
 
     const modData = this.mods.find(modItem => modItem.name === mod.name);
     if (this.#modListService.useIndexedModsSignal() && modData) {
-      console.log('Using indexed mod link: ', modData.link);
       linkModel.downloadUrl = modData.link ?? '';
     }
 
