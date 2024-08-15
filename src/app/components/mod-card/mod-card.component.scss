@@ -52,6 +52,7 @@ mat-card {
 .card-container {
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 .mod-steps-container {

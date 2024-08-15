@@ -7,8 +7,6 @@ import { ElectronService } from './electron.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HtmlHelper } from '../helper/html-helper';
-import { DirectoryError } from '../models/directory-error';
-import { UserSettingModel } from '../../../../shared/models/user-setting.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +42,7 @@ export class ModListService {
       signalMod.isDependenciesLoading = true;
       signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractFileIdFromUrl(mod.fileUrl), modDependencies));
       signalMod.isDependenciesLoading = false;
+      signalMod.installProgress = this.initialInstallProgress();
       this.updateMod();
     }
     this.updateMod();
