@@ -25,13 +25,32 @@ export default class ModLoadOrderComponent implements OnInit {
   modLoadOrder: ModLoadOrder = { order: [] };
 
   ngOnInit() {
+    const instancePath =
+      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+    if (!instancePath) {
+      return;
+    }
+
     this.#electronService
-      .sendEvent<string, string>('mod-load-order', this.#userSettingsService.getActiveInstance()?.sptRootDirectory)
+      .sendEvent<string, string>('mod-load-order', instancePath)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(modLoadOrder => this.#ngZone.run(() => (this.modLoadOrder = JSON.parse(modLoadOrder.args))));
   }
 
   drop(event: CdkDragDrop<string[]>) {
+    const instancePath =
+      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+    if (!instancePath) {
+      return;
+    }
+
     moveItemInArray(this.modLoadOrder.order, event.previousIndex, event.currentIndex);
+
+    this.#electronService
+      .sendEvent<void, { instancePath: string; modLoadOrder: string[] }>('save-mod-load-order', {
+        instancePath,
+        modLoadOrder: this.modLoadOrder.order,
+      })
+      .subscribe();
   }
 }

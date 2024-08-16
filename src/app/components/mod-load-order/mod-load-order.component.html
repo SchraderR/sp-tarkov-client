@@ -1,8 +1,8 @@
 @if (modLoadOrder.order.length) {
-  <div class="mod-order-container">
-    <div cdkDropList cdkScrollable cdkDropListAutoScrollStep="8" class="mod-order-list" (cdkDropListDropped)="drop($event)">
-      @for (movie of modLoadOrder.order; let i = $index; track movie) {
-        <div class="mod-box" cdkDrag>{{ i }}.{{ movie }}</div>
+  <div class="mod-order-container" cdkScrollable>
+    <div cdkDropList cdkDropListAutoScrollStep="8" class="mod-order-list" (cdkDropListDropped)="drop($event)">
+      @for (modName of modLoadOrder.order; let i = $index; track modName) {
+        <div class="mod-box" cdkDrag>{{ i }}.{{ modName }}</div>
       }
     </div>
   </div>
