@@ -3,6 +3,7 @@ import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import * as path from 'path';
 import { existsSync, readdir, stat } from 'fs-extra';
+import * as log from 'electron-log';
 
 export const handleTempDownloadDirectoryEvents = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('keep-temp-dir-setting', event => event.sender.send('keep-temp-dir-setting-completed', store.get('keepTempDownloadDirectory')));
@@ -19,10 +20,10 @@ export const handleTempDownloadDirectoryEvents = (store: Store<UserSettingStoreM
     }
     try {
       const size = await getDirectorySize(tempDownloadDir);
-      console.log(size);
+      log.info(`Current size: ${size}`);
       event.sender.send('keep-temp-dir-size-completed', size);
     } catch (error) {
-      console.error(error);
+      log.error(error);
       event.sender.send('keep-temp-dir-size-completed', 0);
     }
   });
