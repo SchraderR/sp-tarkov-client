@@ -16,7 +16,6 @@ import { DialogModule } from '@angular/cdk/dialog';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-
 @Component({
   standalone: true,
   selector: 'app-instance-overview',
@@ -74,8 +73,6 @@ export default class InstanceOverviewComponent implements OnInit {
   }
 
   openExternal(mod: ModMeta) {
-    console.log(mod);
-
     let modPath = mod.modPath;
     if (modPath.endsWith(mod.modOriginalName)) {
       modPath = modPath.split(mod.modOriginalName)[0];
@@ -94,8 +91,6 @@ export default class InstanceOverviewComponent implements OnInit {
       return;
     }
 
-    console.log(mod);
-
     const toggleModState: ToggleModStateModel = {
       isServerMod: isServerMod,
       sptInstancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
@@ -108,11 +103,7 @@ export default class InstanceOverviewComponent implements OnInit {
     this.isWorking = true;
 
     this.#electronService
-      .sendEvent<{
-        path: string;
-        name: string;
-        isEnabled: boolean
-      }, ToggleModStateModel>('toggle-mod-state', toggleModState)
+      .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
       .subscribe(disabledMod => {
         this.#ngZone.run(() => {
           this.isWorking = false;
