@@ -93,19 +93,19 @@ export class DownloadService {
             try {
               await this.installProcess(modDependency, modDependencyFileId, activeInstance);
             } catch (error) {
-              mod.installProgress.error = true;
+               modDependency.installProgress.error = true;
               switch (error) {
                 case ApplicationElectronFileError.unzipError:
-                  mod.installProgress.unzipStep.error = true;
-                  mod.installProgress.unzipStep.progress = 1;
+                  modDependency.installProgress.unzipStep.error = true;
+                  modDependency.installProgress.unzipStep.progress = 1;
                   break;
                 case ApplicationElectronFileError.downloadError:
-                  mod.installProgress.downloadStep.error = true;
-                  mod.installProgress.downloadStep.percent = 100;
+                  modDependency.installProgress.downloadStep.error = true;
+                  modDependency.installProgress.downloadStep.percent = 100;
                   break;
                 case ApplicationElectronFileError.downloadLinkError:
-                  mod.installProgress.linkStep.error = true;
-                  mod.installProgress.linkStep.progress = 1;
+                  modDependency.installProgress.linkStep.error = true;
+                  modDependency.installProgress.linkStep.progress = 1;
                   break;
               }
               this.#modListService.updateMod();
