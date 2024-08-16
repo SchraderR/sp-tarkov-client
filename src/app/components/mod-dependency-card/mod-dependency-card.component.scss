@@ -2,6 +2,7 @@
   display: flex;
   width: 100%;
   justify-content: end;
+  margin-left: -4px;
 }
 
 .mod-container {
@@ -26,7 +27,6 @@
 mat-card {
   width: 90%;
   display: flex;
-  margin-right: 4px;
 }
 
 .arrow-container {
