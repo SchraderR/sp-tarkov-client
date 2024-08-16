@@ -200,10 +200,13 @@ export class AppComponent {
   }
 
   private getCurrentTempDownloadDirectorySize(instancePath: string) {
-    this.#electronService.sendEvent<number, string>('keep-temp-dir-size', instancePath).subscribe(value =>
-      this.#userSettingService.keepTempDownloadDirectorySize.set({
-        size: value.args,
-        text: FileHelper.fileSize(value.args),
+    this.#electronService.sendEvent<number, string>('temp-dir-size', instancePath).subscribe(value =>
+      this.#ngZone.run(() => {
+        this.#userSettingService.keepTempDownloadDirectorySize.set({
+          size: value.args,
+          text: FileHelper.fileSize(value.args),
+        });
+        this.#changeDetectorRef.detectChanges();
       })
     );
   }
