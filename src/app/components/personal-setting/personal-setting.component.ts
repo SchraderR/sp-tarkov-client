@@ -101,7 +101,7 @@ export default class PersonalSettingComponent {
       .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
       .pipe(
         switchMap(() =>
-          this.#electronService.sendEvent<number, string>('keep-temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
         )
       )
       .subscribe(value => {
