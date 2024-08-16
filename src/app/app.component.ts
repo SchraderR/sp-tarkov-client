@@ -229,8 +229,6 @@ export class AppComponent {
           };
           await this.#modListService.addMod(mod);
         });
-
-        console.log(value);
       })
     );
   }
@@ -280,7 +278,6 @@ export class AppComponent {
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    console.log(error);
     if (error.isPowerShellIssue) {
       userSettingModel.isPowerShellIssue = true;
     } else {
