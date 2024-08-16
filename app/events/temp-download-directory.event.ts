@@ -12,19 +12,19 @@ export const handleTempDownloadDirectoryEvents = (store: Store<UserSettingStoreM
     event.sender.send('keep-temp-dir-setting-toggle-completed');
   });
 
-  ipcMain.on('keep-temp-dir-size', async (event, instancePath: string) => {
+  ipcMain.on('temp-dir-size', async (event, instancePath: string) => {
     const tempDownloadDir = path.join(instancePath, '_temp');
     if (!existsSync(tempDownloadDir)) {
-      event.sender.send('keep-temp-dir-size-completed', 0);
+      event.sender.send('temp-dir-size-completed', 0);
       return;
     }
     try {
       const size = await getDirectorySize(tempDownloadDir);
       log.info(`Current size: ${size}`);
-      event.sender.send('keep-temp-dir-size-completed', size);
+      event.sender.send('temp-dir-size-completed', size);
     } catch (error) {
       log.error(error);
-      event.sender.send('keep-temp-dir-size-completed', 0);
+      event.sender.send('temp-dir-size-completed', 0);
     }
   });
 };

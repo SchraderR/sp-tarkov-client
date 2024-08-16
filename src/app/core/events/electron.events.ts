@@ -35,7 +35,7 @@
   | 'get-mod-page'
   | 'keep-temp-dir-setting'
   | 'keep-temp-dir-setting-toggle'
-  | 'keep-temp-dir-size'
+  | 'temp-dir-size'
   | 'save-mod-load-order';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
