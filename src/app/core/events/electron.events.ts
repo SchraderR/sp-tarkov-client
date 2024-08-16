@@ -31,11 +31,12 @@
   | 'remove-mod-list-cache'
   | 'use-indexed-mods'
   | 'use-indexed-mods-save'
-   | 'toggle-mod-state'
+  | 'toggle-mod-state'
   | 'get-mod-page'
   | 'keep-temp-dir-setting'
   | 'keep-temp-dir-setting-toggle'
-  | 'keep-temp-dir-size';
+  | 'keep-temp-dir-size'
+  | 'save-mod-load-order';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
