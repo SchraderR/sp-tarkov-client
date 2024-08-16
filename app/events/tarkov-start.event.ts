@@ -14,12 +14,9 @@ export const handleTarkovStartEvent = () => {
 
     try {
       let filePath = path.join(sptInstancePath, exeNameAki);
-      console.log(filePath);
-      console.log(existsSync(filePath));
       if (!existsSync(filePath)) {
         filePath = path.join(sptInstancePath, exeNameSpt);
       }
-      console.log(filePath);
 
       child = spawn(filePath, [], {
         cwd: sptInstancePath,
