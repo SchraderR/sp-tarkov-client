@@ -96,10 +96,10 @@
         </mat-slide-toggle>
 
         <div style="display: flex; gap: 8px">
-          <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearTemporaryDownloadDirectory()">
+          <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
             Clear download directory
           </button>
-          <button mat-raised-button color="primary" style="width: fit-content;" (click)="openTemporaryDownloadDirectory()">
+          <button mat-raised-button color="primary" style="width: fit-content;" (click)="openTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
             Open temp directory
           </button>
         </div>
