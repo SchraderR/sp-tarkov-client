@@ -81,59 +81,31 @@ export class DownloadService {
 
       try {
         await this.installProcess(mod, fileId, activeInstance);
-
-        if (mod.dependencies.length > 0) {
-          for (const modDependency of mod.dependencies) {
-            const modDependencyFileId = FileHelper.extractFileIdFromUrl(modDependency.fileUrl);
-            modDependency.installProgress = this.#modListService.initialInstallProgress();
-            if (!modDependencyFileId || !modDependency.installProgress) {
-              continue;
-            }
-
-            try {
-              await this.installProcess(modDependency, modDependencyFileId, activeInstance);
-            } catch (error) {
-               modDependency.installProgress.error = true;
-              switch (error) {
-                case ApplicationElectronFileError.unzipError:
-                  modDependency.installProgress.unzipStep.error = true;
-                  modDependency.installProgress.unzipStep.progress = 1;
-                  break;
-                case ApplicationElectronFileError.downloadError:
-                  modDependency.installProgress.downloadStep.error = true;
-                  modDependency.installProgress.downloadStep.percent = 100;
-                  break;
-                case ApplicationElectronFileError.downloadLinkError:
-                  modDependency.installProgress.linkStep.error = true;
-                  modDependency.installProgress.linkStep.progress = 1;
-                  break;
-              }
-              this.#modListService.updateMod();
-              continue;
-            }
-          }
-        }
-
-        await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
-      } catch (error) {
+      } catch (error: unknown) {
         mod.installProgress.error = true;
-        switch (error) {
-          case ApplicationElectronFileError.unzipError:
-            mod.installProgress.unzipStep.error = true;
-            mod.installProgress.unzipStep.progress = 1;
-            break;
-          case ApplicationElectronFileError.downloadError:
-            mod.installProgress.downloadStep.error = true;
-            mod.installProgress.downloadStep.percent = 100;
-            break;
-          case ApplicationElectronFileError.downloadLinkError:
-            mod.installProgress.linkStep.error = true;
-            mod.installProgress.linkStep.progress = 1;
-            break;
-        }
+        this.handleError(mod, error as ApplicationElectronFileError);
         this.#modListService.updateMod();
         continue;
       }
+
+      for (const modDependency of mod.dependencies ?? []) {
+        const modDependencyFileId = FileHelper.extractFileIdFromUrl(modDependency.fileUrl);
+        modDependency.installProgress = this.#modListService.initialInstallProgress();
+        if (!modDependencyFileId || !modDependency.installProgress) {
+          continue;
+        }
+
+        try {
+          await this.installProcess(modDependency, modDependencyFileId, activeInstance);
+        } catch (error: unknown) {
+          modDependency.installProgress.error = true;
+          this.handleError(modDependency, error as ApplicationElectronFileError);
+          this.#modListService.updateMod();
+          continue;
+        }
+      }
+
+      await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
     }
 
     if (!this.keepTemporaryDownloadDirectory()) {
@@ -223,5 +195,26 @@ export class DownloadService {
     mod.installProgress!.unzipStep.progress = 1;
     mod.installProgress!.completed = true;
     this.#modListService.updateMod();
+  }
+
+  private handleError(mod: Mod, error: ApplicationElectronFileError) {
+    if (!mod.installProgress) {
+      return;
+    }
+
+    switch (error) {
+      case ApplicationElectronFileError.unzipError:
+        mod.installProgress.unzipStep.error = true;
+        mod.installProgress.unzipStep.progress = 1;
+        break;
+      case ApplicationElectronFileError.downloadError:
+        mod.installProgress.downloadStep.error = true;
+        mod.installProgress.downloadStep.percent = 100;
+        break;
+      case ApplicationElectronFileError.downloadLinkError:
+        mod.installProgress.linkStep.error = true;
+        mod.installProgress.linkStep.progress = 1;
+        break;
+    }
   }
 }
