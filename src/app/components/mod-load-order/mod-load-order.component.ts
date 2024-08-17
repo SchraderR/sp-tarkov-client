@@ -32,7 +32,9 @@ export default class ModLoadOrderComponent implements OnInit {
   modLoadOrder: ModLoadOrder = { order: [] };
 
   ngOnInit() {
-    this.openModLoadOrderDialog();
+    if (!this.#userSettingsService.wasModLoadOrderWarningReviewed()) {
+      this.openModLoadOrderDialog();
+    }
 
     const instancePath =
       this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
@@ -65,6 +67,7 @@ export default class ModLoadOrderComponent implements OnInit {
 
   closeModLoadOrderDialog() {
     this.modLoadOrderWarningDialog.close();
+    this.#userSettingsService.wasModLoadOrderWarningReviewed.update(() => true);
   }
 
   private openModLoadOrderDialog() {

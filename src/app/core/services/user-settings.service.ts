@@ -14,6 +14,7 @@ export class UserSettingsService {
   keepTempDownloadDirectorySize = signal<{ size: number; text: string }>({ text: '', size: 0 });
   isTutorialDone = signal<boolean | null>(null);
   wasInstanceOverviewReviewed = signal<boolean>(false);
+  wasModLoadOrderWarningReviewed = signal<boolean>(false);
 
   addUserSetting(settingModel: UserSettingModel) {
     if (this.userSetting().some(userSetting => userSetting.sptRootDirectory === settingModel.sptRootDirectory)) {
