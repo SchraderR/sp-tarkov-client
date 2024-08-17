@@ -14,3 +14,17 @@
     No mod load order found!
   </span>
 }
+
+<ng-template #modLoadOrderWarning>
+  <mat-card style="padding: 0 16px;">
+    <mat-card-content>
+      <span>You should not change your mod load order unless you are instructed to do so.</span>
+    </mat-card-content>
+
+    <mat-card-actions align="end" style="padding: 16px">
+      <button mat-flat-button color="primary" (click)="closeModLoadOrderDialog()">
+        Acknowledge
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</ng-template>
