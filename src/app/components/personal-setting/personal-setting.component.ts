@@ -211,16 +211,16 @@ export default class PersonalSettingComponent {
       userSettingModel.isError = true;
     }
 
-    this.#matSnackBar.open(
-      `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`,
-      '',
-      {
-        duration: 3000,
-        verticalPosition: 'bottom',
-        horizontalPosition: 'center',
-        panelClass: ['snackbar-multiline'],
-      }
-    );
+    const errorMessage = userSettingModel.isPowerShellIssue
+      ? 'Powershell could not be used. \nPlease make sure, Powershell is configure correctly and environment variable are set correctly.'
+      : `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
+
+    this.#matSnackBar.open(errorMessage, '', {
+      duration: 3000,
+      verticalPosition: 'bottom',
+      horizontalPosition: 'center',
+      panelClass: ['snackbar-multiline'],
+    });
 
     return of({
       userSetting: userSettingModel,
