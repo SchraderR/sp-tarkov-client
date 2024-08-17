@@ -39,7 +39,7 @@ mat-card {
     background-color: black;
 
     @media (prefers-color-scheme: dark) {
-      border-left: 10px solid white;
+      background-color: white;
     }
   }
 }
