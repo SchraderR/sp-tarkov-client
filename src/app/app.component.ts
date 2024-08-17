@@ -93,7 +93,10 @@ export class AppComponent {
         filter(r => r),
         takeUntilDestroyed()
       )
-      .subscribe(() => this.getCurrentPersonalSettings());
+      .subscribe(() => {
+        this.getCurrentPersonalSettings();
+        this.calculateCurrentDirectorySize();
+      });
 
     this.getCachedModList();
     this.getCurrentPersonalSettings();
@@ -109,11 +112,7 @@ export class AppComponent {
         this.showTutorialSnackbar();
       }
 
-      const activeInstance = this.#userSettingService.userSettingSignal().find(i => i.isActive);
-      if (!activeInstance) {
-        return;
-      }
-      this.getCurrentTempDownloadDirectorySize(activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory);
+      this.calculateCurrentDirectorySize();
     });
   }
 
@@ -199,18 +198,6 @@ export class AppComponent {
       .subscribe(value => this.#userSettingService.keepTempDownloadDirectory.set(value.args));
   }
 
-  private getCurrentTempDownloadDirectorySize(instancePath: string) {
-    this.#electronService.sendEvent<number, string>('temp-dir-size', instancePath).subscribe(value =>
-      this.#ngZone.run(() => {
-        this.#userSettingService.keepTempDownloadDirectorySize.set({
-          size: value.args,
-          text: FileHelper.fileSize(value.args),
-        });
-        this.#changeDetectorRef.detectChanges();
-      })
-    );
-  }
-
   private getCurrentTutorialSettings() {
     this.#electronService
       .sendEvent<boolean>('tutorial-setting')
@@ -292,5 +279,24 @@ export class AppComponent {
       serverMods: { args: [] },
       clientMods: { args: [] },
     });
+  }
+
+  private calculateCurrentDirectorySize() {
+    const activeInstance = this.#userSettingService.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService
+      .sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .subscribe(value =>
+        this.#ngZone.run(() => {
+          this.#userSettingService.keepTempDownloadDirectorySize.set({
+            size: value.args,
+            text: FileHelper.fileSize(value.args),
+          });
+          this.#changeDetectorRef.detectChanges();
+        })
+      );
   }
 }
