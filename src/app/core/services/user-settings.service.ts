@@ -27,7 +27,7 @@ export class UserSettingsService {
     this.userSetting.update(state => [...state]);
   }
 
-  updateTutorialDone(state: boolean) {
+  updateTutorialDone(state: boolean | null) {
     this.isTutorialDone.update(() => state);
   }
 

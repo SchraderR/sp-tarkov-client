@@ -120,7 +120,7 @@ export default class PersonalSettingComponent {
   }
 
   restartTutorial() {
-    this.#userSettingsService.updateTutorialDone(false);
+    this.#electronService.sendEvent('tutorial-toggle', false).subscribe(() => this.#userSettingsService.updateTutorialDone(false));
   }
 
   clearSptVersionCache() {

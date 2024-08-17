@@ -111,9 +111,9 @@ export class AppComponent {
       if (isTutorialDone === false) {
         this.showTutorialSnackbar();
       }
+     });
 
-      this.calculateCurrentDirectorySize();
-    });
+    effect(() => this.calculateCurrentDirectorySize());
   }
 
   toggleDrawer = () => {
@@ -201,7 +201,7 @@ export class AppComponent {
   private getCurrentTutorialSettings() {
     this.#electronService
       .sendEvent<boolean>('tutorial-setting')
-      .subscribe(value => this.#ngZone.run(() => this.#userSettingService.isTutorialDone.set(value.args)));
+      .subscribe(value => this.#ngZone.run(() => this.#userSettingService.updateTutorialDone(value.args)));
   }
 
   private getCachedModList() {
@@ -253,15 +253,16 @@ export class AppComponent {
                 }
               },
               complete: () => {
+                console.log('complete');
                 if (!instanceSet) {
                   this.#userSettingService.clearFakeInstance();
                 }
                 this.#modListService.clearFakeTutorialMods();
-                this.#electronService.sendEvent('tutorial-toggle', true).subscribe();
-                this.#userSettingService.updateTutorialDone(true);
+                this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
                 void this.#router.navigate(['/setting']);
               },
             });
+        } else {
           this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
         }
       });
