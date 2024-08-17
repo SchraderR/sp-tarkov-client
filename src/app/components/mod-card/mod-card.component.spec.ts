@@ -13,7 +13,17 @@ describe('ModCardComponent', () => {
 
     fixture = TestBed.createComponent(ModCardComponent);
     component = fixture.componentInstance;
-    component.mod = { fileUrl: '', kind: undefined, supportedSptVersion: '', notSupported: false, name: '', image: '' };
+    component.mod = {
+      fileUrl: '',
+      isDependenciesLoading: false,
+      isInvalid: false,
+      dependencies: [],
+      kind: 'client',
+      supportedSptVersion: '',
+      notSupported: false,
+      name: '',
+      image: '',
+    };
     fixture.detectChanges();
   });
 
