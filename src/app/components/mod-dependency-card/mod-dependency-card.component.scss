@@ -37,6 +37,10 @@ mat-card {
 
   > div {
     background-color: black;
+
+    @media (prefers-color-scheme: dark) {
+      border-left: 10px solid white;
+    }
   }
 }
 
@@ -63,6 +67,10 @@ mat-card {
   right: -10px;
   border: 5px solid transparent;
   border-left: 10px solid black;
+
+  @media (prefers-color-scheme: dark) {
+    border-left: 10px solid white;
+  }
 }
 
 .open-external-button{
