@@ -16,7 +16,12 @@ export const handleClientModsEvent = () => {
 
         const patcherDllFiles = fs
           .readdirSync(rootClientPatchersPath, { withFileTypes: true })
-          .filter(file => file.isFile() && file.name.toLowerCase().includes('.prepatch.') && path.extname(file.name) === '.dll')
+          .filter(
+            file =>
+              file.isFile() &&
+              (file.name.toLowerCase().includes('.prepatch.') || file.name.toLowerCase().includes('_prepatch.')) &&
+              path.extname(file.name) === '.dll'
+          )
           .map((f: any) => f);
 
         for (const file of patcherDllFiles) {
@@ -87,7 +92,7 @@ export const handleClientModsEvent = () => {
                   modPath: directoryDll[0].path,
                   name: m.name.split('.dll')[0],
                 };
-              }),
+              })
             ),
           });
         }
@@ -106,10 +111,7 @@ export const handleClientModsEvent = () => {
 async function getVersion(dllFilePath: string) {
   try {
     const exec = require('util').promisify(require('child_process').exec);
-    const {
-      stderr,
-      stdout,
-    } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
+    const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
 
     if (stderr) {
       return stderr;
@@ -163,7 +165,7 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
                 version: await getVersion(path.join(filePath, m.name)),
                 modPath: filePath,
                 name: m.name.split('.dll')[0],
-              })),
+              }))
           );
 
           data.push({
@@ -197,12 +199,17 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
           const subMods = readdirSync(filePath, { withFileTypes: true });
           const subModObjects = await Promise.all(
             subMods
-              .filter(file => file.isFile() && file.name.toLowerCase().includes('.prepatch.') && path.extname(file.name) === '.dll')
+              .filter(
+                file =>
+                  file.isFile() &&
+                  (file.name.toLowerCase().includes('.prepatch.') || file.name.toLowerCase().includes('_prepatch.')) &&
+                  path.extname(file.name) === '.dll'
+              )
               .map(async m => ({
                 version: await getVersion(path.join(filePath, m.name)),
                 modPath: filePath,
                 name: m.name.split('.dll')[0],
-              })),
+              }))
           );
 
           data.push({
@@ -223,4 +230,3 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
     }
   });
 }
-

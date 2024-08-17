@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
-import { SptInstance, UserSettingStoreModel } from '../shared/models/user-setting.model';
+import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as log from 'electron-log';
 import * as windowStateKeeper from 'electron-window-state';
 
