@@ -4,7 +4,21 @@
   height: 100%;
 }
 
+.mat-mdc-list {
+  margin: 0 4px;
+}
+
+h2 {
+  padding: 0 8px;
+}
+
 .list-item-button {
+  display: flex !important;
+  justify-content: center;
+}
+
+.list-slider-item {
+  height: 100%;
   display: flex !important;
   justify-content: center;
 }
@@ -24,3 +38,27 @@
     user-select: none;
   }
 }
+
+.mat-mdc-icon-button {
+  display: flex !important;
+}
+
+mat-expansion-panel {
+  background: unset;
+  box-shadow: unset !important;
+
+  mat-expansion-panel-header {
+    padding-left: unset;
+
+    ::ng-deep.mat-expansion-indicator {
+      width: 24px !important;
+      height: 24px !important;
+      margin: 0 0 0 44px !important;
+    }
+  }
+
+  ::ng-deep.mat-expansion-panel-content .mat-expansion-panel-body {
+    padding: unset !important;
+  }
+}
+

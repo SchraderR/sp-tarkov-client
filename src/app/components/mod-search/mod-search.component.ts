@@ -18,6 +18,7 @@ import { ElectronService } from '../../core/services/electron.service';
 import { DownloadService } from '../../core/services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModCache } from '../../../../shared/models/user-setting.model';
+import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 
 @Component({
   standalone: true,
@@ -35,6 +36,7 @@ import { ModCache } from '../../../../shared/models/user-setting.model';
     IsAlreadyInstalledDirective,
     MatTooltipModule,
     MatProgressSpinner,
+    IsAlreadyStartedDirective,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
@@ -93,7 +95,7 @@ export class ModSearchComponent {
       sptVersionColorCode: mod.sptVersionColorCode,
     };
 
-    this.#modListService.addMod(mod);
+    await this.#modListService.addMod(mod);
     await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 

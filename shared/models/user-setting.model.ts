@@ -29,6 +29,7 @@ export interface UserSettingStoreModel {
   sptTags: SptTag[];
   modCache: ModCache[];
   useIndexedMods: boolean;
+  keepTempDownloadDirectory: boolean;
   akiInstances: SptInstance[]; // obsolete
   akiVersions: SptVersion[]; // obsolete
   akiTags: SptTag[]; // obsolete
@@ -41,6 +42,7 @@ export interface SptInstance {
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
+  isPowerShellIssue: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }
@@ -54,6 +56,12 @@ export interface ModMeta {
   version: string;
   alternativeName?: string;
   modPath: string;
+  modOriginalPath: string;
+  modOriginalName: string;
+  isDirectory?: boolean;
+  subMods?: ModMeta[];
+  isEnabled: boolean;
+  isPrePatcherMod?: boolean;
 }
 
 export enum Theme {

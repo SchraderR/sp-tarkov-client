@@ -1,7 +1,7 @@
 :host {
   --mdc-linear-progress-active-indicator-height: 15px;
   --mdc-linear-progress-track-height: 15px;
-  margin-right: 4px;
+   margin-right: 4px;
 }
 
 mat-progress-bar {
@@ -53,6 +53,7 @@ mat-card {
 .card-container {
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 .mod-steps-container {

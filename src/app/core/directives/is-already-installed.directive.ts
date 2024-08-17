@@ -4,6 +4,8 @@ import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
 import { Configuration, ConfigurationService } from '../services/configuration.service';
+import { ModMeta } from '../../../../shared/models/user-setting.model';
+import alternativeModNames from './backupAlternativeNames.json';
 
 @Directive({
   standalone: true,
@@ -11,41 +13,6 @@ import { Configuration, ConfigurationService } from '../services/configuration.s
   exportAs: 'isAlreadyInstalled',
 })
 export class IsAlreadyInstalledDirective {
-  private backupServerModNames: { [key: string]: string } = {
-    SVM: 'Server Value Modifier [SVM]',
-    SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
-    'SWAG + DONUTS': 'SWAG + Donuts - Dynamic Spawn Waves and Custom Spawn Points',
-    LPARedux: 'Lock Picking Attorney Redux',
-    NLE: 'Never Lose Equipments',
-    RPG7: 'RPG-7',
-    'AR-54': 'AR-54 7.62x54mmR Designated Marksman Rifle (DMR)',
-    'Tactical Gear Component (TGC)': 'Tactical Gear Component',
-    lotus: 'Lotus Trader',
-    'Fox-PineappleBlitz': 'Fox - PINEAPPLE BLITZ GRENADE (RE-UPLOAD)',
-    'Skills Extended': '[BETA] Skills Extended',
-    Weapons: "Epic's Weapon Pack",
-    Priscilu: 'Priscilu: the trader',
-    AmmoStats: 'Ammo Stats in Description',
-  };
-
-  private backupClientModNames: { [key: string]: string } = {
-    SVM: 'Server Value Modifier [SVM]',
-    SAIN: 'SAIN 2.0 - Solarint"s AI Modifications - Full AI Combat System Replacement',
-    'DrakiaXYZ-BigBrain': 'BigBrain',
-    'skwizzy.LootingBots': 'Looting Bots',
-    'dvize.BushNoESP': 'No Bush ESP',
-    'DrakiaXYZ-Waypoints': 'Waypoints - Expanded Navmesh',
-    FOVFix: "Fontaine's FOV Fix & Variable Optics",
-    'SamSWAT.FOV': "SamSwat's INCREASED FOV - Reupload",
-    'IcyClawz.ItemSellPrice': 'Item Sell Price',
-    'CactusPie.FastHealing': 'Fast healing',
-    GamePanelHUDCompass: 'Game Panel HUD',
-    'CactusPie.MapLocation.Common': "CactusPie's Minimap",
-    SkillsExtended: '[BETA] Skills Extended',
-    BetterFolderBrowser: 'Minimalist Launcher',
-    SPTQuestingBots: 'Questing Bots',
-  };
-
   #userSettingsService = inject(UserSettingsService);
   #configurationService = inject(ConfigurationService);
   #modListService = inject(ModListService);
@@ -68,31 +35,24 @@ export class IsAlreadyInstalledDirective {
     }
 
     if (!config) {
-      config = { alternativeClientModNames: this.backupClientModNames, alternativeServerModNames: this.backupServerModNames } as Configuration;
+      config = { alternativeModNames: alternativeModNames.alternativeModNames } as unknown as Configuration;
     }
 
-    for (const serverMod of activeInstance.serverMods) {
-      if (Object.prototype.hasOwnProperty.call(config.alternativeServerModNames, serverMod.name)) {
-        serverMod.alternativeName = config.alternativeServerModNames[serverMod.name] as string;
-      }
-    }
+    this.assignAlternativeNames(activeInstance.serverMods, config.alternativeModNames);
+    this.assignAlternativeNames(activeInstance.clientMods, config.alternativeModNames);
 
-    for (const clientMod of activeInstance.clientMods) {
-      if (Object.prototype.hasOwnProperty.call(config.alternativeClientModNames, clientMod.name)) {
-        clientMod.alternativeName = config.alternativeClientModNames[clientMod.name];
-      }
-    }
-
-    const closestServerModName = closest(
-      modName,
-      activeInstance.serverMods.flatMap(m => [m.name, m.alternativeName ?? ''])
-    );
-    const closestClientModName = closest(
-      modName,
-      activeInstance.clientMods.flatMap(m => [m.name, m.alternativeName ?? ''])
-    );
+    const closestServerModName = closest(modName, this.flattenSubMods(activeInstance.serverMods));
+    const closestClientModName = closest(modName, this.flattenSubMods(activeInstance.clientMods));
 
     return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
+  }
+
+  private flattenSubMods(mods: ModMeta[]): string[] {
+    return mods.flatMap(mod => [
+      ...(mod.name ? [mod.name] : []),
+      ...(mod.alternativeName ? [mod.alternativeName] : []),
+      ...this.flattenSubMods(mod.subMods ?? []),
+    ]);
   }
 
   private isMatchBasedOnLevenshtein(stringA = '', stringB = '', threshold = 0.2): boolean {
@@ -109,5 +69,17 @@ export class IsAlreadyInstalledDirective {
 
   private checkModInModList() {
     return this.#modListService.modListSignal().some(m => m.name === this.mod.name);
+  }
+
+  private assignAlternativeNames(mods: ModMeta[], alternativeNames: { [key: string]: string }) {
+    for (const mod of mods) {
+      if (Object.prototype.hasOwnProperty.call(alternativeNames, mod.name.trim())) {
+        mod.alternativeName = alternativeNames[mod.name.trim()];
+      }
+
+      if (mod.subMods) {
+        this.assignAlternativeNames(mod.subMods, alternativeNames); // Recursive call for subMods
+      }
+    }
   }
 }

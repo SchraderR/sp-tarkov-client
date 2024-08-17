@@ -1,12 +1,11 @@
-﻿import { BrowserWindow, nativeTheme } from 'electron';
+﻿import { BrowserWindow, nativeTheme, app } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
-import { SptInstance, UserSettingStoreModel } from '../shared/models/user-setting.model';
+import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as log from 'electron-log';
 import * as windowStateKeeper from 'electron-window-state';
-import { Notification } from 'electron';
 
 export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
   let mainWindowState = windowStateKeeper({
@@ -62,6 +61,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('isTutorialDone', false);
     }
 
+    const keepTempDownloadDirectory = store.get('keepTempDownloadDirectory');
+    if (!keepTempDownloadDirectory) {
+      store.set('keepTempDownloadDirectory', false);
+    }
+
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);
@@ -90,6 +94,12 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     const modCache = store.get('modCache');
     if (!modCache) {
       store.set('modCache', []);
+    }
+
+    const appPath = app.getPath('userData');
+    const appInstancePath = path.join(appPath, 'instances');
+    if (!fs.existsSync(appInstancePath)) {
+      fs.mkdirSync(appInstancePath);
     }
 
     migrateData(store);

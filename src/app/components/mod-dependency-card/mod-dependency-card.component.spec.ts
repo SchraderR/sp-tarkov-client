@@ -1,17 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ModCardComponent } from './mod-card.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ModDependencyCardComponent } from './mod-dependency-card.component';
 
-describe('ModCardComponent', () => {
-  let component: ModCardComponent;
-  let fixture: ComponentFixture<ModCardComponent>;
+describe('ModDependencyCardComponent', () => {
+  let component: ModDependencyCardComponent;
+  let fixture: ComponentFixture<ModDependencyCardComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ModCardComponent, HttpClientTestingModule],
+      imports: [ModDependencyCardComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ModCardComponent);
+    fixture = TestBed.createComponent(ModDependencyCardComponent);
     component = fixture.componentInstance;
     component.mod = {
       fileUrl: '',

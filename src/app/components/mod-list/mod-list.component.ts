@@ -15,33 +15,50 @@ import { firstValueFrom } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ModDependencyCardComponent } from '../mod-dependency-card/mod-dependency-card.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   standalone: true,
   selector: 'app-mod-list',
   templateUrl: './mod-list.component.html',
   styleUrl: './mod-list.component.scss',
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, NgOptimizedImage, ModCardComponent, JoyrideModule, MatSlideToggleModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    NgOptimizedImage,
+    ModCardComponent,
+    JoyrideModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    ModDependencyCardComponent,
+    MatProgressSpinner,
+  ],
   animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent implements OnInit {
   #modListService = inject(ModListService);
   #downloadService = inject(DownloadService);
   #electronService = inject(ElectronService);
-  ngZone = inject(NgZone);
-  changeDetectorRef = inject(ChangeDetectorRef);
+  #ngZone = inject(NgZone);
+  #changeDetectorRef = inject(ChangeDetectorRef);
 
   modListSignal = this.#modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
   isModCompleted = computed(() => this.modListSignal().some(m => m.installProgress?.completed));
-  isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
+  isSomeModDependencyLoading = computed(() => this.modListSignal().some(m => m.isDependenciesLoading));
+
   emote = '';
+  isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
   useIndexedModsControl = new FormControl(this.#modListService.useIndexedModsSignal());
 
   constructor() {
     this.#downloadService.downloadProgressEvent
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.ngZone.run(() => this.changeDetectorRef.markForCheck()));
+      .subscribe(() => this.#ngZone.run(() => this.#changeDetectorRef.markForCheck()));
   }
 
   ngOnInit() {
@@ -63,27 +80,26 @@ export default class ModListComponent implements OnInit {
   onUseIndexedModsToggle(event: MatSlideToggleChange) {
     this.#modListService.setUseIndexedMods(event.checked);
     this.#electronService.sendEvent('use-indexed-mods-save', event.checked).subscribe(() => {
-      this.ngZone.run(() => {
+      this.#ngZone.run(() => {
         this.useIndexedModsControl.setValue(event.checked, { emitEvent: false });
-        this.changeDetectorRef.detectChanges();
+        this.#changeDetectorRef.detectChanges();
       });
     });
   }
 
   private loadUseIndexedModsSettings() {
-    this.#electronService.sendEvent<boolean>('use-indexed-mods')
-      .subscribe({
-        next: (response) => {
-          this.#modListService.setUseIndexedMods(response.args);
-          this.ngZone.run(() => {
-            this.useIndexedModsControl.setValue(response.args, { emitEvent: false });
-            this.changeDetectorRef.detectChanges();
-          });
-        },
-        error: (error) => {
-          console.error('Error fetching indexed mods usage:', error);
-        }
-      });
+    this.#electronService.sendEvent<boolean>('use-indexed-mods').subscribe({
+      next: response => {
+        this.#modListService.setUseIndexedMods(response.args);
+        this.#ngZone.run(() => {
+          this.useIndexedModsControl.setValue(response.args, { emitEvent: false });
+          this.#changeDetectorRef.detectChanges();
+        });
+      },
+      error: error => {
+        console.error('Error fetching indexed mods usage:', error);
+      },
+    });
   }
 
   private selectRandomEmote() {

@@ -22,6 +22,10 @@ import { handleSptTagEvents } from './events/spt-tag.event';
 import { handleSptVersionEvents } from './events/spt-version.event';
 import { handleModCacheEvents } from './events/mod-list-cache.event';
 import { handleIndexedModsEvents } from './events/indexed-mods.event';
+import { toggleModStateEvent } from './events/toggle-mod-state.event';
+import { handleModPageEvents } from './events/mod-page.event';
+import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
+
 log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
@@ -48,3 +52,6 @@ handleSptTagEvents(store);
 handleSptVersionEvents(store);
 handleModCacheEvents(store);
 handleIndexedModsEvents(store);
+toggleModStateEvent();
+handleModPageEvents();
+handleTempDownloadDirectoryEvents(store);

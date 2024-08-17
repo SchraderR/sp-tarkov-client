@@ -6,10 +6,16 @@ import { HtmlHelper } from '../helper/html-helper';
 import { SptTag, SptVersion } from '../../../../shared/models/spt-core.model';
 import { ElectronService } from './electron.service';
 
+export interface ModDependency {
+  hubId: string;
+  dependencies: string[];
+}
+
 export interface Configuration {
-  alternativeClientModNames: { [key: string]: string };
-  alternativeServerModNames: { [key: string]: string };
+  alternativeModNames: { [key: string]: string };
   notSupported: number[];
+  restrictedMods: string[];
+  modDependency: ModDependency[]
 }
 
 @Injectable({

@@ -20,6 +20,8 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { DirectoryError } from '../../core/models/directory-error';
+import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
   standalone: true,
@@ -58,6 +60,8 @@ export default class PersonalSettingComponent {
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
+  keepTempDownloadDirectory = new FormControl(this.#userSettingsService.keepTempDownloadDirectory());
+  currentTempDirectorySize = this.#userSettingsService.keepTempDownloadDirectorySize;
   hoveringInstance = '';
 
   changeTheme(event: MatSelectChange) {
@@ -70,12 +74,53 @@ export default class PersonalSettingComponent {
     });
   }
 
+  toggleKeepTempDirectory(event: MatSlideToggleChange) {
+    this.#electronService.sendEvent('keep-temp-dir-setting-toggle', event.checked).subscribe(() => {
+      this.#ngZone.run(() => this.#userSettingsService.keepTempDownloadDirectory.set(event.checked));
+    });
+  }
+
+  openTemporaryDownloadDirectory() {
+    const activeInstance = this.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    if (this.currentTempDirectorySize().size > 0) {
+      this.#electronService.openPath(`${activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory}/_temp`);
+    }
+  }
+
+  clearTemporaryDownloadDirectory() {
+    const activeInstance = this.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService
+      .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .pipe(
+        switchMap(() =>
+          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+        )
+      )
+      .subscribe(value => {
+        this.#ngZone.run(() => {
+          this.#userSettingsService.keepTempDownloadDirectorySize.set({
+            size: value.args,
+            text: FileHelper.fileSize(value.args),
+          });
+          this.#changeDetectorRef.detectChanges();
+        });
+      });
+  }
+
   openInstance(rootDirectory: string) {
     this.#electronService.openPath(rootDirectory);
   }
 
   restartTutorial() {
-    this.#userSettingsService.updateTutorialDone(false);
+    this.#electronService.sendEvent('tutorial-toggle', false).subscribe(() => this.#userSettingsService.updateTutorialDone(false));
   }
 
   clearSptVersionCache() {
@@ -101,7 +146,7 @@ export default class PersonalSettingComponent {
             userSetting: of(newUserSetting),
             serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
             clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
-          }).pipe(catchError(() => this.handleDirectoryPathError(result.args)));
+          }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
@@ -141,6 +186,7 @@ export default class PersonalSettingComponent {
       sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
+      isPowerShellIssue: settingModel.isPowerShellIssue,
       isError: settingModel.isError,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,
@@ -158,19 +204,23 @@ export default class PersonalSettingComponent {
     });
   }
 
-  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
-    userSettingModel.isError = true;
+  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
+    if (error.isPowerShellIssue) {
+      userSettingModel.isPowerShellIssue = true;
+    } else {
+      userSettingModel.isError = true;
+    }
 
-    this.#matSnackBar.open(
-      `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`,
-      '',
-      {
-        duration: 3000,
-        verticalPosition: 'bottom',
-        horizontalPosition: 'center',
-        panelClass: ['snackbar-multiline'],
-      }
-    );
+    const errorMessage = userSettingModel.isPowerShellIssue
+      ? 'Powershell could not be used. \nPlease make sure, Powershell is configure correctly and environment variable are set correctly.'
+      : `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
+
+    this.#matSnackBar.open(errorMessage, '', {
+      duration: 3000,
+      verticalPosition: 'bottom',
+      horizontalPosition: 'center',
+      panelClass: ['snackbar-multiline'],
+    });
 
     return of({
       userSetting: userSettingModel,

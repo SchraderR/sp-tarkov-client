@@ -12,7 +12,11 @@
 
 <div class="mod-list">
   @for (mod of accumulatedModList; track mod) {
-    <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
+    <mat-card
+      appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
+      appIsAlreadyStarted #alreadyStarted="isAlreadyStarted"
+      appCheckModDependency #modDependencies="hasModDependencies"
+      [mod]="mod">
       <mat-card-content class="card-container">
         <div>
           @if (mod.image) {
@@ -39,6 +43,11 @@
                   info
                 </mat-icon>
               } @else {
+                @if (!alreadyInstalled.isAlreadyInstalled() && alreadyStarted.isAlreadyStarted()) {
+                  <div class="already-installed-icon-container">
+                    <mat-spinner [diameter]="30"></mat-spinner>
+                  </div>
+                }
                 @if (alreadyInstalled.isAlreadyInstalled()) {
                   <mat-icon
                     class="already-installed-icon-container"
@@ -46,12 +55,13 @@
                     color="accent">done_all
                   </mat-icon>
                 } @else {
-                  @if (!alreadyInstalled.isInModList()) {
+                  @if (!alreadyStarted.isAlreadyStarted() && !alreadyInstalled.isInModList()) {
                     <button mat-icon-button (click)="addModToModList(mod)"
                             [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
                       <mat-icon>add</mat-icon>
                     </button>
-                  } @else {
+                  }
+                  @if (!alreadyStarted.isAlreadyStarted() && alreadyInstalled.isInModList()) {
                     <button mat-icon-button (click)="removeModFromModList(mod)">
                       <mat-icon>delete</mat-icon>
                     </button>
@@ -67,6 +77,12 @@
             <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
               <mat-icon>open_in_new</mat-icon>
             </button>
+            <span class="spacer"></span>
+            @if (modDependencies.hasModDependencies()) {
+              <mat-icon class="mod-install-instance-warning warning-color" matTooltip="Mod dependency">
+                info
+              </mat-icon>
+            }
           </div>
         </div>
       </mat-card-content>

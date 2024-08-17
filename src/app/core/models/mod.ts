@@ -1,17 +1,19 @@
 ﻿import { DownloadProgress } from '../../../../shared/models/download.model';
-import { Kind } from '../../../../shared/models/unzip.model';
 
 export interface Mod {
   name: string;
   modVersion?: string;
   fileUrl: string;
-  kind: Kind | undefined;
+  kind: string;
   notSupported: boolean;
   supportedSptVersion: string;
   image?: string;
   icon?: string;
   teaser?: string;
+  isDependenciesLoading: boolean;
+  dependencies: Mod[];
   lastUpdate?: string;
+  isInvalid: boolean;
   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
   sptVersionColorCode?: string;

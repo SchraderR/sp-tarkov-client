@@ -30,6 +30,8 @@ import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
+import { DirectoryError } from './core/models/directory-error';
+import { FileHelper } from './core/helper/file-helper';
 
 @Component({
   standalone: true,
@@ -91,13 +93,17 @@ export class AppComponent {
         filter(r => r),
         takeUntilDestroyed()
       )
-      .subscribe(() => this.getCurrentPersonalSettings());
+      .subscribe(() => {
+        this.getCurrentPersonalSettings();
+        this.calculateCurrentDirectorySize();
+      });
 
     this.getCachedModList();
     this.getCurrentPersonalSettings();
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
+    this.getCurrentTempDownloadDirectorySettings();
     this.getGithubRateLimitInformation();
 
     effect(() => {
@@ -105,7 +111,9 @@ export class AppComponent {
       if (isTutorialDone === false) {
         this.showTutorialSnackbar();
       }
-    });
+     });
+
+    effect(() => this.calculateCurrentDirectorySize());
   }
 
   toggleDrawer = () => {
@@ -139,6 +147,7 @@ export class AppComponent {
           userSetting.clientMods = value.clientMods.args;
           userSetting.serverMods = value.serverMods.args;
           userSetting.isError = value.userSetting.isError;
+          userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
           userSetting.isLoading = false;
 
           this.#userSettingService.updateUserSetting();
@@ -153,7 +162,7 @@ export class AppComponent {
       this.#userSettingService.addUserSetting(newUserSetting);
       this.#changeDetectorRef.detectChanges();
 
-      if(!newUserSetting.isValid) {
+      if (!newUserSetting.isValid) {
         return of({
           userSetting: { ...userSetting, isError: true },
           serverMods: { args: [] },
@@ -165,7 +174,7 @@ export class AppComponent {
         userSetting: of(userSetting),
         serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
         clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
-      }).pipe(catchError(() => this.handleDirectoryPathError(userSetting)));
+      }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
     });
   }
 
@@ -183,21 +192,33 @@ export class AppComponent {
       .subscribe(value => this.#userSettingService.isExperimentalFunctionActive.set(value.args));
   }
 
+  private getCurrentTempDownloadDirectorySettings() {
+    this.#electronService
+      .sendEvent<boolean>('keep-temp-dir-setting')
+      .subscribe(value => this.#userSettingService.keepTempDownloadDirectory.set(value.args));
+  }
+
   private getCurrentTutorialSettings() {
     this.#electronService
       .sendEvent<boolean>('tutorial-setting')
-      .subscribe(value => this.#ngZone.run(() => this.#userSettingService.isTutorialDone.set(value.args)));
+      .subscribe(value => this.#ngZone.run(() => this.#userSettingService.updateTutorialDone(value.args)));
   }
 
   private getCachedModList() {
     this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
       this.#ngZone.run(() => {
-        value.args.forEach(modCache => {
-          const mod: Mod = { ...modCache, supportedSptVersion: `C*${modCache.supportedSptVersion}`, kind: undefined, notSupported: false };
-          this.#modListService.addMod(mod);
+        value.args.forEach(async modCache => {
+          const mod: Mod = {
+            ...modCache,
+            supportedSptVersion: `C*${modCache.supportedSptVersion}`,
+            kind: '',
+            notSupported: false,
+            isInvalid: false,
+            dependencies: [],
+            isDependenciesLoading: false,
+          };
+          await this.#modListService.addMod(mod);
         });
-
-        console.log(value);
       })
     );
   }
@@ -232,12 +253,12 @@ export class AppComponent {
                 }
               },
               complete: () => {
+                console.log('complete');
                 if (!instanceSet) {
                   this.#userSettingService.clearFakeInstance();
                 }
                 this.#modListService.clearFakeTutorialMods();
-                this.#electronService.sendEvent('tutorial-toggle', true).subscribe();
-                this.#userSettingService.updateTutorialDone(true);
+                this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
                 void this.#router.navigate(['/setting']);
               },
             });
@@ -247,13 +268,36 @@ export class AppComponent {
       });
   }
 
-  private handleDirectoryPathError(userSetting: UserSettingModel) {
-    userSetting.isError = true;
+  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
+    if (error.isPowerShellIssue) {
+      userSettingModel.isPowerShellIssue = true;
+    } else {
+      userSettingModel.isError = true;
+    }
 
     return of({
-      userSetting: userSetting,
+      userSetting: userSettingModel,
       serverMods: { args: [] },
       clientMods: { args: [] },
     });
+  }
+
+  private calculateCurrentDirectorySize() {
+    const activeInstance = this.#userSettingService.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService
+      .sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .subscribe(value =>
+        this.#ngZone.run(() => {
+          this.#userSettingService.keepTempDownloadDirectorySize.set({
+            size: value.args,
+            text: FileHelper.fileSize(value.args),
+          });
+          this.#changeDetectorRef.detectChanges();
+        })
+      );
   }
 }
