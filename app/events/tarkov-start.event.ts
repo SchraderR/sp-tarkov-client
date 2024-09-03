@@ -3,16 +3,23 @@ import * as path from 'path';
 import * as child from 'child_process';
 import { spawn } from 'node:child_process';
 import * as log from 'electron-log';
+import { existsSync } from 'fs-extra';
 
-const exeName = 'Aki.Server.exe';
+const exeNameAki = 'Aki.Server.exe';
+const exeNameSpt = 'SPT.Server.exe';
 
 export const handleTarkovStartEvent = () => {
-  ipcMain.on('tarkov-start', (event, akiInstancePath: string) => {
+  ipcMain.on('tarkov-start', (event, sptInstancePath: string) => {
     let child: child.ChildProcess;
 
     try {
-      child = spawn(path.join(akiInstancePath, exeName), [], {
-        cwd: akiInstancePath,
+      let filePath = path.join(sptInstancePath, exeNameAki);
+      if (!existsSync(filePath)) {
+        filePath = path.join(sptInstancePath, exeNameSpt);
+      }
+
+      child = spawn(filePath, [], {
+        cwd: sptInstancePath,
         detached: false, // run the child process in the background as a service
         windowsHide: true, // hide the console window on Windows
       });

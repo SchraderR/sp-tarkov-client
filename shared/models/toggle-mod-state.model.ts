@@ -1,7 +1,8 @@
 ﻿export interface ToggleModStateModel {
-  akiInstancePath: string;
+  sptInstancePath: string;
   modOriginalPath: string;
   modOriginalName: string;
   isServerMod: boolean;
+  isPrePatcherMod?: boolean;
   modWillBeDisabled: boolean;
 }

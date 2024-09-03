@@ -15,7 +15,7 @@ body {
   margin: 0;
 
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -54,6 +54,14 @@ body {
   height: 48px !important;
   width: 48px !important;
   margin: unset !important;
+
+  &.warning-color {
+    @media (prefers-color-scheme: light) {
+      color: orangered;
+    }
+
+    color: yellow;
+  }
 }
 
 mat-icon {
@@ -117,7 +125,7 @@ mat-icon {
   align-items: center;
 }
 
-.image-aki-version {
+.image-spt-version {
   &.card-badge {
     display: flex;
     position: absolute;

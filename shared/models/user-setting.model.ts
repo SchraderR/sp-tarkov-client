@@ -1,28 +1,43 @@
-﻿import { AkiCore, AkiTag, AkiVersion } from './aki-core.model';
+﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
+
+export interface UpdateModMeta {
+  name: string;
+  version: string;
+  hubId: string;
+  imageIcon: string;
+  clientName: string;
+  serverName: string;
+}
 
 export interface ModCache {
   name: string;
   fileUrl: string;
-  supportedAkiVersion: string;
+  supportedSptVersion: string;
   image?: string;
   icon?: string;
   teaser?: string;
-  akiVersionColorCode?: string;
+  sptVersionColorCode?: string;
 }
 
 export interface UserSettingStoreModel {
-  akiInstances: AkiInstance[];
+  modMetaData: UpdateModMeta[];
+  sptInstances: SptInstance[];
   theme: Theme;
   isTutorialDone: boolean;
   isExperimentalFunctionsActive: boolean;
-  akiVersions: AkiVersion[];
-  akiTags: AkiTag[];
+  sptVersions: SptVersion[];
+  sptTags: SptTag[];
   modCache: ModCache[];
   useIndexedMods: boolean;
+  keepTempDownloadDirectory: boolean;
+  akiInstances: SptInstance[]; // obsolete
+  akiVersions: SptVersion[]; // obsolete
+  akiTags: SptTag[]; // obsolete
 }
 
-export interface AkiInstance {
-  akiRootDirectory: string;
+export interface SptInstance {
+  sptRootDirectory: string;
+  akiRootDirectory?: string; // obsolete
   isValid: boolean;
   isActive: boolean;
   isLoading: boolean;
@@ -32,14 +47,13 @@ export interface AkiInstance {
   serverMods: ModMeta[];
 }
 
-export interface UserSettingModel extends AkiInstance {
-  akiCore: AkiCore;
+export interface UserSettingModel extends SptInstance {
+  sptCore?: SptCore;
 }
 
 export interface ModMeta {
   name: string;
   version: string;
-  hubId?: string;
   alternativeName?: string;
   modPath: string;
   modOriginalPath: string;
@@ -47,10 +61,7 @@ export interface ModMeta {
   isDirectory?: boolean;
   subMods?: ModMeta[];
   isEnabled: boolean;
-}
-
-export interface UpdateModMeta extends ModMeta {
-  updateVersion?: string;
+  isPrePatcherMod?: boolean;
 }
 
 export enum Theme {

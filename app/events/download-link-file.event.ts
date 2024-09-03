@@ -2,7 +2,7 @@
 import { Browser, launch, Page } from 'puppeteer';
 import axios from 'axios';
 import { GithubRelease } from '../../shared/models/github.model';
-import { LinkModel } from '../../shared/models/aki-core.model';
+import { LinkModel } from '../../shared/models/spt-core.model';
 import { Browser as Browsers, install } from '@puppeteer/browsers';
 import { GithubRateLimit } from '../../shared/models/download.model';
 import * as log from 'electron-log';
@@ -21,7 +21,7 @@ export const handleDownloadLinkEvent = () => {
 
     await install({
       browser: Browsers.CHROME,
-      buildId: '122.0.6257.0',
+      buildId: '127.0.6533.88',
       cacheDir: `${app.getPath('home')}/.local-chromium`,
     });
 
@@ -34,7 +34,7 @@ export const handleDownloadLinkEvent = () => {
         if (!downloadLink) {
           browser = await launch({
             headless: true,
-            executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-122.0.6257.0/chrome-win64/chrome.exe`,
+            executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-127.0.6533.88/chrome-win64/chrome.exe`,
           });
 
           const page = await browser.newPage();
@@ -103,12 +103,13 @@ export const handleDownloadLinkEvent = () => {
 
         const isGoogleDriveLink = isGoogleDrive(downloadLink);
         if (isGoogleDriveLink) {
-          downloadLink = downloadLink.split('?')[0];
           let regex;
           if (downloadLink.includes('/file/d/')) {
             regex = /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/;
           } else if (downloadLink.includes('/folders/')) {
             regex = /https:\/\/drive\.google\.com\/drive\/folders\/(.*?)(\/|$)/;
+          } else if (downloadLink.includes('uc?export=download&id=')) {
+            regex = /https:\/\/drive\.google\.com\/uc\?export=download&id=(.*?)(\/|$)/;
           }
 
           if (!regex) {
@@ -152,8 +153,7 @@ export const handleDownloadLinkEvent = () => {
       } catch (e) {
         log.error(e);
         event.sender.send('download-link-error', 0);
-      }
-      finally {
+      } finally {
         if (browser) {
           await browser.close();
         }

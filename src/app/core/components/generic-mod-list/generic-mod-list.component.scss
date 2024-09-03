@@ -1,11 +1,13 @@
 @use '@angular/material' as mat;
+$toolbarSize: 60px;
 
-:host {
+.mod-list {
   display: flex;
   overflow: auto;
   gap: 16px;
+  flex-direction: row;
   flex-wrap: wrap;
-  padding: 8px;
+  height: calc(100% - ($toolbarSize + 8px)); // toolbar size and some padding sizes
 }
 
 ::ng-deep.version-select {
@@ -44,16 +46,12 @@ mat-card {
 
 .mod-name {
   justify-content: center;
-  padding-top: 4px;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-bottom: 2px;
+  padding: 4px 8px 2px;
   min-width: 140px;
 }
 
 .mod-version {
-  padding: 0 8px;
-  padding-bottom: 2px;
+  padding: 0 8px 2px;
   font-style: italic;
   font-size: small;
   overflow: hidden;
@@ -90,7 +88,7 @@ mat-card {
 .action-container {
   display: flex;
   position: absolute;
-  height: 58px;
+  height: 60px;
   bottom: 4px;
   right: 34px;
   justify-content: flex-end;
@@ -99,6 +97,10 @@ mat-card {
   border-radius: 4px;
   background-color: rgba(75, 75, 75);
   border: 1px solid rgba(0, 0, 0, 0.5);
+
+  .refresh-button {
+    margin: 0 4px;
+  }
 
   ::ng-deep.filter-input {
     @include mat.form-field-density(-5);

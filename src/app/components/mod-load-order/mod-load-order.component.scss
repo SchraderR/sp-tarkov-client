@@ -23,8 +23,8 @@
   overflow: auto;
 
   @media (prefers-color-scheme: dark) {
-    background: rgb(110, 110, 110);
-    border: solid 1px #ccc;
+    background: #2a2a2a;
+    border: solid 1px #555;
   }
 }
 
@@ -42,9 +42,9 @@
   font-size: 14px;
 
   @media (prefers-color-scheme: dark) {
-    background: rgb(98, 98, 98);
-    color: white;
-    border-bottom: solid 1px #8f8f8f;
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-bottom: solid 1px #555;
   }
 }
 

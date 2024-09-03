@@ -6,10 +6,10 @@ import { ensureDirSync, existsSync } from 'fs-extra';
 import { readdirSync, readFileSync } from 'node:fs';
 
 export const handleServerModsEvent = () => {
-  ipcMain.on('server-mod', async (event, akiInstancePath: string) => {
+  ipcMain.on('server-mod', async (event, instancePath: string) => {
     try {
-      if (existsSync(akiInstancePath)) {
-        const rootServerPath = path.join(akiInstancePath, serverModPath);
+      if (existsSync(instancePath)) {
+        const rootServerPath = path.join(instancePath, serverModPath);
         const dirs = readdirSync(rootServerPath, { withFileTypes: true })
           .filter(dirent => dirent.isDirectory() && dirent.name !== 'spt')
           .map(dirent => dirent.name);
@@ -19,12 +19,12 @@ export const handleServerModsEvent = () => {
           const filePath = path.join(rootServerPath, dir, 'package.json');
           if (existsSync(filePath)) {
             const packageJson = JSON.parse(readFileSync(filePath, 'utf8'));
-            const { name, version, akiVersion } = packageJson;
-            if (name && version && akiVersion) {
+            const { name, version, akiVersion, sptVersion } = packageJson;
+            if (name && version && (akiVersion || sptVersion)) {
               data.push({
                 name,
                 version,
-                akiVersion,
+                sptVersion: sptVersion ?? akiVersion,
                 modPath: path.join(rootServerPath, dir),
                 modOriginalPath: path.join(rootServerPath, dir),
                 modOriginalName: dir,
@@ -34,7 +34,7 @@ export const handleServerModsEvent = () => {
           }
         }
 
-        data = await checkForDisabledServerMods(data, akiInstancePath);
+        data = await checkForDisabledServerMods(data, instancePath);
 
         event.sender.send('server-mod-completed', data);
       }
@@ -44,11 +44,11 @@ export const handleServerModsEvent = () => {
     }
   });
 
-  function checkForDisabledServerMods(data: any[], akiInstancePath: string): Promise<any[]> {
+  function checkForDisabledServerMods(data: any[], instancePath: string): Promise<any[]> {
     return new Promise<any[]>(async (resolve, reject) => {
       try {
         const appPath = app.getPath('userData');
-        const instanceName = akiInstancePath.split('\\').pop();
+        const instanceName = instancePath.split('\\').pop();
         if (!instanceName) {
           return data;
         }
@@ -61,13 +61,13 @@ export const handleServerModsEvent = () => {
           const filePath = path.join(instanceServerDisabledModPath, mod.name, 'package.json');
           if (existsSync(filePath)) {
             const packageJson = JSON.parse(readFileSync(filePath, 'utf8'));
-            const { name, version, akiVersion } = packageJson;
+            const { name, version, akiVersion, sptVersion } = packageJson;
 
-            if (name && version && akiVersion) {
+            if (name && version && (akiVersion || sptVersion)) {
               data.push({
                 name,
                 version,
-                akiVersion,
+                sptVersion: sptVersion ?? akiVersion,
                 modPath: path.join(instanceServerDisabledModPath, mod.name),
                 modOriginalPath: path.join(instanceServerDisabledModPath, mod.name),
                 modOriginalName: mod.name,

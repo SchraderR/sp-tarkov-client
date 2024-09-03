@@ -1,6 +1,13 @@
 <div class="mod-list" [class.full]="modListSignal().length">
   @for (mod of modListSignal(); track mod.name) {
     <app-mod-card @fadeInOut [mod]="mod" (removeModEvent)="removeMod($event)" />
+    @if (mod.isDependenciesLoading) {
+      <mat-spinner diameter="50"></mat-spinner>
+    }
+
+    @for (dependency of mod.dependencies; track dependency) {
+      <app-mod-dependency-card @fadeInOut [mod]="dependency"></app-mod-dependency-card>
+    }
   }
 </div>
 
@@ -16,10 +23,15 @@
       [matTooltip]="'Use information from an indexed list. The normal process will be used as a fallback.\n\nThis mod list is updated every hour and mod version might not be in sync with the hub.\n\nUse with caution.'">
       Use indexed mods
     </mat-slide-toggle>
-    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted()"
+    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted() || isSomeModDependencyLoading()"
             (click)="downloadAndInstallAll()">Download / Install
     </button>
   </div>
+
+  <span class="licence-text">
+    <div>*By using this application, you agree to and accept the respective open source licenses for any mods you download</div>
+    <div>*Cached versions (example: C*Spt 3.9.0) are not in sync with the hub. Please check the mod page or use with caution.</div>
+  </span>
 }
 
 @if (!modListSignal().length) {
@@ -29,8 +41,3 @@
     <span class="no-mods-subtext">Add some mods to proceed with the installation</span>
   </div>
 }
-
-<span class="licence-text">
-  <div>*By using this application, you agree to and accept the respective open source licenses for any mods you download</div>
-  <div>*Cached versions (example: C*Aki 3.8.0) are not in sync with the hub. Please check the mod page or use with caution.</div>
-</span>

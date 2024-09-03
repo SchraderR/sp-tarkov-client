@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, Vi
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { AkiInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { SptInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,7 @@ import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DirectoryError } from '../../core/models/directory-error';
+import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
   standalone: true,
@@ -59,6 +60,8 @@ export default class PersonalSettingComponent {
   readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
+  keepTempDownloadDirectory = new FormControl(this.#userSettingsService.keepTempDownloadDirectory());
+  currentTempDirectorySize = this.#userSettingsService.keepTempDownloadDirectorySize;
   hoveringInstance = '';
 
   changeTheme(event: MatSelectChange) {
@@ -71,20 +74,61 @@ export default class PersonalSettingComponent {
     });
   }
 
-  openInstance(akiRootDirectory: string) {
-    this.#electronService.openPath(akiRootDirectory);
+  toggleKeepTempDirectory(event: MatSlideToggleChange) {
+    this.#electronService.sendEvent('keep-temp-dir-setting-toggle', event.checked).subscribe(() => {
+      this.#ngZone.run(() => this.#userSettingsService.keepTempDownloadDirectory.set(event.checked));
+    });
+  }
+
+  openTemporaryDownloadDirectory() {
+    const activeInstance = this.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    if (this.currentTempDirectorySize().size > 0) {
+      this.#electronService.openPath(`${activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory}/_temp`);
+    }
+  }
+
+  clearTemporaryDownloadDirectory() {
+    const activeInstance = this.userSettingSignal().find(i => i.isActive);
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService
+      .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .pipe(
+        switchMap(() =>
+          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+        )
+      )
+      .subscribe(value => {
+        this.#ngZone.run(() => {
+          this.#userSettingsService.keepTempDownloadDirectorySize.set({
+            size: value.args,
+            text: FileHelper.fileSize(value.args),
+          });
+          this.#changeDetectorRef.detectChanges();
+        });
+      });
+  }
+
+  openInstance(rootDirectory: string) {
+    this.#electronService.openPath(rootDirectory);
   }
 
   restartTutorial() {
-    this.#userSettingsService.updateTutorialDone(false);
+    this.#electronService.sendEvent('tutorial-toggle', false).subscribe(() => this.#userSettingsService.updateTutorialDone(false));
   }
 
-  clearAkiVersionCache() {
-    this.#electronService.sendEvent('aki-versions-save', []).subscribe(() => this.cacheClearToast('Aki-Versions'));
+  clearSptVersionCache() {
+    this.#electronService.sendEvent('spt-versions-save', []).subscribe(() => this.cacheClearToast('Spt-Versions'));
   }
 
-  clearAkiTagsCache() {
-    this.#electronService.sendEvent('aki-tags-save', []).subscribe(() => this.cacheClearToast('Aki-Tags'));
+  clearSptTagsCache() {
+    this.#electronService.sendEvent('spt-tags-save', []).subscribe(() => this.cacheClearToast('Spt-Tags'));
   }
 
   getRootEftSpDirectory() {
@@ -100,13 +144,13 @@ export default class PersonalSettingComponent {
 
           return forkJoin({
             userSetting: of(newUserSetting),
-            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.akiRootDirectory),
-            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.akiRootDirectory),
+            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
+            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
           }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
-            const userSetting = this.#userSettingsService.userSettingSignal().find(s => s.akiRootDirectory === result.userSetting.akiRootDirectory);
+            const userSetting = this.#userSettingsService.userSettingSignal().find(s => s.sptRootDirectory === result.userSetting.sptRootDirectory);
             if (!userSetting) {
               return;
             }
@@ -137,9 +181,9 @@ export default class PersonalSettingComponent {
     settingModel.isActive = true;
     this.#userSettingsService.updateUserSetting();
 
-    const akiInstance: AkiInstance = {
+    const sptInstance: SptInstance = {
       isActive: settingModel.isActive,
-      akiRootDirectory: settingModel.akiRootDirectory,
+      sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
       isPowerShellIssue: settingModel.isPowerShellIssue,
@@ -148,13 +192,13 @@ export default class PersonalSettingComponent {
       serverMods: settingModel.serverMods,
     };
 
-    this.#electronService.sendEvent('user-settings-update', akiInstance).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+    this.#electronService.sendEvent('user-settings-update', sptInstance).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
   }
 
   removeInstance(settingModel: UserSettingModel) {
-    this.#electronService.sendEvent('user-settings-remove', settingModel.akiRootDirectory).subscribe(() => {
+    this.#electronService.sendEvent('user-settings-remove', settingModel.sptRootDirectory).subscribe(() => {
       this.#ngZone.run(() => {
-        this.#userSettingsService.removeUserSetting(settingModel.akiRootDirectory);
+        this.#userSettingsService.removeUserSetting(settingModel.sptRootDirectory);
         this.#userSettingsService.updateUserSetting();
       });
     });
@@ -167,16 +211,16 @@ export default class PersonalSettingComponent {
       userSettingModel.isError = true;
     }
 
-    this.#matSnackBar.open(
-      `Instance: ${userSettingModel.akiRootDirectory}\nServer/Client Paths not found.\nMake sure you started the AKI-Server at least one time.`,
-      '',
-      {
-        duration: 3000,
-        verticalPosition: 'bottom',
-        horizontalPosition: 'center',
-        panelClass: ['snackbar-multiline'],
-      }
-    );
+    const errorMessage = userSettingModel.isPowerShellIssue
+      ? 'Powershell could not be used. \nPlease make sure, Powershell is configure correctly and environment variable are set correctly.'
+      : `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
+
+    this.#matSnackBar.open(errorMessage, '', {
+      duration: 3000,
+      verticalPosition: 'bottom',
+      horizontalPosition: 'center',
+      panelClass: ['snackbar-multiline'],
+    });
 
     return of({
       userSetting: userSettingModel,
@@ -185,7 +229,7 @@ export default class PersonalSettingComponent {
     });
   }
 
-  private cacheClearToast(type: 'Aki-Versions' | 'Aki-Tags'): void {
+  private cacheClearToast(type: 'Spt-Versions' | 'Spt-Tags'): void {
     this.#ngZone.run(() => {
       this.#matSnackBar.open(`${type} cache was cleared. ${type} will be fetched on the next startup.`, '', {
         duration: 3000,

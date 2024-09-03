@@ -9,9 +9,9 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
   let tray: Tray | null;
   const iconPath = path.join(__dirname, 'assets/icon_tray.png');
   const browserWindow = BrowserWindowSingleton.getInstance();
-  const instance = store.get('akiInstances');
+  const instance = store.get('sptInstances');
   if (!instance) {
-    store.set('akiInstances', []);
+    store.set('sptInstances', []);
     store.set('theme', 'system');
     store.set('isTutorialDone', false);
     store.set('isExperimentalFunctionsActive', false);

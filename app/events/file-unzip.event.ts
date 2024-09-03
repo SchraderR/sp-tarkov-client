@@ -1,14 +1,14 @@
 ﻿import { ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { clientModPath, serverModPath } from '../constants';
+import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as log from 'electron-log';
 import { ZipArchiveHelper } from '../helper/zip-archive-helper';
 
 export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
-    const ankiTempDownloadDir = path.join(args.akiInstancePath, '_temp');
+    const ankiTempDownloadDir = path.join(args.sptInstancePath, '_temp');
     const archivePath = args.filePath;
 
     if (!fs.existsSync(ankiTempDownloadDir)) {
@@ -53,7 +53,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isArchiveWithSingleDll = await zipArchiveHelper.checkForArchiveWithSingleDll(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
     if (isArchiveWithSingleDll) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.akiInstancePath, clientModPath), sevenBinPath);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath);
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -61,7 +61,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isArchiveWithSingleDllInsideDirectory = await zipArchiveHelper.checkForArchiveWithSingleDllInsideDirectory(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
     if (isArchiveWithSingleDllInsideDirectory) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.akiInstancePath, clientModPath), sevenBinPath, ['**\\*.dll'], true);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath, ['**\\*.dll'], true);
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -69,7 +69,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isHappyPath = await zipArchiveHelper.isHappyPathArchive(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isHappyPath: ${isHappyPath}`);
     if (isHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, args.akiInstancePath, sevenBinPath, [`${clientModPath}/*`, `${serverModPath}/*`]);
+      await zipArchiveHelper.extractFullArchive(archivePath, args.sptInstancePath, sevenBinPath, [`${clientPatcherModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`]);
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -78,7 +78,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     log.log(`FileId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
     if (isNestedServerModHappyPath) {
       await zipArchiveHelper.extractFullArchive(archivePath, ankiTempDownloadDir, sevenBinPath);
-      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}`, args.akiInstancePath, { recursive: true });
+      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(args.sptInstancePath, serverModPath), { recursive: true });
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -86,7 +86,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isServerModWithDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
     log.log(`FileId:${args.hubId} - isServerModWithDirectory: ${isServerModWithDirectory}`);
     if (isServerModWithDirectory) {
-      await zipArchiveHelper.extractFullArchive(archivePath, path.join(args.akiInstancePath, serverModPath), sevenBinPath);
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(args.sptInstancePath, serverModPath), sevenBinPath);
       event.sender.send('file-unzip-completed');
       return;
     }

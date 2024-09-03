@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, EMPTY, filter, firstValueFrom, map, startWith, switchMap } from 'rxjs';
-import { AkiSearchService } from '../../core/services/aki-search.service';
+import { SptSearchService } from '../../core/services/spt-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +18,7 @@ import { ElectronService } from '../../core/services/electron.service';
 import { DownloadService } from '../../core/services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModCache } from '../../../../shared/models/user-setting.model';
+import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 
 @Component({
   standalone: true,
@@ -35,18 +36,19 @@ import { ModCache } from '../../../../shared/models/user-setting.model';
     IsAlreadyInstalledDirective,
     MatTooltipModule,
     MatProgressSpinner,
+    IsAlreadyStartedDirective,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
 })
 export class ModSearchComponent {
-  #akiSearchService = inject(AkiSearchService);
+  #sptSearchService = inject(SptSearchService);
   #modListService = inject(ModListService);
   #userSettingsService = inject(UserSettingsService);
   #electronService = inject(ElectronService);
   #downloadService = inject(DownloadService);
 
-  isActiveAkiInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
+  isActiveSptInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   isLoading = false;
   searchControl = new FormControl('', Validators.minLength(2));
@@ -64,7 +66,7 @@ export class ModSearchComponent {
 
           if (searchArgument?.trim()) {
             this.isLoading = true;
-            return this.#akiSearchService.searchMods(searchArgument!);
+            return this.#sptSearchService.searchMods(searchArgument);
           } else {
             this.isLoading = false;
             return EMPTY;
@@ -72,7 +74,7 @@ export class ModSearchComponent {
         }),
         map(mods => {
           this.isLoading = false;
-          this.filteredModItems = mods.sort((a, b) => b.supportedAkiVersion.localeCompare(a.supportedAkiVersion));
+          this.filteredModItems = mods.sort((a, b) => b.supportedSptVersion.localeCompare(a.supportedSptVersion));
         })
       )
       .subscribe();
@@ -89,11 +91,11 @@ export class ModSearchComponent {
       image: mod.image,
       fileUrl: mod.fileUrl,
       teaser: mod.teaser,
-      supportedAkiVersion: mod.supportedAkiVersion,
-      akiVersionColorCode: mod.akiVersionColorCode,
+      supportedSptVersion: mod.supportedSptVersion,
+      sptVersionColorCode: mod.sptVersionColorCode,
     };
 
-    this.#modListService.addMod(mod);
+    await this.#modListService.addMod(mod);
     await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 

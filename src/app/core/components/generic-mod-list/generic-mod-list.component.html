@@ -10,97 +10,117 @@
   </div>
 }
 
-@for (mod of accumulatedModList; track mod) {
-  <mat-card appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled" [mod]="mod">
-    <mat-card-content class="card-container">
-      <div>
-        @if (mod.image) {
-          <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
-        }
-        @if (mod.icon) {
-          <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-        }
-        @if (mod.supportedAkiVersion) {
-          <div [class]="mod.akiVersionColorCode"
-               class="font-small image-aki-version card-badge">{{ mod.supportedAkiVersion }}
-          </div>
-        }
-      </div>
-      <div class="mod-list-container">
-        <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
-        <div class="mod-version">Last update: {{ mod.lastUpdate }}</div>
-        <div class="mod-teaser">{{ mod.teaser }}</div>
-        <span class="spacer"></span>
-        <div class="card-button-container">
-          @if (isActiveAkiInstanceAvailable()) {
-            @if (mod.notSupported) {
-              <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">info</mat-icon>
-            } @else {
-              @if (alreadyInstalled.isAlreadyInstalled()) {
-                <mat-icon
-                  class="already-installed-icon-container"
-                  matTooltip="Already installed"
-                  color="accent">done_all
+<div class="mod-list">
+  @for (mod of accumulatedModList; track mod) {
+    <mat-card
+      appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
+      appIsAlreadyStarted #alreadyStarted="isAlreadyStarted"
+      appCheckModDependency #modDependencies="hasModDependencies"
+      [mod]="mod">
+      <mat-card-content class="card-container">
+        <div>
+          @if (mod.image) {
+            <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
+          }
+          @if (mod.icon) {
+            <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
+          }
+          @if (mod.supportedSptVersion) {
+            <div [class]="mod.sptVersionColorCode"
+                 class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
+            </div>
+          }
+        </div>
+        <div class="mod-list-container">
+          <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
+          <div class="mod-version">Last update: {{ mod.lastUpdate }}</div>
+          <div class="mod-teaser">{{ mod.teaser }}</div>
+          <span class="spacer"></span>
+          <div class="card-button-container">
+            @if (isActiveSptInstanceAvailable()) {
+              @if (mod.notSupported) {
+                <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">
+                  info
                 </mat-icon>
               } @else {
-                @if (!alreadyInstalled.isInModList()) {
-                  <button mat-icon-button (click)="addModToModList(mod)"
-                          [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
-                    <mat-icon>add</mat-icon>
-                  </button>
+                @if (!alreadyInstalled.isAlreadyInstalled() && alreadyStarted.isAlreadyStarted()) {
+                  <div class="already-installed-icon-container">
+                    <mat-spinner [diameter]="30"></mat-spinner>
+                  </div>
+                }
+                @if (alreadyInstalled.isAlreadyInstalled()) {
+                  <mat-icon
+                    class="already-installed-icon-container"
+                    matTooltip="Already installed"
+                    color="accent">done_all
+                  </mat-icon>
                 } @else {
-                  <button mat-icon-button (click)="removeModFromModList(mod)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  @if (!alreadyStarted.isAlreadyStarted() && !alreadyInstalled.isInModList()) {
+                    <button mat-icon-button (click)="addModToModList(mod)"
+                            [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  }
+                  @if (!alreadyStarted.isAlreadyStarted() && alreadyInstalled.isInModList()) {
+                    <button mat-icon-button (click)="removeModFromModList(mod)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
                 }
               }
+            } @else {
+              <mat-icon class="mod-install-instance-warning" color="warn"
+                        matTooltip="Add or activate an instance of SPT to enable additional functionality">
+                warning
+              </mat-icon>
             }
-          } @else {
-            <mat-icon class="mod-install-instance-warning" color="warn"
-                      matTooltip="Add or activate an instance of SPT to enable additional functionality">
-              warning
-            </mat-icon>
-          }
-          <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
-            <mat-icon>open_in_new</mat-icon>
-          </button>
+            <button mat-icon-button (click)="openExternal(mod.fileUrl)" matTooltip="Open external">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+            <span class="spacer"></span>
+            @if (modDependencies.hasModDependencies()) {
+              <mat-icon class="mod-install-instance-warning warning-color" matTooltip="Mod dependency">
+                info
+              </mat-icon>
+            }
+          </div>
         </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-}
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
 
 <mat-toolbar class="action-container">
-  <button mat-icon-button [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
+  <button mat-icon-button class="refresh-button" [disabled]="loading" (click)="refresh()" matTooltip="Refresh list">
     <mat-icon>refresh</mat-icon>
   </button>
 
   @if (tags) {
-    <ng-container *ngTemplateOutlet="akiTagsForm"></ng-container>
+    <ng-container *ngTemplateOutlet="sptTagsForm"></ng-container>
   } @else {
-    <ng-container *ngTemplateOutlet="akiVersionForm"></ng-container>
+    <ng-container *ngTemplateOutlet="sptVersionForm"></ng-container>
   }
 
   <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20" />
 </mat-toolbar>
 
 
-<ng-template #akiVersionForm>
+<ng-template #sptVersionForm>
   <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
-    <mat-label>Aki Version</mat-label>
-    <mat-select [formControl]="akiVersionFormField">
+    <mat-label>SPT Version</mat-label>
+    <mat-select [formControl]="sptVersionFormField">
       <mat-option [value]=""></mat-option>
-      @for (version of akiVersionSignal(); track version) {
+      @for (version of sptVersionSignal(); track version) {
         <mat-option [value]="version">{{ version.innerText }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 </ng-template>
 
-<ng-template #akiTagsForm>
+<ng-template #sptTagsForm>
   <mat-form-field class="version-select" color="accent" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Tags</mat-label>
-    <input matInput aria-label="Number" [formControl]="akiTagFormField" [matAutocomplete]="auto">
+    <input matInput aria-label="Number" [formControl]="sptTagFormField" [matAutocomplete]="auto">
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
       @for (tag of filteredOptions | async; track tag) {
         <mat-option [value]="tag.innerText">{{ tag.innerText }}</mat-option>

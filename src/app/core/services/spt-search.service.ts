@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { from, map, mergeMap, Observable, toArray } from 'rxjs';
+import { catchError, concatMap, delay, from, map, mergeMap, Observable, of, toArray } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HtmlHelper } from '../helper/html-helper';
 import { Mod } from '../models/mod';
-import { Kind } from '../../../../shared/models/unzip.model';
 import { environment } from '../../../environments/environment';
 import { FileHelper } from '../helper/file-helper';
 import { ConfigurationService } from './configuration.service';
@@ -15,7 +14,7 @@ interface SearchResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class AkiSearchService {
+export class SptSearchService {
   private restrictedModKinds = ['Community support'];
 
   #httpClient = inject(HttpClient);
@@ -34,10 +33,14 @@ export class AkiSearchService {
       )
       .pipe(
         map(response => this.extractModInformation(response)),
-        mergeMap((mods: Mod[]) => from(mods)),
+        mergeMap((mods: Mod[]) => from(mods).pipe(concatMap(mod => of(mod).pipe(delay(500))))),
         mergeMap(mod =>
           this.getFileHubView(mod.fileUrl).pipe(
-            map(({ supportedAkiVersion, akiVersionColorCode }) => ({ ...mod, supportedAkiVersion, akiVersionColorCode }))
+            map(({ supportedSptVersion, sptVersionColorCode }) => ({
+              ...mod,
+              supportedSptVersion,
+              sptVersionColorCode,
+            }))
           )
         ),
         toArray()
@@ -55,24 +58,14 @@ export class AkiSearchService {
 
     return Array.from(modListSection)
       .map(e => {
-        const rawKind = e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML;
-        let kind: Kind | undefined;
-        if (rawKind.startsWith('Client mods')) {
-          kind = Kind.client;
-        } else if (rawKind.startsWith('Server mods')) {
-          kind = Kind.server;
-        } else if (rawKind.startsWith('Overhaul')) {
-          kind = Kind.overhaul;
-        }
-
         return {
           name: e.getElementsByClassName('extendedNotificationLabel')?.[0]?.innerHTML,
           image: e.getElementsByTagName('img')?.[0]?.src ?? this.#placeholderImagePath,
           fileUrl: e.getElementsByTagName('a')?.[0]?.href,
-          kind: kind,
+          kind: e.getElementsByClassName('extendedNotificationSubtitle')?.[0].getElementsByTagName('small')?.[0].innerHTML,
         } as Mod; // Type assertion here
       })
-      .filter(m => m.kind !== undefined && !this.restrictedModKinds.some(r => m.kind?.includes(r)))
+      .filter(m => !this.restrictedModKinds.some(r => m.kind?.includes(r)))
       .map(e => {
         if (!config) {
           return e;
@@ -83,22 +76,33 @@ export class AkiSearchService {
           return e;
         }
 
-        e.notSupported = !!config.notSupported.find(f => f === +fileId);
+        if (environment.production) {
+          e.notSupported = !!config.notSupported.find(f => f === +fileId);
+        }
+
         return e;
       });
   }
 
-  private getFileHubView(modUrl: string): Observable<{ supportedAkiVersion: string; akiVersionColorCode: string }> {
+  private getFileHubView(modUrl: string): Observable<{ supportedSptVersion: string; sptVersionColorCode: string }> {
     modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
-    return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(map(modView => this.extractSPVersion(modView)));
+    return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(
+      map(modView => this.extractSPVersion(modView)),
+      catchError(() => {
+        return of({
+          supportedSptVersion: 'Error while fetching version. Use with caution.',
+          sptVersionColorCode: 'badge label red',
+        });
+      })
+    );
   }
 
-  private extractSPVersion(modHub: string): { supportedAkiVersion: string; akiVersionColorCode: string } {
+  private extractSPVersion(modHub: string): { supportedSptVersion: string; sptVersionColorCode: string } {
     const searchResult = HtmlHelper.parseStringAsHtml(modHub);
 
     return {
-      supportedAkiVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
-      akiVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+      supportedSptVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+      sptVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
     };
   }
 }
