@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { Configuration, ConfigurationService } from '../../core/services/configuration.service';
+import { ConfigurationService } from '../../core/services/configuration.service';
 import { ModListService } from '../../core/services/mod-list.service';
-import alternativeModNames from '../../core/directives/backupAlternativeNames.json';
 import { ModMeta } from '../../../../shared/models/user-setting.model';
 
 @Injectable()

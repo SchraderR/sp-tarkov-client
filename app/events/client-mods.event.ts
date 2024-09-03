@@ -117,7 +117,7 @@ async function getVersion(dllFilePath: string) {
       return stderr;
     }
 
-    return stdout;
+     return stdout.trim();
   } catch (error) {
     throw { error, isPowerShellIssue: true };
   }

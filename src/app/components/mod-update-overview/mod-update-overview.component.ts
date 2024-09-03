@@ -16,6 +16,7 @@ import { IndexedMods } from '../../core/services/download.service';
 import { NgArrayPipesModule } from 'ngx-pipes';
 import { LevenshteinService } from '../../core/services/levenshtein.service';
 import { MatCardModule } from '@angular/material/card';
+import { clean, gte } from 'semver';
 
 @Component({
   standalone: true,
@@ -38,7 +39,6 @@ export default class ModUpdateOverviewComponent {
     if (!activeInstance) {
       return [];
     }
-
     return [...activeInstance.serverMods, ...activeInstance.clientMods] as UpdateModMeta[];
   });
 
@@ -46,7 +46,6 @@ export default class ModUpdateOverviewComponent {
     effect(() => {
       const activeInstance = this.#userSettingsService.userSettingSignal().find(i => i.isActive);
       const indexedMods = this.#modListService.indexedModListSignal();
-      // const modMetaData = this.#configurationService.configSignal()?.modMetaData!;
       const config = this.#configurationService.configSignal();
 
       if (!activeInstance || !config) {
@@ -56,43 +55,30 @@ export default class ModUpdateOverviewComponent {
       this.#modUpdateService.assignAlternativeNames(activeInstance.serverMods, config.alternativeModNames);
       this.#modUpdateService.assignAlternativeNames(activeInstance.clientMods, config.alternativeModNames);
 
-      // const flattenMetaModNames = this.#levenshteinService.flattenSubMods(modMetaData.map(m => ({ name: m.name }) as ModMeta));
       const flattenIndexedModNames = this.#levenshteinService.flattenSubMods(indexedMods.map(m => ({ name: m.name }) as ModMeta));
-      const combinedModNames = [...flattenIndexedModNames]; //...flattenMetaModNames,
+      const combinedModNames = [...flattenIndexedModNames];
 
-      activeInstance.serverMods.forEach(mod => this.handleMod(mod, indexedMods, combinedModNames)); //, modMetaData
-      activeInstance.clientMods.forEach(mod => this.handleMod(mod, indexedMods, combinedModNames)); //, modMetaData
+      activeInstance.serverMods.forEach(mod => this.handleMod(mod, indexedMods, combinedModNames));
+      activeInstance.clientMods.forEach(mod => this.handleMod(mod, indexedMods, combinedModNames));
     });
   }
 
-  private handleMod(
-    mod: UpdateModMeta,
-    indexedMods: IndexedMods[],
-    // modMetaData: {
-    //   name: string;
-    //   hubId: string;
-    // }[],
-    flattenModNames: string[]
-  ) {
+  private handleMod(mod: UpdateModMeta, indexedMods: IndexedMods[], flattenModNames: string[]) {
     const indexedModAlternativeName = indexedMods.find(m => m.name === mod.alternativeName);
     const indexedModModName = indexedMods.find(m => m.name === mod.name);
 
-    console.log(mod.name);
+    mod.version = mod.version;
+
     if (!!indexedModAlternativeName || !!indexedModModName) {
-      console.log(indexedModAlternativeName);
-      console.log(indexedModModName);
+      const newVersion = indexedModAlternativeName?.version ?? indexedModModName?.version;
 
-      mod.hubId = indexedModAlternativeName?.id ?? indexedModModName?.id;
-      mod.updateVersion = indexedModAlternativeName?.version ?? indexedModModName?.version;
+      if (!this.areVersionsEqual(mod.version, newVersion)) {
+        mod.hubId = indexedModAlternativeName?.id ?? indexedModModName?.id;
+        mod.updateVersion = newVersion;
+        mod.isUpdateAvailable = true;
+      }
 
-      mod.subMods?.forEach(subMod => {
-        this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
-        if (subMod.hubId && !mod.hubId) {
-          mod.hubId = subMod.hubId;
-          mod.updateVersion = indexedModAlternativeName?.version ?? indexedModModName?.version;
-        }
-      });
-
+      this.processSubMods(mod, indexedMods, flattenModNames, newVersion);
       return;
     }
 
@@ -100,113 +86,57 @@ export default class ModUpdateOverviewComponent {
     const closestModName = closest(mod.name, flattenModNames);
 
     const isHubNameBasedOnLevenshtein = this.#levenshteinService.isMatchBasedOnLevenshtein(closestAlternativeName, mod.alternativeName);
-    const isModNameBasedOnLLevenshtein = this.#levenshteinService.isMatchBasedOnLevenshtein(closestModName, mod.name);
+    const isModNameBasedOnLevenshtein = this.#levenshteinService.isMatchBasedOnLevenshtein(closestModName, mod.name);
 
-    console.log(isHubNameBasedOnLevenshtein);
-    console.log(isModNameBasedOnLLevenshtein);
     if (isHubNameBasedOnLevenshtein) {
-      const item = indexedMods?.find(m => m.name === closestAlternativeName);
-      console.log(item);
-
-      mod.hubId = item?.id;
-      mod.updateVersion = item?.version;
-
-      mod.subMods?.forEach(subMod => {
-        this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
-        if (subMod.hubId && !mod.hubId) {
-          mod.hubId = subMod.hubId;
-          mod.updateVersion = item?.version;
-        }
-      });
+      this.updateModDetails(mod, indexedMods, flattenModNames, closestAlternativeName);
       return;
     }
 
-    if (isModNameBasedOnLLevenshtein) {
-      const item = indexedMods?.find(m => m.name === closestModName);
-      mod.hubId = item?.id;
-      mod.updateVersion = item?.version;
-
-      mod.subMods?.forEach(subMod => {
-        this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
-        if (subMod.hubId && !mod.hubId) {
-          mod.hubId = subMod.hubId;
-          mod.updateVersion = item?.version;
-        }
-      });
+    if (isModNameBasedOnLevenshtein) {
+      this.updateModDetails(mod, indexedMods, flattenModNames, closestModName);
       return;
     }
+  }
 
-    //const closestAlternativeName = closest(mod.alternativeName ?? '', flattenModNames);
-    //const closestModName = closest(mod.name, flattenModNames);
-    //
-    //const isHubNameBasedOnLevenshtein = closestAlternativeName
-    //  ? this.#levenshteinService.isMatchBasedOnLevenshtein(closestAlternativeName, mod.alternativeName)
-    //  : false;
-    //
-    //const isModNameBasedOnLLevenshtein = closestModName ? this.#levenshteinService.isMatchBasedOnLevenshtein(closestModName, mod.name) : false;
-    //
-    //if (isHubNameBasedOnLevenshtein) {
-    //  const item = modMetaData?.find(m => m.name === closestAlternativeName);
-    //  mod.hubId = item?.hubId;
-    //
-    //  mod.subMods?.forEach(subMod => {
-    //    this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
-    //    if (subMod.hubId && !mod.hubId) {
-    //      mod.hubId = subMod.hubId;
-    //    }
-    //  });
-    //
-    //  return;
-    //}
-    //
-    //if (isModNameBasedOnLLevenshtein) {
-    //  const item = modMetaData?.find(m => m.name === closestModName);
-    //  mod.hubId = item?.hubId;
-    //
-    //  mod.subMods?.forEach(subMod => {
-    //    this.handleMod(subMod, indexedMods, modMetaData, flattenModNames);
-    //    if (subMod.hubId && !mod.hubId) {
-    //      mod.hubId = subMod.hubId;
-    //    }
-    //  });
-    //
-    //  return;
-    //}
-    //
+  private processSubMods(mod: UpdateModMeta, indexedMods: IndexedMods[], flattenModNames: string[], updateVersion: string | undefined) {
     mod.subMods?.forEach(subMod => {
-      this.handleMod(subMod, indexedMods, flattenModNames); //, modMetaData
-      if (subMod.hubId && !mod.hubId) {
-        mod.hubId = subMod.hubId;
-      }
+      this.handleMod(subMod, indexedMods, flattenModNames);
 
-      return;
+      if (subMod.hubId && !mod.hubId && !this.areVersionsEqual(mod.version, updateVersion)) {
+        mod.hubId = subMod.hubId;
+        mod.updateVersion = updateVersion;
+        mod.isUpdateAvailable = true;
+      }
     });
   }
 
-  openExternal(modPath: string) {
-    this.#electronService.openPath(modPath);
+  private updateModDetails(mod: UpdateModMeta, indexedMods: IndexedMods[], flattenModNames: string[], closestName: string) {
+    const item = indexedMods?.find(m => m.name === closestName);
+
+    if (!this.areVersionsEqual(mod.version, item?.version)) {
+      mod.hubId = item?.id;
+      mod.updateVersion = item?.version;
+      mod.isUpdateAvailable = true;
+    }
+
+    this.processSubMods(mod, indexedMods, flattenModNames, item?.version);
   }
 
-  private async checkForUpdateFromIndexedList() {
-    try {
-      const indexedMods = this.#modListService.indexedModListSignal();
-
-      // const updatesAvailable = response.filter(mod => {
-      //   const indexedMod = indexedMods.find(indexedMod => indexedMod.modId === mod.modId);
-      //   if (!indexedMod) {
-      //     return true;
-      //   }
-      //
-      //   // Or use a custom function to compare versions if it's not a simple number. E.g., '1.0.2'
-      //   return indexedMod.version !== mod.version;
-      // });
-
-      // if (updatesAvailable.length > 0) {
-      //   console.log('Updates Available: ', updatesAvailable);
-      //   // Do something with the mods that need to be updated.
-      // }
-    } catch (error) {
-      console.error('Error checking for updates:', error);
+  private trimTrailingZeros(version: string): string {
+    const parts = version.split('.');
+    if (parts.length === 4 && parts[3] === '0') {
+      parts.pop();
     }
+    return parts.join('.');
+  }
+
+  private areVersionsEqual(version1: string | undefined, version2: string | undefined): boolean {
+    if (!version1 || !version2) return false;
+
+    const cleanedVersion1 = this.trimTrailingZeros(version1);
+    const cleanedVersion2 = this.trimTrailingZeros(version2);
+
+    return gte(cleanedVersion1, cleanedVersion2);
   }
 }

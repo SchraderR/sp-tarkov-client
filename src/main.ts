@@ -12,6 +12,7 @@ import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
 import { forkJoin } from 'rxjs';
 import { ModListService } from './app/core/services/mod-list.service';
+import { DownloadService } from './app/core/services/download.service';
 
 if (environment.production) {
   enableProdMode();

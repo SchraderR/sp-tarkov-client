@@ -14,6 +14,7 @@ import { UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { environment } from '../../../environments/environment';
 
 export interface IndexedMods {
+  id?: string;
   name?: string;
   version?: string;
   link?: string;

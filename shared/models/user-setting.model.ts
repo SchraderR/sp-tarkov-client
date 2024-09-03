@@ -1,14 +1,5 @@
 ﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
 
-export interface UpdateModMeta {
-  name: string;
-  version: string;
-  hubId: string;
-  imageIcon: string;
-  clientName: string;
-  serverName: string;
-}
-
 export interface ModCache {
   name: string;
   fileUrl: string;
@@ -51,7 +42,13 @@ export interface UserSettingModel extends SptInstance {
   sptCore?: SptCore;
 }
 
+export interface UpdateModMeta extends ModMeta {
+  isUpdateAvailable?: boolean;
+  updateVersion?: string;
+}
+
 export interface ModMeta {
+  hubId?: string;
   name: string;
   version: string;
   alternativeName?: string;

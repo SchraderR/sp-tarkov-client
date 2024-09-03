@@ -1,8 +1,19 @@
+ Server - Mods
+@for (mod of isInModList(); track mod) {
+  <div style="display: flex">
+    <div>{{ mod.name }} - {{ mod.version }}</div>
+    <div>HubID: {{ mod?.hubId }}</div>
+  </div>
+}
+<br/>
+<br/>
+<br/>
+
 <div style="flex-direction: column; gap: 8px; display: flex;">
   @for (mod of isInModList(); track mod) {
-    @if (mod?.hubId) {
+    @if (mod?.isUpdateAvailable) {
       <mat-card>
-        <mat-card-header>{{ mod.name }} - {{ mod?.hubId }}</mat-card-header>
+        <mat-card-header>{{ mod.name }} - {{ mod.hubId }}</mat-card-header>
         <mat-card-content>
           <br>
           <div>Current Version: {{ mod.version }}</div>
@@ -12,4 +23,5 @@
     }
   }
 </div>
+
 
