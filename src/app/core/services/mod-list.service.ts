@@ -2,11 +2,12 @@ import { inject, Injectable, signal } from '@angular/core';
 import { InstallProgress, Mod } from '../models/mod';
 import { FileHelper } from '../helper/file-helper';
 import { ConfigurationService } from './configuration.service';
-import { catchError, firstValueFrom, forkJoin, map, of, switchMap } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { ElectronService } from './electron.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HtmlHelper } from '../helper/html-helper';
+import { IndexedMods } from './download.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,9 +18,12 @@ export class ModListService {
   readonly #httpClient = inject(HttpClient);
 
   private modList = signal<Mod[]>([]);
+  private indexedModList = signal<IndexedMods[]>([]);
   private useIndexedMods = signal<boolean>(false);
+
   readonly modListSignal = this.modList.asReadonly();
   readonly useIndexedModsSignal = this.useIndexedMods.asReadonly();
+  readonly indexedModListSignal = this.indexedModList.asReadonly();
 
   setUseIndexedMods(value: boolean) {
     this.useIndexedMods.set(value);
@@ -191,5 +195,22 @@ export class ModListService {
       sptVersionColorCode: 'badge label red',
       isInvalid: true,
     } as unknown as Mod);
+  }
+
+  loadIndexedMods() {
+    console.log('Fetching indexed mods data from hub json');
+    return this.#httpClient
+      .get<{ mod_data: IndexedMods[] }>(environment.sptHubModsJson)
+      .pipe(tap(response => this.indexedModList.set(response.mod_data)));
+  }
+
+  loadUseIndexedModsSettings() {
+    return this.#electronService.sendEvent<boolean>('use-indexed-mods').pipe(
+      tap(response => this.setUseIndexedMods(response.args)),
+      catchError(error => {
+        console.error('Error fetching indexed mods usage:', error);
+        return error;
+      })
+    );
   }
 }

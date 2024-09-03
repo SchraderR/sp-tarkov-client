@@ -6,6 +6,7 @@ import { ModListService } from '../services/mod-list.service';
 import { Configuration, ConfigurationService } from '../services/configuration.service';
 import { ModMeta } from '../../../../shared/models/user-setting.model';
 import alternativeModNames from './backupAlternativeNames.json';
+import { LevenshteinService } from '../services/levenshtein.service';
 
 @Directive({
   standalone: true,
@@ -16,6 +17,7 @@ export class IsAlreadyInstalledDirective {
   #userSettingsService = inject(UserSettingsService);
   #configurationService = inject(ConfigurationService);
   #modListService = inject(ModListService);
+  #levenshteinService = inject(LevenshteinService);
 
   @Input({ required: true }) mod!: Mod;
 
@@ -41,30 +43,13 @@ export class IsAlreadyInstalledDirective {
     this.assignAlternativeNames(activeInstance.serverMods, config.alternativeModNames);
     this.assignAlternativeNames(activeInstance.clientMods, config.alternativeModNames);
 
-    const closestServerModName = closest(modName, this.flattenSubMods(activeInstance.serverMods));
-    const closestClientModName = closest(modName, this.flattenSubMods(activeInstance.clientMods));
+    const closestServerModName = closest(modName, this.#levenshteinService.flattenSubMods(activeInstance.serverMods));
+    const closestClientModName = closest(modName, this.#levenshteinService.flattenSubMods(activeInstance.clientMods));
 
-    return this.isMatchBasedOnLevenshtein(modName, closestServerModName) || this.isMatchBasedOnLevenshtein(modName, closestClientModName);
-  }
-
-  private flattenSubMods(mods: ModMeta[]): string[] {
-    return mods.flatMap(mod => [
-      ...(mod.name ? [mod.name] : []),
-      ...(mod.alternativeName ? [mod.alternativeName] : []),
-      ...this.flattenSubMods(mod.subMods ?? []),
-    ]);
-  }
-
-  private isMatchBasedOnLevenshtein(stringA = '', stringB = '', threshold = 0.2): boolean {
-    if (!stringA || !stringB) {
-      return false;
-    }
-
-    const levenshteinDistance = distance(stringA, stringB);
-    const averageLength = (stringA.length + stringB.length) / 2;
-
-    const relativeDistance = levenshteinDistance / averageLength;
-    return relativeDistance <= threshold;
+    return (
+      this.#levenshteinService.isMatchBasedOnLevenshtein(modName, closestServerModName) ||
+      this.#levenshteinService.isMatchBasedOnLevenshtein(modName, closestClientModName)
+    );
   }
 
   private checkModInModList() {

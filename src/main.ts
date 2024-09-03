@@ -11,6 +11,7 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
 import { forkJoin } from 'rxjs';
+import { ModListService } from './app/core/services/mod-list.service';
 import { DownloadService } from './app/core/services/download.service';
 
 if (environment.production) {
@@ -41,7 +42,7 @@ bootstrapApplication(AppComponent, {
     {
       provide: APP_INITIALIZER,
       useFactory: modDataLoaderFactory,
-      deps: [DownloadService],
+      deps: [ModListService],
       multi: true,
     },
   ],
@@ -52,6 +53,6 @@ function configurationServiceFactory(configurationService: ConfigurationService)
     forkJoin([configurationService.getCurrentConfiguration(), configurationService.getSptVersion(), configurationService.getCurrentTags()]);
 }
 
-function modDataLoaderFactory(downloadService: DownloadService) {
-  return () => downloadService.getModData();
+function modDataLoaderFactory(modListService: ModListService) {
+  return () => forkJoin([modListService.loadIndexedMods(), modListService.loadUseIndexedModsSettings()]);
 }

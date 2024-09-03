@@ -17,9 +17,9 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
     store.set('isExperimentalFunctionsActive', false);
   }
 
-  //if (process.platform === 'win32') {
-  //  app.setAppUserModelId('SP-EFT Manager');
-  //}
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('SP-EFT Manager');
+  }
 
   try {
     app.on('ready', () =>
@@ -27,18 +27,18 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
         createMainApiManagementWindow(isServe, store);
 
         tray = new Tray(iconPath);
-        //tray.on('double-click', () => {
-        //  const browserWindow = BrowserWindowSingleton.getInstance();
-        //  browserWindow.show();
-        //});
+        tray.on('double-click', () => {
+          const browserWindow = BrowserWindowSingleton.getInstance();
+          browserWindow.show();
+        });
         tray.setToolTip('EFT-SP Management Tool');
 
-        //const contextMenu = Menu.buildFromTemplate([
-        //  { label: '               ' },
-        //  { type: 'separator' },
-        //  { label: 'Close App', click: () => app.quit() },
-        //]);
-        //tray.setContextMenu(contextMenu);
+        const contextMenu = Menu.buildFromTemplate([
+          { label: '               ' },
+          { type: 'separator' },
+          { label: 'Close App', click: () => app.quit() },
+        ]);
+        tray.setContextMenu(contextMenu);
       }, 400)
     );
     app.on('window-all-closed', () => {
