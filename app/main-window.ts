@@ -66,6 +66,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('keepTempDownloadDirectory', false);
     }
 
+    const isCheckInstalledActive = store.get('isCheckInstalledActive');
+    if (isCheckInstalledActive === null || isCheckInstalledActive === undefined) {
+      store.set('isCheckInstalledActive', true);
+    }
+
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);

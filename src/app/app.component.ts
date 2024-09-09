@@ -104,6 +104,7 @@ export class AppComponent {
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
     this.getCurrentTempDownloadDirectorySettings();
+    this.getCurrentCheckInstalledModSetting();
     this.getGithubRateLimitInformation();
 
     effect(() => {
@@ -111,7 +112,7 @@ export class AppComponent {
       if (isTutorialDone === false) {
         this.showTutorialSnackbar();
       }
-     });
+    });
 
     effect(() => this.calculateCurrentDirectorySize());
   }
@@ -196,6 +197,12 @@ export class AppComponent {
     this.#electronService
       .sendEvent<boolean>('keep-temp-dir-setting')
       .subscribe(value => this.#userSettingService.keepTempDownloadDirectory.set(value.args));
+  }
+
+  private getCurrentCheckInstalledModSetting() {
+    this.#electronService
+      .sendEvent<boolean>('check-installed-setting')
+      .subscribe(value => this.#userSettingService.checkInstalledMod.set(value.args));
   }
 
   private getCurrentTutorialSettings() {

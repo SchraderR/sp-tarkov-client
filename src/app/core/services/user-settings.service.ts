@@ -11,6 +11,7 @@ export class UserSettingsService {
   currentTheme = signal<Theme | null>(null);
   isExperimentalFunctionActive = signal<boolean>(false);
   keepTempDownloadDirectory = signal<boolean>(false);
+  checkInstalledMod = signal<boolean>(false);
   keepTempDownloadDirectorySize = signal<{ size: number; text: string }>({ text: '', size: 0 });
   isTutorialDone = signal<boolean | null>(null);
   wasInstanceOverviewReviewed = signal<boolean>(false);

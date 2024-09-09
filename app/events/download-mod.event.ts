@@ -6,7 +6,7 @@ import * as path from 'path';
 import axios from 'axios';
 import { Browser, launch } from 'puppeteer';
 import * as log from 'electron-log';
-import { File } from 'megajs'
+import { File } from 'megajs';
 import { createWriteStream, renameSync, writeFileSync } from 'node:fs';
 import { existsSync, mkdirSync } from 'fs-extra';
 
@@ -39,8 +39,8 @@ export const handleDownloadModEvent = () => {
       }
 
       if (downloadModel.modFileUrl.includes('mega.nz')) {
-        const file = File.fromURL(downloadModel.modFileUrl)
-        await file.loadAttributes()
+        const file = File.fromURL(downloadModel.modFileUrl);
+        await file.loadAttributes();
 
         const downloadStream = file.download({}, (err, data) => {
           if (err) {
@@ -56,20 +56,24 @@ export const handleDownloadModEvent = () => {
             });
             event.sender.send('download-mod-completed', path.join(ankiTempDownloadDir, file.name as string));
           }
-        })
+        });
 
-        downloadStream.on('progress', (data: { bytesTotal: number; bytesLoaded: number; }) => {
+        downloadStream.on('progress', (data: { bytesTotal: number; bytesLoaded: number }) => {
           event.sender.send('download-mod-progress', {
             percent: data.bytesLoaded / data.bytesTotal,
             transferredBytes: data.bytesLoaded,
             totalBytes: data.bytesTotal,
           });
-        })
+        });
 
         return;
       }
 
-      if (downloadModel.modFileUrl.startsWith('https://hub.sp-tarkov.com/files/download')) {
+      if (
+        downloadModel.modFileUrl.startsWith('dev.sp-tarkov.com') ||
+        downloadModel.modFileUrl.startsWith('hub.sp-tarkov.com/files/download') ||
+        downloadModel.modFileUrl.startsWith('sp-tarkov.com/mod')
+      ) {
         await handleDirectDownload(event, ankiTempDownloadDir, downloadModel);
         return;
       }
@@ -131,7 +135,7 @@ async function waitForDownload(downloadModel: DownloadModel, browser: Browser, e
 
       downloadTimeoutId = setTimeout(() => reject(new Error('Download timeout')), DOWNLOAD_TIMEOUT);
       await page.goto(downloadModel.modFileUrl, { waitUntil: 'networkidle2' });
-      const form = await page.$('#download-form', );
+      const form = await page.$('#download-form');
       if (form) {
         await page.evaluate((f: Element) => (f as HTMLFormElement).submit(), form);
       }

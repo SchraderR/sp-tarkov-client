@@ -36,7 +36,9 @@
   | 'keep-temp-dir-setting'
   | 'keep-temp-dir-setting-toggle'
   | 'temp-dir-size'
-  | 'save-mod-load-order';
+  | 'save-mod-load-order'
+  | 'check-installed-toggle'
+  | 'check-installed-setting';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
