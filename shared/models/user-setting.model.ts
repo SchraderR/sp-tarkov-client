@@ -25,6 +25,7 @@ export interface UserSettingStoreModel {
   theme: Theme;
   isTutorialDone: boolean;
   isExperimentalFunctionsActive: boolean;
+  isCheckInstalledActive: boolean;
   sptVersions: SptVersion[];
   sptTags: SptTag[];
   modCache: ModCache[];

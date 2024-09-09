@@ -68,7 +68,7 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
 
     const isCheckInstalledActive = store.get('isCheckInstalledActive');
     if (!isCheckInstalledActive) {
-      store.set('isCheckInstalledActive', false);
+      store.set('isCheckInstalledActive', true);
     }
 
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
