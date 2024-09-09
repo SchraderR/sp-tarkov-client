@@ -25,6 +25,7 @@ import { handleIndexedModsEvents } from './events/indexed-mods.event';
 import { toggleModStateEvent } from './events/toggle-mod-state.event';
 import { handleModPageEvents } from './events/mod-page.event';
 import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
+import { handleCheckInstalledEvents } from './events/toggle-check-installed.event';
 
 log.initialize();
 
@@ -55,3 +56,4 @@ handleIndexedModsEvents(store);
 toggleModStateEvent();
 handleModPageEvents();
 handleTempDownloadDirectoryEvents(store);
+handleCheckInstalledEvents(store);

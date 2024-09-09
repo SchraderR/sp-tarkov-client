@@ -23,6 +23,10 @@ export class IsAlreadyInstalledDirective {
   isInModList = computed(() => this.checkModInModList());
 
   private checkModAlreadyInstalled() {
+    if (!this.#userSettingsService.checkInstalledMod()) {
+      return false;
+    }
+
     const modName = this.mod.name;
     let config = this.#configurationService.configSignal();
     const activeInstance = this.#userSettingsService.getActiveInstance();

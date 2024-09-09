@@ -151,7 +151,6 @@ export const handleDownloadLinkEvent = () => {
             .catch(err => console.error(err));
         }
 
-        console.log('downloadLink>', downloadLink);
         event.sender.send('download-link-completed', downloadLink);
       } catch (e) {
         log.error(e);
