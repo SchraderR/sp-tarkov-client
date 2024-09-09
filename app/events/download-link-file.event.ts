@@ -61,10 +61,12 @@ export const handleDownloadLinkEvent = () => {
             if (status >= 300 && status <= 399) {
               if (
                 response.headers()?.['location']?.includes('dev.sp-tarkov.com') ||
-                response.headers()?.['location']?.includes('dev.sp-tarkov.com/attachments')
+                response.headers()?.['location']?.includes('dev.sp-tarkov.com/attachments') ||
+                response.headers()?.['location']?.includes('sp-tarkov.com/mod')
               ) {
                 downloadLink = response.headers()['location'];
                 event.sender.send('download-link-completed', downloadLink);
+                return;
               }
             }
           });
@@ -149,6 +151,7 @@ export const handleDownloadLinkEvent = () => {
             .catch(err => console.error(err));
         }
 
+        console.log('downloadLink>', downloadLink);
         event.sender.send('download-link-completed', downloadLink);
       } catch (e) {
         log.error(e);
