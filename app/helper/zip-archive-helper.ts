@@ -18,6 +18,7 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(path, { $bin: sevenBinPath, $cherryPick: ['*\\package.json'], recursive: true })
         .on('data', data => {
+          console.log('data', data);
           if (data.file.split('/')?.[1] === 'package.json') {
             serverModWithLeadingDirectory = true;
           }
@@ -39,6 +40,7 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(path, { $bin: sevenBinPath, $cherryPick: [`*\\${serverModPath}`] })
         .on('data', data => {
+          console.log('data', data);
           if (data?.attributes?.[0] === 'D') {
             nestedServerModName = data.file.split(`${serverModPath}`)[0];
           }
@@ -60,7 +62,10 @@ export class ZipArchiveHelper {
     let isServerMod = false;
     return new Promise((resolve, reject) => {
       list(path, { $bin: sevenBinPath, $cherryPick: ['**\\package.json'], recursive: true })
-        .on('data', data => (isServerMod = true))
+        .on('data', data => {
+          console.log('data', data);
+          isServerMod = true;
+        })
         .on('end', () => resolve(isServerMod))
         .on('error', reject);
     });
@@ -77,7 +82,10 @@ export class ZipArchiveHelper {
     let isClientMod = false;
     return new Promise((resolve, reject) => {
       list(path, { $bin: sevenBinPath, $cherryPick: ['**\\*.dll'], recursive: true })
-        .on('data', data => (isClientMod = true))
+        .on('data', data => {
+          console.log('data', data);
+          isClientMod = true;
+        })
         .on('end', () => resolve(isClientMod))
         .on('error', reject);
     });
@@ -95,7 +103,10 @@ export class ZipArchiveHelper {
 
     return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientPluginModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`] })
-        .on('data', () => (hasFiles = true))
+        .on('data', data => {
+          console.log('data', data);
+          hasFiles = true;
+        })
         .on('end', () => resolve(hasFiles))
         .on('error', error => reject(error));
     });
@@ -115,7 +126,10 @@ export class ZipArchiveHelper {
     let hasFiles = false;
     return new Promise((resolve, reject) => {
       extractFull(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [] })
-        .on('data', () => (hasFiles = true))
+        .on('data', data => {
+          console.log('data', data);
+          hasFiles = true;
+        })
         .on('end', () => resolve(hasFiles))
         .on('error', err => reject(err));
     });
@@ -135,7 +149,10 @@ export class ZipArchiveHelper {
     let hasFiles = false;
     return new Promise((resolve, reject) => {
       extract(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [], recursive: isRecursive })
-        .on('data', data => (hasFiles = true))
+        .on('data', data => {
+          console.log('data', data);
+          hasFiles = true;
+        })
         .on('end', () => resolve(hasFiles))
         .on('error', err => reject(err));
     });
@@ -156,7 +173,7 @@ export class ZipArchiveHelper {
 
     const fileName = path.basename(archivePath);
     const newFileName = fileName.replace(/\(\d+\)/g, '');
-
+    console.log('data', fileName, newFileName);
     fs.copyFileSync(archivePath, path.join(args.sptInstancePath, clientPluginModPath, newFileName));
 
     return true;
@@ -175,6 +192,8 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath, $cherryPick: ['*.dll'] })
         .on('data', data => {
+          console.log('data', data);
+
           if (!data.file.includes('/')) {
             dllFound = true;
           }
@@ -198,6 +217,7 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath })
         .on('data', data => {
+          console.log('data', data);
           if (data?.attributes?.[0] !== 'D') {
             if (path.extname(data.file) === '.dll') {
               dllFound = true;
