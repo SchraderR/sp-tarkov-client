@@ -21,7 +21,7 @@ export class FileTrackerHelper {
       return;
     }
 
-    fileTrackingData.push({ hubId, files, lastUpdateCheck: addHours(new Date(), 1).toISOString() });
+    fileTrackingData.push({ hubId, files, lastUpdateCheck: addHours(new Date(), 1).toISOString(), isActive: true });
     instance.trackedFileData = fileTrackingData;
     instance.trackedFileData.forEach(f => console.log(f.files));
 

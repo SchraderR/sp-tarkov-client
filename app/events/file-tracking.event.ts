@@ -4,6 +4,7 @@ import { BrowserWindowSingleton } from '../browserWindow';
 export interface TrackedFile {
   hubId: string;
   lastUpdateCheck: string;
+  isActive: true;
   files: string[];
 }
 
