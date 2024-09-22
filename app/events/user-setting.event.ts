@@ -4,7 +4,7 @@ import * as Store from 'electron-store';
 import * as path from 'path';
 import { SptInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableSptCoreConfigPath } from '../constants';
-import * as log from 'electron-log';
+import { error, warn } from 'electron-log';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('user-settings', async event => {
@@ -62,7 +62,7 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
 
       stableSptCoreConfigPath.forEach(sptCorePath => {
         if (!fs.existsSync(path.join(sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory, sptCorePath))) {
-          log.error(`${sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory}/${sptCorePath} not available.`);
+          warn(`${sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory}/${sptCorePath} not available.`);
           return;
         }
 
@@ -75,13 +75,14 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         isValid: !!sptCoreJson,
         isActive: sptInstance.isActive,
         isLoading: sptInstance.isLoading,
+        trackedFileData: sptInstance.trackedFileData,
         isError: sptInstance.isError,
         isPowerShellIssue: sptInstance.isPowerShellIssue,
         clientMods: sptInstance.clientMods ?? [],
         serverMods: sptInstance.serverMods ?? [],
       });
     } catch (e) {
-      log.error(e);
+      error(e);
     }
   }
   event.sender.send('user-settings-completed', userSettingModelResult);

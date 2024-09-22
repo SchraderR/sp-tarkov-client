@@ -194,6 +194,7 @@ export default class PersonalSettingComponent {
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
       isPowerShellIssue: settingModel.isPowerShellIssue,
+      trackedFileData: settingModel.trackedFileData,
       isError: settingModel.isError,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,

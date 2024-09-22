@@ -14,6 +14,7 @@
     "@types/node-7z": "^2.1.8",
     "@types/puppeteer": "7.0.4",
     "axios": "^1.7.4",
+    "date-fns": "^4.1.0",
     "electron-dl": "^3.5.2",
     "electron-log": "5.1.4",
     "electron-reload": "^2.0.0-alpha.1",

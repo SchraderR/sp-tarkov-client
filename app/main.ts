@@ -16,7 +16,6 @@ import { handleTutorialEvents } from './events/tutorial.event';
 import { handleTarkovStartEvent } from './events/tarkov-start.event';
 import { handleExperimentalFunctionsEvents } from './events/experimental-functions.event';
 import { handleModLoadOrderEvents } from './events/mod-load-order.event';
-import * as log from 'electron-log';
 import { handleUpdateModEvents } from './events/update-mod.event';
 import { handleSptTagEvents } from './events/spt-tag.event';
 import { handleSptVersionEvents } from './events/spt-version.event';
@@ -26,8 +25,9 @@ import { toggleModStateEvent } from './events/toggle-mod-state.event';
 import { handleModPageEvents } from './events/mod-page.event';
 import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
 import { handleCheckInstalledEvents } from './events/toggle-check-installed.event';
+import { initialize } from 'electron-log';
 
-log.initialize();
+initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
@@ -37,7 +37,7 @@ mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
 handleDownloadLinkEvent();
 handleDownloadModEvent();
-handleFileUnzipEvent(isServe);
+handleFileUnzipEvent(isServe, store);
 handleUserSettingStoreEvents(store);
 handleClientModsEvent();
 handleServerModsEvent();

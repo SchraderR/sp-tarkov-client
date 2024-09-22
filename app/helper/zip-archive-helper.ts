@@ -3,14 +3,27 @@ import * as fs from 'fs';
 import { extract, extractFull, list } from 'node-7z';
 import { clientPluginModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
+import { FileTrackerHelper } from './file-tracker-helper';
+import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import * as Store from 'electron-store';
 
 export class ZipArchiveHelper {
+  private readonly _store: Store<UserSettingStoreModel>;
+  private readonly _instancePath: string;
+
+  constructor(store: Store<UserSettingStoreModel>, instancePath: string) {
+    this._store = store;
+    this._instancePath = instancePath;
+  }
+
   /**
-   * Checks if there is a leading directory in the server mod path.
+   * Checks if a directory at the given path contains a server modification directory
+   * with a leading directory by verifying the presence of 'package.json' files.
    *
-   * @param {string} path - The path to check.
-   * @param {string} sevenBinPath - The path to seven-bin node module.
-   * @return {Promise<boolean>} - A promise that resolves with a boolean indicating whether the leading directory exists.
+   * @param {string} path - The directory path to check for server modifications.
+   * @param {string} sevenBinPath - The path to the 7Zip binary.
+   * @return {Promise<boolean>} - A promise that resolves to true if a server modification with
+   * a leading directory is found, otherwise false.
    */
   checkForLeadingDirectoryServerMod(path: string, sevenBinPath: string): Promise<boolean> {
     let serverModWithLeadingDirectory = false;
@@ -18,7 +31,6 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(path, { $bin: sevenBinPath, $cherryPick: ['*\\package.json'], recursive: true })
         .on('data', data => {
-          console.log('data', data);
           if (data.file.split('/')?.[1] === 'package.json') {
             serverModWithLeadingDirectory = true;
           }
@@ -31,16 +43,16 @@ export class ZipArchiveHelper {
   /**
    * Determines if a nested server module exists at the given path
    *
-   * @param {string} path - The path to the directory to search for the nested server module.
+   * @param {string} archivePath - The path to the directory to search for the nested server module.
    * @param {string} sevenBinPath - The path to the 7zip executable.
    * @returns {Promise<boolean>} - A promise that resolves with a boolean indicating if the nested server module exists.
    */
-  determineNestedServerModHappyPath(path: string, sevenBinPath: string): Promise<string | null> {
+  determineNestedServerModHappyPath(archivePath: string, sevenBinPath: string): Promise<string | null> {
     let nestedServerModName: string | null = null;
+
     return new Promise((resolve, reject) => {
-      list(path, { $bin: sevenBinPath, $cherryPick: [`*\\${serverModPath}`] })
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`*\\${serverModPath}`] })
         .on('data', data => {
-          console.log('data', data);
           if (data?.attributes?.[0] === 'D') {
             nestedServerModName = data.file.split(`${serverModPath}`)[0];
           }
@@ -53,19 +65,17 @@ export class ZipArchiveHelper {
   /**
    * Determines if a given path contains a server module.
    *
-   * @param {string} path - The path to the directory to check.
+   * @param {string} archivePath - The path to the directory to check.
    * @param {string} sevenBinPath - The path to the 7zip binary.
    * @returns {Promise<boolean>} - A promise that resolves with a boolean indicating if the directory is a server module.
    * @throws {Error} - If there is an error while determining the server module.
    */
-  determineServerMod(path: string, sevenBinPath: string): Promise<boolean> {
+  determineServerMod(archivePath: string, sevenBinPath: string): Promise<boolean> {
     let isServerMod = false;
+
     return new Promise((resolve, reject) => {
-      list(path, { $bin: sevenBinPath, $cherryPick: ['**\\package.json'], recursive: true })
-        .on('data', data => {
-          console.log('data', data);
-          isServerMod = true;
-        })
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: ['**\\package.json'], recursive: true })
+        .on('data', () => (isServerMod = true))
         .on('end', () => resolve(isServerMod))
         .on('error', reject);
     });
@@ -74,18 +84,16 @@ export class ZipArchiveHelper {
   /**
    * Determines if a client module exists in the given path.
    *
-   * @param {string} path - The path to search for client modules.
+   * @param {string} archivePath - The path to search for client modules.
    * @param {string} sevenBinPath - The path to the 7zip executable.
    * @returns {Promise<boolean>} A promise that resolves to true if a client module exists, false otherwise.
    */
-  determineClientMod(path: string, sevenBinPath: string): Promise<boolean> {
+  determineClientMod(archivePath: string, sevenBinPath: string): Promise<boolean> {
     let isClientMod = false;
+
     return new Promise((resolve, reject) => {
-      list(path, { $bin: sevenBinPath, $cherryPick: ['**\\*.dll'], recursive: true })
-        .on('data', data => {
-          console.log('data', data);
-          isClientMod = true;
-        })
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: ['**\\*.dll'], recursive: true })
+        .on('data', () => (isClientMod = true))
         .on('end', () => resolve(isClientMod))
         .on('error', reject);
     });
@@ -103,70 +111,94 @@ export class ZipArchiveHelper {
 
     return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientPluginModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`] })
-        .on('data', data => {
-          console.log('data', data);
-          hasFiles = true;
-        })
+        .on('data', () => (hasFiles = true))
         .on('end', () => resolve(hasFiles))
         .on('error', error => reject(error));
     });
   }
 
   /**
-   * Extracts a full archive.
+   * Extracts the entire archive from the specified path to the destination directory.
    *
-   * @param {string} path - The path to the archive file.
-   * @param {string} dest - The destination directory where the files will be extracted to.
-   * @param {string} sevenBinPath - The path to the 7-Zip binary file.
-   * @param {any} [cherryPick] - Optional array of files to extract from the archive.
-
-   * @returns {Promise<boolean>} - A promise that resolves to true if the extraction was successful and false otherwise.
+   * @param {string} archivePath - The path to the archive file.
+   * @param {string} dest - The directory where the archive will be extracted.
+   * @param {string} sevenBinPath - The path to the 7-Zip binary used for extraction.
+   * @param {string} hubId - The identifier of the hub to track extracted files.
+   * @param {any} [cherryPick] - Specific files to extract (optional).
+   * @return {Promise<boolean>} A promise that resolves to a boolean indicating if files were extracted.
    */
-  extractFullArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any): Promise<boolean> {
+  extractFullArchive(archivePath: string, dest: string, sevenBinPath: string, hubId: string, cherryPick?: any): Promise<boolean> {
     let hasFiles = false;
+    let files: string[] = [];
+
     return new Promise((resolve, reject) => {
-      extractFull(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [] })
+      extractFull(archivePath, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [] })
         .on('data', data => {
-          console.log('data', data);
+          files.push(path.resolve(dest, data.file));
           hasFiles = true;
         })
-        .on('end', () => resolve(hasFiles))
+        .on('end', () => {
+          if (hasFiles) {
+            this.trackFiles(files, hubId);
+          }
+
+          resolve(hasFiles);
+        })
         .on('error', err => reject(err));
     });
   }
 
   /**
-   * Extracts files from an archive.
+   * Extracts files from a given archive path to a specified destination.
    *
-   * @param {string} path - The path to the archive file.
-   * @param {string} dest - The destination directory for the extracted files.
-   * @param {string} sevenBinPath - The path to the 7z binary.
-   * @param {any} cherryPick - An optional array of files to extract from the archive.
-   * @param {boolean} isRecursive - Whether to extract files recursively from subdirectories.
-   * @return {Promise<boolean>} - A Promise that resolves to a boolean indicating whether any files were extracted.
+   * @param {string} archivePath - The path to the archive file that needs to be extracted.
+   * @param {string} dest - The destination directory where the extracted files should be placed.
+   * @param {string} sevenBinPath - The path to the 7-zip binary.
+   * @param {string} hubId - The hub identifier for tracking extracted files.
+   * @param {any} [cherryPick] - An optional parameter for cherry-picking specific files from the archive.
+   * @param {boolean} [isRecursive=false] - Optional flag indicating whether extraction should be recursive.
+   * @return {Promise<boolean>} - A promise that resolves to true if files were extracted, otherwise false.
    */
-  extractFilesArchive(path: string, dest: string, sevenBinPath: string, cherryPick?: any, isRecursive: boolean = false): Promise<boolean> {
+  extractFilesArchive(
+    archivePath: string,
+    dest: string,
+    sevenBinPath: string,
+    hubId: string,
+    cherryPick?: any,
+    isRecursive: boolean = false
+  ): Promise<boolean> {
     let hasFiles = false;
+    let files: string[] = [];
+
     return new Promise((resolve, reject) => {
-      extract(path, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [], recursive: isRecursive })
+      extract(archivePath, dest, { $bin: sevenBinPath, $cherryPick: cherryPick ?? [], recursive: isRecursive })
         .on('data', data => {
-          console.log('data', data);
+          files.push(path.resolve(dest, data.file));
           hasFiles = true;
         })
-        .on('end', () => resolve(hasFiles))
+        .on('end', () => {
+          if (hasFiles) {
+            this.trackFiles(files, hubId);
+          }
+
+          resolve(hasFiles);
+        })
         .on('error', err => reject(err));
     });
   }
 
   /**
-   * Checks if the given archivePath refers to a single DLL file
+   * Checks whether the specified archive path points to a single DLL file and handles it accordingly.
    *
-   * @param {string} archivePath - The path of the archive file.
-   * @param {FileUnzipEvent} args - The file unzip event object.
-   * @return {boolean} - True if the archivePath refers to a single DLL file, false otherwise.
+   * @param {string} archivePath - The path to the archive file.
+   * @param {FileUnzipEvent} args - Contains details about the file unzip event including the destination path.
+   * @param {string} hubId - The identifier for the hub where the files need to be tracked.
+   * @return {boolean} - Returns true if the archivePath is a single DLL file and the operation was successful, otherwise false.
    */
-  checkForSingleDll(archivePath: string, args: FileUnzipEvent): boolean {
+  checkForSingleDll(archivePath: string, args: FileUnzipEvent, hubId: string): boolean {
     const isSingleDll = archivePath.endsWith('.dll');
+    let files: string[] = [];
+
     if (!isSingleDll) {
       return false;
     }
@@ -174,7 +206,12 @@ export class ZipArchiveHelper {
     const fileName = path.basename(archivePath);
     const newFileName = fileName.replace(/\(\d+\)/g, '');
     console.log('data', fileName, newFileName);
+
+    // TODO Check this
+    files.push(fileName);
+    files.push(newFileName);
     fs.copyFileSync(archivePath, path.join(args.sptInstancePath, clientPluginModPath, newFileName));
+    this.trackFiles(files, hubId);
 
     return true;
   }
@@ -192,8 +229,6 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath, $cherryPick: ['*.dll'] })
         .on('data', data => {
-          console.log('data', data);
-
           if (!data.file.includes('/')) {
             dllFound = true;
           }
@@ -217,7 +252,6 @@ export class ZipArchiveHelper {
     return new Promise((resolve, reject) => {
       list(archivePath, { $bin: sevenBinPath })
         .on('data', data => {
-          console.log('data', data);
           if (data?.attributes?.[0] !== 'D') {
             if (path.extname(data.file) === '.dll') {
               dllFound = true;
@@ -230,5 +264,10 @@ export class ZipArchiveHelper {
         .on('end', () => resolve(fileCount === 1 && dllFound))
         .on('error', reject);
     });
+  }
+
+  private trackFiles(files: string[], hubId: string) {
+    const fileTrackerHelper = new FileTrackerHelper();
+    fileTrackerHelper.trackFilesWithHubId(files, hubId, this._instancePath, this._store);
   }
 }
