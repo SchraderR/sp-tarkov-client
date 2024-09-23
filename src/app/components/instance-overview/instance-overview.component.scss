@@ -20,9 +20,11 @@ h2 {
   bottom: 0;
 }
 
-.mat-mdc-card-header {
+.mat-mdc-content {
   display: flex;
-  padding: 0 16px 0;
+  min-height: 56px;
+  justify-content: center;
+  align-content: center;
 }
 
 .list-item-button {
@@ -48,7 +50,6 @@ h2 {
     flex-direction: column;
     height: 100%;
     width: 100%;
-    overflow: hidden;
     user-select: none;
   }
 }

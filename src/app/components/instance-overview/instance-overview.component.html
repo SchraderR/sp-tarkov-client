@@ -18,11 +18,11 @@
 @if (activeSptInstance && !activeSptInstance?.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
-      <h2>Installed & Tracked Mods</h2>
+      <h2>Installed Mods ({{activeSptInstance?.trackedMods.length}})</h2>
 
         @for (trackedMod of activeSptInstance?.trackedMods | orderBy:'modName'; track $index) {
-          <mat-card style="height: 40px; justify-content: center; align-content: center;">
-            <mat-card-header>
+          <mat-card>
+            <mat-card-content>
               {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
 
               <div class="instance-actions">
@@ -35,8 +35,7 @@
                   <mat-icon>open_in_new</mat-icon>
                 </button>
               </div>
-
-            </mat-card-header>
+            </mat-card-content>
           </mat-card>
         }
     </div>
@@ -65,12 +64,3 @@
     </mat-card-actions>
   </mat-card>
 </ng-template>
-
-<!--
-<div style="position: absolute; top: 0; right: 0">
-  <button mat-icon-button>
-    <mat-icon>refresh</mat-icon>
-  </button>
-</div>
--->
-
