@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as fs from 'fs';
 import { extract, extractFull, list } from 'node-7z';
 import { clientPluginModPath, serverModPath } from '../constants';
+import { copyFileSync, ensureDirSync } from 'fs-extra';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 
 export class ZipArchiveHelper {
@@ -107,24 +107,36 @@ export class ZipArchiveHelper {
   }
 
   /**
-   * Checks whether the specified archive path points to a single DLL file and handles it accordingly.
+   * Checks if the provided archivePath points to a single DLL file and, if so,
+   * processes it by copying it to the destination and updates the new arguments.
    *
    * @param {string} archivePath - The path to the archive file.
-   * @param {FileUnzipEvent} args - Contains details about the file unzip event including the destination path.
-   * @return {boolean} - Returns true if the archivePath is a single DLL file and the operation was successful, otherwise false.
+   * @param {string} destination - The destination directory where the file should be copied.
+   * @param {FileUnzipEvent} newArgs - An object containing the event details for file unzip.
+   * @returns {{ newArgs: FileUnzipEvent, singleDll: boolean }} - An object containing the updated newArgs and a boolean indicating if the archive is a single DLL.
    */
-  checkForSingleDll(archivePath: string, args: FileUnzipEvent): boolean {
+  checkForSingleDll(
+    archivePath: string,
+    destination: string,
+    newArgs: FileUnzipEvent
+  ): {
+    newArgs: FileUnzipEvent;
+    singleDll: boolean;
+  } {
     const isSingleDll = archivePath.endsWith('.dll');
 
     if (!isSingleDll) {
-      return false;
+      return { singleDll: false, newArgs };
     }
 
     const fileName = path.basename(archivePath);
     const newFileName = fileName.replace(/\(\d+\)/g, '');
-    fs.copyFileSync(archivePath, path.join(args.instancePath, clientPluginModPath, newFileName));
+    ensureDirSync(path.join(destination, clientPluginModPath));
+    copyFileSync(archivePath, path.join(destination, clientPluginModPath, newFileName));
 
-    return true;
+    newArgs.name = newFileName;
+
+    return { singleDll: true, newArgs };
   }
 
   /**

@@ -69,10 +69,11 @@ async function handleArchive(
     log(`----------------------------------`);
     log(`HubId:${args.hubId} - Start Unzip`);
 
-    const isSingleDllResult = zipArchiveHelper.checkForSingleDll(archivePath, args);
-    log(`HubId:${args.hubId} - isSingleDllResult: ${isSingleDllResult}`);
-    if (isSingleDllResult) {
-      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
+    const { singleDll, newArgs } = zipArchiveHelper.checkForSingleDll(archivePath, path.join(instanceModPath, args.hubId), args);
+    console.log(newArgs);
+    log(`HubId:${args.hubId} - isSingleDllResult: ${singleDll}`);
+    if (singleDll) {
+      modTrackingHelper.trackMod(newArgs, path.join(instanceModPath, newArgs.hubId));
       event.sender.send('file-unzip-completed');
       return;
     }
