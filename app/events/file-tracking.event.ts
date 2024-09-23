@@ -1,7 +1,7 @@
 ﻿import { ipcMain } from 'electron';
 import { BrowserWindowSingleton } from '../browserWindow';
 
-export interface TrackedMods {
+export interface TrackedMod {
   modName: string;
   hubId: string;
   modVersion?: string;

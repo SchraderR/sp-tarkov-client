@@ -120,8 +120,9 @@ export class DownloadService {
     }
 
     if (!this.keepTemporaryDownloadDirectory()) {
-      this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
+      await firstValueFrom(this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory));
     }
+
     this.isDownloadAndInstallInProgress.next(false);
     this.isDownloadProcessCompleted.next(true);
   }

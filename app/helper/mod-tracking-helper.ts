@@ -1,6 +1,6 @@
 import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { error } from 'electron-log';
-import { TrackedMods } from '../events/file-tracking.event';
+import { TrackedMod } from '../events/file-tracking.event';
 import { addHours } from 'date-fns';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as Store from 'electron-store';
@@ -25,7 +25,7 @@ export class ModTrackingHelper {
       return;
     }
 
-    const fileTrackingData: TrackedMods[] = instance.trackedMods || [];
+    const fileTrackingData: TrackedMod[] = instance.trackedMods || [];
     const modAlreadyExist = fileTrackingData.find(d => d.hubId === args.hubId);
     if (modAlreadyExist) {
       error('Mod already exists');

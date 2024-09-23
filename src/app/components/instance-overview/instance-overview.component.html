@@ -18,49 +18,25 @@
 @if (activeSptInstance && !activeSptInstance?.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
-      <h2>Installed Mods ({{activeSptInstance?.trackedMods.length}})</h2>
+      <h2>Installed Mods ({{ activeSptInstance?.trackedMods?.length ?? 0 }})</h2>
 
-        @for (trackedMod of activeSptInstance?.trackedMods | orderBy:'modName'; track $index) {
-          <mat-card>
-            <mat-card-content>
-              {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
+      @for (trackedMod of activeSptInstance?.trackedMods | orderBy:'modName'; track $index) {
+        <mat-card>
+          <mat-card-content>
+            {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
 
-              <div class="instance-actions">
-                <mat-slide-toggle *ngIf="isExperimentalFunctionActive()" class="list-slider-item" matListItemMeta
-                                  [disabled]="isWorking" [checked]="trackedMod.isActive"
-                                  (click)="toggleModState(trackedMod)">{{ trackedMod.isActive ? 'Enabled' : 'Disabled' }}
-                </mat-slide-toggle>
+            <div class="instance-actions">
+              <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="trackedMod.isActive"
+                                (click)="toggleModState(trackedMod)">{{ trackedMod.isActive ? 'Active' : 'Inactive' }}
+              </mat-slide-toggle>
 
-                <button mat-icon-button (click)="$event.stopPropagation(); openExternalHub(trackedMod.hubId)">
-                  <mat-icon>open_in_new</mat-icon>
-                </button>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        }
+              <button mat-icon-button (click)="$event.stopPropagation(); openExternalHub(trackedMod.hubId)">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
     </div>
   </div>
 }
-
-<ng-template #instanceToggleModWarning>
-  <mat-card style="padding: 0 16px;">
-    <mat-card-content>
-      <span style="display: block;">
-        The experimental function "Enable/Disable Mods" does not always work 100%.
-        <li>Mod dependencies are not automatically applied</li>
-        <li>Mods with client/server files must be switched separately</li>
-        <br>
-        Be careful and make a backup copy of your mods
-        <br>
-        <span style="font-size: large; font-weight: bold">Please reinstall your mods prior to contacting support.</span>
-      </span>
-    </mat-card-content>
-
-    <mat-card-actions align="end" style="padding: 16px">
-      <button mat-flat-button color="primary" (click)="setToggleWarningState()"
-              [disabled]="isToggleWarningButtonDisabled">
-        Acknowledge {{ counter > 0 ? '(' + counter + 's)' : '' }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
-</ng-template>

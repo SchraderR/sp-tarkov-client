@@ -148,6 +148,7 @@ export class AppComponent {
           userSetting.clientMods = value.clientMods.args;
           userSetting.serverMods = value.serverMods.args;
           userSetting.isError = value.userSetting.isError;
+          userSetting.trackedMods = value.userSetting.trackedMods;
           userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
           userSetting.isLoading = false;
 

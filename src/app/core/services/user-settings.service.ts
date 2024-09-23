@@ -14,7 +14,6 @@ export class UserSettingsService {
   checkInstalledMod = signal<boolean>(false);
   keepTempDownloadDirectorySize = signal<{ size: number; text: string }>({ text: '', size: 0 });
   isTutorialDone = signal<boolean | null>(null);
-  wasInstanceOverviewReviewed = signal<boolean>(false);
   wasModLoadOrderWarningReviewed = signal<boolean>(false);
 
   addUserSetting(settingModel: UserSettingModel) {

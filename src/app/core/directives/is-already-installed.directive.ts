@@ -27,7 +27,7 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
-    const trackedMods = this.#userSettingsService.getActiveInstance()?.trackedMods.map(m => m.hubId);
+    const trackedMods = this.#userSettingsService.getActiveInstance()?.trackedMods?.map(m => m.hubId);
     if (trackedMods?.includes(this.mod.hubId ?? '')) {
       return true;
     }

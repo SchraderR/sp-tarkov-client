@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, effect, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,10 @@ import { DialogModule } from '@angular/cdk/dialog';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { environment } from '../../../environments/environment';
-import { TrackedMods } from '../../../../app/events/file-tracking.event';
+import { TrackedMod } from '../../../../app/events/file-tracking.event';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DownloadService } from '../../core/services/download.service';
 
 @Component({
   standalone: true,
@@ -40,41 +43,15 @@ import { TrackedMods } from '../../../../app/events/file-tracking.event';
     MatCardContent,
   ],
 })
-export default class InstanceOverviewComponent implements OnInit {
+export default class InstanceOverviewComponent {
   @ViewChild('instanceToggleModWarning', { static: true }) instanceToggleModWarning!: TemplateRef<unknown>;
 
   #userSettingsService = inject(UserSettingsService);
   #electronService = inject(ElectronService);
-  #matDialog = inject(MatDialog);
   #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
 
   activeSptInstance = this.#userSettingsService.getActiveInstance();
-  isExperimentalFunctionActive = this.#userSettingsService.isExperimentalFunctionActive;
-  isWorking = false;
-  isToggleWarningButtonDisabled = true;
-  counter = 5;
-  toggleWarningDialogRef!: MatDialogRef<unknown, unknown>;
-
-  ngOnInit() {
-    return;
-
-    if (this.isExperimentalFunctionActive() && !this.#userSettingsService.wasInstanceOverviewReviewed()) {
-      this.toggleWarningDialogRef = this.#matDialog.open(this.instanceToggleModWarning, {
-        disableClose: true,
-        width: '50%',
-      });
-
-      const countdown = setInterval(() => {
-        if (this.counter === 0) {
-          this.isToggleWarningButtonDisabled = false;
-          clearInterval(countdown);
-        } else {
-          this.counter--;
-        }
-      }, 1000);
-    }
-  }
 
   openExternal(mod: ModMeta) {
     let modPath = mod.modPath;
@@ -89,13 +66,8 @@ export default class InstanceOverviewComponent implements OnInit {
     this.#electronService.openExternal(`${environment.sptFileBaseLink}/file/${hubId}`);
   }
 
-  setToggleWarningState() {
-    this.#userSettingsService.wasInstanceOverviewReviewed.set(true);
-    this.toggleWarningDialogRef.close(true);
-  }
-
-  toggleModState(mod: TrackedMods) {
-    if (!this.activeSptInstance || this.isWorking) {
+  toggleModState(mod: TrackedMod) {
+    if (!this.activeSptInstance) {
       return;
     }
 
@@ -104,23 +76,16 @@ export default class InstanceOverviewComponent implements OnInit {
       instancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
     };
 
-    // this.isWorking = true;
-
     this.#electronService
       .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
       .subscribe(() => {
         this.#ngZone.run(() => {
-          // this.isWorking = false;
           const activeInstance = this.#userSettingsService.getActiveInstance();
           if (!activeInstance) {
             return;
           }
 
-          // mod.modOriginalPath = disabledMod.args.path;
-          // mod.modPath = disabledMod.args.path;
-          // mod.isEnabled = disabledMod.args.isEnabled;
-          // mod.subMods?.map(m => (m.modPath = disabledMod.args.path));
-
+          mod.isActive = !mod.isActive;
           this.#userSettingsService.updateUserSetting();
           this.#changeDetectorRef.detectChanges();
         });
