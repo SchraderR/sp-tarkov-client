@@ -135,8 +135,8 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
       const instanceClientDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'client');
       const instancePrePatcherDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'prepatcher');
 
-      ensureDirSync(instanceClientDisabledModPath);
-      ensureDirSync(instancePrePatcherDisabledModPath);
+      // ensureDirSync(instanceClientDisabledModPath);
+      // ensureDirSync(instancePrePatcherDisabledModPath);
 
       const disabledClientMods = readdirSync(instanceClientDisabledModPath, { withFileTypes: true });
       const disabledPrePatcherMods = readdirSync(instancePrePatcherDisabledModPath, { withFileTypes: true });

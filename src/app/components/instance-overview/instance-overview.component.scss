@@ -12,6 +12,19 @@ h2 {
   padding: 0 8px;
 }
 
+.instance-actions {
+  display: flex;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.mat-mdc-card-header {
+  display: flex;
+  padding: 0 16px 0;
+}
+
 .list-item-button {
   display: flex !important;
   justify-content: center;
@@ -31,6 +44,7 @@ h2 {
 
   .mod-list {
     display: flex;
+    gap: 8px;
     flex-direction: column;
     height: 100%;
     width: 100%;

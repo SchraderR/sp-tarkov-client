@@ -50,7 +50,7 @@ export class UserSettingsService {
           clientMods: [],
           isActive: false,
           isPowerShellIssue: false,
-          trackedFileData: [],
+          trackedMods: [],
           sptCore: {
             sptVersion: '4.0.0',
           } as unknown as SptCore,

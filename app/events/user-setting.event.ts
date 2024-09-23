@@ -75,7 +75,7 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         isValid: !!sptCoreJson,
         isActive: sptInstance.isActive,
         isLoading: sptInstance.isLoading,
-        trackedFileData: sptInstance.trackedFileData,
+        trackedMods: sptInstance.trackedMods,
         isError: sptInstance.isError,
         isPowerShellIssue: sptInstance.isPowerShellIssue,
         clientMods: sptInstance.clientMods ?? [],

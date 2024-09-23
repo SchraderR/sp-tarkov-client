@@ -1,11 +1,12 @@
 ﻿import { ipcMain } from 'electron';
 import { BrowserWindowSingleton } from '../browserWindow';
 
-export interface TrackedFile {
+export interface TrackedMods {
+  modName: string;
   hubId: string;
-  lastUpdateCheck: string;
-  isActive: true;
-  files: string[];
+  modVersion?: string;
+  nextUpdateCheck: string;
+  isActive: boolean;
 }
 
 export const fileTrackingEvents = () => {

@@ -179,6 +179,7 @@ export class ModListService {
     return {
       name: modPageView.getElementsByClassName('contentTitle')?.[0]?.getElementsByTagName('span')[0].innerHTML,
       fileUrl: modUrl,
+      modVersion: modPageView.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? '',
       supportedSptVersion: modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
       sptVersionColorCode: modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
     } as Mod;

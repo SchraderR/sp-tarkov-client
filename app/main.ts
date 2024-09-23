@@ -53,7 +53,7 @@ handleSptTagEvents(store);
 handleSptVersionEvents(store);
 handleModCacheEvents(store);
 handleIndexedModsEvents(store);
-toggleModStateEvent();
+toggleModStateEvent(store);
 handleModPageEvents();
 handleTempDownloadDirectoryEvents(store);
 handleCheckInstalledEvents(store);

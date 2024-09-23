@@ -1,63 +1,48 @@
 ﻿import { app, ipcMain } from 'electron';
 import * as path from 'path';
 import { ToggleModStateModel } from '../../shared/models/toggle-mod-state.model';
-import * as log from 'electron-log';
-import { ensureDirSync, existsSync, mkdirSync, move } from 'fs-extra';
-import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
+import { ensureDirSync, existsSync, mkdirSync } from 'fs-extra';
+import * as Store from 'electron-store';
+import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import { error, info } from 'electron-log';
 
-export const toggleModStateEvent = () => {
+export const toggleModStateEvent = (store: Store<UserSettingStoreModel>) => {
   ipcMain.on('toggle-mod-state', async (event, toggleModStateModel: ToggleModStateModel) => {
     const appPath = app.getPath('userData');
     const appInstancePath = path.join(appPath, 'instances');
+    const instances = store.get('sptInstances');
+    const instance = instances.find(i => i.sptRootDirectory === toggleModStateModel.instancePath);
+    if (!instance) {
+      error('Instance not found');
+      return;
+    }
+
     if (!existsSync(appInstancePath)) {
-      log.info('App global instance directory will be created');
+      info('App global instance directory will be created');
       mkdirSync(appInstancePath);
     }
 
-    const instanceName = toggleModStateModel.sptInstancePath.split('\\').pop();
+    const instanceName = toggleModStateModel.instancePath.split('\\').pop();
     if (!instanceName) {
-      log.error('Instance name cannot be fetched');
+      error('Instance name cannot be fetched');
       event.sender.send('toggle-mod-state-error');
       return;
     }
 
-    const instancePrePatcherDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'prepatcher');
-    const instanceClientDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'client');
-    const instanceServerDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'server');
-    let newModPath: string | null = null;
-
-    ensureDirSync(instancePrePatcherDisabledModPath);
-    ensureDirSync(instanceClientDisabledModPath);
-    ensureDirSync(instanceServerDisabledModPath);
-
-    if (toggleModStateModel.modWillBeDisabled) {
-      if (toggleModStateModel.isPrePatcherMod && !toggleModStateModel.isServerMod) {
-        newModPath = path.join(instancePrePatcherDisabledModPath, toggleModStateModel.modOriginalName);
-      } else {
-        newModPath = toggleModStateModel.isServerMod
-          ? path.join(instanceServerDisabledModPath, toggleModStateModel.modOriginalName)
-          : path.join(instanceClientDisabledModPath, toggleModStateModel.modOriginalName);
-      }
-    } else {
-      if (toggleModStateModel.isPrePatcherMod && !toggleModStateModel.isServerMod) {
-        newModPath = path.join(toggleModStateModel.sptInstancePath, clientPatcherModPath, toggleModStateModel.modOriginalName);
-      } else {
-        newModPath = toggleModStateModel.isServerMod
-          ? path.join(toggleModStateModel.sptInstancePath, serverModPath, toggleModStateModel.modOriginalName)
-          : path.join(toggleModStateModel.sptInstancePath, clientPluginModPath, toggleModStateModel.modOriginalName);
-      }
+    const trackedFileData = instance.trackedMods.find(d => d.hubId === toggleModStateModel.hubId);
+    if (!trackedFileData) {
+      error('Mod instance not found');
+      return;
     }
 
-    console.log(toggleModStateModel.modOriginalName);
-    console.log(toggleModStateModel.isPrePatcherMod);
-    console.log(newModPath);
+    // TODO SymLink umsetzen
 
-    move(toggleModStateModel.modOriginalPath, newModPath).then(() => {
-      event.sender.send('toggle-mod-state-completed', {
-        name: toggleModStateModel.modOriginalName,
-        path: newModPath,
-        isEnabled: !toggleModStateModel.modWillBeDisabled,
-      });
-    });
+    // if (!trackedFileData.isActive) {
+    //   removeSync(path.join(instanceDisabledModPath, toggleModStateModel.hubId));
+    // }
+
+    // trackedFileData.isActive = !trackedFileData.isActive; // Toggle the state
+    // store.set('sptInstances', instances);
+    event.sender.send('toggle-mod-state-completed');
   });
 };

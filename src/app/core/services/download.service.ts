@@ -179,8 +179,10 @@ export class DownloadService {
         }),
         switchMap(downloadFilePath => {
           const test: FileUnzipEvent = {
+            name: mod.name,
+            version: mod.modVersion,
             filePath: downloadFilePath?.args,
-            sptInstancePath: activeInstance.sptRootDirectory,
+            instancePath: activeInstance.sptRootDirectory,
             hubId: fileId,
             kind: mod.kind,
           };

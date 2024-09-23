@@ -260,7 +260,6 @@ export class AppComponent {
                 }
               },
               complete: () => {
-                console.log('complete');
                 if (!instanceSet) {
                   this.#userSettingService.clearFakeInstance();
                 }

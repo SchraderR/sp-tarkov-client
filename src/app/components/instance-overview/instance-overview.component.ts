@@ -15,6 +15,8 @@ import { ToggleModStateModel } from '../../../../shared/models/toggle-mod-state.
 import { DialogModule } from '@angular/cdk/dialog';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { environment } from '../../../environments/environment';
+import { TrackedMods } from '../../../../app/events/file-tracking.event';
 
 @Component({
   standalone: true,
@@ -55,6 +57,8 @@ export default class InstanceOverviewComponent implements OnInit {
   toggleWarningDialogRef!: MatDialogRef<unknown, unknown>;
 
   ngOnInit() {
+    return;
+
     if (this.isExperimentalFunctionActive() && !this.#userSettingsService.wasInstanceOverviewReviewed()) {
       this.toggleWarningDialogRef = this.#matDialog.open(this.instanceToggleModWarning, {
         disableClose: true,
@@ -81,41 +85,41 @@ export default class InstanceOverviewComponent implements OnInit {
     this.#electronService.openPath(modPath);
   }
 
+  openExternalHub(hubId: string) {
+    this.#electronService.openExternal(`${environment.sptFileBaseLink}/file/${hubId}`);
+  }
+
   setToggleWarningState() {
     this.#userSettingsService.wasInstanceOverviewReviewed.set(true);
     this.toggleWarningDialogRef.close(true);
   }
 
-  toggleModState(mod: ModMeta, isServerMod = false) {
+  toggleModState(mod: TrackedMods) {
     if (!this.activeSptInstance || this.isWorking) {
       return;
     }
 
     const toggleModState: ToggleModStateModel = {
-      isServerMod: isServerMod,
-      sptInstancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
-      modOriginalPath: mod.modOriginalPath,
-      modOriginalName: mod.modOriginalName,
-      isPrePatcherMod: mod.isPrePatcherMod ?? false,
-      modWillBeDisabled: mod.isEnabled,
+      hubId: mod.hubId,
+      instancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
     };
 
-    this.isWorking = true;
+    // this.isWorking = true;
 
     this.#electronService
       .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
-      .subscribe(disabledMod => {
+      .subscribe(() => {
         this.#ngZone.run(() => {
-          this.isWorking = false;
+          // this.isWorking = false;
           const activeInstance = this.#userSettingsService.getActiveInstance();
           if (!activeInstance) {
             return;
           }
 
-          mod.modOriginalPath = disabledMod.args.path;
-          mod.modPath = disabledMod.args.path;
-          mod.isEnabled = disabledMod.args.isEnabled;
-          mod.subMods?.map(m => (m.modPath = disabledMod.args.path));
+          // mod.modOriginalPath = disabledMod.args.path;
+          // mod.modPath = disabledMod.args.path;
+          // mod.isEnabled = disabledMod.args.isEnabled;
+          // mod.subMods?.map(m => (m.modPath = disabledMod.args.path));
 
           this.#userSettingsService.updateUserSetting();
           this.#changeDetectorRef.detectChanges();
