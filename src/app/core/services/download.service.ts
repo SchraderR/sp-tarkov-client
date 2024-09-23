@@ -78,7 +78,7 @@ export class DownloadService {
         continue;
       }
 
-      const fileId = FileHelper.extractFileIdFromUrl(mod.fileUrl);
+      const fileId = FileHelper.extractHubIdFromUrl(mod.fileUrl);
       if (!fileId || !mod.installProgress) {
         continue;
       }
@@ -93,7 +93,7 @@ export class DownloadService {
       }
 
       for (const modDependency of mod.dependencies ?? []) {
-        const modDependencyHubId = FileHelper.extractFileIdFromUrl(modDependency.fileUrl);
+        const modDependencyHubId = FileHelper.extractHubIdFromUrl(modDependency.fileUrl);
 
         modDependency.installProgress = this.#modListService.initialInstallProgress();
         if (!modDependencyHubId || !modDependency.installProgress) {

@@ -40,7 +40,7 @@ export class ModListService {
       }
 
       signalMod.isDependenciesLoading = true;
-      signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractFileIdFromUrl(mod.fileUrl), modDependenciesIds));
+      signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractHubIdFromUrl(mod.fileUrl), modDependenciesIds));
       signalMod.isDependenciesLoading = false;
       signalMod.installProgress = this.initialInstallProgress();
       this.updateMod();
@@ -137,13 +137,13 @@ export class ModListService {
 
   private getModDependenciesIds(mod: Mod) {
     const config = this.#configurationService.configSignal();
-    const fileId = FileHelper.extractFileIdFromUrl(mod.fileUrl);
+    const hubId = FileHelper.extractHubIdFromUrl(mod.fileUrl);
 
-    if (!fileId || !config) {
+    if (!hubId || !config) {
       return [];
     }
 
-    const modDependencySetting = config.modDependency.find(d => d.hubId === fileId);
+    const modDependencySetting = config.modDependency.find(d => d.hubId === hubId);
     if (!modDependencySetting) {
       return [];
     }

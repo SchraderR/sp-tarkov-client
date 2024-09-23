@@ -71,7 +71,7 @@ export class SptSearchService {
           return e;
         }
 
-        const fileId = FileHelper.extractFileIdFromUrl(e.fileUrl);
+        const fileId = FileHelper.extractHubIdFromUrl(e.fileUrl);
         if (!fileId) {
           return e;
         }

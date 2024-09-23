@@ -46,7 +46,7 @@ export class ModTrackingHelper {
     this._store.set('sptInstances', instances);
   }
 
-  private createModLinks(sourcePath: string, instancePath: string) {
+  createModLinks(sourcePath: string, instancePath: string) {
     const pathsToCheck = [clientPluginModPath, serverModPath];
 
     pathsToCheck.forEach(modPath => {
