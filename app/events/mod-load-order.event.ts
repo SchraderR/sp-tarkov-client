@@ -2,8 +2,8 @@ import { ipcMain } from 'electron';
 import * as path from 'path';
 import { modLoadOrderConfigPath, serverModPath } from '../constants';
 import * as log from 'electron-log';
-import { existsSync } from 'fs-extra';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs-extra';
+import { statSync } from 'node:fs';
 
 export const handleModLoadOrderEvents = () => {
   ipcMain.on('mod-load-order', (event, instancePath: string) => {
@@ -17,8 +17,8 @@ export const handleModLoadOrderEvents = () => {
         const rawOrderData = readFileSync(configFilePath, 'utf-8');
         currentModOrder = JSON.parse(rawOrderData).order || [];
 
-        const currentDirectories = readdirSync(modDirectoryPath, { withFileTypes: true })
-          .filter(dirent => dirent.isDirectory())
+        const currentDirectories = readdirSync(modDirectoryPath, { withFileTypes: true, recursive: true })
+          .filter(dirent => statSync(path.join((dirent as any).path, dirent.name)).isDirectory() || dirent.isDirectory())
           .map(dirent => dirent.name);
 
         currentModOrder = currentModOrder.filter(mod => currentDirectories.includes(mod));
