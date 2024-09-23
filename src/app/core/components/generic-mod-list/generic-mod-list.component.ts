@@ -229,13 +229,14 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
               return e;
             }
 
-            const fileId = FileHelper.extractFileIdFromUrl(e.fileUrl);
-            if (!fileId) {
+            const hubId = FileHelper.extractFileIdFromUrl(e.fileUrl);
+            if (!hubId) {
               return e;
             }
+            e.hubId = hubId;
 
             if (environment.production) {
-              e.notSupported = !!config.notSupported.find(f => f === +fileId);
+              e.notSupported = !!config.notSupported.find(f => f === +hubId);
             }
 
             return e;
