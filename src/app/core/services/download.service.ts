@@ -48,7 +48,11 @@ export class DownloadService {
     console.log('Fetching indexed mods data from hub json');
 
     try {
-      const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.sptHubModsJson));
+      const response = await firstValueFrom(
+        this.#httpClient.get<{
+          mod_data: IndexedMods[];
+        }>(environment.sptHubModsJson)
+      );
       this.mods = response.mod_data;
       this.lastFetchTime = new Date();
       return this.mods;
@@ -89,14 +93,21 @@ export class DownloadService {
       }
 
       for (const modDependency of mod.dependencies ?? []) {
-        const modDependencyFileId = FileHelper.extractFileIdFromUrl(modDependency.fileUrl);
+        const modDependencyHubId = FileHelper.extractFileIdFromUrl(modDependency.fileUrl);
+
         modDependency.installProgress = this.#modListService.initialInstallProgress();
-        if (!modDependencyFileId || !modDependency.installProgress) {
+        if (!modDependencyHubId || !modDependency.installProgress) {
+          continue;
+        }
+
+        const alreadyInstalledMods = this.#userSettingsService.getActiveInstance()?.trackedMods.map(m => m.hubId);
+        if (alreadyInstalledMods?.includes(modDependency.hubId ?? '')) {
+          modDependency.installProgress.completed = true;
           continue;
         }
 
         try {
-          await this.installProcess(modDependency, modDependencyFileId, activeInstance);
+          await this.installProcess(modDependency, modDependencyHubId, activeInstance);
         } catch (error: unknown) {
           modDependency.installProgress.error = true;
           this.handleError(modDependency, error as ApplicationElectronFileError);
@@ -169,7 +180,7 @@ export class DownloadService {
           mod.installProgress!.linkStep.progress = 1;
 
           const downloadModel: DownloadModel = {
-            fileId,
+            hubId: fileId,
             name: mod.name,
             sptInstancePath: activeInstance.sptRootDirectory,
             modFileUrl: downloadLinkEvent!.args,

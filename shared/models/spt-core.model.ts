@@ -10,7 +10,7 @@
 
 export interface DownloadModel {
   name?: string;
-  fileId: string;
+  hubId: string;
   modFileUrl: string;
   sptInstancePath: string;
 }

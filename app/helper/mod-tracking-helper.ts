@@ -4,9 +4,10 @@ import { TrackedMods } from '../events/file-tracking.event';
 import { addHours } from 'date-fns';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as Store from 'electron-store';
-import { readdirSync, readlinkSync, statSync, symlinkSync } from 'node:fs';
+import { readdirSync, statSync, symlinkSync } from 'node:fs';
 import * as path from 'path';
-import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
+import { clientPluginModPath, serverModPath } from '../constants';
+import { existsSync } from 'fs-extra';
 
 export class ModTrackingHelper {
   private _store: Store<UserSettingStoreModel>;
@@ -50,6 +51,9 @@ export class ModTrackingHelper {
 
     pathsToCheck.forEach(modPath => {
       const fullSourcePath = path.join(sourcePath, modPath);
+      if (!existsSync(fullSourcePath)) {
+        return;
+      }
 
       if (statSync(fullSourcePath).isDirectory()) {
         const modDirectory = readdirSync(fullSourcePath);

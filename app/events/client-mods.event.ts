@@ -3,8 +3,6 @@ import * as path from 'path';
 import { clientPatcherModPath, clientPluginModPath } from '../constants';
 import * as fs from 'fs';
 import * as log from 'electron-log';
-import { ensureDirSync } from 'fs-extra';
-import { readdirSync } from 'node:fs';
 
 export const handleClientModsEvent = () => {
   ipcMain.on('client-mod', async (event, sptInstancePath: string) => {
@@ -132,98 +130,6 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
         return data;
       }
 
-      const instanceClientDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'client');
-      const instancePrePatcherDisabledModPath = path.join(appPath, 'instances', instanceName, 'disabled', 'prepatcher');
-
-      // ensureDirSync(instanceClientDisabledModPath);
-      // ensureDirSync(instancePrePatcherDisabledModPath);
-
-      const disabledClientMods = readdirSync(instanceClientDisabledModPath, { withFileTypes: true });
-      const disabledPrePatcherMods = readdirSync(instancePrePatcherDisabledModPath, { withFileTypes: true });
-
-      for (const mod of disabledClientMods) {
-        const filePath = path.join(instanceClientDisabledModPath, mod.name);
-        let version = '';
-
-        if (mod.isFile()) {
-          version = await getVersion(filePath);
-
-          data.push({
-            name: mod.name.split('.dll')[0],
-            version,
-            modPath: instanceClientDisabledModPath,
-            modOriginalPath: path.join(instanceClientDisabledModPath, mod.name),
-            modOriginalName: mod.name,
-            isEnabled: false,
-          });
-        } else if (mod.isDirectory()) {
-          const subMods = readdirSync(filePath, { withFileTypes: true });
-          const subModObjects = await Promise.all(
-            subMods
-              .filter(file => file.isFile() && path.extname(file.name) === '.dll')
-              .map(async m => ({
-                version: await getVersion(path.join(filePath, m.name)),
-                modPath: filePath,
-                name: m.name.split('.dll')[0],
-              }))
-          );
-
-          data.push({
-            name: mod.name,
-            modPath: filePath,
-            modOriginalPath: filePath,
-            modOriginalName: mod.name,
-            isEnabled: false,
-            isDirectory: true,
-            subMods: subModObjects,
-          });
-        }
-      }
-
-      for (const mod of disabledPrePatcherMods) {
-        const filePath = path.join(instancePrePatcherDisabledModPath, mod.name);
-        let version = '';
-
-        if (mod.isFile()) {
-          version = await getVersion(filePath);
-
-          data.push({
-            name: mod.name.split('.dll')[0],
-            version,
-            modPath: instancePrePatcherDisabledModPath,
-            modOriginalPath: path.join(instancePrePatcherDisabledModPath, mod.name),
-            modOriginalName: mod.name,
-            isEnabled: false,
-          });
-        } else if (mod.isDirectory()) {
-          const subMods = readdirSync(filePath, { withFileTypes: true });
-          const subModObjects = await Promise.all(
-            subMods
-              .filter(
-                file =>
-                  file.isFile() &&
-                  (file.name.toLowerCase().includes('.prepatch.') || file.name.toLowerCase().includes('_prepatch.')) &&
-                  path.extname(file.name) === '.dll'
-              )
-              .map(async m => ({
-                version: await getVersion(path.join(filePath, m.name)),
-                modPath: filePath,
-                name: m.name.split('.dll')[0],
-              }))
-          );
-
-          data.push({
-            name: mod.name,
-            modPath: filePath,
-            modOriginalPath: filePath,
-            modOriginalName: mod.name,
-            isEnabled: false,
-            isDirectory: true,
-            isPrePatcherMod: true,
-            subMods: subModObjects,
-          });
-        }
-      }
       resolve(data);
     } catch (e) {
       console.log(e);
