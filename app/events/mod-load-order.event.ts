@@ -32,7 +32,7 @@ export const handleModLoadOrderEvents = () => {
         log.info(`Updated ${modLoadOrderConfigPath} with current mod directories.`);
       } else {
         currentModOrder = readdirSync(modDirectoryPath, { withFileTypes: true })
-          .filter(dirent => dirent.isDirectory())
+          .filter(dirent => statSync(path.join((dirent as any).path, dirent.name)).isDirectory() || dirent.isDirectory())
           .map(dirent => dirent.name);
 
         if (!currentModOrder.length) {
