@@ -57,13 +57,10 @@ export class ModTrackingHelper {
 
       if (statSync(fullSourcePath).isDirectory()) {
         const modDirectory = readdirSync(fullSourcePath);
-        console.log('modDirectory', modDirectory);
 
         modDirectory.forEach(modName => {
           const sourceModPath = path.join(fullSourcePath, modName);
           const targetModPath = path.join(instancePath, modPath, modName);
-          console.log('sourceModPath', sourceModPath);
-          console.log('targetModPath', targetModPath);
 
           symlinkSync(sourceModPath, targetModPath);
         });
