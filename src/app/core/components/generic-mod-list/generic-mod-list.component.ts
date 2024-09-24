@@ -104,7 +104,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     this.filteredOptions = this.sptTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
-      map(value => this.filterAkiTags(value || '')),
+      map(value => this.filterTags(value || '')),
       tap(() => this.loadData(this._sortField, this.pageNumber))
     );
 
@@ -250,7 +250,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private filterAkiTags(value: string): SptTag[] {
+  private filterTags(value: string): SptTag[] {
     const filterValue = value.toLowerCase();
     if (!this.sptTagsSignal()?.length) {
       return [];

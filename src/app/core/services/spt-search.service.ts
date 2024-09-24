@@ -84,25 +84,34 @@ export class SptSearchService {
       });
   }
 
-  private getFileHubView(modUrl: string): Observable<{ supportedSptVersion: string; sptVersionColorCode: string }> {
+  getFileHubView(modUrl: string): Observable<Mod> {
+    const originalModUrl = modUrl;
     modUrl = environment.production ? modUrl : modUrl.replace('https://hub.sp-tarkov.com/', '');
+
     return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(
-      map(modView => this.extractSPVersion(modView)),
+      map(modView => this.extractSPInformation(modView, originalModUrl)),
       catchError(() => {
         return of({
           supportedSptVersion: 'Error while fetching version. Use with caution.',
           sptVersionColorCode: 'badge label red',
-        });
+        } as Mod);
       })
     );
   }
 
-  private extractSPVersion(modHub: string): { supportedSptVersion: string; sptVersionColorCode: string } {
-    const searchResult = HtmlHelper.parseStringAsHtml(modHub);
+  private extractSPInformation(modHub: string, fileUrl: string): Mod {
+    const htmlResult = HtmlHelper.parseStringAsHtml(modHub);
 
     return {
-      supportedSptVersion: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
-      sptVersionColorCode: searchResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
-    };
+      name: htmlResult.getElementsByClassName('contentTitle')?.[0]?.getElementsByTagName('span')[0].innerHTML,
+      fileUrl: fileUrl,
+      image: htmlResult.getElementsByClassName('contentHeaderIcon')[0]?.getElementsByTagName('img')[0]?.src ?? null,
+      icon: htmlResult.getElementsByClassName('contentHeaderIcon')[0]?.getElementsByTagName('span')[0]?.className.split('icon icon64')[1] ?? null,
+      teaser: htmlResult.getElementsByClassName('filebaseFileTeaser')[0].innerHTML ?? '',
+      modVersion: htmlResult.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? '',
+      supportedSptVersion: htmlResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
+      sptVersionColorCode: htmlResult.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
+      kind: '',
+    } as Mod;
   }
 }

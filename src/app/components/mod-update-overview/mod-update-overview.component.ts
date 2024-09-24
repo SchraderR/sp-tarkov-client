@@ -23,8 +23,6 @@ export default class ModUpdateOverviewComponent implements OnInit {
       // https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/#versions
       // https://hub.sp-tarkov.com/files/
       // file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/#versions
-
-      console.log(value.args);
       //this.#httpClient
       //  .get(`${environment.akiFileBaseLink}/file/1062/#versions`, { observe: 'response', responseType: 'text' })
       //  .pipe(

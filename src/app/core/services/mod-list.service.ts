@@ -137,7 +137,7 @@ export class ModListService {
 
   private getModDependenciesIds(mod: Mod) {
     const config = this.#configurationService.configSignal();
-    const hubId = FileHelper.extractHubIdFromUrl(mod.fileUrl);
+    const hubId = mod.hubId ?? FileHelper.extractHubIdFromUrl(mod.fileUrl);
 
     if (!hubId || !config) {
       return [];
