@@ -24,7 +24,6 @@ export const handleFileUnzipEvent = (isServe: boolean, store: Store<UserSettingS
     }
     const instanceModPath = path.join(appPath, 'instances', instanceName, 'mods');
     ensureDirSync(instanceModPath);
-    console.log(instanceModPath);
 
     if (!fs.existsSync(tempDownloadDir)) {
       fs.mkdirSync(tempDownloadDir);
@@ -70,7 +69,6 @@ async function handleArchive(
     log(`HubId:${args.hubId} - Start Unzip`);
 
     const { singleDll, newArgs } = zipArchiveHelper.checkForSingleDll(archivePath, path.join(instanceModPath, args.hubId), args);
-    console.log(newArgs);
     log(`HubId:${args.hubId} - isSingleDllResult: ${singleDll}`);
     if (singleDll) {
       modTrackingHelper.trackMod(newArgs, path.join(instanceModPath, newArgs.hubId));
