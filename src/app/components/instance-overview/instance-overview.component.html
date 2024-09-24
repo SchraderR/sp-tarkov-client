@@ -18,10 +18,21 @@
 @if (activeSptInstance && !activeSptInstance?.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
-      <h2>Installed Mods ({{ activeSptInstance?.trackedMods?.length ?? 0 }})</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px;">
+        <h2>Installed Mods ({{ activeSptInstance?.trackedMods?.length ?? 0 }})</h2>
+
+        <div style="display: flex; justify-content: end; align-items: center; padding: 8px;">
+          <button mat-icon-button matTooltip="Import Mods" (click)="importModsFromFileSystem()">
+            <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Export Mods" (click)="exportModsToFileSystem()">
+            <mat-icon>upload</mat-icon>
+          </button>
+        </div>
+      </div>
 
       @for (trackedMod of activeSptInstance?.trackedMods | orderBy:'modName'; track $index) {
-        <mat-card>
+        <mat-card style="margin-right: 8px;">
           <mat-card-content>
             {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
 

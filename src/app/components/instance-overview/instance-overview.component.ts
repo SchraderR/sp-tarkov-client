@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, effect, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,17 +9,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from '../../core/services/electron.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { ModMeta } from '../../../../shared/models/user-setting.model';
+import { ModCache, ModMeta } from '../../../../shared/models/user-setting.model';
 import { NgPipesModule } from 'ngx-pipes';
 import { ToggleModStateModel } from '../../../../shared/models/toggle-mod-state.model';
 import { DialogModule } from '@angular/cdk/dialog';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { environment } from '../../../environments/environment';
 import { TrackedMod } from '../../../../app/events/file-tracking.event';
-import { filter } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DownloadService } from '../../core/services/download.service';
+import { firstValueFrom } from 'rxjs';
+import { MatTooltip } from '@angular/material/tooltip';
+import { ModListService } from '../../core/services/mod-list.service';
+import { Mod } from '../../core/models/mod';
+import { SptSearchService } from '../../core/services/spt-search.service';
 
 @Component({
   standalone: true,
@@ -41,6 +42,7 @@ import { DownloadService } from '../../core/services/download.service';
     MatCardActions,
     MatCardHeader,
     MatCardContent,
+    MatTooltip,
   ],
 })
 export default class InstanceOverviewComponent {
@@ -50,6 +52,8 @@ export default class InstanceOverviewComponent {
   #electronService = inject(ElectronService);
   #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
+  #modListService = inject(ModListService);
+  #searchService = inject(SptSearchService);
 
   activeSptInstance = this.#userSettingsService.getActiveInstance();
 
@@ -66,6 +70,52 @@ export default class InstanceOverviewComponent {
     this.#electronService.openExternal(`${environment.sptFileBaseLink}/file/${hubId}`);
   }
 
+  async exportModsToFileSystem() {
+    const activeInstance = this.#userSettingsService.getActiveInstance();
+    if (!activeInstance || !activeInstance.trackedMods.length) {
+      return;
+    }
+
+    await firstValueFrom(
+      this.#electronService.sendEvent(
+        'export-mods-file-system',
+        activeInstance.trackedMods?.map(m => m.hubId)
+      )
+    );
+  }
+
+  async importModsFromFileSystem() {
+    const activeInstance = this.#userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      return;
+    }
+
+    this.#electronService.sendEvent<Mod[]>('import-mods-file-system').subscribe(importedMods => {
+      this.#ngZone.run(() => {
+        const trackedModHubIds = activeInstance.trackedMods.map(mod => mod.hubId);
+        const filteredMods = importedMods.args.filter(importedMod => !trackedModHubIds.includes(importedMod.hubId ?? ''));
+
+        filteredMods.forEach(async importedMod => {
+          const modInfo = await firstValueFrom(this.#searchService.getFileHubView(importedMod.fileUrl));
+          const modCacheItem: ModCache = {
+            name: modInfo.name,
+            icon: modInfo.icon,
+            image: modInfo.image,
+            fileUrl: modInfo.fileUrl,
+            teaser: modInfo.teaser,
+            supportedSptVersion: modInfo.supportedSptVersion,
+            sptVersionColorCode: modInfo.sptVersionColorCode,
+          };
+
+          await this.#modListService.addMod(modInfo);
+          await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
+        });
+
+        this.#changeDetectorRef.detectChanges();
+      });
+    });
+  }
+
   toggleModState(mod: TrackedMod) {
     if (!this.activeSptInstance) {
       return;
@@ -77,7 +127,14 @@ export default class InstanceOverviewComponent {
     };
 
     this.#electronService
-      .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
+      .sendEvent<
+        {
+          path: string;
+          name: string;
+          isEnabled: boolean;
+        },
+        ToggleModStateModel
+      >('toggle-mod-state', toggleModState)
       .subscribe(() => {
         this.#ngZone.run(() => {
           const activeInstance = this.#userSettingsService.getActiveInstance();
