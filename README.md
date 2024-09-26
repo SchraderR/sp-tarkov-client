@@ -1,3 +1,4 @@
+[![Qodana](https://github.com/SchraderR/sp-tarkov-client/actions/workflows/qodana_code_quality.yml/badge.svg?branch=master)](https://github.com/SchraderR/sp-tarkov-client/actions/workflows/qodana_code_quality.yml)
 [![Angular Workflow](https://github.com/SchraderR/sp-tarkov-client/actions/workflows/angular-main.yml/badge.svg?branch=master)](https://github.com/SchraderR/sp-tarkov-client/actions/workflows/angular-main.yml)
 [![Release Electron Application](https://github.com/SchraderR/sp-tarkov-client/actions/workflows/release-electron.yml/badge.svg?branch=master)](https://github.com/SchraderR/sp-tarkov-client/actions/workflows/release-electron.yml)
 

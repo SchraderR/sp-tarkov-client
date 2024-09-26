@@ -26,5 +26,11 @@ jobs:
       - name: Run Tests
         run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
 
+      - name: Archive coverage data
+        uses: actions/upload-artifact@v2
+        with:
+          name: jest-coverage-data
+          path: .qodana/code-coverage
+
       - name: Build Code
         run: npm run build
