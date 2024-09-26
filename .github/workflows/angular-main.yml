@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jest-coverage-data
-          path: coverage/report-lcov/lcov.info
+          path: .qodana/code-coverage
 
       - name: Build Code
         run: npm run build
