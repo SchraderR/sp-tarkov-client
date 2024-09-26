@@ -3,6 +3,7 @@ import { extract, extractFull, list } from 'node-7z';
 import { clientPluginModPath, serverModPath } from '../constants';
 import { copyFileSync, ensureDirSync } from 'fs-extra';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
+import { log } from 'electron-log';
 
 export class ZipArchiveHelper {
   /**

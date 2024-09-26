@@ -37,9 +37,13 @@
             {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
 
             <div class="instance-actions">
-              <mat-slide-toggle class="list-slider-item" matListItemMeta [checked]="trackedMod.isActive"
+              <mat-slide-toggle class="list-slider-item" matListItemMeta [disabled]="isWorking" [checked]="trackedMod.isActive"
                                 (click)="toggleModState(trackedMod)">{{ trackedMod.isActive ? 'Active' : 'Inactive' }}
               </mat-slide-toggle>
+
+              <button mat-icon-button [ngClass]="!isWorking ? 'remove-action' : ''" [disabled]="isWorking" (click)="$event.stopPropagation(); toggleModState(trackedMod, true)">
+                <mat-icon>delete</mat-icon>
+              </button>
 
               <button mat-icon-button (click)="$event.stopPropagation(); openExternalHub(trackedMod.hubId)">
                 <mat-icon>open_in_new</mat-icon>

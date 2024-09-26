@@ -100,7 +100,7 @@ export class DownloadService {
           continue;
         }
 
-        const alreadyInstalledMods = this.#userSettingsService.getActiveInstance()?.trackedMods.map(m => m.hubId);
+        const alreadyInstalledMods = this.#userSettingsService.getActiveInstance()?.trackedMods?.map(m => m.hubId);
         if (alreadyInstalledMods?.includes(modDependency.hubId ?? '')) {
           modDependency.installProgress.completed = true;
           continue;

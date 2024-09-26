@@ -1,5 +1,5 @@
 ﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
-import { TrackedMod } from '../../app/events/file-tracking.event';
+import { TrackedMod } from './tracked-mod.model';
 
 export interface UpdateModMeta {
   name: string;
@@ -44,7 +44,6 @@ export interface SptInstance {
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
-  isPowerShellIssue: boolean;
   trackedMods: TrackedMod[];
   clientMods: ModMeta[];
   serverMods: ModMeta[];

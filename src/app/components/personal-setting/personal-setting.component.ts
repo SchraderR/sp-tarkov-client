@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, Vi
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { SptInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { SptInstance, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -151,8 +151,6 @@ export default class PersonalSettingComponent {
 
           return forkJoin({
             userSetting: of(newUserSetting),
-            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
-            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
           }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
         }),
         tap(result => {
@@ -162,8 +160,6 @@ export default class PersonalSettingComponent {
               return;
             }
 
-            userSetting.clientMods = result.clientMods.args;
-            userSetting.serverMods = result.serverMods.args;
             userSetting.isError = result.userSetting.isError;
             userSetting.isLoading = false;
           });
@@ -193,7 +189,6 @@ export default class PersonalSettingComponent {
       sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
-      isPowerShellIssue: settingModel.isPowerShellIssue,
       trackedMods: settingModel.trackedMods,
       isError: settingModel.isError,
       clientMods: settingModel.clientMods,
@@ -213,15 +208,8 @@ export default class PersonalSettingComponent {
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    if (error.isPowerShellIssue) {
-      userSettingModel.isPowerShellIssue = true;
-    } else {
-      userSettingModel.isError = true;
-    }
-
-    const errorMessage = userSettingModel.isPowerShellIssue
-      ? 'Powershell could not be used. \nPlease make sure, Powershell is configure correctly and environment variable are set correctly.'
-      : `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
+    userSettingModel.isError = true;
+    const errorMessage = `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
 
     this.#matSnackBar.open(errorMessage, '', {
       duration: 3000,

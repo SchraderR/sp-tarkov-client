@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { ModCache, ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModCache, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -145,11 +145,8 @@ export class AppComponent {
             return;
           }
 
-          userSetting.clientMods = value.clientMods.args;
-          userSetting.serverMods = value.serverMods.args;
           userSetting.isError = value.userSetting.isError;
           userSetting.trackedMods = value.userSetting.trackedMods;
-          userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
           userSetting.isLoading = false;
 
           this.#userSettingService.updateUserSetting();
@@ -174,8 +171,6 @@ export class AppComponent {
 
       return forkJoin({
         userSetting: of(userSetting),
-        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
-        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
       }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
     });
   }
@@ -276,16 +271,10 @@ export class AppComponent {
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    if (error.isPowerShellIssue) {
-      userSettingModel.isPowerShellIssue = true;
-    } else {
-      userSettingModel.isError = true;
-    }
+    userSettingModel.isError = true;
 
     return of({
       userSetting: userSettingModel,
-      serverMods: { args: [] },
-      clientMods: { args: [] },
     });
   }
 

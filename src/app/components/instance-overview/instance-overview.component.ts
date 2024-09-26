@@ -15,12 +15,12 @@ import { ToggleModStateModel } from '../../../../shared/models/toggle-mod-state.
 import { DialogModule } from '@angular/cdk/dialog';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
 import { environment } from '../../../environments/environment';
-import { TrackedMod } from '../../../../app/events/file-tracking.event';
 import { firstValueFrom } from 'rxjs';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ModListService } from '../../core/services/mod-list.service';
 import { Mod } from '../../core/models/mod';
 import { SptSearchService } from '../../core/services/spt-search.service';
+import { TrackedMod } from '../../../../shared/models/tracked-mod.model';
 
 @Component({
   standalone: true,
@@ -56,6 +56,7 @@ export default class InstanceOverviewComponent {
   #searchService = inject(SptSearchService);
 
   activeSptInstance = this.#userSettingsService.getActiveInstance();
+  isWorking = false;
 
   openExternal(mod: ModMeta) {
     let modPath = mod.modPath;
@@ -116,36 +117,36 @@ export default class InstanceOverviewComponent {
     });
   }
 
-  toggleModState(mod: TrackedMod) {
+  toggleModState(mod: TrackedMod, remove = false) {
     if (!this.activeSptInstance) {
       return;
     }
 
+    this.isWorking = true;
+
     const toggleModState: ToggleModStateModel = {
       hubId: mod.hubId,
       instancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
+      remove: remove,
     };
 
-    this.#electronService
-      .sendEvent<
-        {
-          path: string;
-          name: string;
-          isEnabled: boolean;
-        },
-        ToggleModStateModel
-      >('toggle-mod-state', toggleModState)
-      .subscribe(() => {
-        this.#ngZone.run(() => {
-          const activeInstance = this.#userSettingsService.getActiveInstance();
-          if (!activeInstance) {
-            return;
-          }
+    this.#electronService.sendEvent<void, ToggleModStateModel>('toggle-mod-state', toggleModState).subscribe(() => {
+      this.#ngZone.run(() => {
+        const activeInstance = this.#userSettingsService.getActiveInstance();
+        if (!activeInstance) {
+          return;
+        }
 
+        if (toggleModState.remove) {
+          activeInstance.trackedMods = activeInstance.trackedMods.filter(m => m.hubId !== toggleModState.hubId);
+        } else {
           mod.isActive = !mod.isActive;
-          this.#userSettingsService.updateUserSetting();
-          this.#changeDetectorRef.detectChanges();
-        });
+        }
+
+        this.isWorking = false;
+        this.#userSettingsService.updateUserSetting();
+        this.#changeDetectorRef.detectChanges();
       });
+    });
   }
 }

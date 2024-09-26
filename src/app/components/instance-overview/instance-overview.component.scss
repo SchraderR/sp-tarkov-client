@@ -18,6 +18,11 @@ h2 {
   right: 0;
   top: 0;
   bottom: 0;
+  gap: 4px;
+
+  .remove-action {
+    color: orangered;
+  }
 }
 
 .mat-mdc-content {

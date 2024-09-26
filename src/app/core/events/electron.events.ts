@@ -6,8 +6,6 @@
   | 'download-link'
   | 'download-mod'
   | 'file-unzip'
-  | 'client-mod'
-  | 'server-mod'
   | 'window-minimize'
   | 'window-maximize'
   | 'window-close'

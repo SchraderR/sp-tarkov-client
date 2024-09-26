@@ -1,6 +1,5 @@
 import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { error } from 'electron-log';
-import { TrackedMod } from '../events/file-tracking.event';
+import { error, log } from 'electron-log';
 import { addHours } from 'date-fns';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as Store from 'electron-store';
@@ -8,6 +7,7 @@ import { readdirSync, statSync, symlinkSync } from 'node:fs';
 import * as path from 'path';
 import { clientPluginModPath, serverModPath } from '../constants';
 import { existsSync } from 'fs-extra';
+import { TrackedMod } from '../../shared/models/tracked-mod.model';
 
 export class ModTrackingHelper {
   private _store: Store<UserSettingStoreModel>;
@@ -40,13 +40,13 @@ export class ModTrackingHelper {
       isActive: true,
     });
 
-    this.createModLinks(sourcePath, args.instancePath);
+    this.createModLinks(sourcePath, args);
 
     instance.trackedMods = fileTrackingData;
     this._store.set('sptInstances', instances);
   }
 
-  createModLinks(sourcePath: string, instancePath: string) {
+  createModLinks(sourcePath: string, trackedFileData: FileUnzipEvent) {
     const pathsToCheck = [clientPluginModPath, serverModPath];
 
     pathsToCheck.forEach(modPath => {
@@ -60,9 +60,10 @@ export class ModTrackingHelper {
 
         modDirectory.forEach(modName => {
           const sourceModPath = path.join(fullSourcePath, modName);
-          const targetModPath = path.join(instancePath, modPath, modName);
+          const targetModPath = path.join(trackedFileData.instancePath, modPath, modName);
 
           symlinkSync(sourceModPath, targetModPath);
+          log(`HubId:${trackedFileData.hubId} - Initial SymLink created ${sourceModPath} -> ${targetModPath}`);
         });
       }
     });

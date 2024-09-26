@@ -79,7 +79,7 @@ async function handleArchive(
     const isArchiveWithSingleDll = await zipArchiveHelper.checkForArchiveWithSingleDll(archivePath, sevenBinPath);
     log(`HubId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
     if (isArchiveWithSingleDll) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId), sevenBinPath, args);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId), sevenBinPath);
       modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
       event.sender.send('file-unzip-completed');
       return;
@@ -111,7 +111,7 @@ async function handleArchive(
     const isNestedServerModHappyPath = await zipArchiveHelper.determineNestedServerModHappyPath(archivePath, sevenBinPath);
     log(`HubId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
     if (isNestedServerModHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, tempDownloadDir, sevenBinPath, args);
+      await zipArchiveHelper.extractFullArchive(archivePath, tempDownloadDir, sevenBinPath);
       fs.cpSync(`${tempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(instanceModPath, args.hubId), {
         recursive: true,
       });
@@ -121,10 +121,12 @@ async function handleArchive(
       return;
     }
 
-    const isServerModWithDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
-    log(`HubId:${args.hubId} - isServerModWithDirectory: ${isServerModWithDirectory}`);
-    if (isServerModWithDirectory) {
-      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId), sevenBinPath, args);
+    const isServerModWithLeadingDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
+    log(`HubId:${args.hubId} - isServerModWithDirectory: ${isServerModWithLeadingDirectory}`);
+    if (isServerModWithLeadingDirectory) {
+      ensureDirSync(path.join(instanceModPath, args.hubId, serverModPath));
+
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId, serverModPath), sevenBinPath);
       modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
       event.sender.send('file-unzip-completed');
       return;
