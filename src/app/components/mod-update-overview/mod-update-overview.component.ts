@@ -19,7 +19,7 @@ export default class ModUpdateOverviewComponent implements OnInit {
   }
 
   private getCurrentModMetaData() {
-    this.#electronService.sendEvent<UpdateModMeta[]>('update-mod-data').subscribe(async value => {
+    this.#electronService.sendEvent<UpdateModMeta[]>('update-mod-data').subscribe(async () => {
       // https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/#versions
       // https://hub.sp-tarkov.com/files/
       // file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/#versions
