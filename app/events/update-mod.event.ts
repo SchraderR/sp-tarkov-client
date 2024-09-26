@@ -4,7 +4,7 @@ import { ipcMain } from 'electron';
 import axios from 'axios';
 
 export const handleUpdateModEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('update-mod-data', event => {
+  ipcMain.on('update-mod-data', () => {
     //axios({
     //  url: 'https://hub.sp-tarkov.com/files/file/1062/#versions',
     //  method: 'get',
