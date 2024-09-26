@@ -81,6 +81,7 @@ export default class PersonalSettingComponent {
     });
   }
 
+
   toggleCheckInstalledMod(event: MatSlideToggleChange) {
     this.#electronService.sendEvent('check-installed-toggle', event.checked).subscribe(() => {
       this.#ngZone.run(() => this.#userSettingsService.checkInstalledMod.set(event.checked));
