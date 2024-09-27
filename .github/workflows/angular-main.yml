@@ -29,7 +29,7 @@ jobs:
       - name: List report files
         continue-on-error: true
         run: |
-          ls -la
+          ls
 
       - name: Archive coverage data
         uses: actions/upload-artifact@v4
