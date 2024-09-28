@@ -1,5 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
 import { UpdateModMeta } from '../../../../shared/models/user-setting.model';
 
