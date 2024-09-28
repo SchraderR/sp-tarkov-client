@@ -6,7 +6,7 @@ import * as Store from 'electron-store';
 import { SptInstance, UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { error, info, log } from 'electron-log';
 import { clientPluginModPath, serverModPath } from '../constants';
-import { rmdirSync, symlinkSync, unlinkSync } from 'node:fs';
+import { symlinkSync } from 'node:fs';
 import { TrackedMod } from '../../shared/models/tracked-mod.model';
 
 export const toggleModStateEvent = (store: Store<UserSettingStoreModel>) => {

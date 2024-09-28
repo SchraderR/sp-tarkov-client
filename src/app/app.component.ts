@@ -30,7 +30,6 @@ import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
-import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
 
 @Component({
@@ -171,7 +170,7 @@ export class AppComponent {
 
       return forkJoin({
         userSetting: of(userSetting),
-      }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
+      }).pipe(catchError(() => this.handleDirectoryPathError(userSetting)));
     });
   }
 
@@ -270,7 +269,7 @@ export class AppComponent {
       });
   }
 
-  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
+  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
     userSettingModel.isError = true;
 
     return of({

@@ -20,7 +20,6 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
@@ -151,7 +150,7 @@ export default class PersonalSettingComponent {
 
           return forkJoin({
             userSetting: of(newUserSetting),
-          }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
+          }).pipe(catchError(() => this.handleDirectoryPathError(result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
@@ -207,7 +206,7 @@ export default class PersonalSettingComponent {
     });
   }
 
-  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
+  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
     userSettingModel.isError = true;
     const errorMessage = `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
 

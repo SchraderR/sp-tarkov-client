@@ -24,7 +24,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
   try {
     app.on('ready', () =>
       setTimeout(() => {
-        createMainApiManagementWindow(isServe, store);
+        void createMainApiManagementWindow(isServe, store);
 
         tray = new Tray(iconPath);
         //tray.on('double-click', () => {
@@ -49,7 +49,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
 
     app.on('activate', () => {
       if (browserWindow === null) {
-        createMainApiManagementWindow(isServe, store);
+        void createMainApiManagementWindow(isServe, store);
       }
     });
   } catch (e) {}

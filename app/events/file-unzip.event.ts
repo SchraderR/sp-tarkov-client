@@ -39,15 +39,16 @@ export const handleFileUnzipEvent = (isServe: boolean, store: Store<UserSettingS
 };
 
 /**
- * Handles the unzipping and processing of archive files based on the provided criteria and conditions.
+ * Handles the process of unzipping an archive and tracking its contents.
  *
- * @param {string} archivePath - The file path of the archive to be processed.
- * @param {FileUnzipEvent} args - Event arguments including details about the file and its processing requirements.
- * @param {string} tempDownloadDir - Temporary directory for downloading Anki files.
- * @param {boolean} isServe - Flag indicating whether the function is being executed in a serve mode.
- * @param {Electron.IpcMainEvent} event - IPC event used to communicate back to the main process.
- * @param {Store<UserSettingStoreModel>} store - The store containing user settings.
- * @return {Promise<void>} A promise that resolves when the archive handling is complete.
+ * @param {string} archivePath - The path to the archive file.
+ * @param {FileUnzipEvent} args - Contains event details for unzipping.
+ * @param {string} tempDownloadDir - Temporary directory for downloaded files.
+ * @param {boolean} isServe - Indicates if the operation is being run in serve mode.
+ * @param {Electron.IpcMainEvent} event - The event object for inter-process communication.
+ * @param {Store<UserSettingStoreModel>} store - The store for user settings.
+ * @param {string} instanceModPath - Path to the instance mod directory.
+ * @returns {Promise<void>} A promise that resolves when the operation completes.
  */
 async function handleArchive(
   archivePath: string,
