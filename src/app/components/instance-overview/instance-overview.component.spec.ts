@@ -13,8 +13,9 @@ describe('InstanceOverviewComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [InstanceOverviewComponent, provideRouter([])],
+      imports: [InstanceOverviewComponent],
       providers: [
+        provideRouter([]),
         mockProvider(ElectronService, {
           sendEvent: () => EMPTY,
         }),
