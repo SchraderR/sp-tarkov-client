@@ -45,7 +45,7 @@ handleTutorialEvents(store);
 handleTarkovStartEvent();
 handleExperimentalFunctionsEvents(store);
 handleModLoadOrderEvents();
-handleUpdateModEvents(store);
+handleUpdateModEvents();
 handleSptTagEvents(store);
 handleSptVersionEvents(store);
 handleModCacheEvents(store);
