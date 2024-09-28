@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import InstanceOverviewComponent from './instance-overview.component';
-import { RouterTestingModule } from '@angular/router/testing';
 import { mockProvider } from '@ngneat/spectator';
 import { ElectronService } from '../../core/services/electron.service';
 import { EMPTY } from 'rxjs';
-import {ModListService} from "../../core/services/mod-list.service";
-import {SptSearchService} from "../../core/services/spt-search.service";
+import { ModListService } from '../../core/services/mod-list.service';
+import { SptSearchService } from '../../core/services/spt-search.service';
+import { provideRouter } from '@angular/router';
 
 describe('InstanceOverviewComponent', () => {
   let component: InstanceOverviewComponent;
@@ -13,7 +13,7 @@ describe('InstanceOverviewComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [InstanceOverviewComponent, RouterTestingModule],
+      imports: [InstanceOverviewComponent, provideRouter([])],
       providers: [
         mockProvider(ElectronService, {
           sendEvent: () => EMPTY,

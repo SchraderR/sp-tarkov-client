@@ -1,4 +1,4 @@
-﻿import { app, Menu, Tray } from 'electron';
+﻿import { app, Tray } from 'electron';
 import { createMainApiManagementWindow } from './main-window';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';

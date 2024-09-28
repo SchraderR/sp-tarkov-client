@@ -10,9 +10,7 @@ import { UpdateModMeta } from '../../../../shared/models/user-setting.model';
   styleUrl: './mod-update-overview.component.scss',
 })
 export default class ModUpdateOverviewComponent implements OnInit {
-  #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
-  #destroyRef = inject(DestroyRef);
 
   ngOnInit() {
     this.getCurrentModMetaData();

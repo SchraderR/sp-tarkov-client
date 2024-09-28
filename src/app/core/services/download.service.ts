@@ -112,7 +112,6 @@ export class DownloadService {
           modDependency.installProgress.error = true;
           this.handleError(modDependency, error as ApplicationElectronFileError);
           this.#modListService.updateMod();
-          continue;
         }
       }
 

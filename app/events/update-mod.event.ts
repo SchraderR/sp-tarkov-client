@@ -1,9 +1,6 @@
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { ipcMain } from 'electron';
-import axios from 'axios';
 
-export const handleUpdateModEvents = (store: Store<UserSettingStoreModel>) => {
+export const handleUpdateModEvents = () => {
   ipcMain.on('update-mod-data', () => {
     //axios({
     //  url: 'https://hub.sp-tarkov.com/files/file/1062/#versions',
