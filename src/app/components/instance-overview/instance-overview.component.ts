@@ -55,7 +55,7 @@ export default class InstanceOverviewComponent {
   #modListService = inject(ModListService);
   #searchService = inject(SptSearchService);
 
-  activeSptInstance = this.#userSettingsService.getActiveInstance();
+  activeInstance = this.#userSettingsService.getActiveInstance();
   isWorking = false;
 
   openExternal(mod: ModMeta) {
@@ -74,6 +74,10 @@ export default class InstanceOverviewComponent {
   async exportModsToFileSystem() {
     const activeInstance = this.#userSettingsService.getActiveInstance();
     if (!activeInstance || !activeInstance.trackedMods.length) {
+      return;
+    }
+
+    if (activeInstance?.trackedMods.length === 0) {
       return;
     }
 
@@ -118,7 +122,7 @@ export default class InstanceOverviewComponent {
   }
 
   toggleModState(mod: TrackedMod, remove = false) {
-    if (!this.activeSptInstance) {
+    if (!this.activeInstance) {
       return;
     }
 
@@ -126,7 +130,7 @@ export default class InstanceOverviewComponent {
 
     const toggleModState: ToggleModStateModel = {
       hubId: mod.hubId,
-      instancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
+      instancePath: this.activeInstance.sptRootDirectory ?? this.activeInstance.akiRootDirectory,
       remove: remove,
     };
 

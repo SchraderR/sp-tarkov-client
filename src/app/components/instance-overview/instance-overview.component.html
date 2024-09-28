@@ -1,4 +1,4 @@
-@if (!activeSptInstance) {
+@if (!activeInstance) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <div style="display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center">
       There is no active Instance. Please go to the setting and activate an SPT-Instance.
@@ -9,29 +9,29 @@
   </div>
 }
 
-@if (activeSptInstance?.isLoading) {
+@if (activeInstance?.isLoading) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <mat-spinner [diameter]="100"></mat-spinner>
   </div>
 }
 
-@if (activeSptInstance && !activeSptInstance?.isLoading) {
+@if (activeInstance && !activeInstance?.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px;">
-        <h2>Installed Mods ({{ activeSptInstance?.trackedMods?.length ?? 0 }})</h2>
+        <h2>Installed Mods ({{ activeInstance?.trackedMods?.length ?? 0 }})</h2>
 
         <div style="display: flex; justify-content: end; align-items: center; padding: 8px;">
           <button mat-icon-button matTooltip="Import Mods" (click)="importModsFromFileSystem()">
             <mat-icon>download</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Export Mods" (click)="exportModsToFileSystem()">
+          <button mat-icon-button matTooltip="Export Mods" [disabled]="activeInstance?.trackedMods.length" (click)="exportModsToFileSystem()">
             <mat-icon>upload</mat-icon>
           </button>
         </div>
       </div>
 
-      @for (trackedMod of activeSptInstance?.trackedMods | orderBy:'modName'; track $index) {
+      @for (trackedMod of activeInstance?.trackedMods | orderBy:'modName'; track $index) {
         <mat-card style="margin-right: 8px;">
           <mat-card-content>
             {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
