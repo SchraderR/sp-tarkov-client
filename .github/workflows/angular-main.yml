@@ -26,11 +26,6 @@ jobs:
       - name: Run Tests
         run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless --code-coverage
 
-      - name: List report files
-        continue-on-error: true
-        run: |
-          ls
-
       - name: Archive coverage data
         uses: actions/upload-artifact@v4
         with:
