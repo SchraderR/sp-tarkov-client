@@ -103,6 +103,7 @@ export default class InstanceOverviewComponent {
         filteredMods.forEach(async importedMod => {
           const modInfo = await firstValueFrom(this.#searchService.getFileHubView(importedMod.fileUrl));
           const modCacheItem: ModCache = {
+            hubId: modInfo.hubId,
             name: modInfo.name,
             icon: modInfo.icon,
             image: modInfo.image,

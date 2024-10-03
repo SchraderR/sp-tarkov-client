@@ -86,6 +86,7 @@ export class ModSearchComponent {
     event.stopPropagation();
 
     const modCacheItem: ModCache = {
+      hubId: mod.hubId,
       name: mod.name,
       icon: mod.icon,
       image: mod.image,

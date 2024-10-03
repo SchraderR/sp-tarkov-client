@@ -125,6 +125,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
   async addModToModList(mod: Mod) {
     const modCacheItem: ModCache = {
+      hubId: mod.hubId,
       name: mod.name,
       icon: mod.icon,
       image: mod.image,

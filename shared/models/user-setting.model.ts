@@ -11,6 +11,7 @@ export interface UpdateModMeta {
 }
 
 export interface ModCache {
+  hubId?: string;
   name: string;
   fileUrl: string;
   supportedSptVersion: string;

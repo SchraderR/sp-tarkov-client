@@ -126,21 +126,6 @@ export class DownloadService {
     this.isDownloadProcessCompleted.next(true);
   }
 
-  async downloadAndInstallSingle(mod: Mod): Promise<void> {
-    const isInProgress = this.isDownloadAndInstallInProgress.value;
-
-    if (isInProgress) {
-      const modIndex = this.#modListService.modListSignal().findIndex(modItem => modItem.name == mod.name);
-      if (modIndex !== -1) {
-        this.#modListService.modListSignal().splice(modIndex, 1);
-        this.#modListService.modListSignal().push(mod);
-      }
-    } else {
-      mod.installProgress = this.#modListService.initialInstallProgress();
-      await this.downloadAndInstallAll();
-    }
-  }
-
   private async installProcess(mod: Mod, fileId: string, activeInstance: UserSettingModel) {
     if (!mod?.installProgress) {
       return;
