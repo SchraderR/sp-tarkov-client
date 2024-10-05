@@ -7,7 +7,7 @@ import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as log from 'electron-log';
 import * as windowStateKeeper from 'electron-window-state';
 
-export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
+export const createMainApiManagementWindow = async (isServe: boolean, store: Store<UserSettingStoreModel>): Promise<void> => {
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1200,
     defaultHeight: 600,
@@ -66,11 +66,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('keepTempDownloadDirectory', false);
     }
 
-    const isCheckInstalledActive = store.get('isCheckInstalledActive');
-    if (isCheckInstalledActive === null || isCheckInstalledActive === undefined) {
-      store.set('isCheckInstalledActive', true);
-    }
-
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);
@@ -115,7 +110,7 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       debug();
 
       require('electron-reload');
-      browserWindow.loadURL('http://localhost:4200');
+      await browserWindow.loadURL('http://localhost:4200');
     } else {
       let pathIndex = './index.html';
 

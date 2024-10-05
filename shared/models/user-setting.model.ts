@@ -1,4 +1,5 @@
 ﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
+import { TrackedMod } from './tracked-mod.model';
 
 export interface UpdateModMeta {
   name: string;
@@ -10,6 +11,7 @@ export interface UpdateModMeta {
 }
 
 export interface ModCache {
+  hubId?: string;
   name: string;
   fileUrl: string;
   supportedSptVersion: string;
@@ -25,7 +27,6 @@ export interface UserSettingStoreModel {
   theme: Theme;
   isTutorialDone: boolean;
   isExperimentalFunctionsActive: boolean;
-  isCheckInstalledActive: boolean;
   sptVersions: SptVersion[];
   sptTags: SptTag[];
   modCache: ModCache[];
@@ -43,7 +44,7 @@ export interface SptInstance {
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
-  isPowerShellIssue: boolean;
+  trackedMods: TrackedMod[];
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }

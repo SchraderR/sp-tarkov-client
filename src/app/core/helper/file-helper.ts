@@ -1,5 +1,5 @@
 ﻿export class FileHelper {
-  static extractFileIdFromUrl = (fileUrl: string) => {
+  static extractHubIdFromUrl = (fileUrl: string) => {
     const url = new URL(fileUrl);
     const regex = /\/file\/(\d+)-/;
 

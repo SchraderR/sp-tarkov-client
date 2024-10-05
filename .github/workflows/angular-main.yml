@@ -24,13 +24,13 @@ jobs:
         run: npm run lint
 
       - name: Run Tests
-        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
+        run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless --code-coverage
 
       - name: Archive coverage data
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: jest-coverage-data
-          path: .qodana/code-coverage
+          path: coverage/report-lcov
 
       - name: Build Code
         run: npm run build

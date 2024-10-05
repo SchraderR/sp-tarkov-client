@@ -2,6 +2,7 @@
 
 export interface Mod {
   name: string;
+  hubId?: string;
   modVersion?: string;
   fileUrl: string;
   kind: string;

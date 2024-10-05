@@ -4,19 +4,26 @@ import * as Store from 'electron-store';
 import * as path from 'path';
 import { SptInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableSptCoreConfigPath } from '../constants';
-import * as log from 'electron-log';
+import { error, warn } from 'electron-log';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
+  ipcMain.on('user-setting', (event, instancePath: string) => {
+    const instances = store.get('sptInstances');
+    const activeInstance = instances.find(i => i.sptRootDirectory === instancePath);
+
+    event.sender.send('user-setting-completed', activeInstance);
+  });
+
   ipcMain.on('user-settings', async event => {
     await handleUserSettingStoreEvent(event, store);
   });
 
-  ipcMain.on('user-settings-update', (event, akiInstance: SptInstance) => {
-    handleUpdateUserSettingStoreEvent(event, store, akiInstance);
+  ipcMain.on('user-settings-update', (event, instance: SptInstance) => {
+    handleUpdateUserSettingStoreEvent(event, store, instance);
   });
 
-  ipcMain.on('user-settings-remove', (event, akiRootDirectory: string) => {
-    handleRemoveUserSettingStoreEvent(event, store, akiRootDirectory);
+  ipcMain.on('user-settings-remove', (event, rootDirectory: string) => {
+    handleRemoveUserSettingStoreEvent(event, store, rootDirectory);
   });
 };
 
@@ -62,7 +69,7 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
 
       stableSptCoreConfigPath.forEach(sptCorePath => {
         if (!fs.existsSync(path.join(sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory, sptCorePath))) {
-          log.error(`${sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory}/${sptCorePath} not available.`);
+          warn(`${sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory}/${sptCorePath} not available.`);
           return;
         }
 
@@ -75,13 +82,13 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
         isValid: !!sptCoreJson,
         isActive: sptInstance.isActive,
         isLoading: sptInstance.isLoading,
+        trackedMods: sptInstance.trackedMods,
         isError: sptInstance.isError,
-        isPowerShellIssue: sptInstance.isPowerShellIssue,
         clientMods: sptInstance.clientMods ?? [],
         serverMods: sptInstance.serverMods ?? [],
       });
     } catch (e) {
-      log.error(e);
+      error(e);
     }
   }
   event.sender.send('user-settings-completed', userSettingModelResult);

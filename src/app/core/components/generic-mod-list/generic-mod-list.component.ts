@@ -64,12 +64,9 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   private paginatorSubscription: Subscription | undefined;
   private fetchModSubscription: Subscription | undefined;
 
-  private _sortField: GenericModListSortField = 'cumulativeLikes';
-  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  // private _sortField: GenericModListSortField = 'cumulativeLikes';
 
-  @Input() set sortField(sortValue: GenericModListSortField) {
-    this._sortField = sortValue;
-  }
+  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
 
   @Input() sortOrder: GenericModListSortOrder = 'DESC';
   @Input() tags: boolean | undefined;
@@ -83,6 +80,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   #configurationService = inject(ConfigurationService);
 
   sptVersionFormField = new FormControl<SptVersion | null>(null);
+  sortFormField = new FormControl<string>('cumulativeLikes', { nonNullable: true });
   sptTagFormField = new FormControl(null);
   filteredOptions: Observable<SptTag[]> | undefined;
 
@@ -97,34 +95,39 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   sptTagsSignal = this.#configurationService.tagsSignal;
 
   ngOnInit() {
+    this.sortFormField.valueChanges
+      .pipe(debounceTime(500), takeUntilDestroyed(this.#destroyRef))
+      .subscribe(() => this.loadData(this.sortFormField.value, this.pageNumber));
+
     this.sptVersionFormField.valueChanges
       .pipe(debounceTime(500), takeUntilDestroyed(this.#destroyRef))
-      .subscribe(() => this.loadData(this._sortField, this.pageNumber));
+      .subscribe(() => this.loadData(this.sortFormField.value, this.pageNumber));
 
     this.filteredOptions = this.sptTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
-      map(value => this.filterAkiTags(value || '')),
-      tap(() => this.loadData(this._sortField, this.pageNumber))
+      map(value => this.filterTags(value || '')),
+      tap(() => this.loadData(this.sortFormField.value, this.pageNumber))
     );
 
-    this.loadData(this._sortField, this.pageNumber);
+    this.loadData(this.sortFormField.value, this.pageNumber);
   }
 
   ngAfterViewInit() {
     this.paginatorSubscription = this.paginator?.page
       .pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef))
-      .subscribe((event: PageEvent) => this.loadData(this._sortField, event.pageIndex));
+      .subscribe((event: PageEvent) => this.loadData(this.sortFormField.value, event.pageIndex));
   }
 
   isActiveSptInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   refresh() {
-    this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
+    this.loadData(this.sortFormField.value, this.pageNumber);
   }
 
   async addModToModList(mod: Mod) {
     const modCacheItem: ModCache = {
+      hubId: mod.hubId,
       name: mod.name,
       icon: mod.icon,
       image: mod.image,
@@ -174,7 +177,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     return !this.#configurationService.configSignal()?.restrictedMods?.includes(mod.name);
   }
 
-  private loadData(sortValue: GenericModListSortField, pageNumber = 0) {
+  private loadData(sortValue: string, pageNumber = 0) {
     this.loading = true;
     const config = this.#configurationService.configSignal();
     let basePath = '';
@@ -229,13 +232,14 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
               return e;
             }
 
-            const fileId = FileHelper.extractFileIdFromUrl(e.fileUrl);
-            if (!fileId) {
+            const hubId = FileHelper.extractHubIdFromUrl(e.fileUrl);
+            if (!hubId) {
               return e;
             }
+            e.hubId = hubId;
 
             if (environment.production) {
-              e.notSupported = !!config.notSupported.find(f => f === +fileId);
+              e.notSupported = !!config.notSupported.find(f => f === +hubId);
             }
 
             return e;
@@ -249,7 +253,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private filterAkiTags(value: string): SptTag[] {
+  private filterTags(value: string): SptTag[] {
     const filterValue = value.toLowerCase();
     if (!this.sptTagsSignal()?.length) {
       return [];

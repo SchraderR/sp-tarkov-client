@@ -252,7 +252,3 @@ async function getReleaseData({ tag, userName, repoName }: GithubLinkData, event
     return null;
   }
 }
-
-function timeout(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}

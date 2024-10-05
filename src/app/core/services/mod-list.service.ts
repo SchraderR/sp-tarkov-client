@@ -32,15 +32,15 @@ export class ModListService {
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
 
-    const modDependencies = this.getModDependencies(mod);
-    if (modDependencies.length > 0) {
+    const modDependenciesIds = this.getModDependenciesIds(mod);
+    if (modDependenciesIds.length > 0) {
       const signalMod = this.modList().find(m => m.name === mod.name);
       if (!signalMod) {
         return;
       }
 
       signalMod.isDependenciesLoading = true;
-      signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractFileIdFromUrl(mod.fileUrl), modDependencies));
+      signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractHubIdFromUrl(mod.fileUrl), modDependenciesIds));
       signalMod.isDependenciesLoading = false;
       signalMod.installProgress = this.initialInstallProgress();
       this.updateMod();
@@ -135,15 +135,15 @@ export class ModListService {
     ]);
   }
 
-  private getModDependencies(mod: Mod) {
+  private getModDependenciesIds(mod: Mod) {
     const config = this.#configurationService.configSignal();
-    const fileId = FileHelper.extractFileIdFromUrl(mod.fileUrl);
+    const hubId = mod.hubId ?? FileHelper.extractHubIdFromUrl(mod.fileUrl);
 
-    if (!fileId || !config) {
+    if (!hubId || !config) {
       return [];
     }
 
-    const modDependencySetting = config.modDependency.find(d => d.hubId === fileId);
+    const modDependencySetting = config.modDependency.find(d => d.hubId === hubId);
     if (!modDependencySetting) {
       return [];
     }
@@ -158,7 +158,7 @@ export class ModListService {
           switchMap(modPageLink => {
             const modUrl = environment.production ? modPageLink.args : modPageLink.args.replace('https://hub.sp-tarkov.com/', '');
             return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(
-              map(modView => this.extractModInformation(modView, modPageLink.args)),
+              map(modView => ({ hubId: dep, ...this.extractModInformation(modView, modPageLink.args) })),
               catchError(() => this.handleDependencyError())
             );
           }),
@@ -179,6 +179,7 @@ export class ModListService {
     return {
       name: modPageView.getElementsByClassName('contentTitle')?.[0]?.getElementsByTagName('span')[0].innerHTML,
       fileUrl: modUrl,
+      modVersion: modPageView.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? '',
       supportedSptVersion: modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
       sptVersionColorCode: modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
     } as Mod;

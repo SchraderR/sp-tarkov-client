@@ -8,6 +8,7 @@
 .mod-container {
   display: flex;
   flex-direction: row !important;
+   padding: 0 !important;
 }
 
 
@@ -23,16 +24,27 @@
   }
 }
 
+.mod-dependency {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 
 mat-card {
   width: 90%;
   display: flex;
 }
 
+.absolute {
+  position: absolute !important;
+}
+
 .arrow-container {
   z-index: -1;
   position: relative;
-  width: 100px;
+  width: 140px;
   height: 50px;
 
   > div {
@@ -73,7 +85,7 @@ mat-card {
   }
 }
 
-.open-external-button{
+.open-external-button {
   position: absolute;
   right: 0;
 }

@@ -29,8 +29,6 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
           let coreJson: string = '';
 
           stableSptCoreConfigPath.forEach(corePath => {
-            console.log(corePath);
-
             if (!fs.existsSync(path.join(selectedPath, corePath))) {
               log.error(`${corePath} not available.`);
               return;
