@@ -1,11 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Theme, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { SptCore } from '../../../../shared/models/spt-core.model';
+import { ElectronService } from './electron.service';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserSettingsService {
+  #electronService = inject(ElectronService);
+
   private userSetting = signal<UserSettingModel[]>([]);
   readonly userSettingSignal = this.userSetting.asReadonly();
   currentTheme = signal<Theme | null>(null);
@@ -62,5 +66,16 @@ export class UserSettingsService {
 
   clearFakeInstance() {
     this.userSetting.set([]);
+  }
+
+  getCurrentTrackedModSetting(userSetting: UserSettingModel) {
+    return this.#electronService
+      .sendEvent<UserSettingModel, string>('user-setting', userSetting.sptRootDirectory ?? userSetting.akiRootDirectory)
+      .pipe(
+        tap(value => {
+          userSetting.trackedMods = value.args.trackedMods;
+          this.updateUserSetting();
+        })
+      );
   }
 }

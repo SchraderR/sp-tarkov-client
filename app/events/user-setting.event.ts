@@ -7,16 +7,23 @@ import { stableSptCoreConfigPath } from '../constants';
 import { error, warn } from 'electron-log';
 
 export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
+  ipcMain.on('user-setting', (event, instancePath: string) => {
+    const instances = store.get('sptInstances');
+    const activeInstance = instances.find(i => i.sptRootDirectory === instancePath);
+
+    event.sender.send('user-setting-completed', activeInstance);
+  });
+
   ipcMain.on('user-settings', async event => {
     await handleUserSettingStoreEvent(event, store);
   });
 
-  ipcMain.on('user-settings-update', (event, akiInstance: SptInstance) => {
-    handleUpdateUserSettingStoreEvent(event, store, akiInstance);
+  ipcMain.on('user-settings-update', (event, instance: SptInstance) => {
+    handleUpdateUserSettingStoreEvent(event, store, instance);
   });
 
-  ipcMain.on('user-settings-remove', (event, akiRootDirectory: string) => {
-    handleRemoveUserSettingStoreEvent(event, store, akiRootDirectory);
+  ipcMain.on('user-settings-remove', (event, rootDirectory: string) => {
+    handleRemoveUserSettingStoreEvent(event, store, rootDirectory);
   });
 };
 

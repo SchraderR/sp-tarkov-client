@@ -1,5 +1,6 @@
 ﻿export type applicationElectronEventNames =
   | 'open-directory'
+  | 'user-setting'
   | 'user-settings'
   | 'user-settings-update'
   | 'user-settings-remove'

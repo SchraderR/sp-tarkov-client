@@ -85,6 +85,7 @@ export class DownloadService {
 
       try {
         await this.installProcess(mod, fileId, activeInstance);
+        await firstValueFrom(this.#userSettingsService.getCurrentTrackedModSetting(activeInstance));
       } catch (error: unknown) {
         mod.installProgress.error = true;
         this.handleError(mod, error as ApplicationElectronFileError);
@@ -93,7 +94,7 @@ export class DownloadService {
       }
 
       for (const modDependency of mod.dependencies ?? []) {
-        const modDependencyHubId = FileHelper.extractHubIdFromUrl(modDependency.fileUrl);
+        const modDependencyHubId = modDependency.hubId ?? FileHelper.extractHubIdFromUrl(modDependency.fileUrl);
 
         modDependency.installProgress = this.#modListService.initialInstallProgress();
         if (!modDependencyHubId || !modDependency.installProgress) {
@@ -108,6 +109,7 @@ export class DownloadService {
 
         try {
           await this.installProcess(modDependency, modDependencyHubId, activeInstance);
+          await firstValueFrom(this.#userSettingsService.getCurrentTrackedModSetting(activeInstance));
         } catch (error: unknown) {
           modDependency.installProgress.error = true;
           this.handleError(modDependency, error as ApplicationElectronFileError);
