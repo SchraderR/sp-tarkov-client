@@ -91,10 +91,6 @@
           Keep download directory <span style="font-size: small; color: gray">~{{ currentTempDirectorySize().text }}</span>
         </mat-slide-toggle>
 
-        <mat-slide-toggle [formControl]="checkInstalledMod" (change)="toggleCheckInstalledMod($event)">
-          Check mod installation <span style="font-size: small; color: gray">(toggle this off will allow you install already installed mods)</span>
-        </mat-slide-toggle>
-
         <div style="display: flex; gap: 8px">
           <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
             Clear download directory

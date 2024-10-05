@@ -60,7 +60,6 @@ export default class PersonalSettingComponent {
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
   keepTempDownloadDirectory = new FormControl(this.#userSettingsService.keepTempDownloadDirectory());
-  checkInstalledMod = new FormControl(this.#userSettingsService.checkInstalledMod());
   currentTempDirectorySize = this.#userSettingsService.keepTempDownloadDirectorySize;
   hoveringInstance = '';
 
@@ -77,12 +76,6 @@ export default class PersonalSettingComponent {
   toggleKeepTempDirectory(event: MatSlideToggleChange) {
     this.#electronService.sendEvent('keep-temp-dir-setting-toggle', event.checked).subscribe(() => {
       this.#ngZone.run(() => this.#userSettingsService.keepTempDownloadDirectory.set(event.checked));
-    });
-  }
-
-  toggleCheckInstalledMod(event: MatSlideToggleChange) {
-    this.#electronService.sendEvent('check-installed-toggle', event.checked).subscribe(() => {
-      this.#ngZone.run(() => this.#userSettingsService.checkInstalledMod.set(event.checked));
     });
   }
 
