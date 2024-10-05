@@ -1,6 +1,6 @@
 import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { error, log } from 'electron-log';
-import { addHours } from 'date-fns';
+import { addMinutes } from 'date-fns';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as Store from 'electron-store';
 import { readdirSync, statSync, symlinkSync } from 'node:fs';
@@ -36,7 +36,7 @@ export class ModTrackingHelper {
       modName: args.name,
       hubId: args.hubId,
       modVersion: args.version,
-      nextUpdateCheck: addHours(new Date(), 1).toISOString(),
+      nextUpdateCheck: addMinutes(new Date(), 30).toISOString(),
       isActive: true,
     });
 

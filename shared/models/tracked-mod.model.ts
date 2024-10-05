@@ -3,5 +3,7 @@ export interface TrackedMod {
   hubId: string;
   modVersion?: string;
   nextUpdateCheck: string;
+  newVersionDetected?: boolean;
+  newModVersion?: string;
   isActive: boolean;
 }

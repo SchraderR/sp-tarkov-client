@@ -24,6 +24,7 @@ import { handleModPageEvents } from './events/mod-page.event';
 import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
 import { initialize } from 'electron-log';
 import { handleSharingModsEvents } from './events/export-mods.event';
+import { handleNotificationEvents } from './events/notification.event';
 
 initialize();
 
@@ -44,7 +45,7 @@ handleTutorialEvents(store);
 handleTarkovStartEvent();
 handleExperimentalFunctionsEvents(store);
 handleModLoadOrderEvents();
-handleUpdateModEvents();
+handleUpdateModEvents(store);
 handleSptTagEvents(store);
 handleSptVersionEvents(store);
 handleModCacheEvents(store);
@@ -53,3 +54,4 @@ toggleModStateEvent(store);
 handleModPageEvents();
 handleTempDownloadDirectoryEvents(store);
 handleSharingModsEvents();
+handleNotificationEvents();

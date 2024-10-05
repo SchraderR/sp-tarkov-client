@@ -17,9 +17,9 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
     store.set('isExperimentalFunctionsActive', false);
   }
 
-  //if (process.platform === 'win32') {
-  //  app.setAppUserModelId('SP-EFT Manager');
-  //}
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('SP-EFT Manager');
+  }
 
   try {
     app.on('ready', () =>
