@@ -29,7 +29,6 @@ export const handleUpdateModEvents = (store: Store<UserSettingStoreModel>) => {
       });
     }
 
-    //
     // console.log(ttt);
     // new DOMParser().parseFromString('hubViewData', 'text/html');
   });
