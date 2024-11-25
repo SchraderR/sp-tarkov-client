@@ -25,7 +25,7 @@
           <button mat-icon-button matTooltip="Import Mods" (click)="importModsFromFileSystem()">
             <mat-icon>download</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Export Mods" [disabled]="activeInstance?.trackedMods?.length" (click)="exportModsToFileSystem()">
+          <button mat-icon-button matTooltip="Export Mods" [disabled]="activeInstance?.trackedMods?.length === 0" (click)="exportModsToFileSystem()">
             <mat-icon>upload</mat-icon>
           </button>
         </div>
