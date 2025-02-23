@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ModCardComponent } from '../mod-card/mod-card.component';
 import { ModListService } from '../../core/services/mod-list.service';
 import { Mod } from '../../core/models/mod';
@@ -13,8 +13,8 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { JoyrideModule } from 'ngx-joyride';
 import { firstValueFrom } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
-import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ModDependencyCardComponent } from '../mod-dependency-card/mod-dependency-card.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
