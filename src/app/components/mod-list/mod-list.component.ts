@@ -29,7 +29,6 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatCardModule,
     MatIconModule,
     MatTooltipModule,
-    NgOptimizedImage,
     ModCardComponent,
     JoyrideModule,
     MatSlideToggleModule,
@@ -53,7 +52,6 @@ export default class ModListComponent implements OnInit {
 
   emote = '';
   isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
-  useIndexedModsControl = new FormControl(this.#modListService.useIndexedModsSignal());
 
   constructor() {
     this.#downloadService.downloadProgressEvent
@@ -63,7 +61,6 @@ export default class ModListComponent implements OnInit {
 
   ngOnInit() {
     this.selectRandomEmote();
-    this.loadUseIndexedModsSettings();
   }
 
   downloadAndInstallAll = () => this.#downloadService.downloadAndInstallAll();
@@ -75,31 +72,6 @@ export default class ModListComponent implements OnInit {
 
   removeCompletedMods() {
     this.#modListService.removeCompletedMods();
-  }
-
-  onUseIndexedModsToggle(event: MatSlideToggleChange) {
-    this.#modListService.setUseIndexedMods(event.checked);
-    this.#electronService.sendEvent('use-indexed-mods-save', event.checked).subscribe(() => {
-      this.#ngZone.run(() => {
-        this.useIndexedModsControl.setValue(event.checked, { emitEvent: false });
-        this.#changeDetectorRef.detectChanges();
-      });
-    });
-  }
-
-  private loadUseIndexedModsSettings() {
-    this.#electronService.sendEvent<boolean>('use-indexed-mods').subscribe({
-      next: response => {
-        this.#modListService.setUseIndexedMods(response.args);
-        this.#ngZone.run(() => {
-          this.useIndexedModsControl.setValue(response.args, { emitEvent: false });
-          this.#changeDetectorRef.detectChanges();
-        });
-      },
-      error: error => {
-        console.error('Error fetching indexed mods usage:', error);
-      },
-    });
   }
 
   private selectRandomEmote() {
