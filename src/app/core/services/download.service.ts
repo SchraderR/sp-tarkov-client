@@ -11,7 +11,6 @@ import { DownloadProgress } from '../../../../shared/models/download.model';
 import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
 import { Mod } from '../models/mod';
 import { UserSettingModel } from '../../../../shared/models/user-setting.model';
-import { environment } from '../../../environments/environment';
 
 export interface IndexedMods {
   name?: string;
@@ -38,26 +37,6 @@ export class DownloadService {
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
   downloadProgressEvent = new BehaviorSubject<void>(void 0);
 
-  async getModData(): Promise<IndexedMods[]> {
-    const currentTime = new Date();
-    if (this.lastFetchTime && currentTime.getTime() - this.lastFetchTime.getTime() < this.MAX_CACHE_DURATION && this.mods && this.mods.length > 0) {
-      console.log('Using cached indexed mods data');
-      return this.mods;
-    }
-
-    console.log('Fetching indexed mods data from hub json');
-
-    try {
-      const response = await firstValueFrom(this.#httpClient.get<{ mod_data: IndexedMods[] }>(environment.sptHubModsJson));
-      this.mods = response.mod_data;
-      this.lastFetchTime = new Date();
-      return this.mods;
-    } catch (error) {
-      console.error('Failed to load mods:', error);
-      throw new Error('Failed to load mods');
-    }
-  }
-
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
     this.isDownloadProcessCompleted.next(false);
@@ -65,8 +44,6 @@ export class DownloadService {
     if (!activeInstance) {
       return;
     }
-
-    await this.getModData();
 
     for (let i = 0; i < this.activeModList().length; i++) {
       const mod = this.activeModList()[i];
@@ -156,11 +133,6 @@ export class DownloadService {
       sptInstancePath: activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory,
       downloadUrl: '',
     };
-
-    const modData = this.mods.find(modItem => modItem.name === mod.name);
-    if (this.#modListService.useIndexedModsSignal() && modData) {
-      linkModel.downloadUrl = modData.link ?? '';
-    }
 
     await this.#electronService
       .sendEvent<string, LinkModel>('download-link', linkModel)

@@ -12,10 +12,11 @@ export interface ModDependency {
 }
 
 export interface Configuration {
+  isSptHubModsJsonDisabled: boolean;
   alternativeModNames: { [key: string]: string };
   notSupported: number[];
   restrictedMods: string[];
-  modDependency: ModDependency[]
+  modDependency: ModDependency[];
 }
 
 @Injectable({
@@ -33,7 +34,9 @@ export class ConfigurationService {
   readonly tagsSignal = this.#tags.asReadonly();
 
   getCurrentConfiguration() {
-    return this.#httpClient.get<Configuration>(`${environment.githubConfigLink}/config.json?cacheBust=${Date.now()}`).pipe(tap(config => this.#config.set(config)));
+    return this.#httpClient
+      .get<Configuration>(`${environment.githubConfigLink}/config.json?cacheBust=${Date.now()}`)
+      .pipe(tap(config => this.#config.set(config)));
   }
 
   getSptVersion() {
