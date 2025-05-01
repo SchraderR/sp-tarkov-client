@@ -41,7 +41,7 @@
 </mat-menu>
 
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
-  <mat-sidenav class="visible" [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
+  <mat-sidenav class="visible" [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" opened>
     <mat-action-list class="side-navigation-actions-container">
       <mat-list-item routerLinkActive="active-link" routerLink="instance-overview" (click)="toggleDrawer()"
                      [matTooltipDisabled]="isExpanded"

@@ -36,7 +36,7 @@ export default class ModLoadOrderComponent implements OnInit {
     }
 
     const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+      this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
@@ -49,7 +49,7 @@ export default class ModLoadOrderComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+      this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }

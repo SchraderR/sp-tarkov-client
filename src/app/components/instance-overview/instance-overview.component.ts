@@ -13,7 +13,7 @@ import { ModMeta } from '../../../../shared/models/user-setting.model';
 import { NgPipesModule } from 'ngx-pipes';
 import { ToggleModStateModel } from '../../../../shared/models/toggle-mod-state.model';
 import { DialogModule } from '@angular/cdk/dialog';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
+import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -33,7 +33,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
         DialogModule,
         MatCard,
         MatCardActions,
-        MatCardHeader,
         MatCardContent,
     ]
 })
@@ -92,7 +91,7 @@ export default class InstanceOverviewComponent implements OnInit {
 
     const toggleModState: ToggleModStateModel = {
       isServerMod: isServerMod,
-      sptInstancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
+      sptInstancePath: this.activeSptInstance.sptRootDirectory,
       modOriginalPath: mod.modOriginalPath,
       modOriginalName: mod.modOriginalName,
       isPrePatcherMod: mod.isPrePatcherMod ?? false,

@@ -295,7 +295,7 @@ export class AppComponent {
     }
 
     this.#electronService
-      .sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)
       .subscribe(value =>
         this.#ngZone.run(() => {
           this.#userSettingService.keepTempDownloadDirectorySize.set({

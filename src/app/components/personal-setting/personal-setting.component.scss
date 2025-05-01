@@ -6,8 +6,8 @@
   }
 
   .theme-select {
-    @include mat.form-field-density(-5);
     width: fit-content;
+    @include mat.form-field-density(-5);
   }
 
   .mat-expansion-indicator {
@@ -78,6 +78,7 @@
 mat-icon.warning {
   margin-right: 0 !important;
   margin-left: 0 !important;
+
   &:last-of-type {
     margin-right: 16px !important;
   }

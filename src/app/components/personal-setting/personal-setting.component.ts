@@ -12,7 +12,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListItem, MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -92,7 +92,7 @@ export default class PersonalSettingComponent {
     }
 
     if (this.currentTempDirectorySize().size > 0) {
-      this.#electronService.openPath(`${activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory}/_temp`);
+      this.#electronService.openPath(`${activeInstance.sptRootDirectory}/_temp`);
     }
   }
 
@@ -103,10 +103,10 @@ export default class PersonalSettingComponent {
     }
 
     this.#electronService
-      .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+      .sendEvent('clear-temp', activeInstance.sptRootDirectory)
       .pipe(
         switchMap(() =>
-          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
+          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)
         )
       )
       .subscribe(value => {

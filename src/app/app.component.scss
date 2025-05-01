@@ -69,7 +69,7 @@
   display: inline-flex;
   cursor: pointer;
   text-decoration: none;
-  color: mat.m2-get-color-from-palette($mat-theme-accent-palette, 500);
+  // color: mat.m2-get-color-from-palette($mat-theme-accent-palette, 500);
 
   mat-icon {
     font-size: 19px;

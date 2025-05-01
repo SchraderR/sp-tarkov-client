@@ -3,12 +3,19 @@
 @use '@fontsource/roboto/500' as *;
 @use 'material-symbols/outlined';
 @use '@angular/material' as mat;
-@import 'material-symbols';
+@use 'material-symbols' as *;
 
 html,
 body {
   height: 100%;
   font-family: "Roboto";
+
+  color-scheme: light dark;
+  @include mat.theme((
+    color: mat.$violet-palette,
+    typography: Roboto,
+    density: 0
+  ));
 }
 
 body {
@@ -56,11 +63,11 @@ body {
   margin: unset !important;
 
   &.warning-color {
+    color: yellow;
+
     @media (prefers-color-scheme: light) {
       color: orangered;
     }
-
-    color: yellow;
   }
 }
 
@@ -159,128 +166,6 @@ mat-icon {
     background-color: black;
   }
 }
-
-// TODO Remove or better
-
-@include mat.elevation-classes();
-@include mat.app-background();
-
-$mat-theme-primary-palette: map-merge(
-    mat.$m2-cyan-palette,
-    (
-      contrast: (
-        100: #150c4a,
-      ),
-    )
-);
-$mat-theme-primary: mat.m2-define-palette($mat-theme-primary-palette, $default: 100, $lighter: 100, $darker: 700, $text: 500);
-
-$mat-theme-accent-palette: map-merge(
-    mat.$m2-teal-palette,
-    (
-      501: #4d77b6,
-      contrast: (
-        501: white,
-        A100: white,
-        A200: white,
-      ),
-    )
-);
-$mat-theme-accent: mat.m2-define-palette($mat-theme-accent-palette, $default: 501, $lighter: A100, $darker: A200, $text: 600);
-
-$mat-theme-warn-palette: map-merge(mat.$m2-pink-palette, ());
-$mat-theme-warn: mat.m2-define-palette($mat-theme-warn-palette, $default: A200, $lighter: 500, $darker: 500, $text: A700);
-
-$mat-dark-theme-primary-palette: map-merge(
-    mat.$m2-lime-palette,
-    (
-      contrast: (
-        200: #030844,
-        A100: rgba(0, 0, 0, 0.87),
-        A700: rgba(0, 0, 0, 0.87),
-      ),
-    )
-);
-$mat-dark-theme-primary: mat.m2-define-palette($mat-dark-theme-primary-palette, $default: 200, $lighter: A100, $darker: A700, $text: 700);
-
-$mat-dark-theme-accent-palette: map-merge(
-    mat.$m2-green-palette,
-    (
-      contrast: (
-        A200: black,
-        50: black,
-        A400: black,
-      ),
-    )
-);
-$mat-dark-theme-accent: mat.m2-define-palette($mat-dark-theme-accent-palette, $default: A200, $lighter: 50, $darker: A400, $text: A100);
-
-$mat-dark-theme-warn-palette: map-merge(
-    mat.$m2-pink-palette,
-    (
-      contrast: (
-        A100: black,
-        100: white,
-      ),
-    )
-);
-$mat-dark-theme-warn: mat.m2-define-palette($mat-dark-theme-warn-palette, $default: A100, $lighter: 100, $darker: A700, $text: 100);
-
-$mat-typography: mat.m2-define-typography-config(
-  $body-2: mat.m2-define-typography-level(
-    $font-size: 16px,
-    $font-weight: 400,
-  ),
-  $body-1: mat.m2-define-typography-level(
-    $font-size: 18px,
-    $font-weight: 400,
-  ),
-  $caption: mat.m2-define-typography-level(
-    $font-size: 16px,
-    $font-weight: Medium,
-  ),
-  $button: mat.m2-define-typography-level(
-    $font-size: 16px,
-    $font-weight: 500,
-  ),
-);
-
-$mat-density: 0;
-
-$mat-core-theme: mat.m2-define-light-theme(
-    (
-      color: (
-        primary: $mat-theme-primary,
-        accent: $mat-theme-accent,
-        warn: $mat-theme-warn,
-      ),
-      typography: $mat-typography,
-      density: $mat-density,
-    )
-);
-
-$mat-dark-theme: mat.m2-define-dark-theme(
-    (
-      color: (
-        primary: $mat-dark-theme-primary,
-        accent: $mat-dark-theme-accent,
-        warn: $mat-dark-theme-warn,
-      ),
-    )
-);
-
-
-@include mat.all-component-themes($mat-core-theme);
-
-@media (prefers-color-scheme: dark) {
-  @include mat.all-component-colors($mat-dark-theme);
-}
-
-@media (prefers-color-scheme: light) {
-  @include mat.all-component-colors($mat-core-theme);
-}
-
-
 .center-page {
   -webkit-app-region: drag;
   display: flex;
