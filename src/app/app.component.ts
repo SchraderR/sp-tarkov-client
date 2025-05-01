@@ -221,7 +221,7 @@ export class AppComponent {
             notSupported: false,
             isInvalid: false,
             dependencies: [],
-            isDependenciesLoading: false,
+            isDependenciesLoading: false
           };
           await this.#modListService.addMod(mod);
         });

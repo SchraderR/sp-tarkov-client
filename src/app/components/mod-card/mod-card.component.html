@@ -36,9 +36,9 @@
       }
       @if (mod.installProgress?.linkStep?.start) {
         <div class="mod-steps-container" @fadeInOut>
-          @if (mod?.installProgress; as installProgress) {
+          @if (mod.installProgress; as installProgress) {
             @if (!installProgress.completed) {
-              @if (installProgress.linkStep?.start) {
+              @if (installProgress.linkStep.start) {
                 <div class="full-width" @fadeInOut>
                   <span class="mod-step-name">Fetching Information</span>
                   <mat-progress-bar
@@ -48,7 +48,7 @@
                   />
                 </div>
               }
-              @if (installProgress.linkStep?.start) {
+              @if (installProgress.linkStep.start) {
                 <div class="full-width" @fadeInOut>
                   <span class="mod-step-name">Download</span>
                   <div class="progress-bar-container">
@@ -88,7 +88,7 @@
       }
     </div>
 
-    @if (false && hovering && mod?.installProgress?.error) {
+    @if (false && hovering && mod.installProgress?.error) {
       <div
         @fadeInOut
         class="delete-button-container retry"
@@ -97,7 +97,7 @@
       </div>
     }
 
-    @if (hovering && (!mod?.installProgress?.linkStep?.start || mod?.installProgress?.completed || mod?.installProgress?.error)) {
+    @if (hovering && (!mod.installProgress?.linkStep?.start || mod.installProgress?.completed || mod.installProgress?.error)) {
       <div
         @fadeInOut
         class="delete-button-container"

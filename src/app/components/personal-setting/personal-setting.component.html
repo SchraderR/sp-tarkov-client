@@ -33,7 +33,7 @@
               <div
                 matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}
               </div>
-              <div matListItemLine>{{ settingModel.sptRootDirectory ?? settingModel.akiRootDirectory }}</div>
+              <div matListItemLine>{{ settingModel.sptRootDirectory }}</div>
               @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
                      (click)="openInstance(settingModel.sptRootDirectory)">

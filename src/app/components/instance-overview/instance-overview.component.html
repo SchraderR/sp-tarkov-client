@@ -9,23 +9,23 @@
   </div>
 }
 
-@if (activeSptInstance?.isLoading) {
+@if (activeSptInstance.isLoading) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <mat-spinner [diameter]="100"></mat-spinner>
   </div>
 }
 
-@if (activeSptInstance && !activeSptInstance?.isLoading) {
+@if (activeSptInstance.isLoading) {
   <div class="mod-list-container">
     <div class="mod-list">
-      <h2>Server-Mods ({{ activeSptInstance?.serverMods?.length }})</h2>
+      <h2>Server-Mods ({{ activeSptInstance.serverMods.length }})</h2>
 
       <mat-list style="overflow: auto;">
-        @if (activeSptInstance?.serverMods?.length === 0) {
+        @if (activeSptInstance.serverMods.length === 0) {
           <span>No Server-Mods installed!</span>
         }
 
-        @for (serverMod of activeSptInstance?.serverMods | orderBy:'name'; track $index) {
+        @for (serverMod of activeSptInstance.serverMods | orderBy:'name'; track $index) {
           <mat-list-item>
             <span matListItemTitle>{{ serverMod.name }}</span>
             <span matListItemLine>{{ serverMod.version }}</span>
@@ -44,12 +44,12 @@
     <mat-divider [vertical]="true" />
 
     <div class="mod-list">
-      <h2>Client-Mods ({{ activeSptInstance?.clientMods?.length }})</h2>
+      <h2>Client-Mods ({{ activeSptInstance.clientMods.length }})</h2>
       <mat-list style="overflow: auto;">
-        @if (activeSptInstance?.clientMods?.length === 0) {
+        @if (activeSptInstance.clientMods.length === 0) {
           <span>No Client-Mods installed!</span>
         }
-        @for (clientMod of activeSptInstance?.clientMods | orderBy:'name'; track $index) {
+        @for (clientMod of activeSptInstance.clientMods | orderBy:'name'; track $index) {
           @if (clientMod.isDirectory && clientMod?.subMods?.length ?? 0 > 1) {
             <mat-expansion-panel>
               <mat-expansion-panel-header>

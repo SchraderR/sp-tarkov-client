@@ -17,12 +17,12 @@
       </div>
 
       <div class="progress-bar-container">
-        @if (mod?.installProgress?.linkStep?.start && mod?.installProgress?.unzipStep && !mod?.installProgress?.completed) {
+        @if (mod.installProgress?.linkStep?.start && mod.installProgress?.unzipStep && !mod.installProgress?.completed) {
           <mat-progress-bar
             @fadeInOut
-            [mode]="mod?.installProgress?.linkStep?.start && mod?.installProgress?.unzipStep?.progress === 0 ? 'indeterminate' : 'determinate'"
-            [color]="mod?.installProgress?.linkStep?.error ? 'warn' : 'accent'"
-            [value]="mod?.installProgress?.unzipStep?.progress ? mod!.installProgress!.unzipStep!.progress * 100 : 0"
+            [mode]="mod.installProgress?.linkStep?.start && mod.installProgress?.unzipStep?.progress === 0 ? 'indeterminate' : 'determinate'"
+            [color]="mod.installProgress?.linkStep?.error ? 'warn' : 'accent'"
+            [value]="mod.installProgress?.unzipStep?.progress ? mod.installProgress!.unzipStep!.progress * 100 : 0"
           />
         }
         @if (mod.installProgress?.completed) {
