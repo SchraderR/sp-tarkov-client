@@ -7,7 +7,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-  standalone: true,
   selector: 'app-tarkov-start',
   templateUrl: './tarkov-start.component.html',
   styleUrls: ['./tarkov-start.component.scss'],
@@ -45,6 +44,6 @@ export class TarkovStartComponent implements OnInit {
       return;
     }
 
-    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory).subscribe();
+    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory).subscribe();
   }
 }

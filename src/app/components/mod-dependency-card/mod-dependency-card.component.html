@@ -25,7 +25,7 @@
             [value]="mod?.installProgress?.unzipStep?.progress ? mod!.installProgress!.unzipStep!.progress * 100 : 0"
           />
         }
-        @if (mod?.installProgress?.completed) {
+        @if (mod.installProgress?.completed) {
           <div class="installation-completed-container">
             <mat-icon>done</mat-icon>
             Installation completed

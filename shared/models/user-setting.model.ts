@@ -31,14 +31,10 @@ export interface UserSettingStoreModel {
   modCache: ModCache[];
   useIndexedMods: boolean;
   keepTempDownloadDirectory: boolean;
-  akiInstances: SptInstance[]; // obsolete
-  akiVersions: SptVersion[]; // obsolete
-  akiTags: SptTag[]; // obsolete
 }
 
 export interface SptInstance {
   sptRootDirectory: string;
-  akiRootDirectory?: string; // obsolete
   isValid: boolean;
   isActive: boolean;
   isLoading: boolean;

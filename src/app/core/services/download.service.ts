@@ -130,7 +130,7 @@ export class DownloadService {
 
     const linkModel: LinkModel = {
       fileId,
-      sptInstancePath: activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory,
+      sptInstancePath: activeInstance.sptRootDirectory,
       downloadUrl: '',
     };
 

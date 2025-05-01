@@ -107,8 +107,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       fs.mkdirSync(appInstancePath);
     }
 
-    migrateData(store);
-
     if (isServe) {
       browserWindow.webContents.openDevTools();
       const debug = require('electron-debug');
@@ -134,26 +132,3 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     log.error(e?.toString());
   }
 };
-
-function migrateData(store: Store<UserSettingStoreModel>): void {
-  const oldAkiInstances = store.get('akiInstances');
-  if (oldAkiInstances) {
-    store.set(
-      'sptInstances',
-      oldAkiInstances.map(i => ({ sptRootDirectory: i.akiRootDirectory, isActive: i.isActive }))
-    );
-    store.delete('akiInstances');
-  }
-
-  const oldAkiTags = store.get('akiTags');
-  if (oldAkiTags) {
-    store.set('sptTags', oldAkiTags);
-    store.delete('akiTags');
-  }
-
-  const oldAkiVersions = store.get('akiVersions');
-  if (oldAkiVersions) {
-    store.set('sptVersions', oldAkiVersions);
-    store.delete('akiVersions');
-  }
-}

@@ -15,7 +15,7 @@ export interface Mod {
   lastUpdate?: string;
   isInvalid: boolean;
   isAlreadyInModList?: boolean;
-  installProgress?: InstallProgress;
+  installProgress?: InstallProgress | null;
   sptVersionColorCode?: string;
 }
 

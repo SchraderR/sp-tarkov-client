@@ -9,7 +9,7 @@
         @for (settingModel of userSettingSignal(); track settingModel.sptRootDirectory) {
           @if (settingModel.isLoading) {
             <mat-list-item #loading lines="2">
-              <mat-spinner [diameter]="50"></mat-spinner>
+              <mat-spinner [diameter]="50" />
             </mat-list-item>
           }
           @if (!settingModel.isLoading) {
@@ -30,7 +30,9 @@
                         matTooltip="There was an issue with PowerShell. Installed Client-Mods of the current instance will not be loaded.">
                 warning
               </mat-icon>
-              <div matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}</div>
+              <div
+                matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}
+              </div>
               <div matListItemLine>{{ settingModel.sptRootDirectory ?? settingModel.akiRootDirectory }}</div>
               @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
@@ -92,7 +94,8 @@
         }
         -->
         <mat-slide-toggle [formControl]="keepTempDownloadDirectory" (change)="toggleKeepTempDirectory($event)">
-          Keep download directory <span style="font-size: small; color: gray">~{{ currentTempDirectorySize().text }}</span>
+          Keep download directory <span
+          style="font-size: small; color: gray">~{{ currentTempDirectorySize().text }}</span>
         </mat-slide-toggle>
 
         <mat-slide-toggle [formControl]="checkInstalledMod" (change)="toggleCheckInstalledMod($event)">
@@ -100,10 +103,12 @@
         </mat-slide-toggle>
 
         <div style="display: flex; gap: 8px">
-          <button mat-raised-button color="primary" style="width: fit-content;" (click)="clearTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
+          <button mat-raised-button color="primary" style="width: fit-content;"
+                  (click)="clearTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
             Clear download directory
           </button>
-          <button mat-raised-button color="primary" style="width: fit-content;" (click)="openTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
+          <button mat-raised-button color="primary" style="width: fit-content;"
+                  (click)="openTemporaryDownloadDirectory()" [disabled]="currentTempDirectorySize().size === 0">
             Open temp directory
           </button>
         </div>

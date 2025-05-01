@@ -4,7 +4,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../services/electron.service';
@@ -34,7 +33,6 @@ export type GenericModListSortField = 'cumulativeLikes' | 'time' | 'lastChangeTi
 export type GenericModListSortOrder = 'ASC' | 'DESC';
 
 @Component({
-  standalone: true,
   selector: 'app-generic-mod-list',
   templateUrl: './generic-mod-list.component.html',
   styleUrl: './generic-mod-list.component.scss',
@@ -42,7 +40,6 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    RouterLink,
     MatTooltipModule,
     NgOptimizedImage,
     IsAlreadyInstalledDirective,

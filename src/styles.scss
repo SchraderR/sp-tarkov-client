@@ -162,7 +162,8 @@ mat-icon {
 
 // TODO Remove or better
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 $mat-theme-primary-palette: map-merge(
     mat.$m2-cyan-palette,

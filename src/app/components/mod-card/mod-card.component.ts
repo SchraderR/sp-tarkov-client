@@ -21,7 +21,6 @@ export interface ModLicenseInformation {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-mod-card',
   templateUrl: './mod-card.component.html',
   styleUrl: './mod-card.component.scss',

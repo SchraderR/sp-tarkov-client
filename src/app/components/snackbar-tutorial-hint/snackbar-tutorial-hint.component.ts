@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBarAction, MatSnackBarRef } from '@angular/material/snack-bar';
 
 @Component({
-  standalone: true,
-  selector: 'app-snackbar-tutorial-hint',
-  templateUrl: './snackbar-tutorial-hint.component.html',
-  styleUrl: './snackbar-tutorial-hint.component.scss',
-  imports: [CommonModule, MatButtonModule, MatSnackBarAction],
+    selector: 'app-snackbar-tutorial-hint',
+    templateUrl: './snackbar-tutorial-hint.component.html',
+    styleUrl: './snackbar-tutorial-hint.component.scss',
+    imports: [CommonModule, MatButtonModule, MatSnackBarAction]
 })
 export class SnackbarTutorialHintComponent {
   snackBarRef = inject(MatSnackBarRef);

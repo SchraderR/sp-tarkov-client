@@ -21,25 +21,24 @@ import { ModCache } from '../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 
 @Component({
-  standalone: true,
-  selector: 'app-mod-search',
-  imports: [
-    CommonModule,
-    MatAutocompleteModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatOptionModule,
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatIconModule,
-    IsAlreadyInstalledDirective,
-    MatTooltipModule,
-    MatProgressSpinner,
-    IsAlreadyStartedDirective,
-  ],
-  templateUrl: './mod-search.component.html',
-  styleUrl: './mod-search.component.scss',
+    selector: 'app-mod-search',
+    imports: [
+        CommonModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatOptionModule,
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatIconModule,
+        IsAlreadyInstalledDirective,
+        MatTooltipModule,
+        MatProgressSpinner,
+        IsAlreadyStartedDirective,
+    ],
+    templateUrl: './mod-search.component.html',
+    styleUrl: './mod-search.component.scss'
 })
 export class ModSearchComponent {
   #sptSearchService = inject(SptSearchService);

@@ -24,7 +24,6 @@ import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
-  standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
@@ -41,7 +40,6 @@ import { FileHelper } from '../../core/helper/file-helper';
     MatSelectModule,
     ReactiveFormsModule,
     JoyrideModule,
-    NgOptimizedImage,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
   ],

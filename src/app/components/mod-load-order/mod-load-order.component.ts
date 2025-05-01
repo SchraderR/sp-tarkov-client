@@ -13,11 +13,10 @@ export interface ModLoadOrder {
 }
 
 @Component({
-  standalone: true,
-  selector: 'app-mod-load-order',
-  templateUrl: './mod-load-order.component.html',
-  styleUrl: './mod-load-order.component.scss',
-  imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent],
+    selector: 'app-mod-load-order',
+    templateUrl: './mod-load-order.component.html',
+    styleUrl: './mod-load-order.component.scss',
+    imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent]
 })
 export default class ModLoadOrderComponent implements OnInit {
   @ViewChild('modLoadOrderWarning', { static: true }) modLoadOrderWarning!: TemplateRef<unknown>;
