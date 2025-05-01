@@ -123,7 +123,7 @@
       </button>
     </mat-action-list>
   </mat-sidenav>
-  <mat-sidenav-content class="sidenav-content">
+  <mat-sidenav-content class="sidenav-content" [ngClass]="isExpanded ? 'margin-expanded' : 'margin-collapsed'">
     <div [class.extended]="isExpanded" class="full-width full-height overflow-auto" joyrideStep="downloadOverviewStep"
          stepPosition="center" [stepContent]="joyRideStepDownloadOverviewContent">
       <router-outlet />
