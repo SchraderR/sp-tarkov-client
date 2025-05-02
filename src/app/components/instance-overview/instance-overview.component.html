@@ -10,12 +10,10 @@
 }
 
 @if (activeSptInstance.isLoading) {
-  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
+  <div class="full-height full-width spinner-container" >
     <mat-spinner [diameter]="100"></mat-spinner>
   </div>
-}
-
-@if (activeSptInstance.isLoading) {
+} @else {
   <div class="mod-list-container">
     <div class="mod-list">
       <h2>Server-Mods ({{ activeSptInstance.serverMods.length }})</h2>
@@ -40,8 +38,6 @@
         }
       </mat-list>
     </div>
-
-    <mat-divider [vertical]="true" />
 
     <div class="mod-list">
       <h2>Client-Mods ({{ activeSptInstance.clientMods.length }})</h2>
@@ -89,6 +85,8 @@
     </div>
   </div>
 }
+
+
 
 <ng-template #instanceToggleModWarning>
   <mat-card style="padding: 0 16px;">
