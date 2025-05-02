@@ -37,7 +37,7 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/material-styles.scss",
+              "src/styles/_theme-colors.scss",
               "node_modules/font-awesome/css/font-awesome.css"
             ],
             "scripts": [],

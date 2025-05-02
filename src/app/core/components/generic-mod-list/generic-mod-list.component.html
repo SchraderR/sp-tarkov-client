@@ -79,7 +79,9 @@
             </button>
             <span class="spacer"></span>
             @if (modDependencies.hasModDependencies()) {
-              <mat-icon class="mod-install-instance-warning warning-color" matTooltip="Mod dependency" fontIcon="info"/>
+              <mat-icon class="mod-install-instance-warning warning-color" matTooltip="Mod dependency">
+                info
+              </mat-icon>
             }
           </div>
         </div>
@@ -94,9 +96,9 @@
   </button>
 
   @if (tags) {
-    <ng-container *ngTemplateOutlet="sptTagsForm" />
+    <ng-container *ngTemplateOutlet="sptTagsForm"/>
   } @else {
-    <ng-container *ngTemplateOutlet="sptVersionForm" />
+    <ng-container *ngTemplateOutlet="sptVersionForm"/>
   }
 
   <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20"/>

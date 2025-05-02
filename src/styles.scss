@@ -4,18 +4,24 @@
 @use 'material-symbols/outlined';
 @use '@angular/material' as mat;
 @use 'material-symbols' as *;
+@use "./styles/_theme-colors" as theme-colors;
 
 html,
 body {
-  height: 100%;
-  font-family: "Roboto";
-
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   color-scheme: light dark;
-  @include mat.theme((
-    color: mat.$violet-palette,
-    typography: Roboto,
-    density: 0
-  ));
+
+  height: 100%;
+  @include mat.theme(
+      (
+        color: (
+          primary: theme-colors.$primary-palette,
+          tertiary: theme-colors.$tertiary-palette,
+        ),
+        typography: Roboto,
+        density: 0,
+      )
+  );
 }
 
 body {
@@ -61,6 +67,10 @@ body {
   height: 48px !important;
   width: 48px !important;
   margin: unset !important;
+
+  &.warning-color {
+    color: var(--mat-sys-tertiary);
+  }
 }
 
 mat-icon {
