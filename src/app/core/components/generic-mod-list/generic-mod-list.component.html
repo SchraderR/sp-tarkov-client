@@ -52,7 +52,8 @@
                   <mat-icon
                     class="already-installed-icon-container"
                     matTooltip="Already installed"
-                    color="accent">done_all
+                    color="accent">
+                    done_all
                   </mat-icon>
                 } @else {
                   @if (!alreadyStarted.isAlreadyStarted() && !alreadyInstalled.isInModList()) {
@@ -101,7 +102,8 @@
     <ng-container *ngTemplateOutlet="sptVersionForm"/>
   }
 
-  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength" [pageSize]="20"/>
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
+                 [pageSize]="20"/>
 </mat-toolbar>
 
 

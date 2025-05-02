@@ -4,7 +4,7 @@
     <h1>SP-EFT Manager - Beta</h1>
   </div>
   <div class="flex justify-center align-center full-width">
-    <app-mod-search class="no-drag" style="width: 60%" />
+    <app-mod-search class="no-drag" style="width: 60%"/>
     <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep"
             [stepContent]="joyRideStepDownloadButtonContent">
       <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false"
@@ -49,7 +49,7 @@
         <mat-icon matListItemIcon>manage_accounts</mat-icon>
         <div matListItemTitle>Active Instance</div>
       </mat-list-item>
-       <mat-list-item routerLink="mod-load-order" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
+      <mat-list-item routerLink="mod-load-order" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded"
                      matTooltip="Mod Load Order">
         <mat-icon matListItemIcon>reorder</mat-icon>
         <div matListItemTitle>Mod Load Order</div>
@@ -61,7 +61,7 @@
           <div matListItemTitle>Mod Update Overview</div>
         </mat-list-item>
       -->
-      <mat-divider />
+      <mat-divider/>
       <div joyrideStep="sideNavStep" [stepContent]="joyRideStepContent">
         <mat-list-item routerLinkActive="active-link" routerLink="new" (click)="toggleDrawer()"
                        [matTooltipDisabled]="isExpanded"
@@ -93,7 +93,7 @@
           <mat-icon matListItemIcon>sell</mat-icon>
           <div matListItemTitle>Search mods by tags</div>
         </mat-list-item>
-        <mat-divider />
+        <mat-divider/>
       </div>
       <mat-list-item routerLinkActive="active-link" routerLink="setting" (click)="toggleDrawer()"
                      [matTooltipDisabled]="isExpanded"
@@ -126,15 +126,17 @@
   <mat-sidenav-content class="sidenav-content" [ngClass]="isExpanded ? 'margin-expanded' : 'margin-collapsed'">
     <div [class.extended]="isExpanded" class="full-width full-height overflow-auto" joyrideStep="downloadOverviewStep"
          stepPosition="center" [stepContent]="joyRideStepDownloadOverviewContent">
-      <router-outlet />
+      <router-outlet/>
     </div>
   </mat-sidenav-content>
 
-  <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
-    @if (isTarkovInstanceRunExpanded) {
-      <app-tarkov-start />
-    }
-  </mat-sidenav>
+  @if (isExperimentalFunctionActive() && isTarkovInstanceRunExpanded) {
+    <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
+      @if (isTarkovInstanceRunExpanded) {
+        <app-tarkov-start/>
+      }
+    </mat-sidenav>
+  }
 </mat-sidenav-container>
 
 <ng-template #joyRideStepContent>

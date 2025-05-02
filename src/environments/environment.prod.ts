@@ -7,4 +7,5 @@ export const environment = {
   sptFileTagBaseLink: 'https://hub.sp-tarkov.com/tagged/',
   githubConfigLink: 'https://schraderr.github.io/sp-tarkov-client-configuration',
   sptHubModsJson: 'https://hub.sp-tarkov.com/mods.json',
+  ignoreRemoteConfig: false,
 };

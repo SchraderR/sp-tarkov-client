@@ -13,10 +13,10 @@ export interface ModLoadOrder {
 }
 
 @Component({
-    selector: 'app-mod-load-order',
-    templateUrl: './mod-load-order.component.html',
-    styleUrl: './mod-load-order.component.scss',
-    imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent]
+  selector: 'app-mod-load-order',
+  templateUrl: './mod-load-order.component.html',
+  styleUrl: './mod-load-order.component.scss',
+  imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent],
 })
 export default class ModLoadOrderComponent implements OnInit {
   @ViewChild('modLoadOrderWarning', { static: true }) modLoadOrderWarning!: TemplateRef<unknown>;
@@ -29,14 +29,14 @@ export default class ModLoadOrderComponent implements OnInit {
 
   modLoadOrderWarningDialog!: MatDialogRef<unknown, unknown>;
   modLoadOrder: ModLoadOrder = { order: [] };
+  wasModLoadOrderWarningReviewed = this.#userSettingsService.wasModLoadOrderWarningReviewed;
 
   ngOnInit() {
     if (!this.#userSettingsService.wasModLoadOrderWarningReviewed()) {
       this.openModLoadOrderDialog();
     }
 
-    const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
+    const instancePath = this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
@@ -48,8 +48,7 @@ export default class ModLoadOrderComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
+    const instancePath = this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
