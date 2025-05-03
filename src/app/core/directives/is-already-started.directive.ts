@@ -1,4 +1,4 @@
-import { computed, Directive, inject, Input } from '@angular/core';
+import { computed, Directive, inject, input } from '@angular/core';
 import { ModListService } from '../services/mod-list.service';
 import { Mod } from '../models/mod';
 
@@ -10,12 +10,12 @@ import { Mod } from '../models/mod';
 export class IsAlreadyStartedDirective {
   #modListService = inject(ModListService);
 
-  @Input({ required: true }) mod!: Mod;
+  readonly mod = input.required<Mod>();
 
   isAlreadyStarted = computed(() => this.checkModAlreadyStarted());
 
   private checkModAlreadyStarted() {
-    const mod = this.#modListService.modListSignal().find(m => m.name === this.mod.name);
+    const mod = this.#modListService.modListSignal().find(m => m.name === this.mod().name);
     if (!mod) {
       return false;
     }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, ViewChild, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -61,15 +61,11 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   private paginatorSubscription: Subscription | undefined;
   private fetchModSubscription: Subscription | undefined;
 
-  private _sortField: GenericModListSortField = 'cumulativeLikes';
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
 
-  @Input() set sortField(sortValue: GenericModListSortField) {
-    this._sortField = sortValue;
-  }
-
-  @Input() sortOrder: GenericModListSortOrder = 'DESC';
-  @Input() tags: boolean | undefined;
+  readonly sortField = input<GenericModListSortField>('cumulativeLikes');
+  readonly sortOrder = input<GenericModListSortOrder>('DESC');
+  readonly tags = input<boolean>();
 
   #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
@@ -96,28 +92,28 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.sptVersionFormField.valueChanges
       .pipe(debounceTime(500), takeUntilDestroyed(this.#destroyRef))
-      .subscribe(() => this.loadData(this._sortField, this.pageNumber));
+      .subscribe(() => this.loadData(this.sortField(), this.pageNumber));
 
     this.filteredOptions = this.sptTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
       map(value => this.filterAkiTags(value || '')),
-      tap(() => this.loadData(this._sortField, this.pageNumber))
+      tap(() => this.loadData(this.sortField(), this.pageNumber))
     );
 
-    this.loadData(this._sortField, this.pageNumber);
+    this.loadData(this.sortField(), this.pageNumber);
   }
 
   ngAfterViewInit() {
     this.paginatorSubscription = this.paginator?.page
       .pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef))
-      .subscribe((event: PageEvent) => this.loadData(this._sortField, event.pageIndex));
+      .subscribe((event: PageEvent) => this.loadData(this.sortField(), event.pageIndex));
   }
 
   isActiveSptInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
 
   refresh() {
-    this.loadData(this._sortField ?? 'cumulativeLikes', this.pageNumber);
+    this.loadData(this.sortField() ?? 'cumulativeLikes', this.pageNumber);
   }
 
   async addModToModList(mod: Mod) {
@@ -176,7 +172,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     const config = this.#configurationService.configSignal();
     let basePath = '';
 
-    if (this.tags) {
+    if (this.tags()) {
       const akiTag = this.sptTagsSignal()?.find(t => t.innerText === this.sptTagFormField.value);
       if (!akiTag) {
         this.loading = false;
@@ -186,7 +182,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
       basePath = `${environment.sptFileTagBaseLink}${akiTag?.tagPath}?objectType=com.woltlab.filebase.file&pageNo=${pageNumber + 1}`;
     } else {
-      basePath = `${environment.sptFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder}&labelIDs[1]=${this.sptVersionFormField.value?.dataLabelId}`;
+      basePath = `${environment.sptFileBaseLink}/?pageNo=${pageNumber + 1}&sortField=${sortValue}&sortOrder=${this.sortOrder()}&labelIDs[1]=${this.sptVersionFormField.value?.dataLabelId}`;
     }
 
     this.accumulatedModList = [];

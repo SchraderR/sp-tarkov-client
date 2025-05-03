@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, inject, OnInit, input, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,8 +32,8 @@ export class ModCardComponent implements OnInit {
   #electronService = inject(ElectronService);
   #downloadService = inject(DownloadService);
 
-  @Input({ required: true }) mod!: Mod;
-  @Output() removeModEvent = new EventEmitter<Mod>();
+  readonly mod = input.required<Mod>();
+  readonly removeModEvent = output<Mod>();
 
   hovering = false;
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
@@ -47,13 +47,14 @@ export class ModCardComponent implements OnInit {
   downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 
   private getModVersionAndLicenseInformation(): Observable<ModLicenseInformation> {
-    if (!this.mod?.fileUrl) {
+    const mod = this.mod();
+    if (!mod?.fileUrl) {
       return EMPTY;
     }
-    let path = this.mod.fileUrl;
+    let path = mod.fileUrl;
 
     if (!environment.production) {
-      path = this.mod.fileUrl.split('https://hub.sp-tarkov.com/')[1];
+      path = mod.fileUrl.split('https://hub.sp-tarkov.com/')[1];
     }
 
     return this.#httpClient.get(path, { responseType: 'text' }).pipe(
@@ -62,11 +63,11 @@ export class ModCardComponent implements OnInit {
         const supportedVersion = modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '';
         const modLicenceBox = modPageView.body.querySelector('.boxContent dl dd:first-of-type a');
 
-        this.mod.supportedSptVersion = supportedVersion;
-        this.mod.modVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? '';
+        mod.supportedSptVersion = supportedVersion;
+        mod.modVersion = modPageView.body.getElementsByClassName('filebaseVersionNumber')[0].innerHTML ?? '';
 
         return {
-          url: modLicenceBox?.getAttribute('href') ?? this.mod.fileUrl,
+          url: modLicenceBox?.getAttribute('href') ?? mod.fileUrl,
           text: modLicenceBox?.innerHTML ?? 'SP Hub-License',
         };
       })

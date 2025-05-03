@@ -4,7 +4,7 @@
   </div>
 }
 
-@if (tags && accumulatedModList.length === 0) {
+@if (tags() && accumulatedModList.length === 0) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <span>Select a tag to start the search.</span>
   </div>
@@ -96,7 +96,7 @@
     <mat-icon>refresh</mat-icon>
   </button>
 
-  @if (tags) {
+  @if (tags()) {
     <ng-container *ngTemplateOutlet="sptTagsForm"/>
   } @else {
     <ng-container *ngTemplateOutlet="sptVersionForm"/>

@@ -1,4 +1,4 @@
-import { computed, Directive, inject, Input } from '@angular/core';
+import { computed, Directive, inject, input } from '@angular/core';
 import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
@@ -17,7 +17,7 @@ export class IsAlreadyInstalledDirective {
   #configurationService = inject(ConfigurationService);
   #modListService = inject(ModListService);
 
-  @Input({ required: true }) mod!: Mod;
+  readonly mod = input.required<Mod>();
 
   isAlreadyInstalled = computed(() => this.checkModAlreadyInstalled());
   isInModList = computed(() => this.checkModInModList());
@@ -27,10 +27,10 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
-    const modName = this.mod.name;
+    const modName = this.mod().name;
     let config = this.#configurationService.configSignal();
     const activeInstance = this.#userSettingsService.getActiveInstance();
-    if (!this.mod || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
+    if (!this.mod() || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
       return false;
     }
 
@@ -72,7 +72,7 @@ export class IsAlreadyInstalledDirective {
   }
 
   private checkModInModList() {
-    return this.#modListService.modListSignal().some(m => m.name === this.mod.name);
+    return this.#modListService.modListSignal().some(m => m.name === this.mod().name);
   }
 
   private assignAlternativeNames(mods: ModMeta[], alternativeNames: { [key: string]: string }) {

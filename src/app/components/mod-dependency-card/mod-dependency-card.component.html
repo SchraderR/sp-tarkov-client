@@ -5,27 +5,27 @@
 
 <mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
   <mat-card-content style="position: relative; height: 100%" class="card-container">
-    @if (mod.supportedSptVersion) {
-      <div [class]="mod.sptVersionColorCode"
-           class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
+    @if (mod()).supportedSptVersion) {
+      <div [class]="mod().sptVersionColorCode"
+           class="font-small image-spt-version card-badge">{{ mod().supportedSptVersion }}
       </div>
     }
 
     <div class="mod-container">
       <div class="mod-title" style="display: flex; width: 100%">
-        <strong class="one-line-clamp"> {{ mod.name }}</strong>
+        <strong class="one-line-clamp"> {{ mod().name }}</strong>
       </div>
 
       <div class="progress-bar-container">
-        @if (mod.installProgress?.linkStep?.start && mod.installProgress?.unzipStep && !mod.installProgress?.completed) {
+        @if (mod().installProgress?.linkStep?.start && mod().installProgress?.unzipStep && !mod().installProgress?.completed) {
           <mat-progress-bar
             @fadeInOut
-            [mode]="mod.installProgress?.linkStep?.start && mod.installProgress?.unzipStep?.progress === 0 ? 'indeterminate' : 'determinate'"
-            [color]="mod.installProgress?.linkStep?.error ? 'warn' : 'accent'"
-            [value]="mod.installProgress?.unzipStep?.progress ? mod.installProgress!.unzipStep!.progress * 100 : 0"
+            [mode]="mod().installProgress?.linkStep?.start && mod().installProgress?.unzipStep?.progress === 0 ? 'indeterminate' : 'determinate'"
+            [color]="mod().installProgress?.linkStep?.error ? 'warn' : 'accent'"
+            [value]="mod().installProgress?.unzipStep?.progress ? mod().installProgress!.unzipStep!.progress * 100 : 0"
           />
         }
-        @if (mod.installProgress?.completed) {
+        @if (mod().installProgress?.completed) {
           <div class="installation-completed-container">
             <mat-icon>done</mat-icon>
             Installation completed
@@ -36,8 +36,8 @@
     </div>
 
 
-    @if (hovering && !mod.isInvalid) {
-      <button class="open-external-button" mat-icon-button @fadeInOut (click)="openExternal(mod.fileUrl)">
+    @if (hovering && !mod().isInvalid) {
+      <button class="open-external-button" mat-icon-button @fadeInOut (click)="openExternal(mod()().fileUrl)">
         <mat-icon class="font-weight-400 icon-size-48">open_in_new</mat-icon>
       </button>
     }

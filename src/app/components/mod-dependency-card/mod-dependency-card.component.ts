@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Mod } from '../../core/models/mod';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,7 +17,7 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 export class ModDependencyCardComponent {
   #electronService = inject(ElectronService);
 
-  @Input({ required: true }) mod!: Mod;
+  readonly mod = input.required<Mod>();
 
   hovering = false;
 
