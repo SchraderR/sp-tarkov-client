@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, OnInit, TemplateRef, viewChild } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,7 +37,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
     ]
 })
 export default class InstanceOverviewComponent implements OnInit {
-  @ViewChild('instanceToggleModWarning', { static: true }) instanceToggleModWarning!: TemplateRef<unknown>;
+  readonly instanceToggleModWarning = viewChild.required<TemplateRef<unknown>>('instanceToggleModWarning');
 
   #userSettingsService = inject(UserSettingsService);
   #electronService = inject(ElectronService);
@@ -54,7 +54,7 @@ export default class InstanceOverviewComponent implements OnInit {
 
   ngOnInit() {
     if (this.isExperimentalFunctionActive() && !this.#userSettingsService.wasInstanceOverviewReviewed()) {
-      this.toggleWarningDialogRef = this.#matDialog.open(this.instanceToggleModWarning, {
+      this.toggleWarningDialogRef = this.#matDialog.open(this.instanceToggleModWarning(), {
         disableClose: true,
         width: '50%',
       });

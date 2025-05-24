@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, model, NgZone, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, model, NgZone, signal, viewChild } from '@angular/core';
 import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { Router, RouterModule } from '@angular/router';
@@ -79,7 +79,7 @@ export class AppComponent {
   isTarkovInstanceRunExpanded = false;
   isExperimentalFunctionActive = this.#userSettingService.isExperimentalFunctionActive;
 
-  @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
+  readonly matSideNav = viewChild.required(MatSidenav);
 
   modListSignal = this.#modListService.modListSignal;
   appIconPath = 'assets/images/icon.png';
@@ -118,7 +118,7 @@ export class AppComponent {
 
   toggleDrawer() {
     this.isExpanded = false;
-    void this.matSideNav.toggle();
+    void this.matSideNav().toggle();
   }
 
   openExternal = (url: string) => void this.#electronService.openExternal(url);

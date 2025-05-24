@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, NgZone, OnInit, TemplateRef, viewChild } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
 import { CommonModule } from '@angular/common';
 import { UserSettingsService } from '../../core/services/user-settings.service';
@@ -19,7 +19,7 @@ export interface ModLoadOrder {
   imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent],
 })
 export default class ModLoadOrderComponent implements OnInit {
-  @ViewChild('modLoadOrderWarning', { static: true }) modLoadOrderWarning!: TemplateRef<unknown>;
+  readonly modLoadOrderWarning = viewChild.required<TemplateRef<unknown>>('modLoadOrderWarning');
 
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
@@ -69,7 +69,7 @@ export default class ModLoadOrderComponent implements OnInit {
   }
 
   private openModLoadOrderDialog() {
-    this.modLoadOrderWarningDialog = this.#matDialog.open(this.modLoadOrderWarning, {
+    this.modLoadOrderWarningDialog = this.#matDialog.open(this.modLoadOrderWarning(), {
       disableClose: true,
       width: '50%',
     });

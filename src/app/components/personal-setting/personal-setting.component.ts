@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, viewChildren } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
@@ -46,7 +46,7 @@ import { FileHelper } from '../../core/helper/file-helper';
   animations: [fadeInFadeOutAnimation],
 })
 export default class PersonalSettingComponent {
-  @ViewChildren('loading') matList: QueryList<MatListItem> | undefined;
+  readonly matList: MatListItem = viewChildren('loading');
 
   #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);
@@ -104,11 +104,7 @@ export default class PersonalSettingComponent {
 
     this.#electronService
       .sendEvent('clear-temp', activeInstance.sptRootDirectory)
-      .pipe(
-        switchMap(() =>
-          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)
-        )
-      )
+      .pipe(switchMap(() => this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)))
       .subscribe(value => {
         this.#ngZone.run(() => {
           this.#userSettingsService.keepTempDownloadDirectorySize.set({
@@ -145,7 +141,7 @@ export default class PersonalSettingComponent {
           this.#userSettingsService.addUserSetting(newUserSetting);
           this.#changeDetectorRef.detectChanges();
 
-          this.matList?.last?._elementRef.nativeElement.scrollIntoView({ behavior: 'smooth' });
+          this.matList()?.at(-1)!?._elementRef.nativeElement.scrollIntoView({ behavior: 'smooth' });
 
           return forkJoin({
             userSetting: of(newUserSetting),

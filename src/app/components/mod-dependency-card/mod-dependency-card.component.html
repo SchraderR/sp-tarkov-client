@@ -37,7 +37,7 @@
 
 
     @if (hovering && !mod().isInvalid) {
-      <button class="open-external-button" mat-icon-button @fadeInOut (click)="openExternal(mod()().fileUrl)">
+      <button class="open-external-button" mat-icon-button @fadeInOut (click)="openExternal(mod().fileUrl)">
         <mat-icon class="font-weight-400 icon-size-48">open_in_new</mat-icon>
       </button>
     }

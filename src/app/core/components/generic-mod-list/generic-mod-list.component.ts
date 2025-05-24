@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, ViewChild, input } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, input, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -58,10 +58,9 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
-  private paginatorSubscription: Subscription | undefined;
   private fetchModSubscription: Subscription | undefined;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  readonly paginator = viewChild(MatPaginator);
 
   readonly sortField = input<GenericModListSortField>('cumulativeLikes');
   readonly sortOrder = input<GenericModListSortOrder>('DESC');
@@ -105,8 +104,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.paginatorSubscription = this.paginator?.page
-      .pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef))
+    this.paginator()
+      ?.page.pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef))
       .subscribe((event: PageEvent) => this.loadData(this.sortField(), event.pageIndex));
   }
 
