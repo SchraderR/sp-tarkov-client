@@ -37,10 +37,10 @@ export class UserSettingsService {
     this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== akiRootDirectory)]);
   }
 
-  getActiveInstance(): UserSettingModel {
+  getActiveInstance(): UserSettingModel | null {
     const activeInstance = this.userSetting().find(setting => setting.isActive);
     if(!activeInstance) {
-      throw new Error('No active instance found');
+      return null;
     }
 
     return activeInstance;

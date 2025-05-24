@@ -46,7 +46,7 @@ import { FileHelper } from '../../core/helper/file-helper';
   animations: [fadeInFadeOutAnimation],
 })
 export default class PersonalSettingComponent {
-  readonly matList: MatListItem = viewChildren('loading');
+  readonly matList = viewChildren<MatListItem>('loading');
 
   #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);

@@ -16,17 +16,17 @@
             <mat-list-item lines="2" (mouseenter)="hoveringInstance = settingModel.sptRootDirectory"
                            (mouseleave)="hoveringInstance = ''">
               <mat-icon joyrideStep="settingStepInstanceActive" [stepContent]="joyRideStepInstanceActiveContent"
-                        *ngIf="!settingModel.isError" matListItemAvatar class="active-star"
+                        *ngIf="!settingModel.isError" matListItemIcon class="active-star"
                         [class.fill]="settingModel.isActive"
                         matTooltip="Set instance to active"
                         (click)="setActiveInstance(settingModel)">
                 star
               </mat-icon>
-              <mat-icon *ngIf="settingModel.isError" matListItemAvatar color="warn" class="warning"
+              <mat-icon *ngIf="settingModel.isError" matListItemIcon color="warn" class="warning"
                         matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.">
                 warning
               </mat-icon>
-              <mat-icon *ngIf="settingModel.isPowerShellIssue" matListItemAvatar color="warn" class="warning"
+              <mat-icon *ngIf="settingModel.isPowerShellIssue" matListItemIcon color="warn" class="warning"
                         matTooltip="There was an issue with PowerShell. Installed Client-Mods of the current instance will not be loaded.">
                 warning
               </mat-icon>
