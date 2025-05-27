@@ -74,7 +74,7 @@ export class UserSettingsService {
 
   getCurrentTrackedModSetting(userSetting: UserSettingModel) {
     return this.#electronService
-      .sendEvent<UserSettingModel, string>('user-setting', userSetting.sptRootDirectory ?? userSetting.akiRootDirectory)
+      .sendEvent<UserSettingModel, string>('user-setting', userSetting.sptRootDirectory)
       .pipe(
         tap(value => {
           userSetting.trackedMods = value.args.trackedMods;

@@ -43,7 +43,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
         MatCardContent,
     ]
 })
-export default class InstanceOverviewComponent implements OnInit {
+export default class InstanceOverviewComponent {
   readonly instanceToggleModWarning = viewChild.required<TemplateRef<unknown>>('instanceToggleModWarning');
 
   #userSettingsService = inject(UserSettingsService);
@@ -129,7 +129,7 @@ export default class InstanceOverviewComponent implements OnInit {
 
     const toggleModState: ToggleModStateModel = {
       hubId: mod.hubId,
-      instancePath: this.activeInstance.sptRootDirectory ?? this.activeInstance.akiRootDirectory,
+      instancePath: this.activeInstance.sptRootDirectory,
       remove: remove,
     };
 

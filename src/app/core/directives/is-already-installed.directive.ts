@@ -24,7 +24,7 @@ export class IsAlreadyInstalledDirective {
 
   private checkModAlreadyInstalled() {
     const trackedMods = this.#userSettingsService.getActiveInstance()?.trackedMods?.map(m => m.hubId);
-    if (trackedMods?.includes(this.mod.hubId ?? '')) {
+    if (trackedMods?.includes(this.mod().hubId ?? '')) {
       return true;
     }
 

@@ -109,7 +109,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.paginatorSubscription = this.paginator?.page
+    this.paginator()?.page
       .pipe(debounceTime(250), takeUntilDestroyed(this.#destroyRef))
       .subscribe((event: PageEvent) => this.loadData(this.sortFormField.value, event.pageIndex));
   }
