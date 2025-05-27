@@ -17,7 +17,7 @@ export class CheckModDependencyDirective {
 
   private checkForModDependencies() {
     const config = this.#configurationService.configSignal();
-    const fileId = FileHelper.extractFileIdFromUrl(this.mod().fileUrl);
+    const fileId = FileHelper.extractHubIdFromUrl(this.mod().fileUrl);
 
     if (!fileId || !config) {
       return false;

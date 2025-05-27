@@ -16,6 +16,26 @@ mat-expansion-panel-body {
   padding: unset;
 }
 
+.instance-actions {
+  display: flex;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  gap: 4px;
+
+  .remove-action {
+    color: orangered;
+  }
+}
+
+.mat-mdc-content {
+  display: flex;
+  min-height: 56px;
+  justify-content: center;
+  align-content: center;
+}
+
 .list-item-button {
   display: flex !important;
   justify-content: center;
@@ -35,10 +55,10 @@ mat-expansion-panel-body {
 
   .mod-list {
     display: flex;
+    gap: 8px;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    overflow: hidden;
     user-select: none;
   }
 }

@@ -1,4 +1,4 @@
-﻿import { app, Menu, Tray } from 'electron';
+﻿import { app, Tray } from 'electron';
 import { createMainApiManagementWindow } from './main-window';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
@@ -17,14 +17,14 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
     store.set('isExperimentalFunctionsActive', false);
   }
 
-  //if (process.platform === 'win32') {
-  //  app.setAppUserModelId('SP-EFT Manager');
-  //}
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('SP-EFT Manager');
+  }
 
   try {
     app.on('ready', () =>
       setTimeout(() => {
-        createMainApiManagementWindow(isServe, store);
+        void createMainApiManagementWindow(isServe, store);
 
         tray = new Tray(iconPath);
         //tray.on('double-click', () => {
@@ -49,7 +49,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
 
     app.on('activate', () => {
       if (browserWindow === null) {
-        createMainApiManagementWindow(isServe, store);
+        void createMainApiManagementWindow(isServe, store);
       }
     });
   } catch (e) {}

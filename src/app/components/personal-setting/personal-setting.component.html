@@ -26,14 +26,8 @@
                         matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.">
                 warning
               </mat-icon>
-              <mat-icon *ngIf="settingModel.isPowerShellIssue" matListItemIcon color="warn" class="warning"
-                        matTooltip="There was an issue with PowerShell. Installed Client-Mods of the current instance will not be loaded.">
-                warning
-              </mat-icon>
-              <div
-                matListItemTitle>{{ (settingModel?.sptCore?.sptVersion ?? settingModel?.sptCore?.akiVersion) ?? "Instance not found" }}
-              </div>
-              <div matListItemLine>{{ settingModel.sptRootDirectory }}</div>
+              <div matListItemTitle>{{ settingModel?.sptCore?.sptVersion ?? "Instance not found" }}</div>
+              <div matListItemLine>{{ settingModel?.sptRootDirectory }}</div>
               @if (settingModel.sptRootDirectory === hoveringInstance) {
                 <div @fadeInOut class="delete-button-container open-instance-button"
                      (click)="openInstance(settingModel.sptRootDirectory)">
@@ -96,10 +90,6 @@
         <mat-slide-toggle [formControl]="keepTempDownloadDirectory" (change)="toggleKeepTempDirectory($event)">
           Keep download directory <span
           style="font-size: small; color: gray">~{{ currentTempDirectorySize().text }}</span>
-        </mat-slide-toggle>
-
-        <mat-slide-toggle [formControl]="checkInstalledMod" (change)="toggleCheckInstalledMod($event)">
-          Check mod installation <span style="font-size: small; color: gray">(toggle this off will allow you install already installed mods)</span>
         </mat-slide-toggle>
 
         <div style="display: flex; gap: 8px">

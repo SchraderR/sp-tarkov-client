@@ -1,7 +1,9 @@
 ﻿export interface FileUnzipEvent {
-  sptInstancePath: string;
+  instancePath: string;
   filePath: string;
   hubId: string;
+  name: string;
+  version?: string;
   kind: string;
 }
 

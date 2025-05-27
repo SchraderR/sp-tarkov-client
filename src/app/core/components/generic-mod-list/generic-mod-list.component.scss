@@ -10,7 +10,7 @@ $toolbarSize: 60px;
   height: calc(100% - ($toolbarSize + 8px)); // toolbar size and some padding sizes
 }
 
-::ng-deep.version-select {
+::ng-deep.select-form-field {
   @include mat.form-field-density(-5);
 }
 
@@ -96,6 +96,8 @@ mat-card {
   width: fit-content;
   border-radius: 4px;
   background-color: var(--mat-sys-surface-container-low);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  gap: 8px;
 
   .refresh-button {
     margin: 0 4px;

@@ -19,9 +19,6 @@ export class TarkovStartComponent implements OnInit {
   #ngZone = inject(NgZone);
   #destroyRef = inject(DestroyRef);
 
-  private messagesCount = new Map<string, number>();
-  private lastMessage = '';
-
   serverOutput = this.#tarkovInstanceService.serverOutputSignal;
 
   ngOnInit(): void {

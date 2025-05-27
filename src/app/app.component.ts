@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { ModCache, ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModCache, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -30,7 +30,6 @@ import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
-import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
 
 @Component({
@@ -103,7 +102,6 @@ export class AppComponent {
     this.getCurrentTutorialSettings();
     this.getCurrentExpFunctionSettings();
     this.getCurrentTempDownloadDirectorySettings();
-    this.getCurrentCheckInstalledModSetting();
     this.getGithubRateLimitInformation();
 
     effect(() => {
@@ -144,10 +142,8 @@ export class AppComponent {
             return;
           }
 
-          userSetting.clientMods = value.clientMods.args;
-          userSetting.serverMods = value.serverMods.args;
           userSetting.isError = value.userSetting.isError;
-          userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
+          userSetting.trackedMods = value.userSetting.trackedMods;
           userSetting.isLoading = false;
 
           this.#userSettingService.updateUserSetting();
@@ -172,9 +168,7 @@ export class AppComponent {
 
       return forkJoin({
         userSetting: of(userSetting),
-        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
-        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
-      }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
+      }).pipe(catchError(() => this.handleDirectoryPathError(userSetting)));
     });
   }
 
@@ -196,12 +190,6 @@ export class AppComponent {
     this.#electronService
       .sendEvent<boolean>('keep-temp-dir-setting')
       .subscribe(value => this.#userSettingService.keepTempDownloadDirectory.set(value.args));
-  }
-
-  private getCurrentCheckInstalledModSetting() {
-    this.#electronService
-      .sendEvent<boolean>('check-installed-setting')
-      .subscribe(value => this.#userSettingService.checkInstalledMod.set(value.args));
   }
 
   private getCurrentTutorialSettings() {
@@ -259,7 +247,6 @@ export class AppComponent {
                 }
               },
               complete: () => {
-                console.log('complete');
                 if (!instanceSet) {
                   this.#userSettingService.clearFakeInstance();
                 }
@@ -274,17 +261,11 @@ export class AppComponent {
       });
   }
 
-  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    if (error.isPowerShellIssue) {
-      userSettingModel.isPowerShellIssue = true;
-    } else {
-      userSettingModel.isError = true;
-    }
+  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
+    userSettingModel.isError = true;
 
     return of({
       userSetting: userSettingModel,
-      serverMods: { args: [] },
-      clientMods: { args: [] },
     });
   }
 

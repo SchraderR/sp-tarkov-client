@@ -37,6 +37,7 @@ export class ModCardComponent implements OnInit {
 
   hovering = false;
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
+  isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
 
   ngOnInit() {
     this.modLicenseInformation$ = this.getModVersionAndLicenseInformation();
@@ -44,7 +45,6 @@ export class ModCardComponent implements OnInit {
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
   openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
-  downloadAndInstallSingle = async (mod: Mod) => await this.#downloadService.downloadAndInstallSingle(mod);
 
   private getModVersionAndLicenseInformation(): Observable<ModLicenseInformation> {
     const mod = this.mod();
