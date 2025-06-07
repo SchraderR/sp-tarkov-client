@@ -74,7 +74,6 @@ export class ModSearchComponent {
           }
         }),
         map(mods => {
-          console.log(mods);
           this.isLoading = false;
           this.filteredModItems = mods.data.sort((a, b) => {
             if (a.versions && b.versions) {

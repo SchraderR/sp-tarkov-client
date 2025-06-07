@@ -1,5 +1,4 @@
 import { ipcMain } from 'electron';
-import { Browser, Page } from 'puppeteer';
 import { GithubRelease } from '../../shared/models/github.model';
 import { GithubRateLimit } from '../../shared/models/download.model';
 import { LinkModel } from '../../shared/models/spt-core.model';
@@ -13,8 +12,6 @@ export interface GithubLinkData {
 }
 
 export const handleProcessDownloadLinkEvent = () => {
-  let browser: Browser;
-
   ipcMain.on('process-download-link', async (event, linkModel: LinkModel) => {
     let downloadLink = linkModel.downloadUrl;
 
@@ -90,10 +87,6 @@ export const handleProcessDownloadLinkEvent = () => {
     } catch (e) {
       log.error(e);
       event.sender.send('process-download-link-error', 0);
-    } finally {
-      if (browser) {
-        await browser.close();
-      }
     }
   });
 };

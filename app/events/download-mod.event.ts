@@ -16,9 +16,9 @@ export const handleDownloadModEvent = () => {
 
   ipcMain.on('download-mod', async (event, downloadModel: DownloadModel) => {
     try {
-      const ankiTempDownloadDir = path.join(downloadModel.sptInstancePath, '_temp');
-      if (!existsSync(ankiTempDownloadDir)) {
-        mkdirSync(ankiTempDownloadDir);
+      const tempDownloadDir = path.join(downloadModel.sptInstancePath, '_temp');
+      if (!existsSync(tempDownloadDir)) {
+        mkdirSync(tempDownloadDir);
       }
 
       if (!downloadModel.modFileUrl) {
@@ -32,7 +32,7 @@ export const handleDownloadModEvent = () => {
           executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-127.0.6533.88/chrome-win64/chrome.exe`,
         });
 
-        const isDownloadCompleted = await waitForDownload(downloadModel, browser, event, ankiTempDownloadDir);
+        const isDownloadCompleted = await waitForDownload(downloadModel, browser, event, tempDownloadDir);
         if (isDownloadCompleted) {
           return;
         }
@@ -48,13 +48,13 @@ export const handleDownloadModEvent = () => {
           }
 
           if (data) {
-            writeFileSync(path.join(ankiTempDownloadDir, file.name as string), data);
+            writeFileSync(path.join(tempDownloadDir, file.name as string), data);
             event.sender.send('download-mod-progress-completed', {
               percent: 100,
               transferredBytes: file.size,
               totalBytes: file.size,
             });
-            event.sender.send('download-mod-completed', path.join(ankiTempDownloadDir, file.name as string));
+            event.sender.send('download-mod-completed', path.join(tempDownloadDir, file.name as string));
           }
         });
 
@@ -74,12 +74,12 @@ export const handleDownloadModEvent = () => {
         downloadModel.modFileUrl.startsWith('hub.sp-tarkov.com/files/download') ||
         downloadModel.modFileUrl.startsWith('sp-tarkov.com/mod')
       ) {
-        await handleDirectDownload(event, ankiTempDownloadDir, downloadModel);
+        await handleDirectDownload(event, tempDownloadDir, downloadModel);
         return;
       }
 
       await download(BrowserWindowSingleton.getInstance(), downloadModel.modFileUrl, {
-        directory: ankiTempDownloadDir,
+        directory: tempDownloadDir,
         saveAs: false,
         onProgress: progress => event.sender.send('download-mod-progress', progress),
         onCompleted: file => event.sender.send('download-mod-completed', file.path),

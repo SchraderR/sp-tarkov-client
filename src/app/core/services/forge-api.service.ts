@@ -125,7 +125,7 @@ export class ForgeApiService {
 
   searchMod(searchText: string) {
     const options = {
-      params: new HttpParams().set('filter[slug]', searchText).set('include', 'versions'),
+      params: new HttpParams().set('filter[name]', searchText).set('filter[slug]', searchText).set('include', 'versions'),
     };
 
     return this.httpClient.get<PaginatedBaseApi<Mod[]>>(`${environment.forgeBasePath}/mods`, options);
