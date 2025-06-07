@@ -51,6 +51,7 @@
     "ngx-joyride": "2.5.0",
     "ngx-pipes": "3.2.2",
     "rxjs": "7.8.2",
+    "semver": "7.7.2",
     "tslib": "^2.5.0",
     "zone.js": "~0.15.0"
   },
@@ -68,6 +69,7 @@
     "@types/fast-levenshtein": "^0.0.4",
     "@types/jasmine": "5.1.7",
     "@types/jasminewd2": "2.0.13",
+    "@types/semver": "7.7.0",
     "@types/node": "^18.16.9",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",

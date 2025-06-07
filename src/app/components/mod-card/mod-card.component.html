@@ -9,23 +9,14 @@
           <mat-icon class="font-weight-400 icon-size-48">open_in_new</mat-icon>
         </div>
       }
-      <img class="image-shadow" [ngSrc]="mod().thumbnail | imagePathResolver" height="120" width="120" alt="asfasghertze">
-      <!--
-      @if (mod().image) {
-        <img class="image-shadow" [src]="mod().image" height="120" width="120" alt="">
-      }
-      @if (mod().icon) {
-        <span [className]="'mod-icon ' + 'fa ' + mod().icon"></span>
-      }
-      -->
+      <img class="image-shadow" [ngSrc]="mod().thumbnail | imagePathResolver" height="120" width="120" alt="">
 
-      <!-- TOOD CHECK
-      @if (mod().supportedSptVersion) {
-        <div [class]="mod().sptVersionColorCode"
-             class="font-small image-spt-version card-badge">{{ mod().supportedSptVersion }}
+      @let latestCompatibleModSptVersion = mod()?.versions?.[0]?.spt_version_constraint | semverSptVersion;
+      @if (latestCompatibleModSptVersion) {
+        <div [class]="'badge-version ' + latestCompatibleModSptVersion.color_class" class="font-small image-spt-version card-badge">
+          {{ latestCompatibleModSptVersion.version }}
         </div>
       }
-      -->
     </div>
     <div class="mod-container">
       <div class="mod-title" style="display: flex">

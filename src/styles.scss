@@ -139,27 +139,66 @@ mat-icon {
     font-size: 12px;
     border-radius: 4px 4px 4px 0;
   }
+}
 
-  &.badge.label.green {
-    background-color: #090;
+.badge-version {
+  &.red {
+    background-color: #fef2f2;
+    color: #b91c1c;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #b91c1c;
+      color: #fef2f2;
+    }
   }
 
-  &.badge.label.slightly-outdated {
-    background-color: #b1e433;
-    color: #323947;
+  &.green {
+    background-color: #f0fdf4;
+    color: #15803d;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #15803d;
+      color: #f0fdf4;
+    }
   }
 
-  &.badge.label.yellow {
-    background-color: #ff0;
-    color: #323947;
+  &.emerald {
+    background-color: #ecfdf5;
+    color: #047857;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #047857;
+      color: #ecfdf5;
+    }
   }
 
-  &.badge.label.red {
-    background-color: #c00;
+  &.lime {
+    background-color: #f7fee7;
+    color: #4d7c0f;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #4d7c0f;
+      color: #f7fee7;
+    }
   }
 
-  &.badge.label.black {
-    background-color: black;
+  &.yellow {
+    background-color: #fefce8;
+    color: #a16207;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #a16207;
+      color: #fefce8;
+    }
+  }
+
+  &.gray {
+    color: #ffffff;
+    background-color: #6b7280;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #374151;
+    }
   }
 }
 

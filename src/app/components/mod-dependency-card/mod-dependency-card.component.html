@@ -5,9 +5,10 @@
 
 <mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
   <mat-card-content style="position: relative; height: 100%" class="card-container">
-    @if (mod().supportedSptVersion) {
-      <div [class]="mod().sptVersionColorCode"
-           class="font-small image-spt-version card-badge">{{ mod().supportedSptVersion }}
+    @let latestCompatibleModSptVersion = mod()?.versions?.[0]?.spt_version_constraint | semverSptVersion;
+    @if (latestCompatibleModSptVersion) {
+      <div [class]="'badge-version ' + latestCompatibleModSptVersion.color_class" class="font-small image-spt-version card-badge">
+        {{ latestCompatibleModSptVersion.version }}
       </div>
     }
 
@@ -17,11 +18,11 @@
       </div>
 
       <div [class.absolute]="mod().installProgress?.completed" class="progress-bar-container">
-        @if (mod().installProgress?.linkStep?.start && mod().installProgress?.unzipStep && !mod().installProgress?.completed) {
+        @if (mod().installProgress?.downloadStep?.start && mod().installProgress?.unzipStep && !mod().installProgress?.completed) {
           <mat-progress-bar
             @fadeInOut
-            [mode]="mod().installProgress?.linkStep?.start && mod().installProgress?.unzipStep?.progress === 0 ? 'indeterminate' : 'determinate'"
-            [color]="mod().installProgress?.linkStep?.error ? 'warn' : 'accent'"
+            [mode]="mod().installProgress?.downloadStep?.start && mod().installProgress?.unzipStep?.progress === 0 ? 'indeterminate' : 'determinate'"
+            [color]="mod().installProgress?.downloadStep?.error ? 'warn' : 'accent'"
             [value]="mod().installProgress?.unzipStep?.progress ? mod().installProgress!.unzipStep!.progress * 100 : 0"
           />
         }

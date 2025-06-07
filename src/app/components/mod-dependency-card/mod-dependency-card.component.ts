@@ -6,10 +6,11 @@ import { ElectronService } from '../../core/services/electron.service';
 import { MatIconButton } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
+import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
 
 @Component({
   selector: 'app-mod-dependency-card',
-  imports: [MatCard, MatCardContent, MatIconModule, MatIconButton, MatProgressBar],
+  imports: [MatCard, MatCardContent, MatIconModule, MatIconButton, MatProgressBar, SemverSptVersionPipe],
   templateUrl: './mod-dependency-card.component.html',
   styleUrls: ['./mod-dependency-card.component.scss', './../mod-card/mod-card.component.scss'],
   animations: [fadeInFadeOutAnimation],

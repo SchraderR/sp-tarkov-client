@@ -18,7 +18,6 @@ export interface ModCache {
 }
 
 export interface UserSettingStoreModel {
-  modMetaData: UpdateModMeta[];
   sptInstances: SptInstance[];
   theme: Theme;
   isTutorialDone: boolean;

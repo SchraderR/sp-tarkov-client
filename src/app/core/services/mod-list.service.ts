@@ -7,7 +7,7 @@ import { ElectronService } from './electron.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HtmlHelper } from '../helper/html-helper';
-import { ForgeMod } from './forge-api.service';
+import { ForgeMod, ForgeModVersion } from './forge-api.service';
 import { SptVersion } from '../../../../shared/models/spt-core.model';
 
 @Injectable({
@@ -87,7 +87,7 @@ export class ModListService {
         detail_url: null!,
         thumbnail: 'assets/images/813.png',
         teaser: 'Lighting and postprocessing overhaul',
-        versions: [{ version: 'SPT 5.0.0' } as SptVersion],
+        versions: [{ spt_version_constraint: 'SPT 5.0.0' } as ForgeModVersion],
         dependencies: [],
         isDependenciesLoading: false,
         notSupported: false,
@@ -111,7 +111,7 @@ export class ModListService {
         detail_url: null!,
         thumbnail: 'assets/images/1062.jpg',
         teaser: "Bots that don't suck.",
-        versions: [{ version: 'SPT 5.0.0' } as SptVersion],
+        versions: [{ spt_version_constraint: 'SPT 5.0.0' } as ForgeModVersion],
         dependencies: [],
         isDependenciesLoading: false,
         notSupported: false,
@@ -135,7 +135,7 @@ export class ModListService {
         detail_url: null!,
         thumbnail: 'assets/images/606.png',
         teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
-        versions: [{ version: 'SPT 5.0.0' } as SptVersion],
+        versions: [{ spt_version_constraint: 'SPT 5.0.0' } as ForgeModVersion],
         dependencies: [],
         isDependenciesLoading: false,
         notSupported: false,

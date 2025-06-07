@@ -77,11 +77,6 @@ export const createMainApiManagementWindow = async (isServe: boolean, store: Sto
       store.set('sptInstances', []);
     }
 
-    const modMetaData = store.get('modMetaData');
-    if (!modMetaData) {
-      store.set('modMetaData', []);
-    }
-
     const sptTags = store.get('sptTags');
     if (!sptTags) {
       store.set('sptTags', []);

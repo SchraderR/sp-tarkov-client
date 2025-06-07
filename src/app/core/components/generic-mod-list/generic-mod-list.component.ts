@@ -28,6 +28,7 @@ import { CheckModDependencyDirective } from '../../directives/check-mod-dependen
 import { ForgeApiService } from '../../services/forge-api.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { ImagePathResolverPipe } from '../../pipes/image-path-resolver.pipe';
+import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
 
 export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -58,6 +59,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatButtonToggle,
     ImagePathResolverPipe,
     NgOptimizedImage,
+    SemverSptVersionPipe,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
@@ -123,6 +125,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   async addModToModList(mod: Mod) {
+    console.log(mod);
     const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
 
     await this.modListService.addMod(mod);
@@ -191,19 +194,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       .getMods(this.sortTypeFormField.value, this.sortOrderFormField.value, (this.paginator()?.pageIndex ?? 0) + 1)
       .subscribe(forgeModResult => {
         this.accumulatedModList = Array.from(forgeModResult.data)
-          .map(mod => {
-            return {
-              name: mod.name,
-              hubId: mod.hub_id,
-              fileUrl: mod.detail_url,
-              thumbnail: mod.thumbnail,
-              teaser: mod.teaser,
-              supportedSptVersion: 'NO INFORMATION',
-              sptVersionColorCode: 'NO INFORMATION',
-              notSupported: false,
-              lastUpdate: mod.updated_at,
-            } as unknown as Mod;
-          })
+          .map(mod => ({ ...mod }) as Mod)
           .filter(e => this.filterCoreMods(e))
           .map(e => {
             if (!config) {
@@ -216,6 +207,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
             return e;
           });
+
+        console.log(this.accumulatedModList);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.pageNumber = forgeModResult.meta.current_page;

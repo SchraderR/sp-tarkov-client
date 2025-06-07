@@ -12,6 +12,7 @@ import { ElectronService } from '../../core/services/electron.service';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { DownloadService } from '../../core/services/download.service';
 import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
+import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
 
 export interface ModLicenseInformation {
   url: string;
@@ -32,6 +33,7 @@ export interface ModLicenseInformation {
     MatRippleModule,
     ImagePathResolverPipe,
     NgOptimizedImage,
+    SemverSptVersionPipe,
   ],
   animations: [fadeInFadeOutAnimation],
 })
@@ -46,7 +48,9 @@ export class ModCardComponent implements OnInit {
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
   isDownloadingAndInstalling$ = this.downloadService.isDownloadAndInstallInProgress;
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.mod());
+  }
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);

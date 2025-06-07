@@ -69,7 +69,7 @@ export interface ForgeMod {
   published_at: string; // '2025-01-09T17:48:53.000000Z';
   created_at: string; // '2024-12-11T14:48:53.000000Z';
   updated_at: string; // '2025-04-10T13:50:00.000000Z';
-  versions?: SptVersion[];
+  versions?: ForgeModVersion[];
   dependencies?: unknown[];
 }
 
@@ -102,7 +102,7 @@ export class ForgeApiService {
   }
 
   getSptVersions() {
-    const options = { params: new HttpParams().set('sort', '-version') };
+    const options = { params: new HttpParams().set('sort', '-version').set('per_page', 50) };
 
     return this.httpClient.get<BaseApi<SptVersion[]>>(`${environment.forgeBasePath}/spt/versions`, options);
   }
@@ -116,7 +116,7 @@ export class ForgeApiService {
       params: new HttpParams()
         .set('sort', `${sortOrder === 'DESC' ? '-' : ''}${sort}`)
         .set('page', page)
-        .set('includes', 'dependencies')
+        .set('include', 'versions')
         .set('per_page', 12),
     };
 
@@ -125,14 +125,16 @@ export class ForgeApiService {
 
   searchMod(searchText: string) {
     const options = {
-      params: new HttpParams().set('filter[name]', searchText).set('filter[slug]', searchText).set('include', 'versions'),
+      params: new HttpParams().set('filter[name]', searchText).set('include', 'versions'),
     };
 
     return this.httpClient.get<PaginatedBaseApi<Mod[]>>(`${environment.forgeBasePath}/mods`, options);
   }
 
   getModDetail(modId: number) {
-    return this.httpClient.get<BaseApi<ForgeModDetail>>(`${environment.forgeBasePath}/mod/${modId}`);
+    const options = { params: new HttpParams().set('include', 'versions') };
+
+    return this.httpClient.get<BaseApi<ForgeModDetail>>(`${environment.forgeBasePath}/mod/${modId}`, options);
   }
 
   getModVersions(modId: number) {

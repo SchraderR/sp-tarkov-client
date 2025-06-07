@@ -20,6 +20,7 @@ import { ModCache } from '../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 import { ForgeApiService } from '../../core/services/forge-api.service';
 import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
+import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
 
 @Component({
   selector: 'app-mod-search',
@@ -38,6 +39,7 @@ import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe
     MatProgressSpinner,
     IsAlreadyStartedDirective,
     ImagePathResolverPipe,
+    SemverSptVersionPipe,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
@@ -89,6 +91,7 @@ export class ModSearchComponent {
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
+    console.log(mod);
     event.stopPropagation();
 
     const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
