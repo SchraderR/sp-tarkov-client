@@ -19,58 +19,58 @@ import { ModDependencyCardComponent } from '../mod-dependency-card/mod-dependenc
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-    selector: 'app-mod-list',
-    templateUrl: './mod-list.component.html',
-    styleUrl: './mod-list.component.scss',
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        MatCardModule,
-        MatIconModule,
-        MatTooltipModule,
-        ModCardComponent,
-        JoyrideModule,
-        MatSlideToggleModule,
-        ReactiveFormsModule,
-        ModDependencyCardComponent,
-        MatProgressSpinner,
-    ],
-    animations: [fadeInFadeOutAnimation]
+  selector: 'app-mod-list',
+  templateUrl: './mod-list.component.html',
+  styleUrl: './mod-list.component.scss',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    ModCardComponent,
+    JoyrideModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    ModDependencyCardComponent,
+    MatProgressSpinner,
+  ],
+  animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent implements OnInit {
-  #modListService = inject(ModListService);
-  #downloadService = inject(DownloadService);
-  #electronService = inject(ElectronService);
-  #ngZone = inject(NgZone);
-  #changeDetectorRef = inject(ChangeDetectorRef);
+  private modListService = inject(ModListService);
+  private downloadService = inject(DownloadService);
+  private electronService = inject(ElectronService);
+  private ngZone = inject(NgZone);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
-  modListSignal = this.#modListService.modListSignal;
+  modListSignal = this.modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
   isModCompleted = computed(() => this.modListSignal().some(m => m.installProgress?.completed));
   isSomeModDependencyLoading = computed(() => this.modListSignal().some(m => m.isDependenciesLoading));
 
   emote = '';
-  isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
+  isDownloadingAndInstalling$ = this.downloadService.isDownloadAndInstallInProgress;
 
   constructor() {
-    this.#downloadService.downloadProgressEvent
+    this.downloadService.downloadProgressEvent
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.#ngZone.run(() => this.#changeDetectorRef.markForCheck()));
+      .subscribe(() => this.ngZone.run(() => this.changeDetectorRef.markForCheck()));
   }
 
   ngOnInit() {
     this.selectRandomEmote();
   }
 
-  downloadAndInstallAll = () => this.#downloadService.downloadAndInstallAll();
+  downloadAndInstallAll = () => this.downloadService.downloadAndInstallAll();
 
   async removeMod(mod: Mod) {
-    this.#modListService.removeMod(mod.name);
-    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
+    this.modListService.removeMod(mod.name);
+    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
   }
 
   removeCompletedMods() {
-    this.#modListService.removeCompletedMods();
+    this.modListService.removeCompletedMods();
   }
 
   private selectRandomEmote() {

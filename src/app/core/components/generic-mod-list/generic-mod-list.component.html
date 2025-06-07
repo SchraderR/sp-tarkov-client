@@ -19,12 +19,10 @@
       [mod]="mod">
       <mat-card-content class="card-container">
         <div>
-          @if (mod.image) {
-            <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
+          @if (mod.thumbnail) {
+            <img class="image-shadow" [ngSrc]="mod?.thumbnail | imagePathResolver" height="144" width="144" alt="">
           }
-          @if (mod.icon) {
-            <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-          }
+
           @if (mod.supportedSptVersion) {
             <div [class]="mod.sptVersionColorCode"
                  class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
@@ -105,17 +103,27 @@
   }
 
   <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
-                 [pageSize]="20"/>
+                 [pageSize]="12"/>
 </mat-toolbar>
 
 <ng-template #sortForm>
+  <mat-button-toggle-group hideSingleSelectionIndicator [formControl]="sortOrderFormField" [value]="sortTypeFormField">
+    <mat-button-toggle value="DESC" matTooltip="Descending">
+      <mat-icon>south</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="ASC" matTooltip="Ascending">
+      <mat-icon>north</mat-icon>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+
   <mat-form-field class="select-form-field" color="accent" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Mod Type</mat-label>
-    <mat-select [formControl]="sortFormField" [value]="sortFormField">
-      <mat-option value="cumulativeLikes">Top Rated Mods</mat-option>
-      <mat-option value="downloads">Most loaded Mods</mat-option>
-      <mat-option value="lastChangeTime">Updated Mods</mat-option>
-      <mat-option value="time">New Mods</mat-option>
+    <mat-select [formControl]="sortTypeFormField" [value]="sortTypeFormField">
+      <mat-option value="name">name</mat-option>
+      <mat-option value="featured">featured</mat-option>
+      <mat-option value="created_at">created_at</mat-option>
+      <mat-option value="updated_at">updated_at</mat-option>
+      <mat-option value="published_at">published_at</mat-option>
     </mat-select>
   </mat-form-field>
 </ng-template>
@@ -126,7 +134,7 @@
     <mat-select [formControl]="sptVersionFormField">
       <mat-option [value]=""></mat-option>
       @for (version of sptVersionSignal(); track version) {
-        <mat-option [value]="version">{{ version.innerText }}</mat-option>
+        <mat-option [value]="version">{{ version.version }}</mat-option>
       }
     </mat-select>
   </mat-form-field>

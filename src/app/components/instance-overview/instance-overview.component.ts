@@ -19,29 +19,28 @@ import { firstValueFrom } from 'rxjs';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ModListService } from '../../core/services/mod-list.service';
 import { Mod } from '../../core/models/mod';
-import { SptSearchService } from '../../core/services/spt-search.service';
 import { TrackedMod } from '../../../../shared/models/tracked-mod.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-    selector: 'app-instance-overview',
-    templateUrl: './instance-overview.component.html',
-    styleUrl: './instance-overview.component.scss',
-    imports: [
-        CommonModule,
-        RouterLink,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-        MatListModule,
-        MatIconModule,
-        MatExpansionModule,
-        MatSlideToggleModule,
-        NgPipesModule,
-        DialogModule,
-        MatCard,
-        MatCardActions,
-        MatCardContent,
-    ]
+  selector: 'app-instance-overview',
+  templateUrl: './instance-overview.component.html',
+  styleUrl: './instance-overview.component.scss',
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatIconModule,
+    MatExpansionModule,
+    MatSlideToggleModule,
+    NgPipesModule,
+    DialogModule,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+  ],
 })
 export default class InstanceOverviewComponent {
   readonly instanceToggleModWarning = viewChild.required<TemplateRef<unknown>>('instanceToggleModWarning');
@@ -51,7 +50,6 @@ export default class InstanceOverviewComponent {
   #ngZone = inject(NgZone);
   #changeDetectorRef = inject(ChangeDetectorRef);
   #modListService = inject(ModListService);
-  #searchService = inject(SptSearchService);
 
   activeInstance = this.#userSettingsService.getActiveInstance();
   isWorking = false;
@@ -66,7 +64,8 @@ export default class InstanceOverviewComponent {
   }
 
   openExternalHub(hubId: string) {
-    this.#electronService.openExternal(`${environment.sptFileBaseLink}/file/${hubId}`);
+    // TODO Refactor with new URL
+    // this.#electronService.openExternal(`${environment.sptFileBaseLink}/file/${hubId}`);
   }
 
   async exportModsToFileSystem() {
@@ -93,31 +92,31 @@ export default class InstanceOverviewComponent {
       return;
     }
 
-    this.#electronService.sendEvent<Mod[]>('import-mods-file-system').subscribe(importedMods => {
-      this.#ngZone.run(() => {
-        const trackedModHubIds = activeInstance.trackedMods.map(mod => mod.hubId);
-        const filteredMods = importedMods.args.filter(importedMod => !trackedModHubIds.includes(importedMod.hubId ?? ''));
-
-        filteredMods.forEach(async importedMod => {
-          const modInfo = await firstValueFrom(this.#searchService.getFileHubView(importedMod.fileUrl));
-          const modCacheItem: ModCache = {
-            hubId: modInfo.hubId,
-            name: modInfo.name,
-            icon: modInfo.icon,
-            image: modInfo.image,
-            fileUrl: modInfo.fileUrl,
-            teaser: modInfo.teaser,
-            supportedSptVersion: modInfo.supportedSptVersion,
-            sptVersionColorCode: modInfo.sptVersionColorCode,
-          };
-
-          await this.#modListService.addMod(modInfo);
-          await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
-        });
-
-        this.#changeDetectorRef.detectChanges();
-      });
-    });
+    //this.#electronService.sendEvent<UPDATED_MOD_REFACTOR_LATER[]>('import-mods-file-system').subscribe(importedMods => {
+    //  this.#ngZone.run(() => {
+    //    const trackedModHubIds = activeInstance.trackedMods.map(mod => mod.hubId);
+    //    const filteredMods = importedMods.args.filter(importedMod => !trackedModHubIds.includes(importedMod.hubId ?? ''));
+    //
+    //    filteredMods.forEach(async importedMod => {
+    //      const modInfo = await firstValueFrom(this.#searchService.getFileHubView(importedMod.fileUrl));
+    //      const modCacheItem: ModCache = {
+    //        hubId: modInfo.hubId,
+    //        name: modInfo.name,
+    //        icon: modInfo.icon,
+    //        image: modInfo.image,
+    //        fileUrl: modInfo.fileUrl,
+    //        teaser: modInfo.teaser,
+    //        supportedSptVersion: modInfo.supportedSptVersion,
+    //        sptVersionColorCode: modInfo.sptVersionColorCode,
+    //      };
+    //
+    //      await this.#modListService.addMod(modInfo);
+    //      await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
+    //    });
+    //
+    //    this.#changeDetectorRef.detectChanges();
+    //  });
+    //});
   }
 
   toggleModState(mod: TrackedMod, remove = false) {

@@ -10,7 +10,7 @@ import { JoyrideModule } from 'ngx-joyride';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
-import { forkJoin } from 'rxjs';
+import { firstValueFrom, forkJoin } from 'rxjs';
 
 if (environment.production) {
   enableProdMode();
@@ -18,7 +18,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([authInterceptor]), withInterceptorsFromDi()),
     provideRouter(appRoutes, withComponentInputBinding()),
     importProvidersFrom(JoyrideModule.forRoot()),
     provideAnimations(),
@@ -32,13 +32,17 @@ bootstrapApplication(AppComponent, {
       loader: TranslocoHttpLoader,
     }),
     provideAppInitializer(() => {
-        const initializerFn = (configurationServiceFactory)(inject(ConfigurationService));
-        return initializerFn();
-      }),
+      const configurationService = inject(ConfigurationService);
+      return forkJoin([configurationService.getCurrentConfiguration(), configurationService.getSptVersion(), configurationService.getCurrentTags()]);
+    }),
   ],
 }).catch(err => console.error(err));
 
-function configurationServiceFactory(configurationService: ConfigurationService) {
-  return () =>
-    forkJoin([configurationService.getCurrentConfiguration(), configurationService.getSptVersion(), configurationService.getCurrentTags()]);
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
+  const authToken = environment.TEST_API_KEY_REMOVE_BEFORE_COMMIT;
+
+  const newReq = req.clone({
+    headers: req.headers.append('Authorization', `Bearer ${authToken}`),
+  });
+  return next(newReq);
 }

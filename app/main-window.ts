@@ -25,6 +25,7 @@ export const createMainApiManagementWindow = async (isServe: boolean, store: Sto
       titleBarStyle: 'hidden',
       webPreferences: {
         nodeIntegration: true,
+        webSecurity: false,
         allowRunningInsecureContent: isServe,
         contextIsolation: false,
       },
@@ -36,19 +37,19 @@ export const createMainApiManagementWindow = async (isServe: boolean, store: Sto
     // new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
 
     browserWindow.setMenu(null);
-    browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-      callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-    });
+    // browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+    //   callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
+    // });
 
-    browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          'Access-Control-Allow-Origin': ['*'],
-          'Access-Control-Allow-Headers': ['*'],
-          ...details.responseHeaders,
-        },
-      });
-    });
+    // browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    //   callback({
+    //     responseHeaders: {
+    //       'Access-Control-Allow-Origin': ['*'],
+    //       'Access-Control-Allow-Headers': ['*'],
+    //       ...details.responseHeaders,
+    //     },
+    //   });
+    // });
 
     const theme = store.get('theme');
     if (!theme) {

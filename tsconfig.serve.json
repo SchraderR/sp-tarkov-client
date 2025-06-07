@@ -18,8 +18,12 @@
       "dom"
     ]
   },
+  "include": [
+    "src/typings.d.ts"
+  ],
   "files": [
-    "app/main.ts"
+    "app/main.ts",
+    "src/typings.d.ts"
   ],
   "exclude": [
     "node_modules",

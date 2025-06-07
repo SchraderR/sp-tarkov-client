@@ -5,7 +5,7 @@
 
 <mat-card (mouseenter)="hovering = true" (mouseleave)="hovering = false">
   <mat-card-content style="position: relative; height: 100%" class="card-container">
-    @if (mod()).supportedSptVersion) {
+    @if (mod().supportedSptVersion) {
       <div [class]="mod().sptVersionColorCode"
            class="font-small image-spt-version card-badge">{{ mod().supportedSptVersion }}
       </div>

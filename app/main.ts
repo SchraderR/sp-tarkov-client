@@ -3,7 +3,6 @@ import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import { mainApplicationStart } from './main-application-start';
 import { handleOpenDirectoryEvent } from './events/open-directory.event';
 import { handleUserSettingStoreEvents } from './events/user-setting.event';
-import { handleDownloadLinkEvent } from './events/download-link-file.event';
 import { handleDownloadModEvent } from './events/download-mod.event';
 import { handleFileUnzipEvent } from './events/file-unzip.event';
 import { handleWindowEvents } from './events/window.event';
@@ -33,7 +32,6 @@ void autoUpdater.checkForUpdatesAndNotify();
 
 mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
-handleDownloadLinkEvent();
 handleDownloadModEvent();
 handleFileUnzipEvent(isServe, store);
 handleUserSettingStoreEvents(store);

@@ -4,7 +4,6 @@
   | 'user-settings'
   | 'user-settings-update'
   | 'user-settings-remove'
-  | 'download-link'
   | 'download-mod'
   | 'file-unzip'
   | 'window-minimize'
@@ -45,7 +44,6 @@ export type applicationElectronFileProgressEventNames = 'download-mod-progress' 
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
 
 export enum ApplicationElectronFileError {
-  downloadLinkError,
   downloadError,
   unzipError,
 }

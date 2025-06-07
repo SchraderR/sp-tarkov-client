@@ -20,6 +20,6 @@ export class IsAlreadyStartedDirective {
       return false;
     }
 
-    return mod.installProgress?.linkStep.start && !mod.installProgress?.completed && !mod.installProgress?.error;
+    return mod.installProgress?.downloadStep.start && !mod.installProgress?.completed && !mod.installProgress?.error;
   }
 }

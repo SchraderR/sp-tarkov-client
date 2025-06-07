@@ -1,5 +1,5 @@
 ﻿export interface ToggleModStateModel {
   instancePath: string;
-  hubId: string;
+  hubId: number;
   remove: boolean;
 }

@@ -1,6 +1,7 @@
 <div class="mod-list" [class.full]="modListSignal().length">
   @for (mod of modListSignal(); track mod.name) {
     <app-mod-card @fadeInOut [mod]="mod" (removeModEvent)="removeMod($event)" />
+
     @if (mod.isDependenciesLoading) {
       <mat-spinner diameter="50"></mat-spinner>
     }

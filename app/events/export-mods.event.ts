@@ -36,7 +36,7 @@ export const handleSharingModsEvents = () => {
         validateStatus: (status: number) => status >= 200 && status < 400,
       });
 
-      importedModResult.push({ hubId, fileUrl: response.headers['location'] } as Mod);
+      importedModResult.push({ id: hubId, detail_url: response.headers['location'] } as Mod);
     }
 
     event.sender.send('import-mods-file-system-completed', importedModResult);

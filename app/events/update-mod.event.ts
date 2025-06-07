@@ -9,25 +9,25 @@ export const handleUpdateModEvents = (store: Store<UserSettingStoreModel>) => {
     const instances = store.get('sptInstances');
     const activeInstance = instances.find(i => i.sptRootDirectory === instancePath);
 
-    if (activeInstance) {
-      // TODO for testing REMOVE LATER
-      activeInstance.trackedMods = activeInstance.trackedMods.splice(13);
-      console.log(activeInstance.trackedMods.length);
-
-      activeInstance.trackedMods.forEach(async mod => {
-        if (mod.nextUpdateCheck < new Date().toISOString()) {
-          console.log(`check Mod for ${mod.modName}`);
-
-          const hubLink = await getHubModLink(mod.hubId);
-          const modVersionData = await getModVersionData(hubLink);
-
-          const dom = new jsdom.JSDOM(modVersionData.data);
-          const firstFilebaseVersion = dom.window.document.querySelector('.filebaseVersion .containerHeadline h3');
-          const h3Text = firstFilebaseVersion?.textContent;
-          console.log(h3Text?.trim());
-        }
-      });
-    }
+    // if (activeInstance) {
+    //   // TODO for testing REMOVE LATER
+    //   activeInstance.trackedMods = activeInstance.trackedMods.splice(13);
+    //   console.log(activeInstance.trackedMods.length);
+    //
+    //   activeInstance.trackedMods.forEach(async mod => {
+    //     if (mod.nextUpdateCheck < new Date().toISOString()) {
+    //       console.log(`check Mod for ${mod.modName}`);
+    //
+    //       const hubLink = await getHubModLink(mod.hubId);
+    //       const modVersionData = await getModVersionData(hubLink);
+    //
+    //       const dom = new jsdom.JSDOM(modVersionData.data);
+    //       const firstFilebaseVersion = dom.window.document.querySelector('.filebaseVersion .containerHeadline h3');
+    //       const h3Text = firstFilebaseVersion?.textContent;
+    //       console.log(h3Text?.trim());
+    //     }
+    //   });
+    // }
 
     // console.log(ttt);
     // new DOMParser().parseFromString('hubViewData', 'text/html');
@@ -35,32 +35,32 @@ export const handleUpdateModEvents = (store: Store<UserSettingStoreModel>) => {
 };
 
 async function getModVersionData(link: string) {
-  const response = await axios<string>({
-    url: `${link}/#versions`,
-    method: 'get',
-    timeout: 20000,
-    maxRedirects: 0,
-    validateStatus: (status: number) => status >= 200 && status < 400,
-  });
+  // const response = await axios<string>({
+  //   url: `${link}/#versions`,
+  //   method: 'get',
+  //   timeout: 20000,
+  //   maxRedirects: 0,
+  //   validateStatus: (status: number) => status >= 200 && status < 400,
+  // });
 
-  return response;
+  return 'response';
 }
 
-async function getHubModLink(hubId: string) {
+async function getHubModLink(hubId: number) {
   const hubLink = buildHubLink(hubId);
 
-  const response = await axios({
-    url: hubLink,
-    method: 'get',
-    timeout: 20000,
-    maxRedirects: 0,
-    validateStatus: (status: number) => status >= 200 && status < 400,
-  });
+  // const response = await axios({
+  //   url: hubLink,
+  //   method: 'get',
+  //   timeout: 20000,
+  //   maxRedirects: 0,
+  //   validateStatus: (status: number) => status >= 200 && status < 400,
+  // });
 
-  return response.headers['location'];
+  return "response.headers['location']";
 }
 
-function buildHubLink(hubId: string) {
+function buildHubLink(hubId: number) {
   return `https://hub.sp-tarkov.com/files/file/${hubId}`;
 }
 

@@ -11,14 +11,10 @@ export interface UpdateModMeta {
 }
 
 export interface ModCache {
-  hubId?: string;
+  modId?: number;
   name: string;
-  fileUrl: string;
-  supportedSptVersion: string;
-  image?: string;
-  icon?: string;
+  thumbnail?: string;
   teaser?: string;
-  sptVersionColorCode?: string;
 }
 
 export interface UserSettingStoreModel {

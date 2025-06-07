@@ -17,13 +17,12 @@ export class CheckModDependencyDirective {
 
   private checkForModDependencies() {
     const config = this.#configurationService.configSignal();
-    const fileId = FileHelper.extractHubIdFromUrl(this.mod().fileUrl);
 
-    if (!fileId || !config) {
+    if (!this.mod().id || !config) {
       return false;
     }
 
-    const modDependencySetting = config.modDependency.find(d => d.hubId === fileId);
+    const modDependencySetting = config.modDependency.find(d => d.hubId === this.mod().id);
     if (!modDependencySetting) {
       return false;
     }

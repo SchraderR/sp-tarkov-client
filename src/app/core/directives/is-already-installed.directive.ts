@@ -5,7 +5,6 @@ import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
 import { Configuration, ConfigurationService } from '../services/configuration.service';
 import { ModMeta } from '../../../../shared/models/user-setting.model';
-import alternativeModNames from './backupAlternativeNames.json';
 
 @Directive({
   standalone: true,
@@ -24,7 +23,7 @@ export class IsAlreadyInstalledDirective {
 
   private checkModAlreadyInstalled() {
     const trackedMods = this.#userSettingsService.getActiveInstance()?.trackedMods?.map(m => m.hubId);
-    if (trackedMods?.includes(this.mod().hubId ?? '')) {
+    if (trackedMods?.includes(this.mod().id)) {
       return true;
     }
 
@@ -39,12 +38,8 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
-    if (!config) {
-      config = { alternativeModNames: alternativeModNames.alternativeModNames } as unknown as Configuration;
-    }
-
-    this.assignAlternativeNames(activeInstance.serverMods, config.alternativeModNames);
-    this.assignAlternativeNames(activeInstance.clientMods, config.alternativeModNames);
+    this.assignAlternativeNames(activeInstance.serverMods, config!.alternativeModNames);
+    this.assignAlternativeNames(activeInstance.clientMods, config!.alternativeModNames);
 
     const closestServerModName = closest(modName, this.flattenSubMods(activeInstance.serverMods));
     const closestClientModName = closest(modName, this.flattenSubMods(activeInstance.clientMods));

@@ -55,7 +55,7 @@ export const toggleModStateEvent = (store: Store<UserSettingStoreModel>) => {
     store: Store<UserSettingStoreModel>
   ) {
     try {
-      const removeModPath = path.join(appPath, 'instances', instanceName, 'mods', trackedFileData.hubId);
+      const removeModPath = path.join(appPath, 'instances', instanceName, 'mods', trackedFileData.hubId.toString());
       log(`HubId:${toggleModStateModel.hubId} - Path: ${removeModPath}`);
 
       removeSymLinks(appPath, instanceName, toggleModStateModel.instancePath, trackedFileData);
@@ -108,7 +108,7 @@ export const toggleModStateEvent = (store: Store<UserSettingStoreModel>) => {
     const pathsToCheck = [clientPluginModPath, serverModPath];
 
     pathsToCheck.forEach(modPath => {
-      const fullSourcePath = path.join(appPath, 'instances', instanceName, 'mods', trackedFileData.hubId, modPath);
+      const fullSourcePath = path.join(appPath, 'instances', instanceName, 'mods', trackedFileData.hubId.toString(), modPath);
       if (!existsSync(fullSourcePath)) {
         return;
       }
@@ -128,7 +128,7 @@ export const toggleModStateEvent = (store: Store<UserSettingStoreModel>) => {
     const pathsToCheck = [clientPluginModPath, serverModPath];
 
     pathsToCheck.forEach(modPath => {
-      const fullSourcePath = path.join(appPath, 'instances', instanceName, 'mods', trackedFileData.hubId, modPath);
+      const fullSourcePath = path.join(appPath, 'instances', instanceName, 'mods', trackedFileData.hubId.toString(), modPath);
       if (!existsSync(fullSourcePath)) {
         return;
       }

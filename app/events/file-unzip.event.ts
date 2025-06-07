@@ -69,10 +69,10 @@ async function handleArchive(
     log(`----------------------------------`);
     log(`HubId:${args.hubId} - Start Unzip`);
 
-    const { singleDll, newArgs } = zipArchiveHelper.checkForSingleDll(archivePath, path.join(instanceModPath, args.hubId), args);
+    const { singleDll, newArgs } = zipArchiveHelper.checkForSingleDll(archivePath, path.join(instanceModPath, args.hubId.toString()), args);
     log(`HubId:${args.hubId} - isSingleDllResult: ${singleDll}`);
     if (singleDll) {
-      modTrackingHelper.trackMod(newArgs, path.join(instanceModPath, newArgs.hubId));
+      modTrackingHelper.trackMod(newArgs, path.join(instanceModPath, newArgs.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -80,8 +80,8 @@ async function handleArchive(
     const isArchiveWithSingleDll = await zipArchiveHelper.checkForArchiveWithSingleDll(archivePath, sevenBinPath);
     log(`HubId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
     if (isArchiveWithSingleDll) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId), sevenBinPath);
-      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId.toString()), sevenBinPath);
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -89,8 +89,8 @@ async function handleArchive(
     const isArchiveWithSingleDllInsideDirectory = await zipArchiveHelper.checkForArchiveWithSingleDllInsideDirectory(archivePath, sevenBinPath);
     log(`HubId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
     if (isArchiveWithSingleDllInsideDirectory) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId), sevenBinPath, ['**\\*.dll']);
-      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId.toString()), sevenBinPath, ['**\\*.dll']);
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -98,13 +98,13 @@ async function handleArchive(
     const isHappyPath = await zipArchiveHelper.isHappyPathArchive(archivePath, sevenBinPath);
     log(`HubId:${args.hubId} - isHappyPath: ${isHappyPath}`);
     if (isHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId), sevenBinPath, [
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId.toString()), sevenBinPath, [
         `${clientPatcherModPath}/*`,
         `${clientPluginModPath}/*`,
         `${serverModPath}/*`,
       ]);
 
-      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -113,11 +113,11 @@ async function handleArchive(
     log(`HubId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
     if (isNestedServerModHappyPath) {
       await zipArchiveHelper.extractFullArchive(archivePath, tempDownloadDir, sevenBinPath);
-      fs.cpSync(`${tempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(instanceModPath, args.hubId), {
+      fs.cpSync(`${tempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(instanceModPath, args.hubId.toString()), {
         recursive: true,
       });
 
-      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
@@ -125,10 +125,10 @@ async function handleArchive(
     const isServerModWithLeadingDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
     log(`HubId:${args.hubId} - isServerModWithDirectory: ${isServerModWithLeadingDirectory}`);
     if (isServerModWithLeadingDirectory) {
-      ensureDirSync(path.join(instanceModPath, args.hubId, serverModPath));
+      ensureDirSync(path.join(instanceModPath, args.hubId.toString(), serverModPath));
 
-      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId, serverModPath), sevenBinPath);
-      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId));
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId.toString(), serverModPath), sevenBinPath);
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }

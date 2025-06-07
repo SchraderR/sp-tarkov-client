@@ -1,6 +1,6 @@
 export interface TrackedMod {
   modName: string;
-  hubId: string;
+  hubId: number;
   modVersion?: string;
   nextUpdateCheck: string;
   newVersionDetected?: boolean;

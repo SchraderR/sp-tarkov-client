@@ -20,21 +20,17 @@
   width: 100%;
 }
 
-.icon-end {
-  justify-content: center;
-  align-items: end;
-}
-
 .mod-information-container {
   display: flex;
+  width: 100%;
   flex-direction: column;
-  padding-left: 8px;
   overflow: auto;
+  padding: 4px 8px;
 }
 
 .search-item-container {
   display: flex;
-  padding: 8px;
+  padding: 4px;
 }
 
 .version-pill {
