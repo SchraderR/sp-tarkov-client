@@ -19,13 +19,15 @@
       [mod]="mod">
       <mat-card-content class="card-container">
         <div>
-          <img class="image-shadow" [src]="mod.thumbnail | imagePathResolver" height="144" width="144" alt="">
+          <img class="image-shadow" [ngSrc]="mod.thumbnail | imagePathResolver" height="144" width="144" alt="">
 
+          <!--
           @if (mod.supportedSptVersion) {
             <div [class]="mod.sptVersionColorCode"
                  class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
             </div>
           }
+          -->
         </div>
         <div class="mod-list-container">
           <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>

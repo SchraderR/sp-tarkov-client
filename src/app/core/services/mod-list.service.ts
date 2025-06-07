@@ -172,6 +172,8 @@ export class ModListService {
   }
 
   // TODO CHECK MOD DEPENDENCY
+  // will be implemented later with the forgeApi
+
   // private fetchModDependencyData(modId: string | null, modDependencies: string[]) {
   //   return forkJoin(
   //     modDependencies.map((dep, i) =>

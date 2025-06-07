@@ -41,7 +41,6 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    NgOptimizedImage,
     IsAlreadyInstalledDirective,
     MatPaginatorModule,
     MatToolbarModule,
@@ -58,6 +57,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatButtonToggleGroup,
     MatButtonToggle,
     ImagePathResolverPipe,
+    NgOptimizedImage,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
@@ -190,7 +190,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     this.fetchModSubscription = this.forgeApiService
       .getMods(this.sortTypeFormField.value, this.sortOrderFormField.value, (this.paginator()?.pageIndex ?? 0) + 1)
       .subscribe(forgeModResult => {
-        console.log(forgeModResult.data);
         this.accumulatedModList = Array.from(forgeModResult.data)
           .map(mod => {
             return {
