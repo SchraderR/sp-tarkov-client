@@ -49,7 +49,7 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
             });
           } else {
             event.sender.send('open-directory-error', {
-              message: 'Unable to find Aki.Server. Please ensure EFT-SP is installed in this directory.',
+              message: 'Unable to find Spt-Server. Please ensure SPT is installed in this directory.',
             });
           }
         }
@@ -57,7 +57,7 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
         log.error(error);
         if (error.code === 'ENOENT') {
           event.sender.send('open-directory-error', {
-            message: 'Could not resolve AKI Core. Please ensure that you have selected the root directory.',
+            message: 'Could not resolve SPT Core. Please ensure that you have selected the root directory.',
           });
         } else {
           log.error(error);

@@ -1,5 +1,4 @@
 ﻿export interface SptCore {
-  akiVersion?: string; //obsolete
   sptVersion: string;
   projectName: string;
   compatibleTarkovVersion: string;

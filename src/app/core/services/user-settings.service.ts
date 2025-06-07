@@ -35,13 +35,13 @@ export class UserSettingsService {
     this.isTutorialDone.update(() => state);
   }
 
-  removeUserSetting(akiRootDirectory: string) {
-    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== akiRootDirectory)]);
+  removeUserSetting(sptRootDirectory: string) {
+    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== sptRootDirectory)]);
   }
 
   getActiveInstance(): UserSettingModel | null {
     const activeInstance = this.userSetting().find(setting => setting.isActive);
-    if(!activeInstance) {
+    if (!activeInstance) {
       return null;
     }
 
@@ -73,13 +73,11 @@ export class UserSettingsService {
   }
 
   getCurrentTrackedModSetting(userSetting: UserSettingModel) {
-    return this.#electronService
-      .sendEvent<UserSettingModel, string>('user-setting', userSetting.sptRootDirectory)
-      .pipe(
-        tap(value => {
-          userSetting.trackedMods = value.args.trackedMods;
-          this.updateUserSetting();
-        })
-      );
+    return this.#electronService.sendEvent<UserSettingModel, string>('user-setting', userSetting.sptRootDirectory).pipe(
+      tap(value => {
+        userSetting.trackedMods = value.args.trackedMods;
+        this.updateUserSetting();
+      })
+    );
   }
 }

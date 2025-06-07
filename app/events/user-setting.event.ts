@@ -27,27 +27,27 @@ export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>
   });
 };
 
-function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiRootDirectory: string) {
-  const index = store.get('sptInstances').findIndex(i => i.sptRootDirectory === akiRootDirectory);
+function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, sptRootDirectory: string) {
+  const index = store.get('sptInstances').findIndex(i => i.sptRootDirectory === sptRootDirectory);
   if (index === -1) {
     // TODO Exception
     return;
   }
 
-  const currentSetting = store.get('sptInstances').filter(i => i.sptRootDirectory !== akiRootDirectory);
+  const currentSetting = store.get('sptInstances').filter(i => i.sptRootDirectory !== sptRootDirectory);
   store.set('sptInstances', currentSetting);
   event.sender.send('user-settings-remove-completed');
 }
 
-function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiInstance: SptInstance) {
-  const currentIndex = store.get('sptInstances').findIndex(i => i.sptRootDirectory === akiInstance.sptRootDirectory);
+function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, sptInstance: SptInstance) {
+  const currentIndex = store.get('sptInstances').findIndex(i => i.sptRootDirectory === sptInstance.sptRootDirectory);
   if (currentIndex === -1) {
     // TODO Exception
     return;
   }
 
   const instances = store.get('sptInstances');
-  instances.forEach(i => (i.isActive = i.sptRootDirectory === akiInstance.sptRootDirectory));
+  instances.forEach(i => (i.isActive = i.sptRootDirectory === sptInstance.sptRootDirectory));
   store.set('sptInstances', instances);
 
   event.sender.send('user-settings-update-completed');
