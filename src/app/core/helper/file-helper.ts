@@ -1,16 +1,4 @@
 ﻿export class FileHelper {
-  static extractFileIdFromUrl = (fileUrl: string) => {
-    const url = new URL(fileUrl);
-    const regex = /\/file\/(\d+)-/;
-
-    const match = url.pathname.match(regex);
-    if (match === null) {
-      return null;
-    }
-
-    return match[1];
-  };
-
   static fileSize(size: number): string {
     if (size <= 0) return '0 Bytes';
 

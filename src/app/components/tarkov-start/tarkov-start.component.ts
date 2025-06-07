@@ -7,7 +7,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-  standalone: true,
   selector: 'app-tarkov-start',
   templateUrl: './tarkov-start.component.html',
   styleUrls: ['./tarkov-start.component.scss'],
@@ -19,9 +18,6 @@ export class TarkovStartComponent implements OnInit {
   #tarkovInstanceService = inject(TarkovInstanceService);
   #ngZone = inject(NgZone);
   #destroyRef = inject(DestroyRef);
-
-  private messagesCount = new Map<string, number>();
-  private lastMessage = '';
 
   serverOutput = this.#tarkovInstanceService.serverOutputSignal;
 
@@ -45,6 +41,6 @@ export class TarkovStartComponent implements OnInit {
       return;
     }
 
-    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory).subscribe();
+    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory).subscribe();
   }
 }

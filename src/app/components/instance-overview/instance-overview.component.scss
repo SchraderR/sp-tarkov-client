@@ -12,6 +12,31 @@ h2 {
   padding: 0 8px;
 }
 
+mat-expansion-panel-body {
+  padding: unset;
+}
+
+.instance-actions {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  gap: 4px;
+
+  .remove-action {
+    color: orangered;
+  }
+}
+
+.mat-mdc-content {
+  display: flex;
+  min-height: 56px;
+  justify-content: center;
+  align-content: center;
+}
+
 .list-item-button {
   display: flex !important;
   justify-content: center;
@@ -31,10 +56,10 @@ h2 {
 
   .mod-list {
     display: flex;
+    gap: 8px;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    overflow: hidden;
     user-select: none;
   }
 }
@@ -43,22 +68,25 @@ h2 {
   display: flex !important;
 }
 
+.mat-mdc-list-item {
+  padding-right: 24px;
+}
+
 mat-expansion-panel {
   background: unset;
   box-shadow: unset !important;
 
-  mat-expansion-panel-header {
-    padding-left: unset;
-
-    ::ng-deep.mat-expansion-indicator {
-      width: 24px !important;
-      height: 24px !important;
-      margin: 0 0 0 44px !important;
-    }
+  ::ng-deep .mat-expansion-panel-body {
+    padding: unset !important;
   }
 
-  ::ng-deep.mat-expansion-panel-content .mat-expansion-panel-body {
-    padding: unset !important;
+  mat-expansion-panel-header {
+    padding-left: unset;
   }
 }
 
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

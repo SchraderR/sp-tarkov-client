@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, viewChildren } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { SptInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { SptInstance, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,7 +12,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListItem, MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -20,11 +20,9 @@ import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animat
 import { JoyrideModule } from 'ngx-joyride';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
-  standalone: true,
   selector: 'app-personal-setting',
   templateUrl: './personal-setting.component.html',
   styleUrls: ['./personal-setting.component.scss'],
@@ -41,14 +39,13 @@ import { FileHelper } from '../../core/helper/file-helper';
     MatSelectModule,
     ReactiveFormsModule,
     JoyrideModule,
-    NgOptimizedImage,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
   ],
   animations: [fadeInFadeOutAnimation],
 })
 export default class PersonalSettingComponent {
-  @ViewChildren('loading') matList: QueryList<MatListItem> | undefined;
+  readonly matList = viewChildren<MatListItem>('loading');
 
   #destroyRef = inject(DestroyRef);
   #electronService = inject(ElectronService);
@@ -61,7 +58,6 @@ export default class PersonalSettingComponent {
   currentTheme = new FormControl(this.#userSettingsService.currentTheme());
   experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
   keepTempDownloadDirectory = new FormControl(this.#userSettingsService.keepTempDownloadDirectory());
-  checkInstalledMod = new FormControl(this.#userSettingsService.checkInstalledMod());
   currentTempDirectorySize = this.#userSettingsService.keepTempDownloadDirectorySize;
   hoveringInstance = '';
 
@@ -81,12 +77,6 @@ export default class PersonalSettingComponent {
     });
   }
 
-  toggleCheckInstalledMod(event: MatSlideToggleChange) {
-    this.#electronService.sendEvent('check-installed-toggle', event.checked).subscribe(() => {
-      this.#ngZone.run(() => this.#userSettingsService.checkInstalledMod.set(event.checked));
-    });
-  }
-
   openTemporaryDownloadDirectory() {
     const activeInstance = this.userSettingSignal().find(i => i.isActive);
     if (!activeInstance) {
@@ -94,7 +84,7 @@ export default class PersonalSettingComponent {
     }
 
     if (this.currentTempDirectorySize().size > 0) {
-      this.#electronService.openPath(`${activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory}/_temp`);
+      this.#electronService.openPath(`${activeInstance.sptRootDirectory}/_temp`);
     }
   }
 
@@ -105,12 +95,8 @@ export default class PersonalSettingComponent {
     }
 
     this.#electronService
-      .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
-      .pipe(
-        switchMap(() =>
-          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
-        )
-      )
+      .sendEvent('clear-temp', activeInstance.sptRootDirectory)
+      .pipe(switchMap(() => this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)))
       .subscribe(value => {
         this.#ngZone.run(() => {
           this.#userSettingsService.keepTempDownloadDirectorySize.set({
@@ -147,13 +133,11 @@ export default class PersonalSettingComponent {
           this.#userSettingsService.addUserSetting(newUserSetting);
           this.#changeDetectorRef.detectChanges();
 
-          this.matList?.last?._elementRef.nativeElement.scrollIntoView({ behavior: 'smooth' });
+          this.matList()?.at(-1)!?._elementRef.nativeElement.scrollIntoView({ behavior: 'smooth' });
 
           return forkJoin({
             userSetting: of(newUserSetting),
-            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
-            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
-          }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
+          }).pipe(catchError(() => this.handleDirectoryPathError(result.args)));
         }),
         tap(result => {
           this.#ngZone.run(() => {
@@ -162,8 +146,6 @@ export default class PersonalSettingComponent {
               return;
             }
 
-            userSetting.clientMods = result.clientMods.args;
-            userSetting.serverMods = result.serverMods.args;
             userSetting.isError = result.userSetting.isError;
             userSetting.isLoading = false;
           });
@@ -193,7 +175,7 @@ export default class PersonalSettingComponent {
       sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
-      isPowerShellIssue: settingModel.isPowerShellIssue,
+      trackedMods: settingModel.trackedMods,
       isError: settingModel.isError,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,
@@ -211,16 +193,9 @@ export default class PersonalSettingComponent {
     });
   }
 
-  private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    if (error.isPowerShellIssue) {
-      userSettingModel.isPowerShellIssue = true;
-    } else {
-      userSettingModel.isError = true;
-    }
-
-    const errorMessage = userSettingModel.isPowerShellIssue
-      ? 'Powershell could not be used. \nPlease make sure, Powershell is configure correctly and environment variable are set correctly.'
-      : `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
+  private handleDirectoryPathError(userSettingModel: UserSettingModel) {
+    userSettingModel.isError = true;
+    const errorMessage = `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
 
     this.#matSnackBar.open(errorMessage, '', {
       duration: 3000,

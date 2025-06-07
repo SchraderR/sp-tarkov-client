@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import ModUpdateOverviewComponent from './mod-update-overview.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { mockProvider } from '@ngneat/spectator';
 import { ElectronService } from '../../core/services/electron.service';
 import { of } from 'rxjs';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ModUpdateOverviewComponent', () => {
   let component: ModUpdateOverviewComponent;
@@ -11,9 +12,9 @@ describe('ModUpdateOverviewComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ModUpdateOverviewComponent, HttpClientTestingModule],
-      providers: [mockProvider(ElectronService, { sendEvent: () => of() })],
-    }).compileComponents();
+    imports: [ModUpdateOverviewComponent],
+    providers: [mockProvider(ElectronService, { sendEvent: () => of() }), provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
 
     fixture = TestBed.createComponent(ModUpdateOverviewComponent);
     component = fixture.componentInstance;

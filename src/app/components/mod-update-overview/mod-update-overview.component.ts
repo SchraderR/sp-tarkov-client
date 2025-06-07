@@ -1,30 +1,34 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
 import { UpdateModMeta } from '../../../../shared/models/user-setting.model';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
+import { UserSettingsService } from '../../core/services/user-settings.service';
 
 @Component({
   standalone: true,
   selector: 'app-mod-update-overview',
   templateUrl: './mod-update-overview.component.html',
   styleUrl: './mod-update-overview.component.scss',
+  imports: [CommonModule, MatCardModule],
 })
 export default class ModUpdateOverviewComponent implements OnInit {
-  #httpClient = inject(HttpClient);
   #electronService = inject(ElectronService);
-  #destroyRef = inject(DestroyRef);
+  #userSettingsService = inject(UserSettingsService);
 
-  ngOnInit() {
-    this.getCurrentModMetaData();
-  }
+  activeInstance = this.#userSettingsService.getActiveInstance();
+
+  ngOnInit() {}
 
   private getCurrentModMetaData() {
-    this.#electronService.sendEvent<UpdateModMeta[]>('update-mod-data').subscribe(async value => {
+    if (!this.activeInstance) {
+      return;
+    }
+
+    this.#electronService.sendEvent<UpdateModMeta[], string>('update-mod-data', this.activeInstance.sptRootDirectory).subscribe(async () => {
       // https://hub.sp-tarkov.com/files/file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/#versions
       // https://hub.sp-tarkov.com/files/
       // file/1062-sain-2-0-solarint-s-ai-modifications-full-ai-combat-system-replacement/#versions
-
-      console.log(value.args);
       //this.#httpClient
       //  .get(`${environment.akiFileBaseLink}/file/1062/#versions`, { observe: 'response', responseType: 'text' })
       //  .pipe(

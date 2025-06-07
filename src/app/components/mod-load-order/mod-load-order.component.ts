@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, NgZone, OnInit, TemplateRef, viewChild } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
 import { CommonModule } from '@angular/common';
 import { UserSettingsService } from '../../core/services/user-settings.service';
@@ -13,14 +13,13 @@ export interface ModLoadOrder {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-mod-load-order',
   templateUrl: './mod-load-order.component.html',
   styleUrl: './mod-load-order.component.scss',
   imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent],
 })
 export default class ModLoadOrderComponent implements OnInit {
-  @ViewChild('modLoadOrderWarning', { static: true }) modLoadOrderWarning!: TemplateRef<unknown>;
+  readonly modLoadOrderWarning = viewChild.required<TemplateRef<unknown>>('modLoadOrderWarning');
 
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
@@ -30,14 +29,14 @@ export default class ModLoadOrderComponent implements OnInit {
 
   modLoadOrderWarningDialog!: MatDialogRef<unknown, unknown>;
   modLoadOrder: ModLoadOrder = { order: [] };
+  wasModLoadOrderWarningReviewed = this.#userSettingsService.wasModLoadOrderWarningReviewed;
 
   ngOnInit() {
     if (!this.#userSettingsService.wasModLoadOrderWarningReviewed()) {
       this.openModLoadOrderDialog();
     }
 
-    const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+    const instancePath = this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
@@ -49,8 +48,7 @@ export default class ModLoadOrderComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+    const instancePath = this.#userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
@@ -71,7 +69,7 @@ export default class ModLoadOrderComponent implements OnInit {
   }
 
   private openModLoadOrderDialog() {
-    this.modLoadOrderWarningDialog = this.#matDialog.open(this.modLoadOrderWarning, {
+    this.modLoadOrderWarningDialog = this.#matDialog.open(this.modLoadOrderWarning(), {
       disableClose: true,
       width: '50%',
     });

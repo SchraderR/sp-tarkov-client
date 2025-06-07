@@ -3,12 +3,19 @@
 @use '@fontsource/roboto/500' as *;
 @use 'material-symbols/outlined';
 @use '@angular/material' as mat;
-@import 'material-symbols';
+@use 'material-symbols' as *;
 
 html,
 body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  color-scheme: light dark;
+
   height: 100%;
-  font-family: "Roboto";
+  @include mat.theme((
+    color: mat.$violet-palette,
+    typography: Roboto,
+    density: 0
+  ));
 }
 
 body {
@@ -51,16 +58,12 @@ body {
   display: flex !important;
   justify-content: center;
   align-items: center;
-  height: 48px !important;
-  width: 48px !important;
+  height: 40px !important;
+  width: 40px !important;
   margin: unset !important;
 
   &.warning-color {
-    @media (prefers-color-scheme: light) {
-      color: orangered;
-    }
-
-    color: yellow;
+    color: var(--mat-sys-tertiary);
   }
 }
 
@@ -136,251 +139,196 @@ mat-icon {
     font-size: 12px;
     border-radius: 4px 4px 4px 0;
   }
-
-  &.badge.label.green {
-    background-color: #090;
-  }
-
-  &.badge.label.slightly-outdated {
-    background-color: #b1e433;
-    color: #323947;
-  }
-
-  &.badge.label.yellow {
-    background-color: #ff0;
-    color: #323947;
-  }
-
-  &.badge.label.red {
-    background-color: #c00;
-  }
-
-  &.badge.label.black {
-    background-color: black;
-  }
 }
 
-// TODO Remove or better
-
-@include mat.core();
-
-$mat-theme-primary-palette: map-merge(
-    mat.$cyan-palette,
-    (
-      contrast: (
-        100: #150c4a,
-      ),
-    )
-);
-$mat-theme-primary: mat.define-palette($mat-theme-primary-palette, $default: 100, $lighter: 100, $darker: 700, $text: 500);
-
-$mat-theme-accent-palette: map-merge(
-    mat.$teal-palette,
-    (
-      501: #4d77b6,
-      contrast: (
-        501: white,
-        A100: white,
-        A200: white,
-      ),
-    )
-);
-$mat-theme-accent: mat.define-palette($mat-theme-accent-palette, $default: 501, $lighter: A100, $darker: A200, $text: 600);
-
-$mat-theme-warn-palette: map-merge(mat.$pink-palette, ());
-$mat-theme-warn: mat.define-palette($mat-theme-warn-palette, $default: A200, $lighter: 500, $darker: 500, $text: A700);
-
-$mat-dark-theme-primary-palette: map-merge(
-    mat.$lime-palette,
-    (
-      contrast: (
-        200: #030844,
-        A100: rgba(0, 0, 0, 0.87),
-        A700: rgba(0, 0, 0, 0.87),
-      ),
-    )
-);
-$mat-dark-theme-primary: mat.define-palette($mat-dark-theme-primary-palette, $default: 200, $lighter: A100, $darker: A700, $text: 700);
-
-$mat-dark-theme-accent-palette: map-merge(
-    mat.$green-palette,
-    (
-      contrast: (
-        A200: black,
-        50: black,
-        A400: black,
-      ),
-    )
-);
-$mat-dark-theme-accent: mat.define-palette($mat-dark-theme-accent-palette, $default: A200, $lighter: 50, $darker: A400, $text: A100);
-
-$mat-dark-theme-warn-palette: map-merge(
-    mat.$pink-palette,
-    (
-      contrast: (
-        A100: black,
-        100: white,
-      ),
-    )
-);
-$mat-dark-theme-warn: mat.define-palette($mat-dark-theme-warn-palette, $default: A100, $lighter: 100, $darker: A700, $text: 100);
-
-$mat-typography: mat.define-typography-config(
-  $body-2: mat.define-typography-level(
-    $font-size: 16px,
-    $font-weight: 400,
-  ),
-  $body-1: mat.define-typography-level(
-    $font-size: 18px,
-    $font-weight: 400,
-  ),
-  $caption: mat.define-typography-level(
-    $font-size: 16px,
-    $font-weight: Medium,
-  ),
-  $button: mat.define-typography-level(
-    $font-size: 16px,
-    $font-weight: 500,
-  ),
-);
-
-$mat-density: 0;
-
-$mat-core-theme: mat.define-light-theme(
-    (
-      color: (
-        primary: $mat-theme-primary,
-        accent: $mat-theme-accent,
-        warn: $mat-theme-warn,
-      ),
-      typography: $mat-typography,
-      density: $mat-density,
-    )
-);
-
-$mat-dark-theme: mat.define-dark-theme(
-    (
-      color: (
-        primary: $mat-dark-theme-primary,
-        accent: $mat-dark-theme-accent,
-        warn: $mat-dark-theme-warn,
-      ),
-    )
-);
-
-
-@include mat.all-component-themes($mat-core-theme);
-
-@media (prefers-color-scheme: dark) {
-  @include mat.all-component-colors($mat-dark-theme);
-}
-
-@media (prefers-color-scheme: light) {
-  @include mat.all-component-colors($mat-core-theme);
-}
-
-
-.center-page {
-  -webkit-app-region: drag;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  align-items: center;
-  text-align: center;
-}
-
-.sk-cube-grid {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-}
-
-.sk-cube-grid {
-  & span {
-    font-style: italic;
-    font-size: small;
-  }
-
-  .sk-cube {
-    width: 33%;
-    height: 33%;
-    float: left;
-    -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
-    animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+.badge-version {
+  &.red {
+    background-color: #fef2f2;
+    color: #b91c1c;
 
     @media (prefers-color-scheme: dark) {
-      background-color: #dadada;
-    }
-
-    @media (prefers-color-scheme: light) {
-      background-color: #333;
+      background-color: #b91c1c;
+      color: #fef2f2;
     }
   }
-}
 
-.sk-cube-grid .sk-cube1 {
-  -webkit-animation-delay: 0.2s;
-  animation-delay: 0.2s;
-}
+  &.green {
+    background-color: #f0fdf4;
+    color: #15803d;
 
-.sk-cube-grid .sk-cube2 {
-  -webkit-animation-delay: 0.3s;
-  animation-delay: 0.3s;
-}
-
-.sk-cube-grid .sk-cube3 {
-  -webkit-animation-delay: 0.4s;
-  animation-delay: 0.4s;
-}
-
-.sk-cube-grid .sk-cube4 {
-  -webkit-animation-delay: 0.1s;
-  animation-delay: 0.1s;
-}
-
-.sk-cube-grid .sk-cube5 {
-  -webkit-animation-delay: 0.2s;
-  animation-delay: 0.2s;
-}
-
-.sk-cube-grid .sk-cube6 {
-  -webkit-animation-delay: 0.3s;
-  animation-delay: 0.3s;
-}
-
-.sk-cube-grid .sk-cube7 {
-  -webkit-animation-delay: 0s;
-  animation-delay: 0s;
-}
-
-.sk-cube-grid .sk-cube8 {
-  -webkit-animation-delay: 0.1s;
-  animation-delay: 0.1s;
-}
-
-.sk-cube-grid .sk-cube9 {
-  -webkit-animation-delay: 0.2s;
-  animation-delay: 0.2s;
-}
-
-@-webkit-keyframes sk-cubeGridScaleDelay {
-  0%, 70%, 100% {
-    -webkit-transform: scale3D(1, 1, 1);
-    transform: scale3D(1, 1, 1);
+    @media (prefers-color-scheme: dark) {
+      background-color: #15803d;
+      color: #f0fdf4;
+    }
   }
-  35% {
-    -webkit-transform: scale3D(0, 0, 1);
-    transform: scale3D(0, 0, 1);
+
+  &.emerald {
+    background-color: #ecfdf5;
+    color: #047857;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #047857;
+      color: #ecfdf5;
+    }
+  }
+
+  &.lime {
+    background-color: #f7fee7;
+    color: #4d7c0f;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #4d7c0f;
+      color: #f7fee7;
+    }
+  }
+
+  &.yellow {
+    background-color: #fefce8;
+    color: #a16207;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #a16207;
+      color: #fefce8;
+    }
+  }
+
+  &.gray {
+    color: #ffffff;
+    background-color: #6b7280;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #374151;
+    }
   }
 }
 
-@keyframes sk-cubeGridScaleDelay {
-  0%, 70%, 100% {
-    -webkit-transform: scale3D(1, 1, 1);
-    transform: scale3D(1, 1, 1);
+.loading-container {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.loading-text {
+  color: #cfbcff;
+  margin-top: 20px;
+  font-size: 18px;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.loading-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: #cfbcff;
+  animation: spin 1.5s linear infinite;
+}
+
+.spinner-ring:nth-child(2) {
+  width: 80%;
+  height: 80%;
+  border-top-color: transparent;
+  border-right-color: #efb8c8;
+  animation-duration: 2s;
+  animation-direction: reverse;
+}
+
+.spinner-ring:nth-child(3) {
+  width: 60%;
+  height: 60%;
+  border-right-color: transparent;
+  border-bottom-color: #ccc2db;
+  animation-duration: 2.5s;
+}
+
+.progress-bar {
+  width: 200px;
+  height: 4px;
+  background-color: #2b2a2a;
+  border-radius: 2px;
+  margin-top: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  background-color: #cfbcff;
+  border-radius: 2px;
+  animation: progress 2s ease-in-out infinite;
+}
+
+.loading-percentage {
+  color: #938f95;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.footer-note {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: small;
+  display: flex;
+  justify-content: center;
+  color: #79767b;
+  padding: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  35% {
-    -webkit-transform: scale3D(0, 0, 1);
-    transform: scale3D(0, 0, 1);
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes progress {
+  0% {
+    width: 0;
+    left: 0;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 0;
+    left: 100%;
+  }
+}
+
+.pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
   }
 }

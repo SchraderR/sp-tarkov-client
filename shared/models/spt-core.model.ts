@@ -1,5 +1,4 @@
 ﻿export interface SptCore {
-  akiVersion?: string; //obsolete
   sptVersion: string;
   projectName: string;
   compatibleTarkovVersion: string;
@@ -9,21 +8,29 @@
 }
 
 export interface DownloadModel {
-  name?: string;
-  fileId: string;
+  modId: number;
   modFileUrl: string;
   sptInstancePath: string;
 }
 
 export interface LinkModel {
-  fileId: string;
-  sptInstancePath: string;
+  modId: number;
   downloadUrl: string;
+  sptInstancePath: string;
 }
 
 export interface SptVersion {
-  dataLabelId: string;
-  innerText: string;
+  id: number; // 2,
+  version: string; // "3.11.3",
+  version_major: number; // 3,
+  version_minor: number; // 11,
+  version_patch: number; // 3,
+  version_labels: string; // "",
+  mod_count: string; // 371,
+  link: string; // "https://github.com/sp-tarkov/build/releases/tag/3.11.3",
+  color_class: string; //" green",
+  created_at: string; // "2025-04-08T19:29:40.000000Z",
+  updated_at: string; // "2025-04-08T19:29:40.000000Z"
 }
 
 export interface SptTag {

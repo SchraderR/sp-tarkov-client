@@ -1,5 +1,5 @@
 @if (modLoadOrder.order.length) {
-  <div class="mod-order-container" cdkScrollable>
+  <div class="mod-order-container" [class.blurry]="!wasModLoadOrderWarningReviewed()" cdkScrollable>
     <div cdkDropList cdkDropListAutoScrollStep="8" class="mod-order-list" (cdkDropListDropped)="drop($event)">
       @for (modName of modLoadOrder.order; let i = $index; track modName) {
         <div class="mod-box" cdkDrag>{{ i }}.{{ modName }}</div>

@@ -1,18 +1,32 @@
-﻿import { ipcMain } from 'electron';
+﻿import { app, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
-import * as log from 'electron-log';
 import { ZipArchiveHelper } from '../helper/zip-archive-helper';
+import { error, log } from 'electron-log';
+import * as Store from 'electron-store';
+import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import { ModTrackingHelper } from '../helper/mod-tracking-helper';
+import { ensureDirSync } from 'fs-extra';
 
-export const handleFileUnzipEvent = (isServe: boolean) => {
+export const handleFileUnzipEvent = (isServe: boolean, store: Store<UserSettingStoreModel>) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
-    const ankiTempDownloadDir = path.join(args.sptInstancePath, '_temp');
+    const tempDownloadDir = path.join(args.instancePath, '_temp');
     const archivePath = args.filePath;
 
-    if (!fs.existsSync(ankiTempDownloadDir)) {
-      fs.mkdirSync(ankiTempDownloadDir);
+    const appPath = app.getPath('userData');
+    const instanceName = args.instancePath.split('\\').pop();
+    if (!instanceName) {
+      error('Instance name cannot be fetched');
+      event.sender.send('toggle-mod-state-error');
+      return;
+    }
+    const instanceModPath = path.join(appPath, 'instances', instanceName, 'mods');
+    ensureDirSync(instanceModPath);
+
+    if (!fs.existsSync(tempDownloadDir)) {
+      fs.mkdirSync(tempDownloadDir);
     }
 
     if (!fs.existsSync(archivePath)) {
@@ -20,81 +34,109 @@ export const handleFileUnzipEvent = (isServe: boolean) => {
       return;
     }
 
-    await handleArchive(archivePath, args, ankiTempDownloadDir, isServe, event);
+    await handleArchive(archivePath, args, tempDownloadDir, isServe, event, store, instanceModPath);
   });
 };
 
 /**
- * Handles the archive file by performing various extraction operations based on the file content and arguments.
+ * Handles the process of unzipping an archive and tracking its contents.
  *
- * @param {string} archivePath - The path of the archive file to handle.
- * @param {FileUnzipEvent} args - The arguments for handling the archive file.
- * @param {string} ankiTempDownloadDir - The temporary download directory for Anki.
- * @param {boolean} isServe - Specifies if the server invokes the handleArchive method.
- * @param {Electron.IpcMainEvent} event - The event object for communicating with the main process.
+ * @param {string} archivePath - The path to the archive file.
+ * @param {FileUnzipEvent} args - Contains event details for unzipping.
+ * @param {string} tempDownloadDir - Temporary directory for downloaded files.
+ * @param {boolean} isServe - Indicates if the operation is being run in serve mode.
+ * @param {Electron.IpcMainEvent} event - The event object for inter-process communication.
+ * @param {Store<UserSettingStoreModel>} store - The store for user settings.
+ * @param {string} instanceModPath - Path to the instance mod directory.
+ * @returns {Promise<void>} A promise that resolves when the operation completes.
  */
-async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTempDownloadDir: string, isServe: boolean, event: Electron.IpcMainEvent) {
+async function handleArchive(
+  archivePath: string,
+  args: FileUnzipEvent,
+  tempDownloadDir: string,
+  isServe: boolean,
+  event: Electron.IpcMainEvent,
+  store: Store<UserSettingStoreModel>,
+  instanceModPath: string
+): Promise<void> {
   try {
+    const modTrackingHelper = new ModTrackingHelper(store);
     const sevenBinPath = isServe
       ? 'app\\node_modules\\node-7z-archive\\binaries\\win32\\7z.exe'
       : 'resources\\app.asar.unpacked\\node_modules\\node-7z-archive\\binaries\\win32\\7z.exe';
 
     const zipArchiveHelper = new ZipArchiveHelper();
-    log.log(`----------------------------------`);
-    log.log(`FileId:${args.hubId} - Start Unzip`);
+    log(`----------------------------------`);
+    log(`HubId:${args.hubId} - Start Unzip`);
 
-    const isSingleDllResult = zipArchiveHelper.checkForSingleDll(archivePath, args);
-    log.log(`FileId:${args.hubId} - isSingleDllResult: ${isSingleDllResult}`);
-    if (isSingleDllResult) {
+    const { singleDll, newArgs } = zipArchiveHelper.checkForSingleDll(archivePath, path.join(instanceModPath, args.hubId.toString()), args);
+    log(`HubId:${args.hubId} - isSingleDllResult: ${singleDll}`);
+    if (singleDll) {
+      modTrackingHelper.trackMod(newArgs, path.join(instanceModPath, newArgs.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isArchiveWithSingleDll = await zipArchiveHelper.checkForArchiveWithSingleDll(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
+    log(`HubId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
     if (isArchiveWithSingleDll) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId.toString()), sevenBinPath);
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isArchiveWithSingleDllInsideDirectory = await zipArchiveHelper.checkForArchiveWithSingleDllInsideDirectory(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
+    log(`HubId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
     if (isArchiveWithSingleDllInsideDirectory) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath, ['**\\*.dll'], true);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(instanceModPath, args.hubId.toString()), sevenBinPath, ['**\\*.dll']);
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isHappyPath = await zipArchiveHelper.isHappyPathArchive(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isHappyPath: ${isHappyPath}`);
+    log(`HubId:${args.hubId} - isHappyPath: ${isHappyPath}`);
     if (isHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, args.sptInstancePath, sevenBinPath, [`${clientPatcherModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`]);
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId.toString()), sevenBinPath, [
+        `${clientPatcherModPath}/*`,
+        `${clientPluginModPath}/*`,
+        `${serverModPath}/*`,
+      ]);
+
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isNestedServerModHappyPath = await zipArchiveHelper.determineNestedServerModHappyPath(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
+    log(`HubId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
     if (isNestedServerModHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, ankiTempDownloadDir, sevenBinPath);
-      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(args.sptInstancePath, serverModPath), { recursive: true });
+      await zipArchiveHelper.extractFullArchive(archivePath, tempDownloadDir, sevenBinPath);
+      fs.cpSync(`${tempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(instanceModPath, args.hubId.toString()), {
+        recursive: true,
+      });
+
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
 
-    const isServerModWithDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isServerModWithDirectory: ${isServerModWithDirectory}`);
-    if (isServerModWithDirectory) {
-      await zipArchiveHelper.extractFullArchive(archivePath, path.join(args.sptInstancePath, serverModPath), sevenBinPath);
+    const isServerModWithLeadingDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
+    log(`HubId:${args.hubId} - isServerModWithDirectory: ${isServerModWithLeadingDirectory}`);
+    if (isServerModWithLeadingDirectory) {
+      ensureDirSync(path.join(instanceModPath, args.hubId.toString(), serverModPath));
+
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(instanceModPath, args.hubId.toString(), serverModPath), sevenBinPath);
+      modTrackingHelper.trackMod(args, path.join(instanceModPath, args.hubId.toString()));
       event.sender.send('file-unzip-completed');
       return;
     }
 
-    const isServerMod = await zipArchiveHelper.determineServerMod(archivePath, sevenBinPath);
-    const isClientMod = await zipArchiveHelper.determineClientMod(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isServerMod: ${isServerMod}`);
-    log.log(`FileId:${args.hubId} - isClientMod: ${isClientMod}`);
+    // const isServerMod = await zipArchiveHelper.determineServerMod(archivePath, sevenBinPath);
+    // const isClientMod = await zipArchiveHelper.determineClientMod(archivePath, sevenBinPath);
+    // log(`HubId:${args.hubId} - isServerMod: ${isServerMod}`);
+    // log(`HubId:${args.hubId} - isClientMod: ${isClientMod}`);
 
     // export const clientModPath = 'BepInEx/plugins';
     // export const serverModPath = 'user/mods';
@@ -139,11 +181,10 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     //  event.sender.send('file-unzip-completed');
     //  return;
     //}
-    log.error(`FileId:${args.hubId} - No unzip event found`);
+    error(`HubId:${args.hubId} - No unzip event found`);
     event.sender.send('file-unzip-error', 2);
-  } catch (error) {
-    log.error(error);
-    console.error(error);
+  } catch (e) {
+    error(e);
     event.sender.send('file-unzip-error', 2);
   }
 }

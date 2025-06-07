@@ -5,25 +5,22 @@
         <div
           @fadeInOut
           class="external-button-container"
-          (click)="openExternal(mod.fileUrl)">
+          (click)="openExternal(mod().detail_url)">
           <mat-icon class="font-weight-400 icon-size-48">open_in_new</mat-icon>
         </div>
       }
-      @if (mod.image) {
-        <img class="image-shadow" [ngSrc]="mod.image" height="120" width="120" alt="">
-      }
-      @if (mod.icon) {
-        <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
-      }
-      @if (mod.supportedSptVersion) {
-        <div [class]="mod.sptVersionColorCode"
-             class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
+      <img class="image-shadow" [ngSrc]="mod().thumbnail | imagePathResolver" height="120" width="120" alt="">
+
+      @let latestCompatibleModSptVersion = mod()?.versions?.[0]?.spt_version_constraint | semverSptVersion;
+      @if (latestCompatibleModSptVersion) {
+        <div [class]="'badge-version ' + latestCompatibleModSptVersion.color_class" class="font-small image-spt-version card-badge">
+          {{ latestCompatibleModSptVersion.version }}
         </div>
       }
     </div>
     <div class="mod-container">
       <div class="mod-title" style="display: flex">
-        <strong class="one-line-clamp">{{ mod.name }}</strong>
+        <strong class="one-line-clamp">{{ mod().name }}</strong>
         @if (modLicenseInformation$ | async; as modLicenseInformation) {
           <span style="display: flex; justify-content: center; padding-top: 8px; cursor: pointer;" (click)="openExternal(modLicenseInformation.url)">
             <mat-icon style="font-size: 19px">license</mat-icon>
@@ -31,24 +28,14 @@
           </span>
         }
       </div>
-      @if (!mod.installProgress?.linkStep?.start) {
-        <div class="mod-teaser">{{ mod.teaser }}</div>
+      @if (!mod().installProgress?.downloadStep?.start) {
+        <div class="mod-teaser">{{ mod().teaser }}</div>
       }
-      @if (mod.installProgress?.linkStep?.start) {
+      @if (mod().installProgress?.downloadStep?.start) {
         <div class="mod-steps-container" @fadeInOut>
-          @if (mod?.installProgress; as installProgress) {
+          @if (mod().installProgress; as installProgress) {
             @if (!installProgress.completed) {
-              @if (installProgress.linkStep?.start) {
-                <div class="full-width" @fadeInOut>
-                  <span class="mod-step-name">Fetching Information</span>
-                  <mat-progress-bar
-                    [mode]="installProgress.linkStep.start && installProgress.linkStep.progress === 0 ? 'indeterminate' : 'determinate'"
-                    [color]="installProgress.linkStep.error ? 'warn' : 'accent'"
-                    [value]="installProgress.linkStep.progress * 100"
-                  />
-                </div>
-              }
-              @if (installProgress.linkStep?.start) {
+              @if (installProgress.downloadStep.start) {
                 <div class="full-width" @fadeInOut>
                   <span class="mod-step-name">Download</span>
                   <div class="progress-bar-container">
@@ -66,7 +53,7 @@
                   </div>
                 </div>
               }
-              @if (installProgress.linkStep.start) {
+              @if (installProgress.downloadStep.start) {
                 <div class="full-width" @fadeInOut>
                   <span class="mod-step-name">Install</span>
                   <mat-progress-bar
@@ -87,21 +74,11 @@
         </div>
       }
     </div>
-
-    @if (false && hovering && mod?.installProgress?.error) {
-      <div
-        @fadeInOut
-        class="delete-button-container retry"
-        (click)="downloadAndInstallSingle(mod)">
-        <mat-icon>refresh</mat-icon>
-      </div>
-    }
-
-    @if (hovering && (!mod?.installProgress?.linkStep?.start || mod?.installProgress?.completed || mod?.installProgress?.error)) {
+    @if (hovering && (isDownloadingAndInstalling$ | async) === false && (!mod().installProgress?.downloadStep?.start || mod().installProgress?.completed || mod().installProgress?.error)) {
       <div
         @fadeInOut
         class="delete-button-container"
-        (click)="removeModFromModList(mod)">
+        (click)="removeModFromModList(mod())">
         <mat-icon>delete</mat-icon>
       </div>
     }

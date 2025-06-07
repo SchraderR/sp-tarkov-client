@@ -7,6 +7,8 @@ import { ElectronService } from './electron.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HtmlHelper } from '../helper/html-helper';
+import { ForgeMod, ForgeModVersion } from './forge-api.service';
+import { SptVersion } from '../../../../shared/models/spt-core.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,15 +28,16 @@ export class ModListService {
 
     this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
 
-    const modDependencies = this.getModDependencies(mod);
-    if (modDependencies.length > 0) {
+    const modDependenciesIds = this.getModDependenciesIds(mod);
+    if (modDependenciesIds.length > 0) {
       const signalMod = this.modList().find(m => m.name === mod.name);
       if (!signalMod) {
         return;
       }
 
       signalMod.isDependenciesLoading = true;
-      signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractFileIdFromUrl(mod.fileUrl), modDependencies));
+      // TODO MOD DEPENDENCY
+      // signalMod.dependencies = await firstValueFrom(this.fetchModDependencyData(FileHelper.extractHubIdFromUrl(mod.fileUrl), modDependenciesIds));
       signalMod.isDependenciesLoading = false;
       signalMod.installProgress = this.initialInstallProgress();
       this.updateMod();
@@ -58,11 +61,6 @@ export class ModListService {
     return {
       completed: false,
       error: false,
-      linkStep: {
-        start: false,
-        error: false,
-        progress: 0,
-      },
       downloadStep: {
         start: false,
         error: false,
@@ -86,58 +84,86 @@ export class ModListService {
     this.modList.set([
       {
         name: "Amands's Graphics",
-        fileUrl: null!,
-        image: 'assets/images/813.png',
+        detail_url: null!,
+        thumbnail: 'assets/images/813.png',
         teaser: 'Lighting and postprocessing overhaul',
-        supportedSptVersion: 'SPT 5.0.0',
-        kind: 'Mod',
+        versions: [{ spt_version_constraint: 'SPT 5.0.0' } as ForgeModVersion],
         dependencies: [],
         isDependenciesLoading: false,
         notSupported: false,
-        sptVersionColorCode: 'badge label green jsLabelFeatured',
+        // TODO sptVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
         isInvalid: false,
+        id: 0,
+        hub_id: null,
+        slug: '',
+        downloads: 0,
+        source_code_url: '',
+        featured: false,
+        contains_ads: false,
+        contains_ai_content: false,
+        published_at: '',
+        created_at: '',
+        updated_at: '',
       },
       {
         name: "SAIN 2.0 - Solarint's AI Modifications - Full AI Combat System Replacement",
-        fileUrl: null!,
-        image: 'assets/images/1062.jpg',
+        detail_url: null!,
+        thumbnail: 'assets/images/1062.jpg',
         teaser: "Bots that don't suck.",
-        supportedSptVersion: 'SPT 5.0.0',
-        kind: 'Mod',
+        versions: [{ spt_version_constraint: 'SPT 5.0.0' } as ForgeModVersion],
         dependencies: [],
         isDependenciesLoading: false,
         notSupported: false,
-        sptVersionColorCode: 'badge label green jsLabelFeatured',
+        // TODO sptVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
         isInvalid: false,
+        id: 0,
+        hub_id: null,
+        slug: '',
+        downloads: 0,
+        source_code_url: '',
+        featured: false,
+        contains_ads: false,
+        contains_ai_content: false,
+        published_at: '',
+        created_at: '',
+        updated_at: '',
       },
       {
         name: 'SPT Realism Mod',
-        fileUrl: null!,
-        image: 'assets/images/606.png',
+        detail_url: null!,
+        thumbnail: 'assets/images/606.png',
         teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
-        supportedSptVersion: 'SPT 5.0.0',
-        kind: 'Mod',
+        versions: [{ spt_version_constraint: 'SPT 5.0.0' } as ForgeModVersion],
         dependencies: [],
         isDependenciesLoading: false,
         notSupported: false,
-        sptVersionColorCode: 'badge label green jsLabelFeatured',
+        // TODO sptVersionColorCode: 'badge label green jsLabelFeatured',
         installProgress: null!,
         isInvalid: false,
+        id: 0,
+        hub_id: null,
+        slug: '',
+        downloads: 0,
+        source_code_url: '',
+        featured: false,
+        contains_ads: false,
+        contains_ai_content: false,
+        published_at: '',
+        created_at: '',
+        updated_at: '',
       },
     ]);
   }
 
-  private getModDependencies(mod: Mod) {
+  private getModDependenciesIds(mod: Mod) {
     const config = this.#configurationService.configSignal();
-    const fileId = FileHelper.extractFileIdFromUrl(mod.fileUrl);
-
-    if (!fileId || !config) {
+    if (!mod.id || !config) {
       return [];
     }
 
-    const modDependencySetting = config.modDependency.find(d => d.hubId === fileId);
+    const modDependencySetting = config.modDependency.find(d => d.hubId === mod.id);
     if (!modDependencySetting) {
       return [];
     }
@@ -145,38 +171,26 @@ export class ModListService {
     return modDependencySetting.dependencies;
   }
 
-  private fetchModDependencyData(modId: string | null, modDependencies: string[]) {
-    return forkJoin(
-      modDependencies.map((dep, i) =>
-        this.#electronService.sendEvent<string, string>('get-mod-page', dep, `${modId}-${i}-${dep}`).pipe(
-          switchMap(modPageLink => {
-            const modUrl = environment.production ? modPageLink.args : modPageLink.args.replace('https://hub.sp-tarkov.com/', '');
-            return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(
-              map(modView => this.extractModInformation(modView, modPageLink.args)),
-              catchError(() => this.handleDependencyError())
-            );
-          }),
-          map(e => e as Mod),
-          catchError(() => this.handleDependencyError())
-        )
-      )
-    );
-  }
+  // TODO CHECK MOD DEPENDENCY
+  // will be implemented later with the forgeApi
 
-  private extractModInformation(htmlResult: string, modUrl: string): Mod | null {
-    const modPageView = HtmlHelper.parseStringAsHtml(htmlResult);
-
-    if (!modPageView) {
-      return null;
-    }
-
-    return {
-      name: modPageView.getElementsByClassName('contentTitle')?.[0]?.getElementsByTagName('span')[0].innerHTML,
-      fileUrl: modUrl,
-      supportedSptVersion: modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.innerHTML ?? '',
-      sptVersionColorCode: modPageView.getElementsByClassName('labelList')[0]?.getElementsByClassName('badge label')[0]?.className,
-    } as Mod;
-  }
+  // private fetchModDependencyData(modId: string | null, modDependencies: string[]) {
+  //   return forkJoin(
+  //     modDependencies.map((dep, i) =>
+  //       this.#electronService.sendEvent<string, string>('get-mod-page', dep, `${modId}-${i}-${dep}`).pipe(
+  //         switchMap(modPageLink => {
+  //           const modUrl = environment.production ? modPageLink.args : modPageLink.args.replace('https://hub.sp-tarkov.com/', '');
+  //           return this.#httpClient.get(modUrl, { responseType: 'text' }).pipe(
+  //             map(modView => ({ hubId: dep, ...this.extractModInformation(modView, modPageLink.args) })),
+  //             catchError(() => this.handleDependencyError())
+  //           );
+  //         }),
+  //         map(e => e as Mod),
+  //         catchError(() => this.handleDependencyError())
+  //       )
+  //     )
+  //   );
+  // }
 
   private handleDependencyError() {
     return of({

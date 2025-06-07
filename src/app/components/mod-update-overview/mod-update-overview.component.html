@@ -1,1 +1,8 @@
-<p>mod-update-overview works!</p>
+<mat-card>
+  <mat-card-header>{{ "mod.name" }} - {{ "mod.hubId" }}</mat-card-header>
+  <mat-card-content>
+    <br>
+    <div>Current Version: {{ "mod.version" }}</div>
+    <div>New Version: {{ "mod?.updateVersion" }}</div>
+  </mat-card-content>
+</mat-card>

@@ -1,4 +1,5 @@
 ﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
+import { TrackedMod } from './tracked-mod.model';
 
 export interface UpdateModMeta {
   name: string;
@@ -10,40 +11,31 @@ export interface UpdateModMeta {
 }
 
 export interface ModCache {
+  modId: number;
   name: string;
-  fileUrl: string;
-  supportedSptVersion: string;
-  image?: string;
-  icon?: string;
-  teaser?: string;
-  sptVersionColorCode?: string;
+  thumbnail: string;
+  teaser: string;
 }
 
 export interface UserSettingStoreModel {
-  modMetaData: UpdateModMeta[];
   sptInstances: SptInstance[];
   theme: Theme;
   isTutorialDone: boolean;
   isExperimentalFunctionsActive: boolean;
-  isCheckInstalledActive: boolean;
   sptVersions: SptVersion[];
   sptTags: SptTag[];
   modCache: ModCache[];
   useIndexedMods: boolean;
   keepTempDownloadDirectory: boolean;
-  akiInstances: SptInstance[]; // obsolete
-  akiVersions: SptVersion[]; // obsolete
-  akiTags: SptTag[]; // obsolete
 }
 
 export interface SptInstance {
   sptRootDirectory: string;
-  akiRootDirectory?: string; // obsolete
   isValid: boolean;
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
-  isPowerShellIssue: boolean;
+  trackedMods: TrackedMod[];
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }

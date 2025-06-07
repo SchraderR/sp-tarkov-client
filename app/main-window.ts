@@ -7,7 +7,7 @@ import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as log from 'electron-log';
 import * as windowStateKeeper from 'electron-window-state';
 
-export const createMainApiManagementWindow = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
+export const createMainApiManagementWindow = async (isServe: boolean, store: Store<UserSettingStoreModel>): Promise<void> => {
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1200,
     defaultHeight: 600,
@@ -25,6 +25,7 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       titleBarStyle: 'hidden',
       webPreferences: {
         nodeIntegration: true,
+        webSecurity: false,
         allowRunningInsecureContent: isServe,
         contextIsolation: false,
       },
@@ -36,19 +37,19 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     // new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
 
     browserWindow.setMenu(null);
-    browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-      callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-    });
+    // browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+    //   callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
+    // });
 
-    browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          'Access-Control-Allow-Origin': ['*'],
-          'Access-Control-Allow-Headers': ['*'],
-          ...details.responseHeaders,
-        },
-      });
-    });
+    // browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    //   callback({
+    //     responseHeaders: {
+    //       'Access-Control-Allow-Origin': ['*'],
+    //       'Access-Control-Allow-Headers': ['*'],
+    //       ...details.responseHeaders,
+    //     },
+    //   });
+    // });
 
     const theme = store.get('theme');
     if (!theme) {
@@ -66,11 +67,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       store.set('keepTempDownloadDirectory', false);
     }
 
-    const isCheckInstalledActive = store.get('isCheckInstalledActive');
-    if (isCheckInstalledActive === null || isCheckInstalledActive === undefined) {
-      store.set('isCheckInstalledActive', true);
-    }
-
     const isExperimentalFunctionsActive = store.get('isExperimentalFunctionsActive');
     if (!isExperimentalFunctionsActive) {
       store.set('isExperimentalFunctionsActive', false);
@@ -79,11 +75,6 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     const sptInstances = store.get('sptInstances');
     if (!sptInstances) {
       store.set('sptInstances', []);
-    }
-
-    const modMetaData = store.get('modMetaData');
-    if (!modMetaData) {
-      store.set('modMetaData', []);
     }
 
     const sptTags = store.get('sptTags');
@@ -107,15 +98,13 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
       fs.mkdirSync(appInstancePath);
     }
 
-    migrateData(store);
-
     if (isServe) {
       browserWindow.webContents.openDevTools();
       const debug = require('electron-debug');
       debug();
 
       require('electron-reload');
-      browserWindow.loadURL('http://localhost:4200');
+      await browserWindow.loadURL('http://localhost:4200');
     } else {
       let pathIndex = './index.html';
 
@@ -134,26 +123,3 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     log.error(e?.toString());
   }
 };
-
-function migrateData(store: Store<UserSettingStoreModel>): void {
-  const oldAkiInstances = store.get('akiInstances');
-  if (oldAkiInstances) {
-    store.set(
-      'sptInstances',
-      oldAkiInstances.map(i => ({ sptRootDirectory: i.akiRootDirectory, isActive: i.isActive }))
-    );
-    store.delete('akiInstances');
-  }
-
-  const oldAkiTags = store.get('akiTags');
-  if (oldAkiTags) {
-    store.set('sptTags', oldAkiTags);
-    store.delete('akiTags');
-  }
-
-  const oldAkiVersions = store.get('akiVersions');
-  if (oldAkiVersions) {
-    store.set('sptVersions', oldAkiVersions);
-    store.delete('akiVersions');
-  }
-}

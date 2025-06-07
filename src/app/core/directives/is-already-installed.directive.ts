@@ -1,11 +1,10 @@
-import { computed, Directive, inject, Input } from '@angular/core';
+import { computed, Directive, inject, input } from '@angular/core';
 import { UserSettingsService } from '../services/user-settings.service';
 import { closest, distance } from 'fastest-levenshtein';
 import { Mod } from '../models/mod';
 import { ModListService } from '../services/mod-list.service';
 import { Configuration, ConfigurationService } from '../services/configuration.service';
 import { ModMeta } from '../../../../shared/models/user-setting.model';
-import alternativeModNames from './backupAlternativeNames.json';
 
 @Directive({
   standalone: true,
@@ -17,20 +16,21 @@ export class IsAlreadyInstalledDirective {
   #configurationService = inject(ConfigurationService);
   #modListService = inject(ModListService);
 
-  @Input({ required: true }) mod!: Mod;
+  readonly mod = input.required<Mod>();
 
   isAlreadyInstalled = computed(() => this.checkModAlreadyInstalled());
   isInModList = computed(() => this.checkModInModList());
 
   private checkModAlreadyInstalled() {
-    if (!this.#userSettingsService.checkInstalledMod()) {
-      return false;
+    const trackedMods = this.#userSettingsService.getActiveInstance()?.trackedMods?.map(m => m.hubId);
+    if (trackedMods?.includes(this.mod().id)) {
+      return true;
     }
 
-    const modName = this.mod.name;
+    const modName = this.mod().name;
     let config = this.#configurationService.configSignal();
     const activeInstance = this.#userSettingsService.getActiveInstance();
-    if (!this.mod || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
+    if (!this.mod() || !modName || !activeInstance || (!activeInstance?.serverMods?.length && !activeInstance?.clientMods?.length)) {
       return false;
     }
 
@@ -38,12 +38,8 @@ export class IsAlreadyInstalledDirective {
       return false;
     }
 
-    if (!config) {
-      config = { alternativeModNames: alternativeModNames.alternativeModNames } as unknown as Configuration;
-    }
-
-    this.assignAlternativeNames(activeInstance.serverMods, config.alternativeModNames);
-    this.assignAlternativeNames(activeInstance.clientMods, config.alternativeModNames);
+    this.assignAlternativeNames(activeInstance.serverMods, config!.alternativeModNames);
+    this.assignAlternativeNames(activeInstance.clientMods, config!.alternativeModNames);
 
     const closestServerModName = closest(modName, this.flattenSubMods(activeInstance.serverMods));
     const closestClientModName = closest(modName, this.flattenSubMods(activeInstance.clientMods));
@@ -72,7 +68,7 @@ export class IsAlreadyInstalledDirective {
   }
 
   private checkModInModList() {
-    return this.#modListService.modListSignal().some(m => m.name === this.mod.name);
+    return this.#modListService.modListSignal().some(m => m.name === this.mod().name);
   }
 
   private assignAlternativeNames(mods: ModMeta[], alternativeNames: { [key: string]: string }) {

@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 export const handleModPageEvents = () => {
   ipcMain.on('get-mod-page', (event, modId: string, id: string) => {

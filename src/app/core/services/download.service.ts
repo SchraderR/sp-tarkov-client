@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
-import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
+import { BehaviorSubject, EMPTY, firstValueFrom, switchMap } from 'rxjs';
 import { DownloadModel, LinkModel } from '../../../../shared/models/spt-core.model';
 import { ApplicationElectronFileError } from '../events/electron.events';
 import { ElectronService } from './electron.service';
@@ -23,15 +22,14 @@ export interface IndexedMods {
 })
 export class DownloadService {
   private readonly MAX_CACHE_DURATION = 3600000; // 1 hour in milliseconds
-  #electronService = inject(ElectronService);
-  #userSettingsService = inject(UserSettingsService);
-  #modListService = inject(ModListService);
-  #httpClient = inject(HttpClient);
+  private electronService = inject(ElectronService);
+  private userSettingsService = inject(UserSettingsService);
+  private modListService = inject(ModListService);
 
   mods: IndexedMods[] = [];
   lastFetchTime: Date | null = null;
-  activeModList = this.#modListService.modListSignal;
-  keepTemporaryDownloadDirectory = this.#userSettingsService.keepTempDownloadDirectory;
+  activeModList = this.modListService.modListSignal;
+  keepTemporaryDownloadDirectory = this.userSettingsService.keepTempDownloadDirectory;
 
   isDownloadAndInstallInProgress = new BehaviorSubject(false);
   isDownloadProcessCompleted = new BehaviorSubject<boolean>(false);
@@ -40,85 +38,81 @@ export class DownloadService {
   async downloadAndInstallAll(): Promise<void> {
     this.isDownloadAndInstallInProgress.next(true);
     this.isDownloadProcessCompleted.next(false);
-    const activeInstance = this.#userSettingsService.userSettingSignal().find(us => us.isActive);
+    const activeInstance = this.userSettingsService.userSettingSignal().find(us => us.isActive);
+    console.log(activeInstance);
     if (!activeInstance) {
       return;
     }
 
     for (let i = 0; i < this.activeModList().length; i++) {
       const mod = this.activeModList()[i];
+      console.log(mod);
       if (mod.installProgress?.completed) {
         continue;
       }
 
-      const fileId = FileHelper.extractFileIdFromUrl(mod.fileUrl);
+      const fileId = mod.id;
       if (!fileId || !mod.installProgress) {
         continue;
       }
 
       try {
         await this.installProcess(mod, fileId, activeInstance);
+        await firstValueFrom(this.userSettingsService.getCurrentTrackedModSetting(activeInstance));
       } catch (error: unknown) {
         mod.installProgress.error = true;
         this.handleError(mod, error as ApplicationElectronFileError);
-        this.#modListService.updateMod();
+        this.modListService.updateMod();
         continue;
       }
 
-      for (const modDependency of mod.dependencies ?? []) {
-        const modDependencyFileId = FileHelper.extractFileIdFromUrl(modDependency.fileUrl);
-        modDependency.installProgress = this.#modListService.initialInstallProgress();
-        if (!modDependencyFileId || !modDependency.installProgress) {
-          continue;
-        }
+      // TODO CHECK MOD DEPENDENCY
+      // for (const modDependency of mod.dependencies ?? []) {
+      //   const modDependencyHubId = modDependency.hubId ?? FileHelper.extractHubIdFromUrl(modDependency.fileUrl);
+      //
+      //   modDependency.installProgress = this.modListService.initialInstallProgress();
+      //   if (!modDependencyHubId || !modDependency.installProgress) {
+      //     continue;
+      //   }
+      //
+      //   const alreadyInstalledMods = this.userSettingsService.getActiveInstance()?.trackedMods?.map(m => m.hubId);
+      //   if (alreadyInstalledMods?.includes(modDependency.hubId ?? '')) {
+      //     modDependency.installProgress.completed = true;
+      //     continue;
+      //   }
+      //
+      //   try {
+      //     await this.installProcess(modDependency, modDependencyHubId, activeInstance);
+      //     await firstValueFrom(this.userSettingsService.getCurrentTrackedModSetting(activeInstance));
+      //   } catch (error: unknown) {
+      //     modDependency.installProgress.error = true;
+      //     this.handleError(modDependency, error as ApplicationElectronFileError);
+      //     this.modListService.updateMod();
+      //   }
+      // }
 
-        try {
-          await this.installProcess(modDependency, modDependencyFileId, activeInstance);
-        } catch (error: unknown) {
-          modDependency.installProgress.error = true;
-          this.handleError(modDependency, error as ApplicationElectronFileError);
-          this.#modListService.updateMod();
-          continue;
-        }
-      }
-
-      await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
+      await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
     }
 
     if (!this.keepTemporaryDownloadDirectory()) {
-      this.#electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory).subscribe();
+      await firstValueFrom(this.electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory));
     }
+
     this.isDownloadAndInstallInProgress.next(false);
     this.isDownloadProcessCompleted.next(true);
   }
 
-  async downloadAndInstallSingle(mod: Mod): Promise<void> {
-    const isInProgress = this.isDownloadAndInstallInProgress.value;
-
-    if (isInProgress) {
-      const modIndex = this.#modListService.modListSignal().findIndex(modItem => modItem.name == mod.name);
-      if (modIndex !== -1) {
-        this.#modListService.modListSignal().splice(modIndex, 1);
-        this.#modListService.modListSignal().push(mod);
-      }
-    } else {
-      mod.installProgress = this.#modListService.initialInstallProgress();
-      await this.downloadAndInstallAll();
-    }
-  }
-
-  private async installProcess(mod: Mod, fileId: string, activeInstance: UserSettingModel) {
+  private async installProcess(mod: Mod, hubId: number, activeInstance: UserSettingModel) {
     if (!mod?.installProgress) {
       return;
     }
-    if (mod?.installProgress?.error) {
-      mod.installProgress = this.#modListService.initialInstallProgress();
+    if (mod.installProgress?.error) {
+      mod.installProgress = this.modListService.initialInstallProgress();
     }
+    mod.installProgress.downloadStep.start = true;
+    this.modListService.updateMod();
 
-    mod.installProgress.linkStep.start = true;
-    this.#modListService.updateMod();
-
-    this.#electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
+    this.electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
       if (mod.installProgress!.error) {
         return;
       }
@@ -129,44 +123,42 @@ export class DownloadService {
     });
 
     const linkModel: LinkModel = {
-      fileId,
-      sptInstancePath: activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory,
-      downloadUrl: '',
+      modId: mod.id,
+      sptInstancePath: activeInstance.sptRootDirectory,
+      downloadUrl: mod.source_code_url,
     };
 
-    await this.#electronService
-      .sendEvent<string, LinkModel>('download-link', linkModel)
+    await this.electronService
+      .sendEvent<string, LinkModel>('process-download-link', linkModel)
       .pipe(
-        switchMap(downloadLinkEvent => {
-          mod.installProgress!.linkStep.progress = 1;
-
+        switchMap(proccessedDownloadLink => {
           const downloadModel: DownloadModel = {
-            fileId,
-            name: mod.name,
+            modId: mod.id,
             sptInstancePath: activeInstance.sptRootDirectory,
-            modFileUrl: downloadLinkEvent!.args,
+            modFileUrl: proccessedDownloadLink!.args,
           };
 
-          return this.#electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel);
+          return this.electronService.sendEvent<string, DownloadModel>('download-mod', downloadModel);
         }),
         switchMap(downloadFilePath => {
           const test: FileUnzipEvent = {
+            name: mod.name,
+            // TODO Refactoring version: mod.modVersion,
             filePath: downloadFilePath?.args,
-            sptInstancePath: activeInstance.sptRootDirectory,
-            hubId: fileId,
-            kind: mod.kind,
+            instancePath: activeInstance.sptRootDirectory,
+            hubId,
           };
 
           mod.installProgress!.unzipStep.start = true;
 
-          return this.#electronService.sendEvent('file-unzip', test);
+          return this.electronService.sendEvent('file-unzip', test);
         })
       )
       .toPromise();
 
     mod.installProgress!.unzipStep.progress = 1;
     mod.installProgress!.completed = true;
-    this.#modListService.updateMod();
+    this.modListService.updateMod();
   }
 
   private handleError(mod: Mod, error: ApplicationElectronFileError) {
@@ -182,10 +174,6 @@ export class DownloadService {
       case ApplicationElectronFileError.downloadError:
         mod.installProgress.downloadStep.error = true;
         mod.installProgress.downloadStep.percent = 100;
-        break;
-      case ApplicationElectronFileError.downloadLinkError:
-        mod.installProgress.linkStep.error = true;
-        mod.installProgress.linkStep.progress = 1;
         break;
     }
   }

@@ -1,12 +1,7 @@
 ﻿export interface FileUnzipEvent {
-  sptInstancePath: string;
+  instancePath: string;
   filePath: string;
-  hubId: string;
-  kind: string;
-}
-
-export enum Kind {
-  client = 'client',
-  server = 'server',
-  overhaul = 'overhaul',
+  hubId: number;
+  name: string;
+  version?: string;
 }

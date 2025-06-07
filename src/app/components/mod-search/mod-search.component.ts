@@ -6,7 +6,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, EMPTY, filter, firstValueFrom, map, startWith, switchMap } from 'rxjs';
-import { SptSearchService } from '../../core/services/spt-search.service';
 import { ModListService } from '../../core/services/mod-list.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,9 +18,11 @@ import { DownloadService } from '../../core/services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModCache } from '../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
+import { ForgeApiService } from '../../core/services/forge-api.service';
+import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
+import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
 
 @Component({
-  standalone: true,
   selector: 'app-mod-search',
   imports: [
     CommonModule,
@@ -37,23 +38,25 @@ import { IsAlreadyStartedDirective } from '../../core/directives/is-already-star
     MatTooltipModule,
     MatProgressSpinner,
     IsAlreadyStartedDirective,
+    ImagePathResolverPipe,
+    SemverSptVersionPipe,
   ],
   templateUrl: './mod-search.component.html',
   styleUrl: './mod-search.component.scss',
 })
 export class ModSearchComponent {
-  #sptSearchService = inject(SptSearchService);
-  #modListService = inject(ModListService);
-  #userSettingsService = inject(UserSettingsService);
-  #electronService = inject(ElectronService);
-  #downloadService = inject(DownloadService);
+  private forgeApiService = inject(ForgeApiService);
+  private modListService = inject(ModListService);
+  private userSettingsService = inject(UserSettingsService);
+  private electronService = inject(ElectronService);
+  private downloadService = inject(DownloadService);
 
-  isActiveSptInstanceAvailable = () => !!this.#userSettingsService.getActiveInstance();
+  isActiveSptInstanceAvailable = () => !!this.userSettingsService.getActiveInstance();
 
   isLoading = false;
   searchControl = new FormControl('', Validators.minLength(2));
   filteredModItems: Mod[] = [];
-  isDownloadAndInstallInProgress = this.#downloadService.isDownloadAndInstallInProgress;
+  isDownloadAndInstallInProgress = this.downloadService.isDownloadAndInstallInProgress;
 
   constructor() {
     this.searchControl.valueChanges
@@ -66,7 +69,7 @@ export class ModSearchComponent {
 
           if (searchArgument?.trim()) {
             this.isLoading = true;
-            return this.#sptSearchService.searchMods(searchArgument);
+            return this.forgeApiService.searchMod(searchArgument);
           } else {
             this.isLoading = false;
             return EMPTY;
@@ -74,35 +77,33 @@ export class ModSearchComponent {
         }),
         map(mods => {
           this.isLoading = false;
-          this.filteredModItems = mods.sort((a, b) => b.supportedSptVersion.localeCompare(a.supportedSptVersion));
+          this.filteredModItems = mods.data.sort((a, b) => {
+            if (a.versions && b.versions) {
+              return b.versions[0].version.localeCompare(a.versions[0].version);
+            }
+            return 0;
+          });
         })
       )
       .subscribe();
   }
 
-  openExternal = (licenseUrl: string) => void this.#electronService.openExternal(licenseUrl);
+  openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
+    console.log(mod);
     event.stopPropagation();
 
-    const modCacheItem: ModCache = {
-      name: mod.name,
-      icon: mod.icon,
-      image: mod.image,
-      fileUrl: mod.fileUrl,
-      teaser: mod.teaser,
-      supportedSptVersion: mod.supportedSptVersion,
-      sptVersionColorCode: mod.sptVersionColorCode,
-    };
+    const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
 
-    await this.#modListService.addMod(mod);
-    await firstValueFrom(this.#electronService.sendEvent('add-mod-list-cache', modCacheItem));
+    await this.modListService.addMod(mod);
+    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
   async removeModFromModList(event: MouseEvent, mod: Mod) {
     event.stopPropagation();
 
-    this.#modListService.removeMod(mod.name);
-    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
+    this.modListService.removeMod(mod.name);
+    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
   }
 }

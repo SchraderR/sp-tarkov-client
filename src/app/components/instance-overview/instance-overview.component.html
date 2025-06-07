@@ -1,4 +1,4 @@
-@if (!activeSptInstance) {
+@if (!activeInstance) {
   <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
     <div style="display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center">
       There is no active Instance. Please go to the setting and activate an SPT-Instance.
@@ -7,117 +7,52 @@
       </button>
     </div>
   </div>
-}
+} @else {
 
-@if (activeSptInstance?.isLoading) {
-  <div class="full-height full-width" style="display: flex; justify-content: center; align-items: center;">
-    <mat-spinner [diameter]="100"></mat-spinner>
-  </div>
-}
+  @if (activeInstance?.isLoading) {
+    <div class="full-height full-width spinner-container" style="display: flex; justify-content: center; align-items: center;">
+      <mat-spinner [diameter]="100"></mat-spinner>
+    </div>
+  }
 
-@if (activeSptInstance && !activeSptInstance?.isLoading) {
-  <div class="mod-list-container">
-    <div class="mod-list">
-      <h2>Server-Mods ({{ activeSptInstance?.serverMods?.length }})</h2>
+  @if (activeInstance && !activeInstance?.isLoading) {
+    <div class="mod-list-container">
+      <div class="mod-list">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px;">
+          <h2>Installed Mods ({{ activeInstance?.trackedMods?.length ?? 0 }})</h2>
 
-      <mat-list style="overflow: auto;">
-        @if (activeSptInstance?.serverMods?.length === 0) {
-          <span>No Server-Mods installed!</span>
-        }
-
-        @for (serverMod of activeSptInstance?.serverMods | orderBy:'name'; track $index) {
-          <mat-list-item>
-            <span matListItemTitle>{{ serverMod.name }}</span>
-            <span matListItemLine>{{ serverMod.version }}</span>
-            <mat-slide-toggle *ngIf="isExperimentalFunctionActive()" class="list-slider-item" matListItemMeta
-                              [disabled]="isWorking" [checked]="serverMod.isEnabled"
-                              (click)="toggleModState(serverMod, true)">{{ serverMod.isEnabled ? 'Enabled' : 'Disabled' }}
-            </mat-slide-toggle>
-            <button mat-icon-button matListItemMeta [disabled]="isWorking" (click)="openExternal(serverMod)">
-              <mat-icon>folder_open</mat-icon>
+          <div style="display: flex; justify-content: end; align-items: center; padding: 8px;">
+            <button mat-icon-button matTooltip="Import Mods" (click)="importModsFromFileSystem()">
+              <mat-icon>download</mat-icon>
             </button>
-          </mat-list-item>
-        }
-      </mat-list>
-    </div>
+            <button mat-icon-button matTooltip="Export Mods" [disabled]="activeInstance?.trackedMods?.length === 0" (click)="exportModsToFileSystem()">
+              <mat-icon>upload</mat-icon>
+            </button>
+          </div>
+        </div>
 
-    <mat-divider [vertical]="true" />
+        @for (trackedMod of activeInstance?.trackedMods | orderBy:'modName'; track $index) {
+          <mat-card style="margin-right: 8px;">
+            <mat-card-content>
+              {{ trackedMod.modVersion ? trackedMod?.modVersion?.split(" ")?.[0] : "" }} - {{ trackedMod.modName }}
 
-    <div class="mod-list">
-      <h2>Client-Mods ({{ activeSptInstance?.clientMods?.length }})</h2>
-      <mat-list style="overflow: auto;">
-        @if (activeSptInstance?.clientMods?.length === 0) {
-          <span>No Client-Mods installed!</span>
+              <div class="instance-actions">
+                <mat-slide-toggle class="list-slider-item" matListItemMeta [disabled]="isWorking" [checked]="trackedMod.isActive"
+                                  (click)="toggleModState(trackedMod)">
+                </mat-slide-toggle>
+
+                <button mat-icon-button [class.remove-action]="!isWorking" [disabled]="isWorking" (click)="$event.stopPropagation(); toggleModState(trackedMod, true)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+
+                <button mat-icon-button (click)="$event.stopPropagation(); openExternalHub(trackedMod.hubId)">
+                  <mat-icon>open_in_new</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
         }
-        @for (clientMod of activeSptInstance?.clientMods | orderBy:'name'; track $index) {
-          @if (clientMod.isDirectory && clientMod?.subMods?.length ?? 0 > 1) {
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-list-item>
-                  <span matListItemTitle>{{ clientMod.name }}</span>
-                  <mat-slide-toggle *ngIf="isExperimentalFunctionActive()" class="list-slider-item" matListItemMeta
-                                    [disabled]="isWorking" (click)="$event.stopPropagation(); toggleModState(clientMod)"
-                                    [checked]="clientMod.isEnabled">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}
-                  </mat-slide-toggle>
-                </mat-list-item>
-              </mat-expansion-panel-header>
-              @for (subMod of clientMod.subMods; track subMod) {
-                <mat-list-item>
-                  <span matListItemTitle>{{ subMod.name }}</span>
-                  <span matListItemLine>{{ subMod.version }}</span>
-                  <button matListItemMeta mat-icon-button [disabled]="isWorking" (click)="openExternal(subMod)">
-                    <mat-icon>folder_open</mat-icon>
-                  </button>
-                </mat-list-item>
-              }
-            </mat-expansion-panel>
-          } @else {
-            <mat-list-item>
-              <span matListItemTitle>{{ clientMod.name }}</span>
-              <span matListItemLine>{{ clientMod.version }}</span>
-              <mat-slide-toggle *ngIf="isExperimentalFunctionActive()" class="list-slider-item" matListItemMeta
-                                [disabled]="isWorking" [checked]="clientMod.isEnabled"
-                                (click)="toggleModState(clientMod)">{{ clientMod.isEnabled ? 'Enabled' : 'Disabled' }}
-              </mat-slide-toggle>
-              <button mat-icon-button matListItemMeta [disabled]="isWorking" (click)="openExternal(clientMod)">
-                <mat-icon>folder_open</mat-icon>
-              </button>
-            </mat-list-item>
-          }
-        }
-      </mat-list>
+      </div>
     </div>
-  </div>
+  }
 }
-
-<ng-template #instanceToggleModWarning>
-  <mat-card style="padding: 0 16px;">
-    <mat-card-content>
-      <span style="display: block;">
-        The experimental function "Enable/Disable Mods" does not always work 100%.
-        <li>Mod dependencies are not automatically applied</li>
-        <li>Mods with client/server files must be switched separately</li>
-        <br>
-        Be careful and make a backup copy of your mods
-        <br>
-        <span style="font-size: large; font-weight: bold">Please reinstall your mods prior to contacting support.</span>
-      </span>
-    </mat-card-content>
-
-    <mat-card-actions align="end" style="padding: 16px">
-      <button mat-flat-button color="primary" (click)="setToggleWarningState()"
-              [disabled]="isToggleWarningButtonDisabled">
-        Acknowledge {{ counter > 0 ? '(' + counter + 's)' : '' }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
-</ng-template>
-
-<!--
-<div style="position: absolute; top: 0; right: 0">
-  <button mat-icon-button>
-    <mat-icon>refresh</mat-icon>
-  </button>
-</div>
--->
-
