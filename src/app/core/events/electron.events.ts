@@ -38,7 +38,8 @@
   | 'check-installed-toggle'
   | 'check-installed-setting'
   | 'import-mods-file-system'
-  | 'export-mods-file-system';
+  | 'export-mods-file-system'
+  | 'process-download-link';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';

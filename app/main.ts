@@ -23,6 +23,7 @@ import { handleTempDownloadDirectoryEvents } from './events/temp-download-direct
 import { initialize } from 'electron-log';
 import { handleSharingModsEvents } from './events/export-mods.event';
 import { handleNotificationEvents } from './events/notification.event';
+import { handleProcessDownloadLinkEvent } from './events/process-download-link-file.event';
 
 initialize();
 
@@ -32,6 +33,7 @@ void autoUpdater.checkForUpdatesAndNotify();
 
 mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
+handleProcessDownloadLinkEvent();
 handleDownloadModEvent();
 handleFileUnzipEvent(isServe, store);
 handleUserSettingStoreEvents(store);

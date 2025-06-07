@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { catchError, concatAll, filter, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, concatAll, delay, filter, firstValueFrom, forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -31,6 +31,7 @@ import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.com
 import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
 import { FileHelper } from './core/helper/file-helper';
+import { ForgeApiService } from './core/services/forge-api.service';
 
 @Component({
   selector: 'app-root',
@@ -64,6 +65,7 @@ export class AppComponent {
   private electronService = inject(ElectronService);
   private userSettingService = inject(UserSettingsService);
   private downloadService = inject(DownloadService);
+  private forgeApiService = inject(ForgeApiService);
   private destroyRef = inject(DestroyRef);
   private modListService = inject(ModListService);
   private joyrideService = inject(JoyrideService);
@@ -205,9 +207,13 @@ export class AppComponent {
     this.electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
       this.ngZone.run(() => {
         value.args.forEach(async modCache => {
-          const mod = {
-            ...modCache,
-          } as Mod;
+          // TODO Refactor cache mod informations
+          // maybe save basic informations, show them and start deching detail informations and override cached informations
+          // update infformation only after X TIME (so its not fetching all the time)
+          // should override cached information
+          const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modCache.modId));
+
+          const mod = { ...modDetail.data } as unknown as Mod;
           await this.modListService.addMod(mod);
         });
       })

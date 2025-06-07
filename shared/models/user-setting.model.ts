@@ -11,10 +11,10 @@ export interface UpdateModMeta {
 }
 
 export interface ModCache {
-  modId?: number;
+  modId: number;
   name: string;
-  thumbnail?: string;
-  teaser?: string;
+  thumbnail: string;
+  teaser: string;
 }
 
 export interface UserSettingStoreModel {

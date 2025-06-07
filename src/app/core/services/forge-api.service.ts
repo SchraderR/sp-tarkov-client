@@ -132,7 +132,7 @@ export class ForgeApiService {
   }
 
   getModDetail(modId: number) {
-    return this.httpClient.get<BaseApi<ForgeModDetail>>(`${environment.forgeBasePath}/mod${modId}`);
+    return this.httpClient.get<BaseApi<ForgeModDetail>>(`${environment.forgeBasePath}/mod/${modId}`);
   }
 
   getModVersions(modId: number) {

@@ -46,9 +46,7 @@ export class ModCardComponent implements OnInit {
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
   isDownloadingAndInstalling$ = this.downloadService.isDownloadAndInstallInProgress;
 
-  ngOnInit() {
-    console.log(this.mod());
-  }
+  ngOnInit() {}
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);

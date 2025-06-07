@@ -9,16 +9,15 @@
 }
 
 export interface DownloadModel {
-  name?: string;
-  hubId: number;
+  modId: number;
   modFileUrl: string;
   sptInstancePath: string;
 }
 
 export interface LinkModel {
-  hubId: number;
-  sptInstancePath: string;
+  modId: number;
   downloadUrl: string;
+  sptInstancePath: string;
 }
 
 export interface SptVersion {
