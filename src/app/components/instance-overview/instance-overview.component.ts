@@ -40,6 +40,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
     MatCard,
     MatCardActions,
     MatCardContent,
+    MatTooltip,
   ],
 })
 export default class InstanceOverviewComponent {

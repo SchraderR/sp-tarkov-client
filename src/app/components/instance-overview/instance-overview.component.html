@@ -38,10 +38,10 @@
 
               <div class="instance-actions">
                 <mat-slide-toggle class="list-slider-item" matListItemMeta [disabled]="isWorking" [checked]="trackedMod.isActive"
-                                  (click)="toggleModState(trackedMod)">{{ trackedMod.isActive ? 'Active' : 'Inactive' }}
+                                  (click)="toggleModState(trackedMod)">
                 </mat-slide-toggle>
 
-                <button mat-icon-button [ngClass]="!isWorking ? 'remove-action' : ''" [disabled]="isWorking" (click)="$event.stopPropagation(); toggleModState(trackedMod, true)">
+                <button mat-icon-button [class.remove-action]="!isWorking" [disabled]="isWorking" (click)="$event.stopPropagation(); toggleModState(trackedMod, true)">
                   <mat-icon>delete</mat-icon>
                 </button>
 

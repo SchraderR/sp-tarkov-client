@@ -17,7 +17,7 @@ export interface Mod extends ForgeMod {
   isDependenciesLoading: boolean;
   //   dependencies: Mod[];
   //   lastUpdate?: string;
-  //   isInvalid: boolean;
+  isInvalid: boolean;
   //   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
   //   sptVersionColorCode?: string;
