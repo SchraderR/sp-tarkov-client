@@ -22,6 +22,10 @@
   }
 }
 
+.mat-divider {
+  margin: 8px;
+}
+
 .mat-drawer-container {
   overflow: hidden;
 }
@@ -39,6 +43,14 @@
   &.extended {
     padding: 16px;
   }
+}
+
+.margin-expanded {
+  margin-left: 250px !important;
+}
+
+.margin-collapsed {
+  margin-left: 55px !important;
 }
 
 .window-control-buttons {
@@ -69,7 +81,7 @@
   display: inline-flex;
   cursor: pointer;
   text-decoration: none;
-  color: mat.m2-get-color-from-palette($mat-theme-accent-palette, 500);
+  color: var(--mat-sys-primary);
 
   mat-icon {
     font-size: 19px;
@@ -107,6 +119,10 @@ mat-sidenav[style].visible {
   -webkit-app-region: no-drag;
 }
 
+.github-icon {
+  margin-left: 12px;
+}
+
 .issue-container {
   display: flex;
   flex-direction: column;
@@ -134,16 +150,13 @@ mat-sidenav[style].visible {
 }
 
 .version-container {
+  width: 100%;
   display: flex;
-  justify-content: center;
-  padding-bottom: 8px;
-  position: relative;
-  min-height: 8px;
+  justify-content: end;
 
   > span {
-    position: absolute;
-    right: 2px;
-    bottom: 0;
+    margin-right: 8px;
+    margin-bottom: 4px;
   }
 }
 

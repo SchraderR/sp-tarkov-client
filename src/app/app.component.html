@@ -19,7 +19,7 @@
         </mat-icon>
       </button>
     }
-    <button *ngIf="githubRateLimit" class="no-drag" mat-icon-button [matMenuTriggerFor]="info">
+    <button *ngIf="githubRateLimit" class="github-icon no-drag" mat-icon-button [matMenuTriggerFor]="info">
       <i class="fa fa-github" aria-hidden="true"></i>
     </button>
   </div>
@@ -41,7 +41,7 @@
 </mat-menu>
 
 <mat-sidenav-container class="sidenav-container" [autosize]="true">
-  <mat-sidenav class="visible" [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" [opened]="isExpanded">
+  <mat-sidenav class="visible" [@openClose]="isExpanded ? 'open' : 'closed'" mode="side" opened>
     <mat-action-list class="side-navigation-actions-container">
       <mat-list-item routerLinkActive="active-link" routerLink="instance-overview" (click)="toggleDrawer()"
                      [matTooltipDisabled]="isExpanded"
@@ -97,8 +97,8 @@
       </div>
       <mat-list-item routerLinkActive="active-link" routerLink="setting" (click)="toggleDrawer()"
                      [matTooltipDisabled]="isExpanded"
-                     matTooltip="Setup SPT Instances">
-        <mat-icon matListItemIcon>settings</mat-icon>
+                     matTooltip="Settings">
+        <mat-icon matListItemIcon>Settings</mat-icon>
         <div matListItemTitle>Setting</div>
       </mat-list-item>
       <span class="spacer"></span>
@@ -123,7 +123,7 @@
       </button>
     </mat-action-list>
   </mat-sidenav>
-  <mat-sidenav-content class="sidenav-content">
+  <mat-sidenav-content class="sidenav-content" [ngClass]="isExpanded ? 'margin-expanded' : 'margin-collapsed'">
     <div [class.extended]="isExpanded" class="full-width full-height overflow-auto" joyrideStep="downloadOverviewStep"
          stepPosition="center" [stepContent]="joyRideStepDownloadOverviewContent">
       <router-outlet />
@@ -144,7 +144,7 @@
     <br>
     You can add Mods to your instance by clicking on the "Add" icon.
     <br>
-    <img ngSrc="assets/images/mod-install-icon.png" height="159" width="420">
+    <img ngSrc="assets/images/mod-install-icon.png" height="159" width="420" alt="Mod Install Icon">
   </span>
 </ng-template>
 
