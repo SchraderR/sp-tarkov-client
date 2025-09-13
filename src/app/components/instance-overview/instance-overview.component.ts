@@ -17,26 +17,25 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  standalone: true,
-  selector: 'app-instance-overview',
-  templateUrl: './instance-overview.component.html',
-  styleUrl: './instance-overview.component.scss',
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatListModule,
-    MatIconModule,
-    MatExpansionModule,
-    MatSlideToggleModule,
-    NgPipesModule,
-    DialogModule,
-    MatCard,
-    MatCardActions,
-    MatCardHeader,
-    MatCardContent,
-  ],
+    selector: 'app-instance-overview',
+    templateUrl: './instance-overview.component.html',
+    styleUrl: './instance-overview.component.scss',
+    imports: [
+        CommonModule,
+        RouterLink,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        MatListModule,
+        MatIconModule,
+        MatExpansionModule,
+        MatSlideToggleModule,
+        NgPipesModule,
+        DialogModule,
+        MatCard,
+        MatCardActions,
+        MatCardHeader,
+        MatCardContent,
+    ]
 })
 export default class InstanceOverviewComponent implements OnInit {
   @ViewChild('instanceToggleModWarning', { static: true }) instanceToggleModWarning!: TemplateRef<unknown>;

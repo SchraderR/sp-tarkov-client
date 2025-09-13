@@ -24,28 +24,27 @@ import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
-  standalone: true,
-  selector: 'app-personal-setting',
-  templateUrl: './personal-setting.component.html',
-  styleUrls: ['./personal-setting.component.scss'],
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatExpansionModule,
-    MatListModule,
-    MatLineModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    JoyrideModule,
-    NgOptimizedImage,
-    MatProgressSpinnerModule,
-    MatSlideToggleModule,
-  ],
-  animations: [fadeInFadeOutAnimation],
+    selector: 'app-personal-setting',
+    templateUrl: './personal-setting.component.html',
+    styleUrls: ['./personal-setting.component.scss'],
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatCardModule,
+        MatIconModule,
+        MatTooltipModule,
+        MatExpansionModule,
+        MatListModule,
+        MatLineModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        JoyrideModule,
+        NgOptimizedImage,
+        MatProgressSpinnerModule,
+        MatSlideToggleModule,
+    ],
+    animations: [fadeInFadeOutAnimation]
 })
 export default class PersonalSettingComponent {
   @ViewChildren('loading') matList: QueryList<MatListItem> | undefined;

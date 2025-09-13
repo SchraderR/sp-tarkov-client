@@ -7,11 +7,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-  standalone: true,
-  selector: 'app-tarkov-start',
-  templateUrl: './tarkov-start.component.html',
-  styleUrls: ['./tarkov-start.component.scss'],
-  imports: [CommonModule, MatButton],
+    selector: 'app-tarkov-start',
+    templateUrl: './tarkov-start.component.html',
+    styleUrls: ['./tarkov-start.component.scss'],
+    imports: [CommonModule, MatButton]
 })
 export class TarkovStartComponent implements OnInit {
   #userSettingService = inject(UserSettingsService);

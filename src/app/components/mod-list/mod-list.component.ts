@@ -19,24 +19,23 @@ import { ModDependencyCardComponent } from '../mod-dependency-card/mod-dependenc
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
-  standalone: true,
-  selector: 'app-mod-list',
-  templateUrl: './mod-list.component.html',
-  styleUrl: './mod-list.component.scss',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatTooltipModule,
-    ModCardComponent,
-    JoyrideModule,
-    MatSlideToggleModule,
-    ReactiveFormsModule,
-    ModDependencyCardComponent,
-    MatProgressSpinner,
-  ],
-  animations: [fadeInFadeOutAnimation],
+    selector: 'app-mod-list',
+    templateUrl: './mod-list.component.html',
+    styleUrl: './mod-list.component.scss',
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatCardModule,
+        MatIconModule,
+        MatTooltipModule,
+        ModCardComponent,
+        JoyrideModule,
+        MatSlideToggleModule,
+        ReactiveFormsModule,
+        ModDependencyCardComponent,
+        MatProgressSpinner,
+    ],
+    animations: [fadeInFadeOutAnimation]
 })
 export default class ModListComponent implements OnInit {
   #modListService = inject(ModListService);

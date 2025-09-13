@@ -9,12 +9,11 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 
 @Component({
-  selector: 'app-mod-dependency-card',
-  standalone: true,
-  imports: [MatCard, MatCardContent, MatIconModule, NgOptimizedImage, MatIconButton, MatProgressBar],
-  templateUrl: './mod-dependency-card.component.html',
-  styleUrls: ['./mod-dependency-card.component.scss', './../mod-card/mod-card.component.scss'],
-  animations: [fadeInFadeOutAnimation],
+    selector: 'app-mod-dependency-card',
+    imports: [MatCard, MatCardContent, MatIconModule, NgOptimizedImage, MatIconButton, MatProgressBar],
+    templateUrl: './mod-dependency-card.component.html',
+    styleUrls: ['./mod-dependency-card.component.scss', './../mod-card/mod-card.component.scss'],
+    animations: [fadeInFadeOutAnimation]
 })
 export class ModDependencyCardComponent {
   #electronService = inject(ElectronService);
