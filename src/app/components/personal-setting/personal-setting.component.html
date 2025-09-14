@@ -17,7 +17,7 @@
               (mouseleave)="hoveringInstance = ''">
               @if (!settingModel.isError) {
                 <mat-icon joyrideStep="settingStepInstanceActive" [stepContent]="joyRideStepInstanceActiveContent"
-                  matListItemAvatar class="active-star"
+                  matListItemIcon class="active-star"
                   [class.fill]="settingModel.isActive"
                   matTooltip="Set instance to active"
                   (click)="setActiveInstance(settingModel)">
@@ -25,13 +25,13 @@
                 </mat-icon>
               }
               @if (settingModel.isError) {
-                <mat-icon matListItemAvatar color="warn" class="warning"
+                <mat-icon matListItemIcon color="warn" class="warning"
                   matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.">
                   warning
                 </mat-icon>
               }
               @if (settingModel.isPowerShellIssue) {
-                <mat-icon matListItemAvatar color="warn" class="warning"
+                <mat-icon matListItemIcon color="warn" class="warning"
                   matTooltip="There was an issue with PowerShell. Installed Client-Mods of the current instance will not be loaded.">
                   warning
                 </mat-icon>
@@ -117,7 +117,6 @@
     </mat-card-content>
   </mat-card>
 </div>
-
 
 <ng-template #joyRideStepContent>
   <h4>Adding an Instance:</h4>
