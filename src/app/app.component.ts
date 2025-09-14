@@ -34,31 +34,31 @@ import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        MatSidenavModule,
-        RouterModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatListModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatAutocompleteModule,
-        NgOptimizedImage,
-        ModSearchComponent,
-        MatBadgeModule,
-        MatTooltipModule,
-        MatMenuModule,
-        DatePipe,
-        JoyrideModule,
-        MatCardModule,
-        TarkovStartComponent,
-    ],
-    animations: [sidenavAnimation]
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatSidenavModule,
+    RouterModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatListModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    NgOptimizedImage,
+    ModSearchComponent,
+    MatBadgeModule,
+    MatTooltipModule,
+    MatMenuModule,
+    DatePipe,
+    JoyrideModule,
+    MatCardModule,
+    TarkovStartComponent,
+  ],
+  animations: [sidenavAnimation],
 })
 export class AppComponent {
   #matIconRegistry = inject(MatIconRegistry);
@@ -116,10 +116,10 @@ export class AppComponent {
     effect(() => this.calculateCurrentDirectorySize());
   }
 
-  toggleDrawer = () => {
+  toggleDrawer() {
     this.isExpanded = false;
     void this.matSideNav.toggle();
-  };
+  }
 
   openExternal = (url: string) => void this.#electronService.openExternal(url);
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
