@@ -26,6 +26,7 @@ export default class ModLoadOrderComponent implements OnInit {
   #destroyRef = inject(DestroyRef);
   #matDialog = inject(MatDialog);
 
+  wasModLoadOrderWarningReviewed = this.#userSettingsService.wasModLoadOrderWarningReviewed;
   modLoadOrderWarningDialog!: MatDialogRef<unknown, unknown>;
   modLoadOrder: ModLoadOrder = { order: [] };
 

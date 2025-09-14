@@ -12,6 +12,10 @@
   align-items: center;
 }
 
+.blurry {
+  filter: blur(3px);
+}
+
 .mod-order-list {
   max-width: 100%;
   width: 100%;
@@ -42,7 +46,7 @@
   font-size: 14px;
 
   @media (prefers-color-scheme: dark) {
-    background: #3a3a3a;
+    background-color: var(--mat-sys-surface-container-low);
     color: #e0e0e0;
     border-bottom: solid 1px #555;
   }
@@ -51,10 +55,9 @@
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
-  box-shadow:
-    0 5px 5px -3px rgba(0, 0, 0, 0.2),
-    0 8px 10px 1px rgba(0, 0, 0, 0.14),
-    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .cdk-drag-placeholder {
