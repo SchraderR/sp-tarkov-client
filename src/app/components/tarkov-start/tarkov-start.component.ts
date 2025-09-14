@@ -1,6 +1,5 @@
 import { Component, DestroyRef, inject, NgZone, OnInit } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
-import { CommonModule } from '@angular/common';
 import { ElectronService } from '../../core/services/electron.service';
 import { TarkovInstanceService } from '../../core/services/tarkov-instance.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -10,7 +9,7 @@ import { MatButton } from '@angular/material/button';
     selector: 'app-tarkov-start',
     templateUrl: './tarkov-start.component.html',
     styleUrls: ['./tarkov-start.component.scss'],
-    imports: [CommonModule, MatButton]
+    imports: [MatButton]
 })
 export class TarkovStartComponent implements OnInit {
   #userSettingService = inject(UserSettingsService);

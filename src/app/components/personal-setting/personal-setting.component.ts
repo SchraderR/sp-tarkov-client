@@ -12,7 +12,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListItem, MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -24,27 +24,26 @@ import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
 
 @Component({
-    selector: 'app-personal-setting',
-    templateUrl: './personal-setting.component.html',
-    styleUrls: ['./personal-setting.component.scss'],
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        MatCardModule,
-        MatIconModule,
-        MatTooltipModule,
-        MatExpansionModule,
-        MatListModule,
-        MatLineModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        ReactiveFormsModule,
-        JoyrideModule,
-        NgOptimizedImage,
-        MatProgressSpinnerModule,
-        MatSlideToggleModule,
-    ],
-    animations: [fadeInFadeOutAnimation]
+  selector: 'app-personal-setting',
+  templateUrl: './personal-setting.component.html',
+  styleUrls: ['./personal-setting.component.scss'],
+  imports: [
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatExpansionModule,
+    MatListModule,
+    MatLineModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    JoyrideModule,
+    NgOptimizedImage,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+  ],
+  animations: [fadeInFadeOutAnimation],
 })
 export default class PersonalSettingComponent {
   @ViewChildren('loading') matList: QueryList<MatListItem> | undefined;

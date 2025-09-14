@@ -13,11 +13,11 @@
 
 @if (modListSignal().length) {
   <div class="button-container">
-    <button mat-icon-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModCompleted()"
+    <button mat-icon-button [disabled]="(isDownloadingAndInstalling$ | async) || !isModCompleted()"
             (click)="removeCompletedMods()" matTooltip="Remove all completed Mods">
       <mat-icon>scan_delete</mat-icon>
     </button>
-    <button mat-raised-button color="accent" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted() || isSomeModDependencyLoading()"
+    <button mat-flat-button class="download-button" [disabled]="(isDownloadingAndInstalling$ | async) || !isModNotCompleted() || isSomeModDependencyLoading()"
             (click)="downloadAndInstallAll()">Download / Install
     </button>
   </div>

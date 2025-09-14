@@ -23,10 +23,10 @@
             <img class="image-shadow" [ngSrc]="mod.image" height="144" width="144" alt="">
           }
           @if (mod.icon) {
-            <span [className]="'mod-icon ' + 'fa ' + mod.icon"></span>
+            <span [className]="`mod-icon fa ${mod.icon}`"></span>
           }
           @if (mod.supportedSptVersion) {
-            <div [class]="mod.sptVersionColorCode"
+            <div [class]="`badge-version ${mod.sptVersionColorCode}`"
                  class="font-small image-spt-version card-badge">{{ mod.supportedSptVersion }}
             </div>
           }
