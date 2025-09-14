@@ -95,8 +95,9 @@ mat-card {
   align-items: center;
   width: fit-content;
   border-radius: 4px;
-  background-color: rgba(75, 75, 75);
+  background-color: var(--mat-sys-surface-container-low);
   border: 1px solid rgba(0, 0, 0, 0.5);
+  gap: 8px;
 
   .refresh-button {
     margin: 0 4px;
@@ -107,15 +108,11 @@ mat-card {
   }
 
   @media (prefers-color-scheme: light) {
-    background-color: rgb(236, 236, 236) !important;
-
-    ::ng-deep.mat-mdc-paginator-container {
-      background-color: rgb(236, 236, 236) !important;
-    }
+    border: 1px solid rgba(0, 0, 0, 0.5);
   }
 
   .floating-paginator {
-    background-color: rgba(75, 75, 75);
+    background-color: var(--mat-sys-surface-container-low);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     z-index: 100;

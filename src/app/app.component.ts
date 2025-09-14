@@ -34,7 +34,6 @@ import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -117,10 +116,10 @@ export class AppComponent {
     effect(() => this.calculateCurrentDirectorySize());
   }
 
-  toggleDrawer = () => {
+  toggleDrawer() {
     this.isExpanded = false;
     void this.matSideNav.toggle();
-  };
+  }
 
   openExternal = (url: string) => void this.#electronService.openExternal(url);
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>

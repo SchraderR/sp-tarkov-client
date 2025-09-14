@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
+import { enableProdMode, importProvidersFrom, isDevMode, inject, provideAppInitializer } from '@angular/core';
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -31,12 +31,10 @@ bootstrapApplication(AppComponent, {
       },
       loader: TranslocoHttpLoader,
     }),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configurationServiceFactory,
-      deps: [ConfigurationService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+        const initializerFn = (configurationServiceFactory)(inject(ConfigurationService));
+        return initializerFn();
+      }),
   ],
 }).catch(err => console.error(err));
 

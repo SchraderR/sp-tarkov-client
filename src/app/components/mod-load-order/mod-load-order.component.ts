@@ -1,6 +1,5 @@
 import { Component, DestroyRef, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ElectronService } from '../../core/services/electron.service';
-import { CommonModule } from '@angular/common';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,11 +12,10 @@ export interface ModLoadOrder {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-mod-load-order',
   templateUrl: './mod-load-order.component.html',
   styleUrl: './mod-load-order.component.scss',
-  imports: [CommonModule, DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent],
+  imports: [DragDropModule, MatButton, MatCard, MatCardActions, MatCardContent],
 })
 export default class ModLoadOrderComponent implements OnInit {
   @ViewChild('modLoadOrderWarning', { static: true }) modLoadOrderWarning!: TemplateRef<unknown>;
@@ -28,6 +26,7 @@ export default class ModLoadOrderComponent implements OnInit {
   #destroyRef = inject(DestroyRef);
   #matDialog = inject(MatDialog);
 
+  wasModLoadOrderWarningReviewed = this.#userSettingsService.wasModLoadOrderWarningReviewed;
   modLoadOrderWarningDialog!: MatDialogRef<unknown, unknown>;
   modLoadOrder: ModLoadOrder = { order: [] };
 

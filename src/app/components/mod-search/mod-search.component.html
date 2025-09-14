@@ -2,16 +2,18 @@
   <mat-label>Search for Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
-    <mat-option class="search-loading" *ngIf="isLoading && filteredModItems.length === 0">
-      <mat-spinner [diameter]="50"></mat-spinner>
-    </mat-option>
+    @if (isLoading && filteredModItems.length === 0) {
+      <mat-option class="search-loading">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </mat-option>
+    }
     @for (mod of filteredModItems; track mod) {
       <mat-option
         [value]="mod.name"
         appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
         appIsAlreadyStarted #alreadyStarted="isAlreadyStarted"
         [mod]="mod"
-      >
+        >
         <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
           @if (mod.image) {
             <img class="image-shadow" [ngSrc]="mod.image" width="60" height="60" alt="">
@@ -25,7 +27,7 @@
             <span class="font-x-small">{{ mod.kind }}</span>
             @if (mod.supportedSptVersion) {
               <span [class]="mod.sptVersionColorCode"
-                    class="font-x-small image-spt-version version-pill">{{ mod.supportedSptVersion }}</span>
+              class="font-x-small image-spt-version version-pill">{{ mod.supportedSptVersion }}</span>
             }
           </div>
           <span class="spacer"></span>
@@ -50,7 +52,7 @@
                   mat-icon-button
                   (click)="addModToModList($event, mod)"
                   [matTooltip]="(isDownloadAndInstallInProgress | async) ? 'Add to download queue' : 'Add to list'"
-                >
+                  >
                   <mat-icon>add</mat-icon>
                 </button>
               }

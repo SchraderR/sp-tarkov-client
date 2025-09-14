@@ -21,12 +21,11 @@ export interface ModLicenseInformation {
 }
 
 @Component({
-  standalone: true,
-  selector: 'app-mod-card',
-  templateUrl: './mod-card.component.html',
-  styleUrl: './mod-card.component.scss',
-  imports: [CommonModule, MatCardModule, NgOptimizedImage, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatIconModule, MatRippleModule],
-  animations: [fadeInFadeOutAnimation],
+    selector: 'app-mod-card',
+    templateUrl: './mod-card.component.html',
+    styleUrl: './mod-card.component.scss',
+    imports: [CommonModule, MatCardModule, NgOptimizedImage, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatIconModule, MatRippleModule],
+    animations: [fadeInFadeOutAnimation]
 })
 export class ModCardComponent implements OnInit {
   #httpClient = inject(HttpClient);

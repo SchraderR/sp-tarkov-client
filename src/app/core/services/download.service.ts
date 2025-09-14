@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { FileHelper } from '../helper/file-helper';
 import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
@@ -22,11 +21,9 @@ export interface IndexedMods {
   providedIn: 'root',
 })
 export class DownloadService {
-  private readonly MAX_CACHE_DURATION = 3600000; // 1 hour in milliseconds
   #electronService = inject(ElectronService);
   #userSettingsService = inject(UserSettingsService);
   #modListService = inject(ModListService);
-  #httpClient = inject(HttpClient);
 
   mods: IndexedMods[] = [];
   lastFetchTime: Date | null = null;

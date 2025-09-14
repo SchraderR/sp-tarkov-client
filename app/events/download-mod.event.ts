@@ -48,7 +48,7 @@ export const handleDownloadModEvent = () => {
           }
 
           if (data) {
-            writeFileSync(path.join(ankiTempDownloadDir, file.name as string), data);
+            writeFileSync(path.join(ankiTempDownloadDir, file.name as string), data as any);
             event.sender.send('download-mod-progress-completed', {
               percent: 100,
               transferredBytes: file.size,

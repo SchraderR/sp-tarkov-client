@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, inject, NgZone, OnInit, TemplateRef, View
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,12 +16,10 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  standalone: true,
-  selector: 'app-instance-overview',
-  templateUrl: './instance-overview.component.html',
-  styleUrl: './instance-overview.component.scss',
-  imports: [
-    CommonModule,
+    selector: 'app-instance-overview',
+    templateUrl: './instance-overview.component.html',
+    styleUrl: './instance-overview.component.scss',
+    imports: [
     RouterLink,
     MatButtonModule,
     MatProgressSpinnerModule,
@@ -35,8 +32,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
     MatCard,
     MatCardActions,
     MatCardHeader,
-    MatCardContent,
-  ],
+    MatCardContent
+]
 })
 export default class InstanceOverviewComponent implements OnInit {
   @ViewChild('instanceToggleModWarning', { static: true }) instanceToggleModWarning!: TemplateRef<unknown>;
