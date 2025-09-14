@@ -12,7 +12,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListItem, MatListModule } from '@angular/material/list';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NgOptimizedImage } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -39,7 +38,6 @@ import { FileHelper } from '../../core/helper/file-helper';
     MatSelectModule,
     ReactiveFormsModule,
     JoyrideModule,
-    NgOptimizedImage,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
   ],

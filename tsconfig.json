@@ -30,13 +30,10 @@
     "node_modules"
   ],
   "angularCompilerOptions": {
-    "strictTemplates": true,
-    "fullTemplateTypeCheck": true,
-    "annotateForClosureCompiler": true,
+    "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "skipTemplateCodegen": false,
-    "preserveWhitespaces": true,
-    "skipMetadataEmit": false,
-    "disableTypeScriptVersionCheck": true
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
   }
 }
