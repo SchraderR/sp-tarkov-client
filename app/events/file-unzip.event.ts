@@ -8,7 +8,7 @@ import { ZipArchiveHelper } from '../helper/zip-archive-helper';
 
 export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
-    const ankiTempDownloadDir = path.join(args.sptInstancePath, '_temp');
+    const ankiTempDownloadDir = path.join(args.instancePath, '_temp');
     const archivePath = args.filePath;
 
     if (!fs.existsSync(ankiTempDownloadDir)) {
@@ -41,60 +41,66 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
 
     const zipArchiveHelper = new ZipArchiveHelper();
     log.log(`----------------------------------`);
-    log.log(`FileId:${args.hubId} - Start Unzip`);
+    log.log(`HubId:${args.hubId} - Start Unzip`);
 
     const isSingleDllResult = zipArchiveHelper.checkForSingleDll(archivePath, args);
-    log.log(`FileId:${args.hubId} - isSingleDllResult: ${isSingleDllResult}`);
+    log.log(`HubId:${args.hubId} - isSingleDllResult: ${isSingleDllResult}`);
     if (isSingleDllResult) {
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isArchiveWithSingleDll = await zipArchiveHelper.checkForArchiveWithSingleDll(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
+    log.log(`HubId:${args.hubId} - isArchiveWithSingleDll: ${isArchiveWithSingleDll}`);
     if (isArchiveWithSingleDll) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.instancePath, clientPluginModPath), sevenBinPath);
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isArchiveWithSingleDllInsideDirectory = await zipArchiveHelper.checkForArchiveWithSingleDllInsideDirectory(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
+    log.log(`HubId:${args.hubId} - isArchiveWithSingleDllInsideDirectory: ${isArchiveWithSingleDllInsideDirectory}`);
     if (isArchiveWithSingleDllInsideDirectory) {
-      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.sptInstancePath, clientPluginModPath), sevenBinPath, ['**\\*.dll'], true);
+      await zipArchiveHelper.extractFilesArchive(archivePath, path.join(args.instancePath, clientPluginModPath), sevenBinPath, ['**\\*.dll'], true);
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isHappyPath = await zipArchiveHelper.isHappyPathArchive(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isHappyPath: ${isHappyPath}`);
+    log.log(`HubId:${args.hubId} - isHappyPath: ${isHappyPath}`);
     if (isHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, args.sptInstancePath, sevenBinPath, [`${clientPatcherModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`]);
+      await zipArchiveHelper.extractFullArchive(archivePath, args.instancePath, sevenBinPath, [
+        `${clientPatcherModPath}/*`,
+        `${clientPluginModPath}/*`,
+        `${serverModPath}/*`,
+      ]);
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isNestedServerModHappyPath = await zipArchiveHelper.determineNestedServerModHappyPath(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
+    log.log(`HubId:${args.hubId} - isNestedServerModHappyPath: ${isNestedServerModHappyPath}`);
     if (isNestedServerModHappyPath) {
       await zipArchiveHelper.extractFullArchive(archivePath, ankiTempDownloadDir, sevenBinPath);
-      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(args.sptInstancePath, serverModPath), { recursive: true });
+      fs.cpSync(`${ankiTempDownloadDir}/${isNestedServerModHappyPath}/${serverModPath}`, path.join(args.instancePath, serverModPath), {
+        recursive: true,
+      });
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isServerModWithDirectory = await zipArchiveHelper.checkForLeadingDirectoryServerMod(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isServerModWithDirectory: ${isServerModWithDirectory}`);
+    log.log(`HubId:${args.hubId} - isServerModWithDirectory: ${isServerModWithDirectory}`);
     if (isServerModWithDirectory) {
-      await zipArchiveHelper.extractFullArchive(archivePath, path.join(args.sptInstancePath, serverModPath), sevenBinPath);
+      await zipArchiveHelper.extractFullArchive(archivePath, path.join(args.instancePath, serverModPath), sevenBinPath);
       event.sender.send('file-unzip-completed');
       return;
     }
 
     const isServerMod = await zipArchiveHelper.determineServerMod(archivePath, sevenBinPath);
     const isClientMod = await zipArchiveHelper.determineClientMod(archivePath, sevenBinPath);
-    log.log(`FileId:${args.hubId} - isServerMod: ${isServerMod}`);
-    log.log(`FileId:${args.hubId} - isClientMod: ${isClientMod}`);
+    log.log(`HubId:${args.hubId} - isServerMod: ${isServerMod}`);
+    log.log(`HubId:${args.hubId} - isClientMod: ${isClientMod}`);
 
     // export const clientModPath = 'BepInEx/plugins';
     // export const serverModPath = 'user/mods';
@@ -139,7 +145,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     //  event.sender.send('file-unzip-completed');
     //  return;
     //}
-    log.error(`FileId:${args.hubId} - No unzip event found`);
+    log.error(`HubId:${args.hubId} - No unzip event found`);
     event.sender.send('file-unzip-error', 2);
   } catch (error) {
     log.error(error);

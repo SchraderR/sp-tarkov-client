@@ -3,7 +3,6 @@ import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import { mainApplicationStart } from './main-application-start';
 import { handleOpenDirectoryEvent } from './events/open-directory.event';
 import { handleUserSettingStoreEvents } from './events/user-setting.event';
-import { handleDownloadLinkEvent } from './events/download-link-file.event';
 import { handleDownloadModEvent } from './events/download-mod.event';
 import { handleFileUnzipEvent } from './events/file-unzip.event';
 import { handleClientModsEvent } from './events/client-mods.event';
@@ -21,10 +20,11 @@ import { handleUpdateModEvents } from './events/update-mod.event';
 import { handleSptTagEvents } from './events/spt-tag.event';
 import { handleSptVersionEvents } from './events/spt-version.event';
 import { handleModCacheEvents } from './events/mod-list-cache.event';
- import { toggleModStateEvent } from './events/toggle-mod-state.event';
+import { toggleModStateEvent } from './events/toggle-mod-state.event';
 import { handleModPageEvents } from './events/mod-page.event';
 import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
 import { handleCheckInstalledEvents } from './events/toggle-check-installed.event';
+import { handleProcessDownloadLinkEvent } from './events/handleProcessDownloadLinkEvent';
 
 log.initialize();
 
@@ -34,8 +34,8 @@ void autoUpdater.checkForUpdatesAndNotify();
 
 mainApplicationStart(isServe, store);
 handleOpenDirectoryEvent(store);
-handleDownloadLinkEvent();
 handleDownloadModEvent();
+handleProcessDownloadLinkEvent();
 handleFileUnzipEvent(isServe);
 handleUserSettingStoreEvents(store);
 handleClientModsEvent();

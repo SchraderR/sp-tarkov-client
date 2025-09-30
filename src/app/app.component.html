@@ -39,7 +39,7 @@
     <div>Remaining: {{ githubRateLimit?.remaining ?? 0 }}</div>
     <div>Used: {{ githubRateLimit?.used ?? 0 }}</div>
     @if (githubRateLimit?.reset) {
-      <div>Reset: {{ githubRateLimit!.reset * 1000 | date:"dd.MM.YYYY HH:mm" }}</div>
+      <div>Reset: {{ githubRateLimit!.reset * 1000 | date:"dd.MM.yyyy HH:mm" }}</div>
     }
   </mat-list>
 </mat-menu>
@@ -67,36 +67,19 @@
       -->
       <mat-divider />
       <div joyrideStep="sideNavStep" [stepContent]="joyRideStepContent">
-        <mat-list-item routerLinkActive="active-link" routerLink="new" (click)="toggleDrawer()"
-          [matTooltipDisabled]="isExpanded"
-          matTooltip="New Mods">
-          <mat-icon matListItemIcon>fiber_new</mat-icon>
-          <div matListItemTitle>New Mods</div>
+        <mat-list-item routerLinkActive="active-link" routerLink="mods" (click)="toggleDrawer()" [matTooltipDisabled]="isExpanded" matTooltip="SPT-Hub Overview">
+          <mat-icon matListItemIcon>badge</mat-icon>
+          <div matListItemTitle>SPT-Hub Overview</div>
         </mat-list-item>
-        <mat-list-item routerLinkActive="active-link" routerLink="updated" (click)="toggleDrawer()"
-          [matTooltipDisabled]="isExpanded"
-          matTooltip="Updated Mods">
-          <mat-icon matListItemIcon>update</mat-icon>
-          <div matListItemTitle>Updated Mods</div>
-        </mat-list-item>
-        <mat-list-item routerLinkActive="active-link" routerLink="top-rated" (click)="toggleDrawer()"
-          [matTooltipDisabled]="isExpanded"
-          matTooltip="Top Rated Mods">
-          <mat-icon matListItemIcon>trophy</mat-icon>
-          <div matListItemTitle>Top Rated Mods</div>
-        </mat-list-item>
-        <mat-list-item routerLinkActive="active-link" routerLink="most-loaded" (click)="toggleDrawer()"
-          [matTooltipDisabled]="isExpanded"
-          matTooltip="Most downloaded">
-          <mat-icon matListItemIcon>keyboard_double_arrow_down</mat-icon>
-          <div matListItemTitle>Most loaded Mods</div>
-        </mat-list-item>
+
+        <!--
         <mat-list-item routerLinkActive="active-link" routerLink="tags" (click)="toggleDrawer()"
           [matTooltipDisabled]="isExpanded"
           matTooltip="Search mods by tags">
           <mat-icon matListItemIcon>sell</mat-icon>
           <div matListItemTitle>Search mods by tags</div>
         </mat-list-item>
+        -->
         <mat-divider />
       </div>
       <mat-list-item routerLinkActive="active-link" routerLink="setting" (click)="toggleDrawer()"
@@ -134,11 +117,13 @@
     </div>
   </mat-sidenav-content>
 
-  <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
-    @if (isTarkovInstanceRunExpanded) {
-      <app-tarkov-start />
-    }
-  </mat-sidenav>
+  @if (isExperimentalFunctionActive() && isTarkovInstanceRunExpanded) {
+    <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
+      @if (isTarkovInstanceRunExpanded) {
+        <app-tarkov-start />
+      }
+    </mat-sidenav>
+  }
 </mat-sidenav-container>
 
 <ng-template #joyRideStepContent>

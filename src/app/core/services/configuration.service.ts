@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { of, tap } from 'rxjs';
 import { SptTag, SptVersion } from '../../../../shared/models/spt-core.model';
-import { ElectronService } from './electron.service';
 import { ForgeApiService } from './forge-api.service';
 
 export interface ModDependency {

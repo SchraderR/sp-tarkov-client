@@ -157,7 +157,7 @@ export class ZipArchiveHelper {
     const fileName = path.basename(archivePath);
     const newFileName = fileName.replace(/\(\d+\)/g, '');
 
-    fs.copyFileSync(archivePath, path.join(args.sptInstancePath, clientPluginModPath, newFileName));
+    fs.copyFileSync(archivePath, path.join(args.instancePath, clientPluginModPath, newFileName));
 
     return true;
   }

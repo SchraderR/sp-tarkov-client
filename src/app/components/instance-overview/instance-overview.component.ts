@@ -16,10 +16,10 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-    selector: 'app-instance-overview',
-    templateUrl: './instance-overview.component.html',
-    styleUrl: './instance-overview.component.scss',
-    imports: [
+  selector: 'app-instance-overview',
+  templateUrl: './instance-overview.component.html',
+  styleUrl: './instance-overview.component.scss',
+  imports: [
     RouterLink,
     MatButtonModule,
     MatProgressSpinnerModule,
@@ -32,8 +32,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
     MatCard,
     MatCardActions,
     MatCardHeader,
-    MatCardContent
-]
+    MatCardContent,
+  ],
 })
 export default class InstanceOverviewComponent implements OnInit {
   @ViewChild('instanceToggleModWarning', { static: true }) instanceToggleModWarning!: TemplateRef<unknown>;
@@ -90,7 +90,7 @@ export default class InstanceOverviewComponent implements OnInit {
 
     const toggleModState: ToggleModStateModel = {
       isServerMod: isServerMod,
-      sptInstancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
+      sptInstancePath: this.activeSptInstance.sptRootDirectory,
       modOriginalPath: mod.modOriginalPath,
       modOriginalName: mod.modOriginalName,
       isPrePatcherMod: mod.isPrePatcherMod ?? false,

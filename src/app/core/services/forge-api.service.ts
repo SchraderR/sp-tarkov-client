@@ -61,7 +61,7 @@ export interface ForgeMod {
   teaser: string; // 'Minus est minima quibusdam necessitatibus inventore iste.';
   thumbnail: string;
   downloads: number; // 55212644;
-  source_code_url: string; // 'http://oconnell.com/earum-sed-fugit-corrupti';
+  source_code_links: ForgeSourceCode[]; // 'http://oconnell.com/earum-sed-fugit-corrupti';
   detail_url: string; // 'https://forge.sp-tarkov.com/mods/1/recusandae-velit-incidunt,';
   featured: boolean;
   contains_ads: boolean;
@@ -71,6 +71,11 @@ export interface ForgeMod {
   updated_at: string; // '2025-04-10T13:50:00.000000Z';
   versions?: ForgeModVersion[];
   dependencies?: Mod[]; // TODO CHECK INTERFACE / CHECK DEPENDENCY
+}
+
+export interface ForgeSourceCode {
+  url: string; // "http://oconnell.com/earum-sed-fugit-corrupti",
+  label: null;
 }
 
 export interface ForgeModVersion {
@@ -116,7 +121,7 @@ export class ForgeApiService {
       params: new HttpParams()
         .set('sort', `${sortOrder === 'DESC' ? '-' : ''}${sort}`)
         .set('page', page)
-        .set('include', 'versions')
+        .set('include', 'versions,source_code_links')
         .set('per_page', 12),
     };
 
@@ -125,7 +130,7 @@ export class ForgeApiService {
 
   searchMod(searchText: string) {
     const options = {
-      params: new HttpParams().set('filter[name]', searchText).set('include', 'versions'),
+      params: new HttpParams().set('filter[name]', searchText).set('include', 'versions,source_code_links'),
     };
 
     return this.httpClient.get<PaginatedBaseApi<Mod[]>>(`${environment.forgeBasePath}/mods`, options);

@@ -91,18 +91,24 @@ export class DownloadService {
   }
 
   private async installProcess(mod: Mod, hubId: number, activeInstance: UserSettingModel) {
+    console.log(mod);
+    console.log(hubId);
+
     if (!mod?.installProgress) {
       return;
     }
+    console.log(mod?.installProgress?.error);
     if (mod?.installProgress?.error) {
       mod.installProgress = this.modListService.initialInstallProgress();
     }
 
     mod.installProgress.downloadStep.start = true;
     this.modListService.updateMod();
+    console.log('this.modListService ');
 
     this.electronService.getDownloadModProgressForFileId().subscribe((progress: DownloadProgress) => {
       if (mod.installProgress!.error) {
+        console.log(mod.installProgress!.error);
         return;
       }
 
@@ -111,12 +117,14 @@ export class DownloadService {
       mod.installProgress!.downloadStep.transferredBytes = FileHelper.fileSize(+progress.transferredBytes);
       this.downloadProgressEvent.next();
     });
+    console.log(mod);
 
     const linkModel: LinkModel = {
       modId: mod.id,
       sptInstancePath: activeInstance.sptRootDirectory,
-      downloadUrl: mod.source_code_url,
+      downloadUrl: mod.source_code_links?.[0]?.url,
     };
+    console.log(linkModel);
 
     await this.electronService
       .sendEvent<string, LinkModel>('process-download-link', linkModel)

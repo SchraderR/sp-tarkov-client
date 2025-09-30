@@ -33,8 +33,8 @@ export class UserSettingsService {
     this.isTutorialDone.update(() => state);
   }
 
-  removeUserSetting(akiRootDirectory: string) {
-    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== akiRootDirectory)]);
+  removeUserSetting(rootDirectory: string) {
+    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== rootDirectory)]);
   }
 
   getActiveInstance(): UserSettingModel | undefined {

@@ -11,36 +11,36 @@ export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>
     await handleUserSettingStoreEvent(event, store);
   });
 
-  ipcMain.on('user-settings-update', (event, akiInstance: SptInstance) => {
-    handleUpdateUserSettingStoreEvent(event, store, akiInstance);
+  ipcMain.on('user-settings-update', (event, instance: SptInstance) => {
+    handleUpdateUserSettingStoreEvent(event, store, instance);
   });
 
-  ipcMain.on('user-settings-remove', (event, akiRootDirectory: string) => {
-    handleRemoveUserSettingStoreEvent(event, store, akiRootDirectory);
+  ipcMain.on('user-settings-remove', (event, rootDirectory: string) => {
+    handleRemoveUserSettingStoreEvent(event, store, rootDirectory);
   });
 };
 
-function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiRootDirectory: string) {
-  const index = store.get('sptInstances').findIndex(i => i.sptRootDirectory === akiRootDirectory);
+function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, rootDirectory: string) {
+  const index = store.get('sptInstances').findIndex(i => i.sptRootDirectory === rootDirectory);
   if (index === -1) {
     // TODO Exception
     return;
   }
 
-  const currentSetting = store.get('sptInstances').filter(i => i.sptRootDirectory !== akiRootDirectory);
+  const currentSetting = store.get('sptInstances').filter(i => i.sptRootDirectory !== rootDirectory);
   store.set('sptInstances', currentSetting);
   event.sender.send('user-settings-remove-completed');
 }
 
-function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, akiInstance: SptInstance) {
-  const currentIndex = store.get('sptInstances').findIndex(i => i.sptRootDirectory === akiInstance.sptRootDirectory);
+function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, instance: SptInstance) {
+  const currentIndex = store.get('sptInstances').findIndex(i => i.sptRootDirectory === instance.sptRootDirectory);
   if (currentIndex === -1) {
     // TODO Exception
     return;
   }
 
   const instances = store.get('sptInstances');
-  instances.forEach(i => (i.isActive = i.sptRootDirectory === akiInstance.sptRootDirectory));
+  instances.forEach(i => (i.isActive = i.sptRootDirectory === instance.sptRootDirectory));
   store.set('sptInstances', instances);
 
   event.sender.send('user-settings-update-completed');
@@ -61,22 +61,21 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
       let sptCoreJson: string = '';
 
       stableSptCoreConfigPath.forEach(sptCorePath => {
-        if (!fs.existsSync(path.join(sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory, sptCorePath))) {
-          log.error(`${sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory}/${sptCorePath} not available.`);
+        if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptCorePath))) {
+          log.error(`${sptInstance.sptRootDirectory}/${sptCorePath} not available.`);
           return;
         }
 
-        sptCoreJson = fs.readFileSync(path.join(sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory, sptCorePath), 'utf-8');
+        sptCoreJson = fs.readFileSync(path.join(sptInstance.sptRootDirectory, sptCorePath), 'utf-8');
       });
 
       userSettingModelResult.push({
-        sptRootDirectory: sptInstance.sptRootDirectory ?? sptInstance.akiRootDirectory,
+        sptRootDirectory: sptInstance.sptRootDirectory,
         sptCore: sptCoreJson ? JSON.parse(sptCoreJson) : null,
         isValid: !!sptCoreJson,
         isActive: sptInstance.isActive,
         isLoading: sptInstance.isLoading,
         isError: sptInstance.isError,
-        isPowerShellIssue: sptInstance.isPowerShellIssue,
         clientMods: sptInstance.clientMods ?? [],
         serverMods: sptInstance.serverMods ?? [],
       });

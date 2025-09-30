@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { catchError, concatAll, filter, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, concatAll, filter, firstValueFrom, forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -32,6 +32,7 @@ import { DownloadService } from './core/services/download.service';
 import { Mod } from './core/models/mod';
 import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
+import { ForgeApiService } from './core/services/forge-api.service';
 
 @Component({
   selector: 'app-root',
@@ -65,6 +66,7 @@ export class AppComponent {
   private readonly electronService = inject(ElectronService);
   private readonly userSettingService = inject(UserSettingsService);
   private readonly downloadService = inject(DownloadService);
+  private forgeApiService = inject(ForgeApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly modListService = inject(ModListService);
   private readonly joyrideService = inject(JoyrideService);
@@ -208,19 +210,20 @@ export class AppComponent {
       .subscribe(value => this.ngZone.run(() => this.userSettingService.updateTutorialDone(value.args)));
   }
 
+  // TODO REFACTORING MOD CACHE
+  // Mod Cache will be an list of ids
+  // loaded its will be fetched with mod/details and populated infos
   private getCachedModList() {
     this.electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
       this.ngZone.run(() => {
         value.args.forEach(async modCache => {
-          const mod: Mod = {
-            ...modCache,
-            supportedSptVersion: `C*${modCache.supportedSptVersion}`,
-            kind: '',
-            notSupported: false,
-            isInvalid: false,
-            dependencies: [],
-            isDependenciesLoading: false,
-          };
+          // TODO Refactor cache mod informations
+          // maybe save basic informations, show them and start deching detail informations and override cached informations
+          // update infformation only after X TIME (so its not fetching all the time)
+          // should override cached information
+          const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modCache.modId));
+
+          const mod = { ...modDetail.data } as unknown as Mod;
           await this.modListService.addMod(mod);
         });
       })
@@ -273,11 +276,7 @@ export class AppComponent {
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    if (error.isPowerShellIssue) {
-      userSettingModel.isPowerShellIssue = true;
-    } else {
-      userSettingModel.isError = true;
-    }
+    userSettingModel.isError = true;
 
     return of({
       userSetting: userSettingModel,
@@ -292,16 +291,14 @@ export class AppComponent {
       return;
     }
 
-    this.electronService
-      .sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
-      .subscribe(value =>
-        this.ngZone.run(() => {
-          this.userSettingService.keepTempDownloadDirectorySize.set({
-            size: value.args,
-            text: FileHelper.fileSize(value.args),
-          });
-          this.changeDetectorRef.detectChanges();
-        })
-      );
+    this.electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory).subscribe(value =>
+      this.ngZone.run(() => {
+        this.userSettingService.keepTempDownloadDirectorySize.set({
+          size: value.args,
+          text: FileHelper.fileSize(value.args),
+        });
+        this.changeDetectorRef.detectChanges();
+      })
+    );
   }
 }

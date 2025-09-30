@@ -91,7 +91,7 @@ export class ModSearchComponent {
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
-    console.log(mod);
+    console.log('addModToModList SEARCH mod', mod);
     event.stopPropagation();
 
     const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };

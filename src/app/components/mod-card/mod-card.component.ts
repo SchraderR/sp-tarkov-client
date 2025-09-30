@@ -11,6 +11,8 @@ import { Observable } from 'rxjs';
 import { ElectronService } from '../../core/services/electron.service';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { DownloadService } from '../../core/services/download.service';
+import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
+import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
 
 export interface ModLicenseInformation {
   url: string;
@@ -21,7 +23,18 @@ export interface ModLicenseInformation {
   selector: 'app-mod-card',
   templateUrl: './mod-card.component.html',
   styleUrl: './mod-card.component.scss',
-  imports: [CommonModule, MatCardModule, NgOptimizedImage, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatIconModule, MatRippleModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    NgOptimizedImage,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatRippleModule,
+    SemverSptVersionPipe,
+    ImagePathResolverPipe,
+  ],
   animations: [fadeInFadeOutAnimation],
 })
 export class ModCardComponent implements OnInit {

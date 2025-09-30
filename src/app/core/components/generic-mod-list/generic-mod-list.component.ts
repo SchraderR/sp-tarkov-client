@@ -95,7 +95,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.sortTypeFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData(this.pageNumber));
-
     this.sortOrderFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData(this.pageNumber));
 
     this.sptVersionFormField.valueChanges
@@ -125,7 +124,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   async addModToModList(mod: Mod) {
-    console.log(mod);
+    console.log('modmodmod', mod);
     const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
 
     await this.modListService.addMod(mod);
