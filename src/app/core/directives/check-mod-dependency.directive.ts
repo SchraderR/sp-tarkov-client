@@ -1,7 +1,6 @@
-import { computed, Directive, inject, Input } from '@angular/core';
+import { computed, Directive, inject, input } from '@angular/core';
 import { ConfigurationService } from '../services/configuration.service';
 import { Mod } from '../models/mod';
-import { FileHelper } from '../helper/file-helper';
 
 @Directive({
   standalone: true,
@@ -9,21 +8,19 @@ import { FileHelper } from '../helper/file-helper';
   exportAs: 'hasModDependencies',
 })
 export class CheckModDependencyDirective {
-  #configurationService = inject(ConfigurationService);
-
-  @Input({ required: true }) mod!: Mod;
+  private readonly configurationService = inject(ConfigurationService);
+  readonly mod = input.required<Mod>();
 
   hasModDependencies = computed(() => this.checkForModDependencies());
 
   private checkForModDependencies() {
-    const config = this.#configurationService.configSignal();
-    const fileId = FileHelper.extractFileIdFromUrl(this.mod.fileUrl);
+    const config = this.configurationService.configSignal();
 
-    if (!fileId || !config) {
+    if (!this.mod().id || !config) {
       return false;
     }
 
-    const modDependencySetting = config.modDependency.find(d => d.hubId === fileId);
+    const modDependencySetting = config.modDependency.find(d => d.hubId === this.mod().id);
     if (!modDependencySetting) {
       return false;
     }

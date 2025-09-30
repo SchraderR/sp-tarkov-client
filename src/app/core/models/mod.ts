@@ -1,22 +1,26 @@
 ﻿import { DownloadProgress } from '../../../../shared/models/download.model';
+import { ForgeMod } from '../services/forge-api.service';
 
-export interface Mod {
-  name: string;
-  modVersion?: string;
-  fileUrl: string;
-  kind: string;
+// TODO REFACTORING
+// export interface UPDATED_MOD_REFACTOR_LATER extends ForgeMod, Mod {}
+
+export interface Mod extends ForgeMod {
+  //   name: string;
+  //   hubId?: string;
+  //   modVersion?: string;
+  //   fileUrl: string;
+  //   kind: string;
   notSupported: boolean;
-  supportedSptVersion: string;
-  image?: string;
-  icon?: string;
-  teaser?: string;
+  //   supportedSptVersion: string;
+  //   image?: string;
+  //   icon?: string;
   isDependenciesLoading: boolean;
-  dependencies: Mod[];
-  lastUpdate?: string;
+  //   dependencies: Mod[];
+  //   lastUpdate?: string;
   isInvalid: boolean;
-  isAlreadyInModList?: boolean;
+  //   isAlreadyInModList?: boolean;
   installProgress?: InstallProgress;
-  sptVersionColorCode?: string;
+  //   sptVersionColorCode?: string;
 }
 
 export interface InstallProgress {
@@ -24,7 +28,6 @@ export interface InstallProgress {
   started?: Date;
   finished?: Date;
   error?: boolean;
-  linkStep: StepProgress;
   downloadStep: DownloadProgress;
   unzipStep: StepProgress;
 }

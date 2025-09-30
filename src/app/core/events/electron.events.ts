@@ -1,9 +1,9 @@
 ﻿export type applicationElectronEventNames =
   | 'open-directory'
+  | 'user-setting'
   | 'user-settings'
   | 'user-settings-update'
   | 'user-settings-remove'
-  | 'download-link'
   | 'download-mod'
   | 'file-unzip'
   | 'client-mod'
@@ -38,13 +38,13 @@
   | 'temp-dir-size'
   | 'save-mod-load-order'
   | 'check-installed-toggle'
-  | 'check-installed-setting';
+  | 'check-installed-setting'
+  | 'process-download-link';
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
 
 export enum ApplicationElectronFileError {
-  downloadLinkError,
   downloadError,
   unzipError,
 }

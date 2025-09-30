@@ -61,33 +61,33 @@ import { FileHelper } from './core/helper/file-helper';
   animations: [sidenavAnimation],
 })
 export class AppComponent {
-  #matIconRegistry = inject(MatIconRegistry);
-  #electronService = inject(ElectronService);
-  #userSettingService = inject(UserSettingsService);
-  #downloadService = inject(DownloadService);
-  #destroyRef = inject(DestroyRef);
-  #modListService = inject(ModListService);
-  #joyrideService = inject(JoyrideService);
-  #matSnackBar = inject(MatSnackBar);
-  #router = inject(Router);
-  #ngZone = inject(NgZone);
-  #changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly matIconRegistry = inject(MatIconRegistry);
+  private readonly electronService = inject(ElectronService);
+  private readonly userSettingService = inject(UserSettingsService);
+  private readonly downloadService = inject(DownloadService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly modListService = inject(ModListService);
+  private readonly joyrideService = inject(JoyrideService);
+  private readonly matSnackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
+  private readonly ngZone = inject(NgZone);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-  config = environment;
-  version = packageJson.version;
+  readonly config = environment;
+  readonly version = packageJson.version;
   isExpanded = false;
   isTarkovInstanceRunExpanded = false;
-  isExperimentalFunctionActive = this.#userSettingService.isExperimentalFunctionActive;
+  isExperimentalFunctionActive = this.userSettingService.isExperimentalFunctionActive;
 
   @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
 
-  modListSignal = this.#modListService.modListSignal;
+  modListSignal = this.modListService.modListSignal;
   appIconPath = 'assets/images/icon.png';
   githubRateLimit: GithubRateLimit | undefined = undefined;
 
   constructor() {
-    this.#matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
-    this.#downloadService.isDownloadProcessCompleted
+    this.matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+    this.downloadService.isDownloadProcessCompleted
       .pipe(
         filter(r => r),
         takeUntilDestroyed()
@@ -107,7 +107,7 @@ export class AppComponent {
     this.getGithubRateLimitInformation();
 
     effect(() => {
-      const isTutorialDone = this.#userSettingService.isTutorialDone();
+      const isTutorialDone = this.userSettingService.isTutorialDone();
       if (isTutorialDone === false) {
         this.showTutorialSnackbar();
       }
@@ -121,25 +121,25 @@ export class AppComponent {
     void this.matSideNav.toggle();
   }
 
-  openExternal = (url: string) => void this.#electronService.openExternal(url);
+  openExternal = (url: string) => void this.electronService.openExternal(url);
   sendWindowEvent = (event: 'window-minimize' | 'window-maximize' | 'window-close') =>
-    void this.#electronService.sendEvent(event).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+    void this.electronService.sendEvent(event).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
 
   openTarkovStartDrawer(): void {
     this.isTarkovInstanceRunExpanded = !this.isTarkovInstanceRunExpanded;
   }
 
   private getCurrentPersonalSettings() {
-    this.#electronService
+    this.electronService
       .sendEvent<UserSettingModel[]>('user-settings')
       .pipe(
         switchMap(res => res && this.getServerMods(res.args)),
         concatAll(),
-        takeUntilDestroyed(this.#destroyRef)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(value => {
-        this.#ngZone.run(() => {
-          const userSetting = this.#userSettingService.userSettingSignal().find(s => s.sptRootDirectory === value.userSetting.sptRootDirectory);
+        this.ngZone.run(() => {
+          const userSetting = this.userSettingService.userSettingSignal().find(s => s.sptRootDirectory === value.userSetting.sptRootDirectory);
           if (!userSetting) {
             return;
           }
@@ -147,11 +147,11 @@ export class AppComponent {
           userSetting.clientMods = value.clientMods.args;
           userSetting.serverMods = value.serverMods.args;
           userSetting.isError = value.userSetting.isError;
-          userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
+          // TODO CHECK REMOVE userSetting.isPowerShellIssue = value.userSetting.isPowerShellIssue;
           userSetting.isLoading = false;
 
-          this.#userSettingService.updateUserSetting();
-          this.#changeDetectorRef.detectChanges();
+          this.userSettingService.updateUserSetting();
+          this.changeDetectorRef.detectChanges();
         });
       });
   }
@@ -159,8 +159,8 @@ export class AppComponent {
   private getServerMods(userSettings: UserSettingModel[]) {
     return userSettings.map(userSetting => {
       const newUserSetting: UserSettingModel = { ...userSetting, isLoading: true };
-      this.#userSettingService.addUserSetting(newUserSetting);
-      this.#changeDetectorRef.detectChanges();
+      this.userSettingService.addUserSetting(newUserSetting);
+      this.changeDetectorRef.detectChanges();
 
       if (!newUserSetting.isValid) {
         return of({
@@ -172,47 +172,45 @@ export class AppComponent {
 
       return forkJoin({
         userSetting: of(userSetting),
-        serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
-        clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
+        serverMods: this.electronService.sendEvent<ModMeta[], string>('server-mod', userSetting.sptRootDirectory),
+        clientMods: this.electronService.sendEvent<ModMeta[], string>('client-mod', userSetting.sptRootDirectory),
       }).pipe(catchError(error => this.handleDirectoryPathError(error, userSetting)));
     });
   }
 
   private getGithubRateLimitInformation() {
-    this.#electronService.getGithubRateLimitInformation().subscribe(value => (this.githubRateLimit = value));
+    this.electronService.getGithubRateLimitInformation().subscribe(value => (this.githubRateLimit = value));
   }
 
   private getCurrentThemeSettings() {
-    this.#electronService.sendEvent<Theme>('theme-setting').subscribe(value => this.#userSettingService.currentTheme.set(value.args));
+    this.electronService.sendEvent<Theme>('theme-setting').subscribe(value => this.userSettingService.currentTheme.set(value.args));
   }
 
   private getCurrentExpFunctionSettings() {
-    this.#electronService
+    this.electronService
       .sendEvent<boolean>('exp-function-setting')
-      .subscribe(value => this.#userSettingService.isExperimentalFunctionActive.set(value.args));
+      .subscribe(value => this.userSettingService.isExperimentalFunctionActive.set(value.args));
   }
 
   private getCurrentTempDownloadDirectorySettings() {
-    this.#electronService
+    this.electronService
       .sendEvent<boolean>('keep-temp-dir-setting')
-      .subscribe(value => this.#userSettingService.keepTempDownloadDirectory.set(value.args));
+      .subscribe(value => this.userSettingService.keepTempDownloadDirectory.set(value.args));
   }
 
   private getCurrentCheckInstalledModSetting() {
-    this.#electronService
-      .sendEvent<boolean>('check-installed-setting')
-      .subscribe(value => this.#userSettingService.checkInstalledMod.set(value.args));
+    this.electronService.sendEvent<boolean>('check-installed-setting').subscribe(value => this.userSettingService.checkInstalledMod.set(value.args));
   }
 
   private getCurrentTutorialSettings() {
-    this.#electronService
+    this.electronService
       .sendEvent<boolean>('tutorial-setting')
-      .subscribe(value => this.#ngZone.run(() => this.#userSettingService.updateTutorialDone(value.args)));
+      .subscribe(value => this.ngZone.run(() => this.userSettingService.updateTutorialDone(value.args)));
   }
 
   private getCachedModList() {
-    this.#electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
-      this.#ngZone.run(() => {
+    this.electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
+      this.ngZone.run(() => {
         value.args.forEach(async modCache => {
           const mod: Mod = {
             ...modCache,
@@ -223,7 +221,7 @@ export class AppComponent {
             dependencies: [],
             isDependenciesLoading: false,
           };
-          await this.#modListService.addMod(mod);
+          await this.modListService.addMod(mod);
         });
       })
     );
@@ -231,14 +229,14 @@ export class AppComponent {
 
   private showTutorialSnackbar() {
     let instanceSet = false;
-    this.#matSnackBar
+    this.matSnackBar
       .openFromComponent(SnackbarTutorialHintComponent, { horizontalPosition: 'end' })
       .afterDismissed()
       .subscribe(selection => {
         if (selection.dismissedByAction) {
-          instanceSet = !!this.#userSettingService.userSettingSignal().length;
+          instanceSet = !!this.userSettingService.userSettingSignal().length;
 
-          this.#joyrideService
+          this.joyrideService
             .startTour({
               steps: [
                 'settingStepInstance@setting',
@@ -251,25 +249,25 @@ export class AppComponent {
             .subscribe({
               next: step => {
                 if (step.name === 'downloadStep') {
-                  this.#modListService.addFakeModForTutorial();
+                  this.modListService.addFakeModForTutorial();
                 }
 
                 if (step.name === 'settingStepInstance') {
-                  this.#userSettingService.checkInstanceOrFake();
+                  this.userSettingService.checkInstanceOrFake();
                 }
               },
               complete: () => {
                 console.log('complete');
                 if (!instanceSet) {
-                  this.#userSettingService.clearFakeInstance();
+                  this.userSettingService.clearFakeInstance();
                 }
-                this.#modListService.clearFakeTutorialMods();
-                this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
-                void this.#router.navigate(['/setting']);
+                this.modListService.clearFakeTutorialMods();
+                this.electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.userSettingService.updateTutorialDone(true));
+                void this.router.navigate(['/setting']);
               },
             });
         } else {
-          this.#electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.#userSettingService.updateTutorialDone(true));
+          this.electronService.sendEvent('tutorial-toggle', true).subscribe(() => this.userSettingService.updateTutorialDone(true));
         }
       });
   }
@@ -289,20 +287,20 @@ export class AppComponent {
   }
 
   private calculateCurrentDirectorySize() {
-    const activeInstance = this.#userSettingService.userSettingSignal().find(i => i.isActive);
+    const activeInstance = this.userSettingService.userSettingSignal().find(i => i.isActive);
     if (!activeInstance) {
       return;
     }
 
-    this.#electronService
+    this.electronService
       .sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
       .subscribe(value =>
-        this.#ngZone.run(() => {
-          this.#userSettingService.keepTempDownloadDirectorySize.set({
+        this.ngZone.run(() => {
+          this.userSettingService.keepTempDownloadDirectorySize.set({
             size: value.args,
             text: FileHelper.fileSize(value.args),
           });
-          this.#changeDetectorRef.detectChanges();
+          this.changeDetectorRef.detectChanges();
         })
       );
   }

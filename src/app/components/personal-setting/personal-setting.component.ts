@@ -46,40 +46,40 @@ import { FileHelper } from '../../core/helper/file-helper';
 export default class PersonalSettingComponent {
   @ViewChildren('loading') matList: QueryList<MatListItem> | undefined;
 
-  #destroyRef = inject(DestroyRef);
-  #electronService = inject(ElectronService);
-  #userSettingsService = inject(UserSettingsService);
-  #changeDetectorRef = inject(ChangeDetectorRef);
-  #matSnackBar = inject(MatSnackBar);
-  #ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly electronService = inject(ElectronService);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly matSnackBar = inject(MatSnackBar);
+  private readonly ngZone = inject(NgZone);
 
-  readonly userSettingSignal = this.#userSettingsService.userSettingSignal;
-  currentTheme = new FormControl(this.#userSettingsService.currentTheme());
-  experimentalFunctionsActive = new FormControl(this.#userSettingsService.isExperimentalFunctionActive());
-  keepTempDownloadDirectory = new FormControl(this.#userSettingsService.keepTempDownloadDirectory());
-  checkInstalledMod = new FormControl(this.#userSettingsService.checkInstalledMod());
-  currentTempDirectorySize = this.#userSettingsService.keepTempDownloadDirectorySize;
+  readonly userSettingSignal = this.userSettingsService.userSettingSignal;
+  currentTheme = new FormControl(this.userSettingsService.currentTheme());
+  experimentalFunctionsActive = new FormControl(this.userSettingsService.isExperimentalFunctionActive());
+  keepTempDownloadDirectory = new FormControl(this.userSettingsService.keepTempDownloadDirectory());
+  checkInstalledMod = new FormControl(this.userSettingsService.checkInstalledMod());
+  currentTempDirectorySize = this.userSettingsService.keepTempDownloadDirectorySize;
   hoveringInstance = '';
 
   changeTheme(event: MatSelectChange) {
-    this.#electronService.sendEvent('theme-toggle', event.value).subscribe(() => this.#userSettingsService.currentTheme.set(event.value));
+    this.electronService.sendEvent('theme-toggle', event.value).subscribe(() => this.userSettingsService.currentTheme.set(event.value));
   }
 
   toggleExperimentalFunction(event: MatSlideToggleChange) {
-    this.#electronService.sendEvent('exp-function-toggle', event.checked).subscribe(() => {
-      this.#ngZone.run(() => this.#userSettingsService.isExperimentalFunctionActive.set(event.checked));
+    this.electronService.sendEvent('exp-function-toggle', event.checked).subscribe(() => {
+      this.ngZone.run(() => this.userSettingsService.isExperimentalFunctionActive.set(event.checked));
     });
   }
 
   toggleKeepTempDirectory(event: MatSlideToggleChange) {
-    this.#electronService.sendEvent('keep-temp-dir-setting-toggle', event.checked).subscribe(() => {
-      this.#ngZone.run(() => this.#userSettingsService.keepTempDownloadDirectory.set(event.checked));
+    this.electronService.sendEvent('keep-temp-dir-setting-toggle', event.checked).subscribe(() => {
+      this.ngZone.run(() => this.userSettingsService.keepTempDownloadDirectory.set(event.checked));
     });
   }
 
   toggleCheckInstalledMod(event: MatSlideToggleChange) {
-    this.#electronService.sendEvent('check-installed-toggle', event.checked).subscribe(() => {
-      this.#ngZone.run(() => this.#userSettingsService.checkInstalledMod.set(event.checked));
+    this.electronService.sendEvent('check-installed-toggle', event.checked).subscribe(() => {
+      this.ngZone.run(() => this.userSettingsService.checkInstalledMod.set(event.checked));
     });
   }
 
@@ -90,7 +90,7 @@ export default class PersonalSettingComponent {
     }
 
     if (this.currentTempDirectorySize().size > 0) {
-      this.#electronService.openPath(`${activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory}/_temp`);
+      this.electronService.openPath(`${activeInstance.sptRootDirectory}/_temp`);
     }
   }
 
@@ -100,60 +100,56 @@ export default class PersonalSettingComponent {
       return;
     }
 
-    this.#electronService
-      .sendEvent('clear-temp', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
-      .pipe(
-        switchMap(() =>
-          this.#electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory)
-        )
-      )
+    this.electronService
+      .sendEvent('clear-temp', activeInstance.sptRootDirectory)
+      .pipe(switchMap(() => this.electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)))
       .subscribe(value => {
-        this.#ngZone.run(() => {
-          this.#userSettingsService.keepTempDownloadDirectorySize.set({
+        this.ngZone.run(() => {
+          this.userSettingsService.keepTempDownloadDirectorySize.set({
             size: value.args,
             text: FileHelper.fileSize(value.args),
           });
-          this.#changeDetectorRef.detectChanges();
+          this.changeDetectorRef.detectChanges();
         });
       });
   }
 
   openInstance(rootDirectory: string) {
-    this.#electronService.openPath(rootDirectory);
+    this.electronService.openPath(rootDirectory);
   }
 
   restartTutorial() {
-    this.#electronService.sendEvent('tutorial-toggle', false).subscribe(() => this.#userSettingsService.updateTutorialDone(false));
+    this.electronService.sendEvent('tutorial-toggle', false).subscribe(() => this.userSettingsService.updateTutorialDone(false));
   }
 
   clearSptVersionCache() {
-    this.#electronService.sendEvent('spt-versions-save', []).subscribe(() => this.cacheClearToast('Spt-Versions'));
+    this.electronService.sendEvent('spt-versions-save', []).subscribe(() => this.cacheClearToast('Spt-Versions'));
   }
 
   clearSptTagsCache() {
-    this.#electronService.sendEvent('spt-tags-save', []).subscribe(() => this.cacheClearToast('Spt-Tags'));
+    this.electronService.sendEvent('spt-tags-save', []).subscribe(() => this.cacheClearToast('Spt-Tags'));
   }
 
   getRootEftSpDirectory() {
-    this.#electronService
+    this.electronService
       .sendEvent<UserSettingModel>('open-directory')
       .pipe(
         switchMap(result => {
           const newUserSetting: UserSettingModel = { ...result.args, isLoading: true };
-          this.#userSettingsService.addUserSetting(newUserSetting);
-          this.#changeDetectorRef.detectChanges();
+          this.userSettingsService.addUserSetting(newUserSetting);
+          this.changeDetectorRef.detectChanges();
 
           this.matList?.last?._elementRef.nativeElement.scrollIntoView({ behavior: 'smooth' });
 
           return forkJoin({
             userSetting: of(newUserSetting),
-            serverMods: this.#electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
-            clientMods: this.#electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
+            serverMods: this.electronService.sendEvent<ModMeta[], string>('server-mod', result.args.sptRootDirectory),
+            clientMods: this.electronService.sendEvent<ModMeta[], string>('client-mod', result.args.sptRootDirectory),
           }).pipe(catchError(error => this.handleDirectoryPathError(error, result.args)));
         }),
         tap(result => {
-          this.#ngZone.run(() => {
-            const userSetting = this.#userSettingsService.userSettingSignal().find(s => s.sptRootDirectory === result.userSetting.sptRootDirectory);
+          this.ngZone.run(() => {
+            const userSetting = this.userSettingsService.userSettingSignal().find(s => s.sptRootDirectory === result.userSetting.sptRootDirectory);
             if (!userSetting) {
               return;
             }
@@ -165,8 +161,8 @@ export default class PersonalSettingComponent {
           });
         }),
         catchError((error: { message: string }) => {
-          this.#ngZone.run(() => {
-            this.#matSnackBar.open(error.message, '', {
+          this.ngZone.run(() => {
+            this.matSnackBar.open(error.message, '', {
               duration: 3000,
               verticalPosition: 'bottom',
               horizontalPosition: 'center',
@@ -182,43 +178,35 @@ export default class PersonalSettingComponent {
   setActiveInstance(settingModel: UserSettingModel) {
     this.userSettingSignal().forEach(us => (us.isActive = false));
     settingModel.isActive = true;
-    this.#userSettingsService.updateUserSetting();
+    this.userSettingsService.updateUserSetting();
 
     const sptInstance: SptInstance = {
       isActive: settingModel.isActive,
       sptRootDirectory: settingModel.sptRootDirectory,
       isValid: settingModel.isValid,
       isLoading: settingModel.isLoading,
-      isPowerShellIssue: settingModel.isPowerShellIssue,
       isError: settingModel.isError,
       clientMods: settingModel.clientMods,
       serverMods: settingModel.serverMods,
     };
 
-    this.#electronService.sendEvent('user-settings-update', sptInstance).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe();
+    this.electronService.sendEvent('user-settings-update', sptInstance).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   removeInstance(settingModel: UserSettingModel) {
-    this.#electronService.sendEvent('user-settings-remove', settingModel.sptRootDirectory).subscribe(() => {
-      this.#ngZone.run(() => {
-        this.#userSettingsService.removeUserSetting(settingModel.sptRootDirectory);
-        this.#userSettingsService.updateUserSetting();
+    this.electronService.sendEvent('user-settings-remove', settingModel.sptRootDirectory).subscribe(() => {
+      this.ngZone.run(() => {
+        this.userSettingsService.removeUserSetting(settingModel.sptRootDirectory);
+        this.userSettingsService.updateUserSetting();
       });
     });
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
-    if (error.isPowerShellIssue) {
-      userSettingModel.isPowerShellIssue = true;
-    } else {
-      userSettingModel.isError = true;
-    }
+    userSettingModel.isError = true;
+    const errorMessage = `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
 
-    const errorMessage = userSettingModel.isPowerShellIssue
-      ? 'Powershell could not be used. \nPlease make sure, Powershell is configure correctly and environment variable are set correctly.'
-      : `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;
-
-    this.#matSnackBar.open(errorMessage, '', {
+    this.matSnackBar.open(errorMessage, '', {
       duration: 3000,
       verticalPosition: 'bottom',
       horizontalPosition: 'center',
@@ -233,8 +221,8 @@ export default class PersonalSettingComponent {
   }
 
   private cacheClearToast(type: 'Spt-Versions' | 'Spt-Tags'): void {
-    this.#ngZone.run(() => {
-      this.#matSnackBar.open(`${type} cache was cleared. ${type} will be fetched on the next startup.`, '', {
+    this.ngZone.run(() => {
+      this.matSnackBar.open(`${type} cache was cleared. ${type} will be fetched on the next startup.`, '', {
         duration: 3000,
         verticalPosition: 'bottom',
         horizontalPosition: 'center',

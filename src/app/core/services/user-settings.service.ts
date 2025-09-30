@@ -49,7 +49,6 @@ export class UserSettingsService {
           serverMods: [],
           clientMods: [],
           isActive: false,
-          isPowerShellIssue: false,
           sptCore: {
             sptVersion: '4.0.0',
           } as unknown as SptCore,
