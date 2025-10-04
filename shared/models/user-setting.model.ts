@@ -35,6 +35,7 @@ export interface UserSettingStoreModel {
   modCache: ModCache[];
   useIndexedMods: boolean;
   keepTempDownloadDirectory: boolean;
+  isMigrated: boolean;
 }
 
 export interface SptInstance {

@@ -51,6 +51,11 @@ export const createMainApiManagementWindow = (isServe: boolean, store: Store<Use
     //   });
     // });
 
+    const isMigrated = store.get('isMigrated');
+    if (!isMigrated) {
+      store.set('isMigrated', false);
+    }
+
     const theme = store.get('theme');
     if (!theme) {
       store.set('theme', 'system');

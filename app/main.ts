@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import { mainApplicationStart } from './main-application-start';
@@ -25,14 +26,21 @@ import { handleModPageEvents } from './events/mod-page.event';
 import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
 import { handleCheckInstalledEvents } from './events/toggle-check-installed.event';
 import { handleProcessDownloadLinkEvent } from './events/handleProcessDownloadLinkEvent';
+import { migrateFromStoreToSQLiteDb } from './database/migrateFromStoreToSQLiteDb';
+import { AppDataSource } from './database/data-source';
 
 log.initialize();
 
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
-void autoUpdater.checkForUpdatesAndNotify();
+AppDataSource.initialize()
+  .then(() => console.log('Connection initialized with database...'))
+  .catch(error => console.log(error));
 
+void autoUpdater.checkForUpdatesAndNotify();
 mainApplicationStart(isServe, store);
+void migrateFromStoreToSQLiteDb(store);
+
 handleOpenDirectoryEvent(store);
 handleDownloadModEvent();
 handleProcessDownloadLinkEvent();

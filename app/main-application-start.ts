@@ -1,4 +1,4 @@
-﻿import { app, Menu, Tray } from 'electron';
+﻿import { app, Menu, Tray, safeStorage } from 'electron';
 import { createMainApiManagementWindow } from './main-window';
 import { BrowserWindowSingleton } from './browserWindow';
 import * as Store from 'electron-store';
@@ -25,6 +25,8 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
     app.on('ready', () =>
       setTimeout(() => {
         createMainApiManagementWindow(isServe, store);
+
+        console.log(safeStorage.isEncryptionAvailable());
 
         tray = new Tray(iconPath);
         //tray.on('double-click', () => {

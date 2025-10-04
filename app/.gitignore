@@ -1,4 +1,9 @@
+.idea/
+.vscode/
 node_modules/
+build/
+tmp/
+temp/
 /test-results/
 /playwright-report/
 /blob-report/
