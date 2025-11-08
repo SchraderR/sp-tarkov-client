@@ -230,10 +230,14 @@ export class AppComponent {
             // maybe save basic informations, show them and start deching detail informations and override cached informations
             // update infformation only after X TIME (so its not fetching all the time)
             // should override cached information
-            const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modId));
 
-            const mod = { ...modDetail.data } as unknown as Mod;
-            this.modListService.addMod(mod);
+
+
+            // TODO CHECK because its called multiple times and spamming requests
+            // const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modId));
+
+            // const mod = { ...modDetail.data } as unknown as Mod;
+            // this.modListService.addMod(mod);
           });
         })
       );
