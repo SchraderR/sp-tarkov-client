@@ -21,6 +21,7 @@ import { IsAlreadyStartedDirective } from '../../core/directives/is-already-star
 import { ForgeApiService } from '../../core/services/forge-api.service';
 import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
 import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
+import { ModCacheModel } from '../../../../shared/models/mod-cache.model';
 
 @Component({
   selector: 'app-mod-search',
@@ -91,19 +92,25 @@ export class ModSearchComponent {
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
-    console.log('addModToModList SEARCH mod', mod);
     event.stopPropagation();
 
     const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
 
-    await this.modListService.addMod(mod);
+    this.modListService.addMod(mod);
     await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCacheItem));
   }
 
   async removeModFromModList(event: MouseEvent, mod: Mod) {
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      console.error('No active instance found');
+      return;
+    }
+
     event.stopPropagation();
 
     this.modListService.removeMod(mod.name);
-    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
+    const modCache: ModCacheModel = { instanceId: activeInstance.id, modId: mod.id };
+    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', modCache));
   }
 }

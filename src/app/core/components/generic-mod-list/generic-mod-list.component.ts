@@ -29,6 +29,7 @@ import { ForgeApiService } from '../../services/forge-api.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { ImagePathResolverPipe } from '../../pipes/image-path-resolver.pipe';
 import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
+import { ModCacheModel } from '../../../../../shared/models/mod-cache.model';
 
 export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -124,16 +125,25 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   async addModToModList(mod: Mod) {
-    console.log('modmodmod', mod);
-    const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      throw new Error('Active instance not found');
+    }
 
-    await this.modListService.addMod(mod);
-    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCacheItem));
+    this.modListService.addMod(mod);
+    const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
+    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCache));
   }
 
   async removeModFromModList(mod: Mod) {
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      throw new Error('Active instance not found');
+    }
+
     this.modListService.removeMod(mod.name);
-    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
+    const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
+    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', modCache));
   }
 
   openExternal(modFileUrl: string) {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, effect, inject, NgZone, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, effect, inject, linkedSignal, NgZone, ViewChild } from '@angular/core';
 import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { Router, RouterModule } from '@angular/router';
@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ElectronService } from './core/services/electron.service';
-import { ModCache, ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
+import { ModMeta, Theme, UserSettingModel } from '../../shared/models/user-setting.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSettingsService } from './core/services/user-settings.service';
 import { MatInputModule } from '@angular/material/input';
@@ -66,7 +66,7 @@ export class AppComponent {
   private readonly electronService = inject(ElectronService);
   private readonly userSettingService = inject(UserSettingsService);
   private readonly downloadService = inject(DownloadService);
-  private forgeApiService = inject(ForgeApiService);
+  private readonly forgeApiService = inject(ForgeApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly modListService = inject(ModListService);
   private readonly joyrideService = inject(JoyrideService);
@@ -99,7 +99,6 @@ export class AppComponent {
         this.calculateCurrentDirectorySize();
       });
 
-    this.getCachedModList();
     this.getCurrentPersonalSettings();
     this.getCurrentThemeSettings();
     this.getCurrentTutorialSettings();
@@ -109,6 +108,8 @@ export class AppComponent {
     this.getGithubRateLimitInformation();
 
     effect(() => {
+      this.getCachedModList();
+
       const isTutorialDone = this.userSettingService.isTutorialDone();
       if (isTutorialDone === false) {
         this.showTutorialSnackbar();
@@ -133,7 +134,7 @@ export class AppComponent {
 
   private getCurrentPersonalSettings() {
     this.electronService
-      .sendEvent<UserSettingModel[]>('user-settings')
+      .sendEvent<UserSettingModel[]>('user-instances')
       .pipe(
         switchMap(res => res && this.getServerMods(res.args)),
         concatAll(),
@@ -213,22 +214,31 @@ export class AppComponent {
   // TODO REFACTORING MOD CACHE
   // Mod Cache will be an list of ids
   // loaded its will be fetched with mod/details and populated infos
-  private getCachedModList() {
-    this.electronService.sendEvent<ModCache[]>('mod-list-cache').subscribe(value =>
-      this.ngZone.run(() => {
-        value.args.forEach(async modCache => {
-          // TODO Refactor cache mod informations
-          // maybe save basic informations, show them and start deching detail informations and override cached informations
-          // update infformation only after X TIME (so its not fetching all the time)
-          // should override cached information
-          const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modCache.modId));
+  private getCachedModList = linkedSignal({
+    source: this.userSettingService.userSettingSignal,
+    computation: (newOptions, previous) => {
+      const activeInstance = this.userSettingService.getActiveInstance();
+      if (!activeInstance) {
+        console.warn('No active instance in linked signal');
+        return;
+      }
 
-          const mod = { ...modDetail.data } as unknown as Mod;
-          await this.modListService.addMod(mod);
-        });
-      })
-    );
-  }
+      this.electronService.sendEvent<number[], number>('mod-list-cache', activeInstance.id).subscribe(value =>
+        this.ngZone.run(() => {
+          value.args.forEach(async modId => {
+            // TODO Refactor cache mod informations
+            // maybe save basic informations, show them and start deching detail informations and override cached informations
+            // update infformation only after X TIME (so its not fetching all the time)
+            // should override cached information
+            const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modId));
+
+            const mod = { ...modDetail.data } as unknown as Mod;
+            this.modListService.addMod(mod);
+          });
+        })
+      );
+    },
+  });
 
   private showTutorialSnackbar() {
     let instanceSet = false;
@@ -260,7 +270,6 @@ export class AppComponent {
                 }
               },
               complete: () => {
-                console.log('complete');
                 if (!instanceSet) {
                   this.userSettingService.clearFakeInstance();
                 }

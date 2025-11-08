@@ -17,6 +17,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ModDependencyCardComponent } from '../mod-dependency-card/mod-dependency-card.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ModCacheModel } from '../../../../shared/models/mod-cache.model';
+import { UserSettingsService } from '../../core/services/user-settings.service';
 
 @Component({
   selector: 'app-mod-list',
@@ -41,6 +43,7 @@ export default class ModListComponent implements OnInit {
   private readonly modListService = inject(ModListService);
   private readonly downloadService = inject(DownloadService);
   private readonly electronService = inject(ElectronService);
+  private readonly userSettingsService = inject(UserSettingsService);
   private readonly ngZone = inject(NgZone);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -65,8 +68,14 @@ export default class ModListComponent implements OnInit {
   downloadAndInstallAll = () => this.downloadService.downloadAndInstallAll();
 
   async removeMod(mod: Mod) {
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      console.error('No active instance found');
+      return;
+    }
+    const modCache: ModCacheModel = { instanceId: activeInstance.id, modId: mod.id };
     this.modListService.removeMod(mod.name);
-    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
+    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', modCache));
   }
 
   removeCompletedMods() {

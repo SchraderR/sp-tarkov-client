@@ -8,6 +8,7 @@ import { SptCore } from '../../../../shared/models/spt-core.model';
 export class UserSettingsService {
   private userSetting = signal<UserSettingModel[]>([]);
   readonly userSettingSignal = this.userSetting.asReadonly();
+
   currentTheme = signal<Theme | null>(null);
   isExperimentalFunctionActive = signal<boolean>(false);
   keepTempDownloadDirectory = signal<boolean>(false);
@@ -33,6 +34,7 @@ export class UserSettingsService {
     this.isTutorialDone.update(() => state);
   }
 
+  // TODO CHECK REFACTORING
   removeUserSetting(rootDirectory: string) {
     this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== rootDirectory)]);
   }
@@ -45,6 +47,7 @@ export class UserSettingsService {
     if (!this.userSettingSignal().length) {
       this.userSetting.set([
         {
+          id: 0,
           sptRootDirectory: 'C://TutorialPath/SPT',
           serverMods: [],
           clientMods: [],

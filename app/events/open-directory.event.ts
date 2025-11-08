@@ -6,19 +6,20 @@ import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableSptCoreConfigPath, stableSptServerName } from '../constants';
 import { BrowserWindowSingleton } from '../browserWindow';
 import * as log from 'electron-log';
+import { createInstance, findInstanceByPath } from '../database/controller/instance.controller';
 
-export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) => {
+export const handleOpenDirectoryEvent = () => {
   const browserWindow = BrowserWindowSingleton.getInstance();
 
   ipcMain.on('open-directory', event => {
-    dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then(selectedDirectoryValue => {
+    dialog.showOpenDialog(browserWindow, { properties: ['openDirectory'] }).then(async selectedDirectoryValue => {
       try {
         const selectedPath = selectedDirectoryValue.filePaths[0];
 
         if (fs.existsSync(selectedPath)) {
           const files = fs.readdirSync(selectedPath);
           const isSptRootDirectorySoftCheck = files.some(f => stableSptServerName.includes(f));
-          const isNewInstance = store.get('sptInstances').find(i => i.sptRootDirectory === selectedPath);
+          const isNewInstance = await findInstanceByPath(selectedPath);
           if (isNewInstance) {
             event.sender.send('open-directory-error', {
               message: 'Instance with this directory already exists.',
@@ -29,8 +30,6 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
           let coreJson: string = '';
 
           stableSptCoreConfigPath.forEach(corePath => {
-            console.log(corePath);
-
             if (!fs.existsSync(path.join(selectedPath, corePath))) {
               log.error(`${corePath} not available.`);
               return;
@@ -40,15 +39,22 @@ export const handleOpenDirectoryEvent = (store: Store<UserSettingStoreModel>) =>
           });
 
           if (isSptRootDirectorySoftCheck) {
-            store.set('sptInstances', [...store.get('sptInstances'), { sptRootDirectory: selectedPath }]);
-            event.sender.send('open-directory-completed', {
-              sptRootDirectory: selectedPath,
-              sptCore: JSON.parse(coreJson.trim()),
-              isValid: true,
-              isActive: false,
-              clientMods: [],
-              serverMods: [],
-            });
+            const newInstance = await createInstance(selectedPath);
+            if (newInstance) {
+              event.sender.send('open-directory-completed', {
+                id: newInstance.id,
+                sptRootDirectory: selectedPath,
+                sptCore: JSON.parse(coreJson.trim()),
+                isValid: true,
+                isActive: false,
+                clientMods: [],
+                serverMods: [],
+              });
+            } else {
+              event.sender.send('open-directory-error', {
+                message: 'Failed to create instance in database.',
+              });
+            }
           } else {
             event.sender.send('open-directory-error', {
               message: 'Unable to find SPT.Server. Please ensure EFT-SP is installed in this directory.',

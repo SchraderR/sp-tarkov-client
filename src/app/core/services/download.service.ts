@@ -10,6 +10,7 @@ import { DownloadProgress } from '../../../../shared/models/download.model';
 import { FileUnzipEvent } from '../../../../shared/models/unzip.model';
 import { Mod } from '../models/mod';
 import { UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { ModCacheModel } from '../../../../shared/models/mod-cache.model';
 
 export interface IndexedMods {
   name?: string;
@@ -38,6 +39,7 @@ export class DownloadService {
     this.isDownloadProcessCompleted.next(false);
     const activeInstance = this.userSettingsService.userSettingSignal().find(us => us.isActive);
     if (!activeInstance) {
+      console.error('No active instance found');
       return;
     }
 
@@ -79,7 +81,8 @@ export class DownloadService {
       //   }
       // }
 
-      await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', mod.name));
+      const modCache: ModCacheModel = { instanceId: activeInstance.id, modId: mod.id };
+      await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', modCache));
     }
 
     if (!this.keepTemporaryDownloadDirectory()) {

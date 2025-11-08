@@ -1,4 +1,4 @@
-<div style="display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px">
+<div style="display: flex; flex-direction: column; height: 100%; gap: 8px; padding-right: 16px;">
   <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent" [stepPosition]="!!userSettingSignal().length ? 'center' : 'bottom'">
     <mat-card-header>
       <mat-card-title>SPT-Instances ({{ userSettingSignal().length }})</mat-card-title>
@@ -20,7 +20,7 @@
                   matListItemIcon
                   class="active-star"
                   [class.fill]="settingModel.isActive"
-                  matTooltip="Set instance to active"
+                  matTooltip="{{settingModel.isActive ? 'This is your current active instance' : 'Set instance to active' }}"
                   (click)="setActiveInstance(settingModel)"
                 >
                   star
@@ -73,11 +73,6 @@
       </mat-form-field>
 
       <button mat-raised-button color="primary" style="width: fit-content" (click)="restartTutorial()">Restart Tutorial</button>
-
-      <div style="display: flex; gap: 8px">
-        <button mat-raised-button color="primary" style="width: fit-content" (click)="clearSptVersionCache()">Clear Spt-Versions</button>
-        <button mat-raised-button color="primary" style="width: fit-content" (click)="clearSptTagsCache()">Clear Spt-Tags</button>
-      </div>
 
       <div style="display: flex; flex-direction: column; gap: 8px">
         <mat-slide-toggle [formControl]="experimentalFunctionsActive" (change)="toggleExperimentalFunction($event)">

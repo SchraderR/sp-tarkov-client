@@ -226,7 +226,7 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
       }
       resolve(data);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   });
 }

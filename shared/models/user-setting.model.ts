@@ -1,4 +1,10 @@
 ﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
+import { InstanceEntity } from '../../app/database/entity/Instance';
+
+export interface InstanceDto extends InstanceEntity {
+  isValid: boolean;
+  sptCore?: SptCore;
+}
 
 export interface UpdateModMeta {
   name: string;
@@ -32,7 +38,7 @@ export interface UserSettingStoreModel {
   isCheckInstalledActive: boolean;
   sptVersions: SptVersion[];
   sptTags: SptTag[];
-  modCache: ModCache[];
+  modCache: number[];
   useIndexedMods: boolean;
   keepTempDownloadDirectory: boolean;
   isMigrated: boolean;
@@ -50,6 +56,7 @@ export interface SptInstance {
 }
 
 export interface UserSettingModel extends SptInstance {
+  id: number;
   sptCore?: SptCore;
 }
 

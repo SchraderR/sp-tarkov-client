@@ -122,14 +122,6 @@ export default class PersonalSettingComponent {
     this.electronService.sendEvent('tutorial-toggle', false).subscribe(() => this.userSettingsService.updateTutorialDone(false));
   }
 
-  clearSptVersionCache() {
-    this.electronService.sendEvent('spt-versions-save', []).subscribe(() => this.cacheClearToast('Spt-Versions'));
-  }
-
-  clearSptTagsCache() {
-    this.electronService.sendEvent('spt-tags-save', []).subscribe(() => this.cacheClearToast('Spt-Tags'));
-  }
-
   getRootEftSpDirectory() {
     this.electronService
       .sendEvent<UserSettingModel>('open-directory')
@@ -176,25 +168,19 @@ export default class PersonalSettingComponent {
   }
 
   setActiveInstance(settingModel: UserSettingModel) {
+    if (settingModel.isActive) {
+      return;
+    }
+
     this.userSettingSignal().forEach(us => (us.isActive = false));
     settingModel.isActive = true;
     this.userSettingsService.updateUserSetting();
 
-    const sptInstance: SptInstance = {
-      isActive: settingModel.isActive,
-      sptRootDirectory: settingModel.sptRootDirectory,
-      isValid: settingModel.isValid,
-      isLoading: settingModel.isLoading,
-      isError: settingModel.isError,
-      clientMods: settingModel.clientMods,
-      serverMods: settingModel.serverMods,
-    };
-
-    this.electronService.sendEvent('user-settings-update', sptInstance).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    this.electronService.sendEvent('user-instance-active', settingModel.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   removeInstance(settingModel: UserSettingModel) {
-    this.electronService.sendEvent('user-settings-remove', settingModel.sptRootDirectory).subscribe(() => {
+    this.electronService.sendEvent('user-instance-remove', settingModel.id).subscribe(() => {
       this.ngZone.run(() => {
         this.userSettingsService.removeUserSetting(settingModel.sptRootDirectory);
         this.userSettingsService.updateUserSetting();
@@ -217,16 +203,6 @@ export default class PersonalSettingComponent {
       userSetting: userSettingModel,
       serverMods: { args: [] },
       clientMods: { args: [] },
-    });
-  }
-
-  private cacheClearToast(type: 'Spt-Versions' | 'Spt-Tags'): void {
-    this.ngZone.run(() => {
-      this.matSnackBar.open(`${type} cache was cleared. ${type} will be fetched on the next startup.`, '', {
-        duration: 3000,
-        verticalPosition: 'bottom',
-        horizontalPosition: 'center',
-      });
     });
   }
 }

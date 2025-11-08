@@ -37,7 +37,7 @@ export interface ModLicenseInformation {
   ],
   animations: [fadeInFadeOutAnimation],
 })
-export class ModCardComponent implements OnInit {
+export class ModCardComponent {
   private readonly electronService = inject(ElectronService);
   private readonly downloadService = inject(DownloadService);
 
@@ -47,10 +47,6 @@ export class ModCardComponent implements OnInit {
   hovering = false;
   modLicenseInformation$: Observable<ModLicenseInformation> | null = null;
   isDownloadingAndInstalling$ = this.downloadService.isDownloadAndInstallInProgress;
-
-  ngOnInit() {
-    console.log(this.mod());
-  }
 
   removeModFromModList = (modDownloadItem: Mod) => this.removeModEvent.emit(modDownloadItem);
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);

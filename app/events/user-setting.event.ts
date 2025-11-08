@@ -1,61 +1,31 @@
-﻿import { ipcMain } from 'electron';
-import * as fs from 'fs';
-import * as Store from 'electron-store';
+﻿import * as fs from 'fs';
 import * as path from 'path';
-import { SptInstance, UserSettingModel, UserSettingStoreModel } from '../../shared/models/user-setting.model';
-import { stableSptCoreConfigPath } from '../constants';
 import * as log from 'electron-log';
+import { ipcMain } from 'electron';
+import { InstanceDto } from '../../shared/models/user-setting.model';
+import { stableSptCoreConfigPath } from '../constants';
+import { findInstanceById, getAllInstances, removeInstance , setInstanceActive } from '../database/controller/instance.controller';
 
-export const handleUserSettingStoreEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('user-settings', async event => {
-    await handleUserSettingStoreEvent(event, store);
-  });
-
-  ipcMain.on('user-settings-update', (event, instance: SptInstance) => {
-    handleUpdateUserSettingStoreEvent(event, store, instance);
-  });
-
-  ipcMain.on('user-settings-remove', (event, rootDirectory: string) => {
-    handleRemoveUserSettingStoreEvent(event, store, rootDirectory);
-  });
+export const handleUserSettingStoreEvents = () => {
+  ipcMain.on('user-instances', async event => await getAllInstancesEvent(event));
+  ipcMain.on('user-instance-active', (event, instanceId: number) => toggleInstanceActiveEvent(event, instanceId));
+  ipcMain.on('user-instance-remove', (event, instanceId: number) => removeUserSettingStoreEvent(event, instanceId));
 };
 
-function handleRemoveUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, rootDirectory: string) {
-  const index = store.get('sptInstances').findIndex(i => i.sptRootDirectory === rootDirectory);
-  if (index === -1) {
-    // TODO Exception
-    return;
-  }
-
-  const currentSetting = store.get('sptInstances').filter(i => i.sptRootDirectory !== rootDirectory);
-  store.set('sptInstances', currentSetting);
-  event.sender.send('user-settings-remove-completed');
+async function toggleInstanceActiveEvent(event: Electron.IpcMainEvent, instanceId: number) {
+  await setInstanceActive(instanceId);
+  event.sender.send('user-instance-active-completed');
 }
 
-function handleUpdateUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>, instance: SptInstance) {
-  const currentIndex = store.get('sptInstances').findIndex(i => i.sptRootDirectory === instance.sptRootDirectory);
-  if (currentIndex === -1) {
-    // TODO Exception
-    return;
-  }
-
-  const instances = store.get('sptInstances');
-  instances.forEach(i => (i.isActive = i.sptRootDirectory === instance.sptRootDirectory));
-  store.set('sptInstances', instances);
-
-  event.sender.send('user-settings-update-completed');
-}
-
-async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: Store<UserSettingStoreModel>) {
-  const sptInstances = store.get('sptInstances');
+async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
+  const sptInstances = await getAllInstances();
   if (!sptInstances || sptInstances.length === 0) {
-    // TODO ERROR HANDLING
+    log.warn('No instances found.');
     event.sender.send('user-settings-completed', []);
     return;
   }
 
-  const userSettingModelResult: UserSettingModel[] = [];
-
+  const userSettingModelResult: InstanceDto[] = [];
   for (const sptInstance of sptInstances) {
     try {
       let sptCoreJson: string = '';
@@ -70,18 +40,34 @@ async function handleUserSettingStoreEvent(event: Electron.IpcMainEvent, store: 
       });
 
       userSettingModelResult.push({
+        id: sptInstance.id,
         sptRootDirectory: sptInstance.sptRootDirectory,
+        isActive: sptInstance.isActive,
+        modCache: sptInstance.modCache,
+
         sptCore: sptCoreJson ? JSON.parse(sptCoreJson) : null,
         isValid: !!sptCoreJson,
-        isActive: sptInstance.isActive,
-        isLoading: sptInstance.isLoading,
-        isError: sptInstance.isError,
-        clientMods: sptInstance.clientMods ?? [],
-        serverMods: sptInstance.serverMods ?? [],
+        // isActive: sptInstance.isActive,
+        // isLoading: sptInstance.isLoading,
+        // isError: sptInstance.isError,
+        // clientMods: sptInstance.clientMods ?? [],
+        // serverMods: sptInstance.serverMods ?? [],
       });
     } catch (e) {
       log.error(e);
     }
   }
-  event.sender.send('user-settings-completed', userSettingModelResult);
+
+  event.sender.send('user-instances-completed', userSettingModelResult);
+}
+
+async function removeUserSettingStoreEvent(event: Electron.IpcMainEvent, instanceId: number) {
+  const instance = await findInstanceById(instanceId);
+  if (!instance) {
+    log.error(`Instance with id ${instanceId} not found.`);
+    return;
+  }
+
+  await removeInstance(instanceId);
+  event.sender.send('user-instance-remove-completed');
 }

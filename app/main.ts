@@ -17,6 +17,6 @@ if (!isMigrated) {
 
 void initializeDatabaseAndMigration(store);
 mainApplicationStart(isServe);
-registerEventHandlers(store, isServe)
+registerEventHandlers(isServe)
 
 void autoUpdater.checkForUpdatesAndNotify();

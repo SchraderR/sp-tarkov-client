@@ -78,7 +78,7 @@ export const handleServerModsEvent = () => {
         }
         resolve(data);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     });
   }

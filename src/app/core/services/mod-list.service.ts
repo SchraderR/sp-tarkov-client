@@ -25,7 +25,7 @@ export class ModListService {
     this.useIndexedMods.set(value);
   }
 
-  async addMod(mod: Mod) {
+  addMod(mod: Mod) {
     if (this.modList().some(m => m.name === mod.name)) {
       return;
     }

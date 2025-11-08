@@ -1,9 +1,8 @@
 import { ipcMain } from 'electron';
+import { spawn } from 'node:child_process';
 import * as path from 'path';
 import * as child from 'child_process';
-import { spawn } from 'node:child_process';
 import * as log from 'electron-log';
-import { existsSync } from 'fs-extra';
 
 const exeNameSpt = 'SPT.Server.exe';
 
