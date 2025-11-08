@@ -1,21 +1,12 @@
-﻿import { app, Menu, Tray, safeStorage } from 'electron';
+﻿import { app, Tray, safeStorage } from 'electron';
 import { createMainApiManagementWindow } from './main-window';
 import { BrowserWindowSingleton } from './browserWindow';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import * as path from 'path';
 
-export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
+export const mainApplicationStart = (isServe: boolean): void => {
   let tray: Tray | null;
   const iconPath = path.join(__dirname, 'assets/icon_tray.png');
   const browserWindow = BrowserWindowSingleton.getInstance();
-  const instance = store.get('sptInstances');
-  if (!instance) {
-    store.set('sptInstances', []);
-    store.set('theme', 'system');
-    store.set('isTutorialDone', false);
-    store.set('isExperimentalFunctionsActive', false);
-  }
 
   //if (process.platform === 'win32') {
   //  app.setAppUserModelId('SP-EFT Manager');
@@ -24,8 +15,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
   try {
     app.on('ready', () =>
       setTimeout(() => {
-        createMainApiManagementWindow(isServe, store);
-
+        createMainApiManagementWindow(isServe);
         console.log(safeStorage.isEncryptionAvailable());
 
         tray = new Tray(iconPath);
@@ -51,7 +41,7 @@ export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingS
 
     app.on('activate', () => {
       if (browserWindow === null) {
-        createMainApiManagementWindow(isServe, store);
+        createMainApiManagementWindow(isServe);
       }
     });
   } catch (e) {}

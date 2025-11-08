@@ -1,12 +1,8 @@
-import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { CoreEntity } from './Core';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({name: 'Instance'})
+@Entity({ name: 'Instance' })
 export class InstanceEntity {
   @PrimaryGeneratedColumn() id: number
-  @Column() sptRootDirectory: string
-  @Column() isActive: boolean
-
-  @ManyToOne(() => CoreEntity, (core) => core.instances)
-  core: CoreEntity
+  @Column() sptRootDirectory: string;
+  @Column() isActive: boolean;
 }

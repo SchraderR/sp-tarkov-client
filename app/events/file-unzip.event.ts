@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as log from 'electron-log';
-import { ZipArchiveHelper } from '../helper/zip-archive-helper';
+import { ZipArchiveHelper } from '../helper/zip-archive.helper';
 
 export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {

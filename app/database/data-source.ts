@@ -1,17 +1,16 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { app } from 'electron';
-import { CoreEntity } from './entity/Core';
 import { InstanceEntity } from './entity/Instance';
+import { UserSettingEntity } from './entity/UserSetting';
 
 const appPath = app.getPath('userData');
-console.log(appPath);
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: `${appPath}\\database.sqlite`,
   synchronize: true,
   logging: false,
-  entities: [CoreEntity, InstanceEntity],
+  entities: [UserSettingEntity, InstanceEntity],
   migrations: [],
   subscribers: [],
 });

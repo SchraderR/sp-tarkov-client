@@ -2,64 +2,21 @@ import 'reflect-metadata';
 import * as Store from 'electron-store';
 import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import { mainApplicationStart } from './main-application-start';
-import { handleOpenDirectoryEvent } from './events/open-directory.event';
-import { handleUserSettingStoreEvents } from './events/user-setting.event';
-import { handleDownloadModEvent } from './events/download-mod.event';
-import { handleFileUnzipEvent } from './events/file-unzip.event';
-import { handleClientModsEvent } from './events/client-mods.event';
-import { handleServerModsEvent } from './events/server-mods.event';
-import { handleWindowEvents } from './events/window.event';
 import { autoUpdater } from 'electron-updater';
-import { handleClearTemporaryDirectoryEvent } from './events/clear-temp.event';
-import { handleThemeEvents } from './events/theme.event';
-import { handleTutorialEvents } from './events/tutorial.event';
-import { handleTarkovStartEvent } from './events/tarkov-start.event';
-import { handleExperimentalFunctionsEvents } from './events/experimental-functions.event';
-import { handleModLoadOrderEvents } from './events/mod-load-order.event';
 import * as log from 'electron-log';
-import { handleUpdateModEvents } from './events/update-mod.event';
-import { handleSptTagEvents } from './events/spt-tag.event';
-import { handleSptVersionEvents } from './events/spt-version.event';
-import { handleModCacheEvents } from './events/mod-list-cache.event';
-import { toggleModStateEvent } from './events/toggle-mod-state.event';
-import { handleModPageEvents } from './events/mod-page.event';
-import { handleTempDownloadDirectoryEvents } from './events/temp-download-directory.event';
-import { handleCheckInstalledEvents } from './events/toggle-check-installed.event';
-import { handleProcessDownloadLinkEvent } from './events/handleProcessDownloadLinkEvent';
-import { migrateFromStoreToSQLiteDb } from './database/migrateFromStoreToSQLiteDb';
-import { AppDataSource } from './database/data-source';
+import { initializeDatabaseAndMigration } from './database/helper/initialize.helper';
+import { registerEventHandlers } from './helper/event-handler.helper';
 
 log.initialize();
-
 const isServe = process.argv.slice(1).some(val => val === '--serve');
 const store = new Store<UserSettingStoreModel>();
-AppDataSource.initialize()
-  .then(() => console.log('Connection initialized with database...'))
-  .catch(error => console.log(error));
+const isMigrated = store.get('isMigrated');
+if (!isMigrated) {
+  store.set('isMigrated', false);
+}
+
+void initializeDatabaseAndMigration(store);
+mainApplicationStart(isServe);
+registerEventHandlers(store, isServe)
 
 void autoUpdater.checkForUpdatesAndNotify();
-mainApplicationStart(isServe, store);
-void migrateFromStoreToSQLiteDb(store);
-
-handleOpenDirectoryEvent(store);
-handleDownloadModEvent();
-handleProcessDownloadLinkEvent();
-handleFileUnzipEvent(isServe);
-handleUserSettingStoreEvents(store);
-handleClientModsEvent();
-handleServerModsEvent();
-handleWindowEvents();
-handleClearTemporaryDirectoryEvent();
-handleThemeEvents(store);
-handleTutorialEvents(store);
-handleTarkovStartEvent();
-handleExperimentalFunctionsEvents(store);
-handleModLoadOrderEvents();
-handleUpdateModEvents(store);
-handleSptTagEvents(store);
-handleSptVersionEvents(store);
-handleModCacheEvents(store);
-toggleModStateEvent();
-handleModPageEvents();
-handleTempDownloadDirectoryEvents(store);
-handleCheckInstalledEvents(store);
