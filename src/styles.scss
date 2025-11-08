@@ -191,6 +191,15 @@ mat-icon {
       color: #fefce8;
     }
   }
+  &.violet {
+    background-color: #f5f3ff;
+    color: #6366f1;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #6366f1;
+      color: #f5f3ff;
+    }
+  }
 
   &.gray {
     color: #ffffff;
