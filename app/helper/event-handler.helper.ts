@@ -20,25 +20,28 @@ import { handleTempDownloadDirectoryEvents } from '../events/temp-download-direc
 import * as log from 'electron-log';
 
 export function registerEventHandlers(isServe: boolean): void {
-  log.info('Registering IPC event handlers');
-  handleOpenDirectoryEvent();
-  handleDownloadModEvent();
-  handleProcessDownloadLinkEvent();
-  handleFileUnzipEvent(isServe);
-  handleUserSettingStoreEvents();
-  handleClientModsEvent();
-  handleServerModsEvent();
-  handleWindowEvents();
-  handleClearTemporaryDirectoryEvent();
-  handleThemeEvents();
-  handleTutorialEvents();
-  handleTarkovStartEvent();
-  handleExperimentalFunctionsEvents();
-  handleModLoadOrderEvents();
-  handleUpdateModEvents();
-  handleModCacheEvents();
-  toggleModStateEvent();
-  handleModPageEvents();
-  handleTempDownloadDirectoryEvents();
-  log.info('IPC event handlers registered');
+  try {
+    handleOpenDirectoryEvent();
+    handleDownloadModEvent();
+    handleProcessDownloadLinkEvent();
+    handleFileUnzipEvent(isServe);
+    handleUserSettingStoreEvents();
+    handleClientModsEvent();
+    handleServerModsEvent();
+    handleWindowEvents();
+    handleClearTemporaryDirectoryEvent();
+    handleThemeEvents();
+    handleTutorialEvents();
+    handleTarkovStartEvent();
+    handleExperimentalFunctionsEvents();
+    handleModLoadOrderEvents();
+    handleUpdateModEvents();
+    handleModCacheEvents();
+    toggleModStateEvent();
+    handleModPageEvents();
+    handleTempDownloadDirectoryEvents();
+    log.info('IPC event handlers registered');
+  } catch (e) {
+    log.error('Error registering event handlers', e);
+  }
 }

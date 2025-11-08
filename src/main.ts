@@ -18,7 +18,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideHttpClient(withInterceptors([authInterceptor]), withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi()),
     provideRouter(appRoutes, withComponentInputBinding()),
     importProvidersFrom(JoyrideModule.forRoot()),
     provideAnimations(),
@@ -38,11 +38,3 @@ bootstrapApplication(AppComponent, {
   ],
 }).catch(err => console.error(err));
 
-export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
-  const authToken = environment.TEST_API_KEY_REMOVE_BEFORE_COMMIT;
-
-  const newReq = req.clone({
-    headers: req.headers.append('Authorization', `Bearer ${authToken}`),
-  });
-  return next(newReq);
-}

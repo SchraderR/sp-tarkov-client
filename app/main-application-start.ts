@@ -1,48 +1,38 @@
-﻿import { app, Tray, safeStorage } from 'electron';
-import { createMainApiManagementWindow } from './main-window';
-import { BrowserWindowSingleton } from './browserWindow';
+﻿import { app, Tray } from 'electron';
 import * as path from 'path';
+import * as log from 'electron-log';
+import { createMainApiManagementWindow } from './main-window';
+import { BrowserWindow } from 'electron'; // only if you need it
 
 export const mainApplicationStart = (isServe: boolean): void => {
-  let tray: Tray | null;
   const iconPath = path.join(__dirname, 'assets/icon_tray.png');
-  const browserWindow = BrowserWindowSingleton.getInstance();
 
-  //if (process.platform === 'win32') {
-  //  app.setAppUserModelId('SP-EFT Manager');
-  //}
+  const start = () => {
+    createMainApiManagementWindow(isServe);
 
-  try {
-    app.on('ready', () =>
-      setTimeout(() => {
-        createMainApiManagementWindow(isServe);
-        console.log(safeStorage.isEncryptionAvailable());
+    try {
+      const tray = new Tray(iconPath);
+      tray.setToolTip('EFT-SP Management Tool');
+    } catch (e) {
+      log.error('Failed to create tray:', e);
+    }
+  };
 
-        tray = new Tray(iconPath);
-        //tray.on('double-click', () => {
-        //  const browserWindow = BrowserWindowSingleton.getInstance();
-        //  browserWindow.show();
-        //});
-        tray.setToolTip('EFT-SP Management Tool');
+  if (app.isReady()) {
+    setTimeout(start, 400);
+  } else {
+    app.once('ready', () => setTimeout(start, 400));
+  }
 
-        //const contextMenu = Menu.buildFromTemplate([
-        //  { label: '               ' },
-        //  { type: 'separator' },
-        //  { label: 'Close App', click: () => app.quit() },
-        //]);
-        //tray.setContextMenu(contextMenu);
-      }, 400)
-    );
-    app.on('window-all-closed', () => {
-      if (process.platform !== 'darwin') {
-        app.quit();
-      }
-    });
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 
-    app.on('activate', () => {
-      if (browserWindow === null) {
-        createMainApiManagementWindow(isServe);
-      }
-    });
-  } catch (e) {}
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      start();
+    }
+  });
 };

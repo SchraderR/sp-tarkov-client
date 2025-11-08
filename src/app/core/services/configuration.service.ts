@@ -43,10 +43,7 @@ export class ConfigurationService {
 
   getSptVersion() {
     return this.forgeApiService.getSptVersions().pipe(
-      tap(sptVersions => {
-        console.log(sptVersions.data);
-        this.sptVersions.set(sptVersions.data);
-      })
+      tap(sptVersions => this.sptVersions.set(sptVersions.data))
     );
   }
 
