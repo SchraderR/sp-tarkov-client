@@ -1,4 +1,4 @@
-<div style="display: flex; flex-direction: column; height: 100%; gap: 8px; padding-right: 16px;">
+<div style="display: flex; flex-direction: column; height: 100%; gap: 16px; padding-right: 16px;">
   <mat-card joyrideStep="settingStepInstance" [stepContent]="joyRideStepContent" [stepPosition]="!!userSettingSignal().length ? 'center' : 'bottom'">
     <mat-card-header>
       <mat-card-title>SPT-Instances ({{ userSettingSignal().length }})</mat-card-title>
@@ -60,7 +60,7 @@
 
   <mat-card>
     <mat-card-header>
-      <mat-card-title style="padding-bottom: 8px">General Settings</mat-card-title>
+      <mat-card-title style="padding-bottom: 16px">General Settings</mat-card-title>
     </mat-card-header>
     <mat-card-content style="display: flex; flex-direction: column; gap: 16px">
       <mat-form-field color="accent" class="theme-select" appearance="outline" subscriptSizing="dynamic">
@@ -114,6 +114,19 @@
       </div>
     </mat-card-content>
   </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title style="padding-bottom: 16px">Auth Token</mat-card-title>
+    </mat-card-header>
+    <mat-card-content style="display: flex; flex-direction: column; gap: 16px">
+      Warning: This will immediately remove your current auth token and close the application because the auth key is mandatory for the functionality of the application.
+
+      <button mat-raised-button color="warn" (click)="removeAuthKey()">
+        Remove Auth Key
+      </button>
+    </mat-card-content>
+  </mat-card>
 </div>
 
 <ng-template #joyRideStepContent>
@@ -131,7 +144,6 @@
     </p>
   </span>
 </ng-template>
-
 <ng-template #joyRideStepInstanceActiveContent>
   <h4>Activate your instance:</h4>
   <span>

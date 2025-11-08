@@ -36,8 +36,6 @@ app.whenReady().then(async () => {
   if (await hasAuthToken()) {
     registerAuthTokenHeaderInterceptor();
     registerEventHandlers(isServe);
-
-    console.log('mainApplicationStart: ');
     mainApplicationStart(isServe);
 
     void autoUpdater.checkForUpdatesAndNotify();

@@ -19,7 +19,6 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModCache } from '../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 import { ForgeApiService } from '../../core/services/forge-api.service';
-import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
 import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
 import { ModCacheModel } from '../../../../shared/models/mod-cache.model';
 
@@ -39,7 +38,6 @@ import { ModCacheModel } from '../../../../shared/models/mod-cache.model';
     MatTooltipModule,
     MatProgressSpinner,
     IsAlreadyStartedDirective,
-    ImagePathResolverPipe,
     SemverSptVersionPipe,
   ],
   templateUrl: './mod-search.component.html',

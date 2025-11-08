@@ -19,7 +19,7 @@
       [mod]="mod">
       <mat-card-content class="card-container">
         <div>
-          <img class="image-shadow" [ngSrc]="mod.thumbnail | imagePathResolver" height="144" width="144" alt="">
+          <img class="image-shadow" [ngSrc]="mod.thumbnail" height="144" width="144" alt="">
           @let latestCompatibleModSptVersion = mod?.versions?.[0]?.spt_version_constraint | semverSptVersion;
           @if (latestCompatibleModSptVersion) {
             <div [class]="'badge-version ' + latestCompatibleModSptVersion.color_class" class="font-small image-spt-version card-badge">

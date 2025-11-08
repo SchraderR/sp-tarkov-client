@@ -113,7 +113,7 @@ export class ForgeApiService {
   }
 
   getUserInformation() {
-    return this.httpClient.get<BaseApi<ForgeUser>>(`${environment.forgeBasePath}/auth`);
+    return this.httpClient.get<BaseApi<ForgeUser>>(`${environment.forgeBasePath}/auth/user`);
   }
 
   getMods(sort: GenericModListSortType, sortOrder: GenericModListSortOrder, page: number) {

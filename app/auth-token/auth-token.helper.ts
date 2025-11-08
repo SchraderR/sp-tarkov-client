@@ -1,7 +1,7 @@
 import { safeStorage, session } from 'electron';
 import * as log from 'electron-log';
 import { getUserSettingProperty, setUserSettingProperty } from '../database/controller/user-setting.controller';
-import { environment } from '../../src/environments/environment';
+import { environment } from '../environment';
 
 export async function hasAuthToken(): Promise<boolean> {
   return !!(await getUserSettingProperty('authKey'));

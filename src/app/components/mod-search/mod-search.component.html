@@ -13,7 +13,7 @@
         [mod]="mod"
       >
         <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
-          <img class="image-shadow" [ngSrc]="mod.thumbnail | imagePathResolver" width="70" height="70" alt="">
+          <img class="image-shadow" [ngSrc]="mod.thumbnail" width="70" height="70" alt="">
 
           <div class="mod-information-container">
             <span class="text-ellipsis" [matTooltip]="mod.name">{{ mod.name }}</span>

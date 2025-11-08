@@ -22,12 +22,10 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInput } from '@angular/material/input';
 import { SptTag, SptVersion } from '../../../../../shared/models/spt-core.model';
-import { ModCache } from '../../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../directives/is-already-started.directive';
 import { CheckModDependencyDirective } from '../../directives/check-mod-dependency.directive';
 import { ForgeApiService } from '../../services/forge-api.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
-import { ImagePathResolverPipe } from '../../pipes/image-path-resolver.pipe';
 import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
 import { ModCacheModel } from '../../../../../shared/models/mod-cache.model';
 
@@ -58,7 +56,6 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     CheckModDependencyDirective,
     MatButtonToggleGroup,
     MatButtonToggle,
-    ImagePathResolverPipe,
     NgOptimizedImage,
     SemverSptVersionPipe,
   ],

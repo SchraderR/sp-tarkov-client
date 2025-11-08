@@ -1,8 +1,8 @@
 import * as log from 'electron-log';
 import * as path from 'path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
-import { environment } from '../../src/environments/environment';
 import { hasAuthToken, registerAuthToken, removeAuthToken } from './auth-token.helper';
+import { environment } from '../environment';
 
 const API_PERMISSIONS_ENDPOINT = environment.forgeApiAuthEndpoint;
 const API_PERMISSION_ACCEPTED_VALUE = 'read';

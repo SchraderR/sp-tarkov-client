@@ -12,7 +12,6 @@ import { ElectronService } from '../../core/services/electron.service';
 import { fadeInFadeOutAnimation } from '../../core/animations/fade-in-out.animation';
 import { DownloadService } from '../../core/services/download.service';
 import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
-import { ImagePathResolverPipe } from '../../core/pipes/image-path-resolver.pipe';
 
 export interface ModLicenseInformation {
   url: string;
@@ -32,8 +31,7 @@ export interface ModLicenseInformation {
     MatTooltipModule,
     MatIconModule,
     MatRippleModule,
-    SemverSptVersionPipe,
-    ImagePathResolverPipe,
+    SemverSptVersionPipe
   ],
   animations: [fadeInFadeOutAnimation],
 })

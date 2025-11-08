@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, NgZone, QueryList, Vi
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../core/services/electron.service';
-import { SptInstance, ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
+import { ModMeta, UserSettingModel } from '../../../../shared/models/user-setting.model';
 import { MatCardModule } from '@angular/material/card';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-personal-setting',
@@ -186,6 +187,11 @@ export default class PersonalSettingComponent {
         this.userSettingsService.updateUserSetting();
       });
     });
+  }
+
+  removeAuthKey() {
+    // TODO Add confirmation dialog
+    this.electronService.sendEvent("remove-auth-key").subscribe()
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {

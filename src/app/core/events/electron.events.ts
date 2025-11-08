@@ -35,7 +35,9 @@
   | 'save-mod-load-order'
   | 'check-installed-toggle'
   | 'check-installed-setting'
-  | 'process-download-link';
+  | 'process-download-link'
+  | 'remove-auth-key'
+  ;
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';

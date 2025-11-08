@@ -9,7 +9,7 @@
           <mat-icon class="font-weight-400 icon-size-48">open_in_new</mat-icon>
         </div>
       }
-      <img class="image-shadow" [ngSrc]="mod().thumbnail | imagePathResolver" height="120" width="120" alt="">
+      <img class="image-shadow" [ngSrc]="mod().thumbnail" height="120" width="120" alt="">
 
       @let latestCompatibleModSptVersion = mod()?.versions?.[0]?.spt_version_constraint | semverSptVersion;
       @if (latestCompatibleModSptVersion) {
