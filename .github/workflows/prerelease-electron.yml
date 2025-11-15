@@ -27,3 +27,16 @@ jobs:
           args: |
             --publish=always
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Create Archive
+        run: |
+          Compress-Archive -Path dist/*.exe -DestinationPath sp-eft-manager-${{ steps.package-version.outputs.version }}.zip
+
+      - name: Upload Archive to Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+           files: sp-eft-manager-${{ steps.package-version.outputs.version }}.zip
+           prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
