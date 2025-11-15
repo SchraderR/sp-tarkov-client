@@ -18,7 +18,7 @@ export async function showAuthKeyDialog(): Promise<void> {
     type: 'info',
     title: 'API Key Required',
     message: 'Please enter your API key',
-    detail: 'This application requires an API key with read-only permissions to function. The key will be encrypted and stored securely on your computer.',
+    detail: 'This application requires an API key with read-only permissions to function. The key will be encrypted and stored locally.',
     buttons: ['Enter API Key', 'Exit'],
     defaultId: 0,
     cancelId: 1,

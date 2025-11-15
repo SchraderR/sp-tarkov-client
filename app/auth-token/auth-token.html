@@ -63,6 +63,37 @@
       text-align: center;
     }
 
+    .info-box {
+      background: #fff3e0;
+      border-left: 4px solid #f57c00;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      border-radius: 4px;
+    }
+
+    .info-box p {
+      color: #e65100;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .info-box strong {
+      color: #bf360c;
+    }
+
+    .info-box ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    .info-box li {
+      color: #e65100;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 4px 0;
+    }
+
     .security-note {
       background: #e3f2fd;
       border-left: 4px solid #1976d2;
@@ -261,9 +292,22 @@
   <h1>Authentication Required</h1>
 
   <p class="description">
+    A Forge user account is mandatory to use this application.
     Enter your API key to securely connect to the application endpoints.
     Your key will be encrypted and stored locally on this device.
   </p>
+
+  <div class="info-box">
+    <p>
+      <strong>How to create your API token:</strong>
+    </p>
+    <ul>
+      <li>Navigate to <strong>Forge Homepage</strong></li>
+      <li>Go to <strong>Profile</strong></li>
+      <li>Click on <strong>API Token</strong></li>
+      <li>Generate a new token with read-only permissions</li>
+    </ul>
+  </div>
 
   <div class="security-note">
     <p>
