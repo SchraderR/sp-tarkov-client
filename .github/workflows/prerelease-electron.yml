@@ -10,41 +10,33 @@ jobs:
   pre-release:
     runs-on: windows-latest
     steps:
-      - name: Test
-        run: |
-          echo "${{ github.ref_name }}"
-          echo "${{ github.ref }}"
-          echo "${GITHUB_REF##*/}"
-          echo "${{ env.RELEASE_VERSION }}"
+      - name: Check out
+        uses: actions/checkout@v4
 
-#      - name: Check out
-#        uses: actions/checkout@v4
-#
-#      - name: Node Setup
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: '20'
-#
-#      - name: Release Electron
-#        uses: Yan-Jobs/action-electron-builder@v1.7.0
-#        env:
-#          EP_PRE_RELEASE: true
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          build_script_name: "build:prod"
-#          args: |
-#            --publish=always
-#          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-#
-#      - name: Create Archive
-#        run: |
-#          Compress-Archive -Path release/*.exe -DestinationPath sp-eft-manager-${{ github.ref }}.zip
-#
-#      - name: Upload Archive to Release
-#        uses: softprops/action-gh-release@v1
-#        if: startsWith(github.ref, 'refs/tags/v')
-#        with:
-#           files: sp-eft-manager-${{ github.ref }}.zip
-#           prerelease: true
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Node Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Release Electron
+        uses: Yan-Jobs/action-electron-builder@v1.7.0
+        env:
+          EP_PRE_RELEASE: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          build_script_name: "build:prod"
+          args: --publish=always
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Create Archive
+        run: |
+          Compress-Archive -Path release/*.exe -DestinationPath sp-eft-manager-${{ github.ref_name }}.zip
+
+      - name: Upload Archive to Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+           files: sp-eft-manager-${{ github.ref_name }}.zip
+           prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
