@@ -1,7 +1,7 @@
 ﻿import { ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { clientPatcherModPath, clientPluginModPath, serverModPath } from '../constants';
+import { clientPatcherModPath, clientPluginModPath, serverModPath, serverModPathWithoutRoot } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as log from 'electron-log';
 import { ZipArchiveHelper } from '../helper/zip-archive.helper';
@@ -66,14 +66,39 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
       return;
     }
 
-    const isHappyPath = await zipArchiveHelper.isHappyPathArchive(archivePath, sevenBinPath);
-    log.log(`HubId:${args.hubId} - isHappyPath: ${isHappyPath}`);
-    if (isHappyPath) {
-      await zipArchiveHelper.extractFullArchive(archivePath, args.instancePath, sevenBinPath, [
-        `${clientPatcherModPath}/*`,
-        `${clientPluginModPath}/*`,
-        `${serverModPath}/*`,
-      ]);
+    const isHappyPathArchiveClientPlugin = await zipArchiveHelper.isHappyPathArchiveClientPlugin(archivePath, sevenBinPath);
+    const isHappyPathArchiveServerMod = await zipArchiveHelper.isHappyPathArchiveServerMod(archivePath, sevenBinPath);
+    const isHappyPathArchiveClientPatcherMod = await zipArchiveHelper.isHappyPathArchiveClientPatcherMod(archivePath, sevenBinPath);
+    const isHappyPathArchiveServerModWithoutRoot = await zipArchiveHelper.isHappyPathArchiveServerModWithoutRoot(archivePath, sevenBinPath);
+
+    if (isHappyPathArchiveClientPlugin || isHappyPathArchiveServerMod || isHappyPathArchiveClientPatcherMod) {
+      if (isHappyPathArchiveClientPlugin) {
+        log.log(`HubId:${args.hubId} - isHappyPathArchiveClientPlugin: ${isHappyPathArchiveClientPlugin}`);
+        await zipArchiveHelper.extractFullArchive(archivePath, args.instancePath, sevenBinPath, [
+          `${clientPluginModPath}/*`
+        ]);
+      }
+
+      if (isHappyPathArchiveServerMod) {
+        log.log(`HubId:${args.hubId} - isHappyPathArchiveServerMod: ${isHappyPathArchiveServerMod}`);
+
+        await zipArchiveHelper.extractFullArchive(archivePath, args.instancePath, sevenBinPath, [
+          `${serverModPath}/*`,
+        ]);
+      }
+
+      if (isHappyPathArchiveClientPatcherMod) {
+        log.log(`HubId:${args.hubId} - isHappyPathArchiveClientPatcherMod: ${isHappyPathArchiveClientPatcherMod}`);
+        await zipArchiveHelper.extractFullArchive(archivePath, args.instancePath, sevenBinPath, [
+          `${clientPatcherModPath}/*`,
+        ]);
+      }
+
+      if (isHappyPathArchiveServerModWithoutRoot) {
+        log.log(`HubId:${args.hubId} - isHappyPathArchiveServerModWithoutRoot: ${isHappyPathArchiveServerModWithoutRoot}`);
+        await zipArchiveHelper.extractFullArchive(archivePath, `${args.instancePath}\\SPT`, sevenBinPath, [`${serverModPathWithoutRoot}/*`]);
+      }
+
       event.sender.send('file-unzip-completed');
       return;
     }

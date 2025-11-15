@@ -1,8 +1,6 @@
 ﻿import { dialog, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import { stableSptCoreConfigPath, stableSptServerName } from '../constants';
 import { BrowserWindowSingleton } from '../browserWindow';
 import * as log from 'electron-log';
@@ -17,8 +15,8 @@ export const handleOpenDirectoryEvent = () => {
         const selectedPath = selectedDirectoryValue.filePaths[0];
 
         if (fs.existsSync(selectedPath)) {
-          const files = fs.readdirSync(selectedPath);
-          const isSptRootDirectorySoftCheck = files.some(f => stableSptServerName.includes(f));
+          const files = fs.readdirSync(selectedPath, { recursive: true });
+          const isSptRootDirectorySoftCheck = files.some(f => stableSptServerName.includes(f as string));
           const isNewInstance = await findInstanceByPath(selectedPath);
           if (isNewInstance) {
             event.sender.send('open-directory-error', {
