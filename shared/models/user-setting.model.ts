@@ -1,4 +1,10 @@
 ﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
+import { InstanceEntity } from '../../app/database/entity/Instance';
+
+export interface InstanceDto extends InstanceEntity {
+  isValid: boolean;
+  sptCore?: SptCore;
+}
 
 export interface UpdateModMeta {
   name: string;
@@ -10,13 +16,17 @@ export interface UpdateModMeta {
 }
 
 export interface ModCache {
+  modId: number;
   name: string;
-  fileUrl: string;
-  supportedSptVersion: string;
-  image?: string;
-  icon?: string;
-  teaser?: string;
-  sptVersionColorCode?: string;
+  // TODO CHECK
+  // fileUrl: string;
+  // supportedSptVersion: string;
+  // image?: string;
+  // icon?: string;
+  // teaser?: string;
+  // sptVersionColorCode?: string;
+  thumbnail: string;
+  teaser: string;
 }
 
 export interface UserSettingStoreModel {
@@ -28,27 +38,25 @@ export interface UserSettingStoreModel {
   isCheckInstalledActive: boolean;
   sptVersions: SptVersion[];
   sptTags: SptTag[];
-  modCache: ModCache[];
+  modCache: number[];
   useIndexedMods: boolean;
   keepTempDownloadDirectory: boolean;
-  akiInstances: SptInstance[]; // obsolete
-  akiVersions: SptVersion[]; // obsolete
-  akiTags: SptTag[]; // obsolete
+  isMigrated: boolean;
 }
 
 export interface SptInstance {
   sptRootDirectory: string;
-  akiRootDirectory?: string; // obsolete
   isValid: boolean;
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
-  isPowerShellIssue: boolean;
+  // TODO CHECK REMOVED isPowerShellIssue: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];
 }
 
 export interface UserSettingModel extends SptInstance {
+  id: number;
   sptCore?: SptCore;
 }
 

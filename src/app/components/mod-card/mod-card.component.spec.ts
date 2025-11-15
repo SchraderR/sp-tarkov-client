@@ -9,23 +9,12 @@ describe('ModCardComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [ModCardComponent],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+      imports: [ModCardComponent],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ModCardComponent);
     component = fixture.componentInstance;
-    component.mod = {
-      fileUrl: '',
-      isDependenciesLoading: false,
-      isInvalid: false,
-      dependencies: [],
-      kind: 'client',
-      supportedSptVersion: '',
-      notSupported: false,
-      name: '',
-      image: '',
-    };
     fixture.detectChanges();
   });
 

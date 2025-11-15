@@ -43,7 +43,7 @@ body {
 .github-info-panel {
   color: white;
   padding: 8px;
-  background: #666 !important;
+  background: var(--mat-sys-surface-container-high) !important;
 }
 
 .already-installed-icon-container {
@@ -189,6 +189,15 @@ mat-icon {
     @media (prefers-color-scheme: dark) {
       background-color: #a16207;
       color: #fefce8;
+    }
+  }
+  &.violet {
+    background-color: #f5f3ff;
+    color: #6366f1;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #6366f1;
+      color: #f5f3ff;
     }
   }
 

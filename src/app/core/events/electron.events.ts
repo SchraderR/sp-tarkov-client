@@ -1,9 +1,9 @@
 ﻿export type applicationElectronEventNames =
   | 'open-directory'
-  | 'user-settings'
-  | 'user-settings-update'
-  | 'user-settings-remove'
-  | 'download-link'
+  | 'user-setting'
+  | 'user-instances'
+  | 'user-instance-active'
+  | 'user-instance-remove'
   | 'download-mod'
   | 'file-unzip'
   | 'client-mod'
@@ -22,10 +22,6 @@
   | 'exp-function-setting'
   | 'exp-function-toggle'
   | 'update-mod-data'
-  | 'spt-versions'
-  | 'spt-versions-save'
-  | 'spt-tags'
-  | 'spt-tags-save'
   | 'mod-list-cache'
   | 'add-mod-list-cache'
   | 'remove-mod-list-cache'
@@ -38,13 +34,15 @@
   | 'temp-dir-size'
   | 'save-mod-load-order'
   | 'check-installed-toggle'
-  | 'check-installed-setting';
+  | 'check-installed-setting'
+  | 'process-download-link'
+  | 'remove-auth-key'
+  ;
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
 export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
 
 export enum ApplicationElectronFileError {
-  downloadLinkError,
   downloadError,
   unzipError,
 }

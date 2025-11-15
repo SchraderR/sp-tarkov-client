@@ -10,7 +10,7 @@ $toolbarSize: 60px;
   height: calc(100% - ($toolbarSize + 8px)); // toolbar size and some padding sizes
 }
 
-::ng-deep.version-select {
+::ng-deep.select-form-field {
   @include mat.form-field-density(-5);
 }
 

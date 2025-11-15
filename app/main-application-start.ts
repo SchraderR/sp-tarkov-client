@@ -1,56 +1,38 @@
-﻿import { app, Menu, Tray } from 'electron';
-import { createMainApiManagementWindow } from './main-window';
-import { BrowserWindowSingleton } from './browserWindow';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../shared/models/user-setting.model';
+﻿import { app, Tray } from 'electron';
 import * as path from 'path';
+import * as log from 'electron-log';
+import { createMainApiManagementWindow } from './main-window';
+import { BrowserWindow } from 'electron'; // only if you need it
 
-export const mainApplicationStart = (isServe: boolean, store: Store<UserSettingStoreModel>): void => {
-  let tray: Tray | null;
+export const mainApplicationStart = (isServe: boolean): void => {
   const iconPath = path.join(__dirname, 'assets/icon_tray.png');
-  const browserWindow = BrowserWindowSingleton.getInstance();
-  const instance = store.get('sptInstances');
-  if (!instance) {
-    store.set('sptInstances', []);
-    store.set('theme', 'system');
-    store.set('isTutorialDone', false);
-    store.set('isExperimentalFunctionsActive', false);
+
+  const start = () => {
+    createMainApiManagementWindow(isServe);
+
+    try {
+      const tray = new Tray(iconPath);
+      tray.setToolTip('EFT-SP Management Tool');
+    } catch (e) {
+      log.error('Failed to create tray:', e);
+    }
+  };
+
+  if (app.isReady()) {
+    setTimeout(start, 400);
+  } else {
+    app.once('ready', () => setTimeout(start, 400));
   }
 
-  //if (process.platform === 'win32') {
-  //  app.setAppUserModelId('SP-EFT Manager');
-  //}
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 
-  try {
-    app.on('ready', () =>
-      setTimeout(() => {
-        createMainApiManagementWindow(isServe, store);
-
-        tray = new Tray(iconPath);
-        //tray.on('double-click', () => {
-        //  const browserWindow = BrowserWindowSingleton.getInstance();
-        //  browserWindow.show();
-        //});
-        tray.setToolTip('EFT-SP Management Tool');
-
-        //const contextMenu = Menu.buildFromTemplate([
-        //  { label: '               ' },
-        //  { type: 'separator' },
-        //  { label: 'Close App', click: () => app.quit() },
-        //]);
-        //tray.setContextMenu(contextMenu);
-      }, 400)
-    );
-    app.on('window-all-closed', () => {
-      if (process.platform !== 'darwin') {
-        app.quit();
-      }
-    });
-
-    app.on('activate', () => {
-      if (browserWindow === null) {
-        createMainApiManagementWindow(isServe, store);
-      }
-    });
-  } catch (e) {}
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      start();
+    }
+  });
 };
