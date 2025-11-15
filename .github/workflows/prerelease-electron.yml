@@ -13,7 +13,9 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Test
-        run: echo ${{ env.RELEASE_VERSION }}
+        run: |
+          echo "${GITHUB_REF##*/}"
+          echo "${{ env.RELEASE_VERSION }}"
 
       - name: Check out
         uses: actions/checkout@v4
