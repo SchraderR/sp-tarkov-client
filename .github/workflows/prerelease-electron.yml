@@ -30,7 +30,7 @@ jobs:
 
       - name: Create Archive
         run: |
-          Compress-Archive -Path dist/*.exe -DestinationPath sp-eft-manager-${{ steps.package-version.outputs.version }}.zip
+          Compress-Archive -Path release/*.exe -DestinationPath sp-eft-manager-${{ steps.package-version.outputs.version }}.zip
 
       - name: Upload Archive to Release
         uses: softprops/action-gh-release@v1
