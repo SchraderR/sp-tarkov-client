@@ -3,10 +3,9 @@ name: Release Electron Application
 on:
   workflow_dispatch:
   push:
-    tags-ignore:
-      - 'v*-beta.*'
     tags:
       - 'v*'
+      - '!v*-beta.*'
 
 jobs:
   release:
