@@ -3,7 +3,8 @@ name: Pre-Release Electron Application
 on:
   workflow_dispatch:
   push:
-    branches: [testing]
+    tags:
+      - 'v*-beta.*'
 
 jobs:
   pre-release:
