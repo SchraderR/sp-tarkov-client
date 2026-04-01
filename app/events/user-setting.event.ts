@@ -21,7 +21,7 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
   const sptInstances = await getAllInstances();
   if (!sptInstances || sptInstances.length === 0) {
     log.warn('No instances found.');
-    event.sender.send('user-settings-completed', []);
+    event.sender.send('user-instances-completed', []);
     return;
   }
 

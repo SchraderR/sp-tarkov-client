@@ -71,7 +71,7 @@ async function handleArchive(archivePath: string, args: FileUnzipEvent, ankiTemp
     const isHappyPathArchiveClientPatcherMod = await zipArchiveHelper.isHappyPathArchiveClientPatcherMod(archivePath, sevenBinPath);
     const isHappyPathArchiveServerModWithoutRoot = await zipArchiveHelper.isHappyPathArchiveServerModWithoutRoot(archivePath, sevenBinPath);
 
-    if (isHappyPathArchiveClientPlugin || isHappyPathArchiveServerMod || isHappyPathArchiveClientPatcherMod) {
+    if (isHappyPathArchiveClientPlugin || isHappyPathArchiveServerMod || isHappyPathArchiveClientPatcherMod || isHappyPathArchiveServerModWithoutRoot) {
       if (isHappyPathArchiveClientPlugin) {
         log.log(`HubId:${args.hubId} - isHappyPathArchiveClientPlugin: ${isHappyPathArchiveClientPlugin}`);
         await zipArchiveHelper.extractFullArchive(archivePath, args.instancePath, sevenBinPath, [
