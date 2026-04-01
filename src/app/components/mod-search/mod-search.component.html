@@ -2,22 +2,26 @@
   <mat-label>Search for Mods</mat-label>
   <input matInput type="text" aria-label="State" [matAutocomplete]="auto" [formControl]="searchControl" />
   <mat-autocomplete #auto="matAutocomplete" [hideSingleSelectionIndicator]="true">
-    <mat-option class="search-loading" *ngIf="isLoading && filteredModItems.length === 0">
-      <mat-spinner [diameter]="50"></mat-spinner>
-    </mat-option>
+    @if (isLoading && filteredModItems.length === 0) {
+      <mat-option class="search-loading">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </mat-option>
+    }
     @for (mod of filteredModItems; track mod) {
       <mat-option
         [value]="mod.name"
-        appIsAlreadyInstalled #alreadyInstalled="isAlreadyInstalled"
-        appIsAlreadyStarted #alreadyStarted="isAlreadyStarted"
+        appIsAlreadyInstalled
+        #alreadyInstalled="isAlreadyInstalled"
+        appIsAlreadyStarted
+        #alreadyStarted="isAlreadyStarted"
         [mod]="mod"
       >
-        <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation();">
-          <img class="image-shadow" [ngSrc]="mod.thumbnail" width="70" height="70" alt="">
+        <div class="search-item-container" (click)="$event.preventDefault(); $event.stopPropagation()">
+          <img class="image-shadow" [ngSrc]="mod.thumbnail" width="70" height="70" alt="" />
 
           <div class="mod-information-container">
             <span class="text-ellipsis" [matTooltip]="mod.name">{{ mod.name }}</span>
-            <div style="display: flex;">
+            <div style="display: flex">
               <div style="display: flex; justify-content: start; align-self: end; height: fit-content">
                 @let latestCompatibleModSptVersion = mod?.versions?.[0]?.spt_version_constraint | semverSptVersion;
                 @if (latestCompatibleModSptVersion) {
@@ -34,9 +38,7 @@
 
                 @if (isActiveSptInstanceAvailable()) {
                   @if (mod.notSupported) {
-                    <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported">
-                      info
-                    </mat-icon>
+                    <mat-icon class="mod-install-instance-warning" color="warn" matTooltip="Installation not supported"> info </mat-icon>
                   } @else {
                     @if (!alreadyInstalled.isAlreadyInstalled() && alreadyStarted.isAlreadyStarted()) {
                       <div class="already-installed-icon-container">
@@ -68,15 +70,14 @@
                   <mat-icon
                     class="mod-install-instance-warning"
                     color="warn"
-                    matTooltip="Add or activate an instance of SPT to enable additional functionality">
+                    matTooltip="Add or activate an instance of SPT to enable additional functionality"
+                  >
                     warning
                   </mat-icon>
                 }
               </div>
             </div>
           </div>
-
-
         </div>
       </mat-option>
     }

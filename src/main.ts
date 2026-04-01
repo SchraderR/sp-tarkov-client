@@ -1,4 +1,4 @@
-import { enableProdMode, importProvidersFrom, isDevMode, inject, provideAppInitializer } from '@angular/core';
+import { enableProdMode, importProvidersFrom, isDevMode, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
@@ -18,6 +18,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZoneChangeDetection(),
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(appRoutes, withComponentInputBinding()),
     importProvidersFrom(JoyrideModule.forRoot()),
@@ -37,4 +38,3 @@ bootstrapApplication(AppComponent, {
     }),
   ],
 }).catch(err => console.error(err));
-
