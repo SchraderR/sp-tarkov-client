@@ -7,6 +7,7 @@ import { ElectronService } from './electron.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { HtmlHelper } from '../helper/html-helper';
+import { ForgeModVersion } from './forge-api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -85,49 +86,87 @@ export class ModListService {
 
   addFakeModForTutorial() {
     this.modList.set([
-      // TODO UPDATE FAKER FOR FIRST TUTORIAL
-      // {
-      //   name: "Amands's Graphics",
-      //   detail_url: null!,
-      //   thumbnail: 'assets/images/813.png',
-      //   teaser: 'Lighting and postprocessing overhaul',
-      //   supportedSptVersion: 'SPT 5.0.0',
-      //   kind: 'Mod',
-      //   dependencies: [],
-      //   isDependenciesLoading: false,
-      //   notSupported: false,
-      //   sptVersionColorCode: 'badge label green jsLabelFeatured',
-      //   installProgress: null!,
-      //   isInvalid: false,
-      // },
-      // {
-      //   name: "SAIN 2.0 - Solarint's AI Modifications - Full AI Combat System Replacement",
-      //   detail_url: null!,
-      //   thumbnail: 'assets/images/1062.jpg',
-      //   teaser: "Bots that don't suck.",
-      //   supportedSptVersion: 'SPT 5.0.0',
-      //   kind: 'Mod',
-      //   dependencies: [],
-      //   isDependenciesLoading: false,
-      //   notSupported: false,
-      //   sptVersionColorCode: 'badge label green jsLabelFeatured',
-      //   installProgress: null!,
-      //   isInvalid: false,
-      // },
-      // {
-      //   name: 'SPT Realism Mod',
-      //   detail_url: null!,
-      //   thumbnail: 'assets/images/606.png',
-      //   teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
-      //   supportedSptVersion: 'SPT 5.0.0',
-      //   kind: 'Mod',
-      //   dependencies: [],
-      //   isDependenciesLoading: false,
-      //   notSupported: false,
-      //   sptVersionColorCode: 'badge label green jsLabelFeatured',
-      //   installProgress: null!,
-      //   isInvalid: false,
-      // },
+      {
+        id: 0,
+        hub_id: null,
+        name: "Amands's Graphics",
+        detail_url: null!,
+        thumbnail: 'assets/images/813.png',
+        teaser: 'Lighting and postprocessing overhaul',
+        dependencies: [],
+        isDependenciesLoading: false,
+        notSupported: false,
+        versions: [
+          {
+            spt_version_constraint: '4.0.13',
+          },
+        ] as unknown as ForgeModVersion[],
+        installProgress: null!,
+        isInvalid: false,
+        slug: '',
+        downloads: 0,
+        source_code_links: [],
+        featured: false,
+        contains_ads: false,
+        contains_ai_content: false,
+        published_at: '',
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 0,
+        hub_id: null,
+        name: "SAIN 2.0 - Solarint's AI Modifications - Full AI Combat System Replacement",
+        detail_url: null!,
+        thumbnail: 'assets/images/1062.jpg',
+        teaser: "Bots that don't suck.",
+        dependencies: [],
+        isDependenciesLoading: false,
+        notSupported: false,
+        versions: [
+          {
+            spt_version_constraint: '4.0.13',
+          },
+        ] as unknown as ForgeModVersion[],
+        installProgress: null!,
+        isInvalid: false,
+        slug: '',
+        downloads: 0,
+        source_code_links: [],
+        featured: false,
+        contains_ads: false,
+        contains_ai_content: false,
+        published_at: '',
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 0,
+        hub_id: null,
+        name: 'SPT Realism Mod',
+        detail_url: null!,
+        thumbnail: 'assets/images/606.png',
+        teaser: 'Realistic Overhaul of SPT designed around making the game experience as realistic and hardcore as possible. Highly configurable!',
+        dependencies: [],
+        isDependenciesLoading: false,
+        notSupported: false,
+        versions: [
+          {
+            spt_version_constraint: '4.0.13',
+          },
+        ] as unknown as ForgeModVersion[],
+        installProgress: null!,
+        isInvalid: false,
+        slug: '',
+        downloads: 0,
+        source_code_links: [],
+        featured: false,
+        contains_ads: false,
+        contains_ai_content: false,
+        published_at: '',
+        created_at: '',
+        updated_at: '',
+      },
     ]);
   }
 
