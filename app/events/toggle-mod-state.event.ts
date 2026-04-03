@@ -48,10 +48,6 @@ export const toggleModStateEvent = () => {
       }
     }
 
-    console.log(toggleModStateModel.modOriginalName);
-    console.log(toggleModStateModel.isPrePatcherMod);
-    console.log(newModPath);
-
     move(toggleModStateModel.modOriginalPath, newModPath).then(() => {
       event.sender.send('toggle-mod-state-completed', {
         name: toggleModStateModel.modOriginalName,

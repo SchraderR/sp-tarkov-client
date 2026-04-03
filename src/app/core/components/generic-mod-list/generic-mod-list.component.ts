@@ -215,8 +215,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
             return e;
           });
 
-        console.log(this.accumulatedModList);
-
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.pageNumber = forgeModResult.meta.current_page;
         this.pageSize = forgeModResult.meta.per_page; // this.accumulatedModList.length;

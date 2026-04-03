@@ -34,7 +34,6 @@ export const handleOpenDirectoryEvent = () => {
 
           try {
             sptVersion = await getVersion(path.join(selectedPath, sptServerMetadataPath));
-            console.log ( 'sptVersion:',sptVersion);
           } catch (error) {
             log.error(error);
           }

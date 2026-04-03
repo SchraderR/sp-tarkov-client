@@ -37,7 +37,6 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
 
       try {
         sptVersion = await getVersion(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath));
-        console.log ( 'sptVersion: ',sptVersion);
       } catch (error) {
         log.error(error);
       }
