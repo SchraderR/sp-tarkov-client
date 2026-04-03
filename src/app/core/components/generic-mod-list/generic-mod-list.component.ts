@@ -28,6 +28,7 @@ import { ForgeApiService } from '../../services/forge-api.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
 import { ModCacheModel } from '../../../../../shared/models/mod-cache.model';
+import { MatDivider } from '@angular/material/list';
 
 export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
@@ -59,6 +60,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     NgOptimizedImage,
     SemverSptVersionPipe,
     DatePipe,
+    MatDivider,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
@@ -204,22 +206,13 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
         let filteredMods = 0;
         this.accumulatedModList = Array.from(forgeModResult.data)
           .map(mod => ({ ...mod }) as Mod)
-          .filter(e => {
-            const isRestricted = this.filterCoreMods(e);
-            if (isRestricted) {
-              filteredMods += 1;
-              return false;
-            }
-
-            return true;
-          })
           .map(e => {
             if (!config) {
               return e;
             }
 
             if (!environment.ignoreRemoteConfig) {
-              e.notSupported = !!config.notSupported.find(f => f === e.hub_id);
+              e.notSupported = !!config.notSupported.find(f => f === e.id || f === e.hub_id);
             }
 
             return e;
@@ -227,7 +220,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.pageNumber = forgeModResult.meta.current_page;
-        this.pageSize = forgeModResult.meta.per_page - filteredMods;
+        this.pageSize = forgeModResult.meta.per_page;
         this.pageLength = forgeModResult.meta.last_page;
         this.total = forgeModResult.meta.total;
         this.loading = false;
