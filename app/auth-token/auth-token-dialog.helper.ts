@@ -77,7 +77,6 @@ async function promptForApiKey(): Promise<void> {
     const inputWindow = new BrowserWindow({
       width: 500,
       height: 750,
-      modal: true,
       resizable: true,
       autoHideMenuBar: true,
       frame: true,
@@ -130,7 +129,13 @@ async function promptForApiKey(): Promise<void> {
       }
     });
 
-    ipcMain.handle('close-auth-window', () => inputWindow.close());
+    ipcMain.handle('close-auth-window', () => {
+      ipcMain.removeHandler('validate-and-save-token');
+      ipcMain.removeHandler('close-auth-window');
+      ipcMain.removeHandler('quit-app');
+      inputWindow.hide();
+      resolve();
+    });
     ipcMain.handle('quit-app', () => app.quit());
 
     const htmlPath = path.join(__dirname, 'auth-token.html');
