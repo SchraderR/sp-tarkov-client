@@ -11,6 +11,7 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
 import { forkJoin } from 'rxjs';
+import { authInterceptor } from './app/core/interceptor/auth.interceptor';
 
 if (environment.production) {
   enableProdMode();
@@ -19,7 +20,7 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(appRoutes, withComponentInputBinding()),
     importProvidersFrom(JoyrideModule.forRoot()),
     provideAnimations(),
