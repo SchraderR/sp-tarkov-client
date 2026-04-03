@@ -26,6 +26,10 @@
              {{ latestCompatibleModSptVersion.version }}
             </div>
           }
+
+          <div class="font-small spt-mod-download" [matTooltip]="`${mod.downloads} downloads`">
+            {{ mod.downloads }} <mat-icon>download</mat-icon>
+          </div>
         </div>
         <div class="mod-list-container">
           <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>

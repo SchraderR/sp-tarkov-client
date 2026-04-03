@@ -132,13 +132,23 @@ mat-icon {
   &.card-badge {
     display: flex;
     position: absolute;
-    justify-content: center;
     bottom: 0;
     color: white;
     padding: 2px 4px;
     font-size: 12px;
     border-radius: 4px 4px 4px 0;
   }
+}
+
+.spt-mod-download {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  bottom: 0;
+  right: 0;
+  color: white;
+  padding: 2px 4px;
+  font-size: 12px;
 }
 
 .badge-version {
