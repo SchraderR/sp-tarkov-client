@@ -23,13 +23,13 @@
           @let latestCompatibleModSptVersion = mod?.versions?.[0]?.spt_version_constraint | semverSptVersion;
           @if (latestCompatibleModSptVersion) {
             <div [class]="'badge-version ' + latestCompatibleModSptVersion.color_class" class="font-small image-spt-version card-badge">
-              {{ latestCompatibleModSptVersion.version }}
+             {{ latestCompatibleModSptVersion.version }}
             </div>
           }
         </div>
         <div class="mod-list-container">
           <strong class="mod-name one-line-clamp">{{ mod.name }}</strong>
-          <div class="mod-version">Last update: {{ mod.updated_at }}</div>
+          <div class="mod-version">Last update: {{ mod.updated_at | date: 'dd.MM.yyyy hh:mm' }}</div>
           <div class="mod-teaser">{{ mod.teaser }}</div>
           <span class="spacer"></span>
           <div class="card-button-container">

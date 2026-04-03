@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe , DatePipe , NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../services/electron.service';
 import { ModListService } from '../../services/mod-list.service';
@@ -58,6 +58,7 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatButtonToggle,
     NgOptimizedImage,
     SemverSptVersionPipe,
+    DatePipe,
   ],
 })
 export default class GenericModListComponent implements OnInit, AfterViewInit {
