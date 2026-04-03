@@ -1,13 +1,4 @@
-﻿export interface SptCore {
-  sptVersion: string;
-  projectName: string;
-  compatibleTarkovVersion: string;
-  serverName: string;
-  profileSaveIntervalSeconds: number;
-  commit: string;
-}
-
-export interface DownloadModel {
+﻿export interface DownloadModel {
   name?: string;
   modId: number;
   modFileUrl: string;

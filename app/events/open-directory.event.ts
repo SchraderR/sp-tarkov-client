@@ -1,10 +1,11 @@
 ﻿import { dialog, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { stableSptCoreConfigPath, stableSptServerName } from '../constants';
+import { sptServerMetadataPath, stableSptServerName } from '../constants';
 import { BrowserWindowSingleton } from '../browserWindow';
 import * as log from 'electron-log';
 import { createInstance, findInstanceByPath } from '../database/controller/instance.controller';
+import { getVersion } from '../helper/powershell.helper';
 
 export const handleOpenDirectoryEvent = () => {
   const browserWindow = BrowserWindowSingleton.getInstance();
@@ -25,16 +26,18 @@ export const handleOpenDirectoryEvent = () => {
             return;
           }
 
-          let coreJson: string = '';
+          let sptVersion = '';
+          if (!fs.existsSync(path.join(selectedPath, sptServerMetadataPath))) {
+            log.error(`${path.join(selectedPath, sptServerMetadataPath)} not available.`);
+            return;
+          }
 
-          stableSptCoreConfigPath.forEach(corePath => {
-            if (!fs.existsSync(path.join(selectedPath, corePath))) {
-              log.error(`${corePath} not available.`);
-              return;
-            }
-
-            coreJson = fs.readFileSync(path.join(selectedPath, corePath), 'utf-8');
-          });
+          try {
+            sptVersion = await getVersion(path.join(selectedPath, sptServerMetadataPath));
+            console.log ( 'sptVersion:',sptVersion);
+          } catch (error) {
+            log.error(error);
+          }
 
           if (isSptRootDirectorySoftCheck) {
             const newInstance = await createInstance(selectedPath);
@@ -42,7 +45,7 @@ export const handleOpenDirectoryEvent = () => {
               event.sender.send('open-directory-completed', {
                 id: newInstance.id,
                 sptRootDirectory: selectedPath,
-                sptCore: JSON.parse(coreJson.trim()),
+                sptVersion: sptVersion,
                 isValid: true,
                 isActive: false,
                 clientMods: [],

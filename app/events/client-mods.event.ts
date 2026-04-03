@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as log from 'electron-log';
 import { ensureDirSync } from 'fs-extra';
 import { readdirSync } from 'node:fs';
+import { getVersion } from '../helper/powershell.helper';
 
 export const handleClientModsEvent = () => {
   ipcMain.on('client-mod', async (event, sptInstancePath: string) => {
@@ -107,21 +108,6 @@ export const handleClientModsEvent = () => {
     }
   });
 };
-
-async function getVersion(dllFilePath: string) {
-  try {
-    const exec = require('util').promisify(require('child_process').exec);
-    const { stderr, stdout } = await exec(`powershell "[System.Diagnostics.FileVersionInfo]::GetVersionInfo('${dllFilePath}').FileVersion`);
-
-    if (stderr) {
-      return stderr;
-    }
-
-    return stdout;
-  } catch (error) {
-    throw { error, isPowerShellIssue: true };
-  }
-}
 
 function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promise<any[]> {
   return new Promise<any[]>(async (resolve, reject) => {

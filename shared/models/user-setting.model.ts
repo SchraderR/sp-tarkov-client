@@ -1,9 +1,9 @@
-﻿import { SptCore, SptTag, SptVersion } from './spt-core.model';
+﻿import { SptTag, SptVersion } from './spt-core.model';
 import { InstanceEntity } from '../../app/database/entity/Instance';
 
 export interface InstanceDto extends InstanceEntity {
   isValid: boolean;
-  sptCore?: SptCore;
+  sptVersion?: string;
 }
 
 export interface UpdateModMeta {
@@ -57,7 +57,7 @@ export interface SptInstance {
 
 export interface UserSettingModel extends SptInstance {
   id: number;
-  sptCore?: SptCore;
+  sptVersion: string;
 }
 
 export interface ModMeta {

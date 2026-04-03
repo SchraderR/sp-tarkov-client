@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 import { Theme, UserSettingModel } from '../../../../shared/models/user-setting.model';
-import { SptCore } from '../../../../shared/models/spt-core.model';
 
 @Injectable({
   providedIn: 'root',
@@ -52,9 +51,7 @@ export class UserSettingsService {
           serverMods: [],
           clientMods: [],
           isActive: false,
-          sptCore: {
-            sptVersion: '4.0.0',
-          } as unknown as SptCore,
+          sptVersion: '6.0.0',
           isLoading: false,
           isError: false,
           isValid: true,

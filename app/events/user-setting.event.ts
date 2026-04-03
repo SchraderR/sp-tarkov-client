@@ -3,8 +3,9 @@ import * as path from 'path';
 import * as log from 'electron-log';
 import { ipcMain } from 'electron';
 import { InstanceDto } from '../../shared/models/user-setting.model';
-import { stableSptCoreConfigPath } from '../constants';
+import { sptServerMetadataPath } from '../constants';
 import { findInstanceById, getAllInstances, removeInstance , setInstanceActive } from '../database/controller/instance.controller';
+import { getVersion } from '../helper/powershell.helper';
 
 export const handleUserSettingStoreEvents = () => {
   ipcMain.on('user-instances', async event => await getAllInstancesEvent(event));
@@ -28,25 +29,26 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
   const userSettingModelResult: InstanceDto[] = [];
   for (const sptInstance of sptInstances) {
     try {
-      let sptCoreJson: string = '';
+      let sptVersion = '';
+      if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath))) {
+        log.error(`${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not available.`);
+        return;
+      }
 
-      stableSptCoreConfigPath.forEach(sptCorePath => {
-        if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptCorePath))) {
-          log.error(`${sptInstance.sptRootDirectory}/${sptCorePath} not available.`);
-          return;
-        }
-
-        sptCoreJson = fs.readFileSync(path.join(sptInstance.sptRootDirectory, sptCorePath), 'utf-8');
-      });
+      try {
+        sptVersion = await getVersion(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath));
+        console.log ( 'sptVersion: ',sptVersion);
+      } catch (error) {
+        log.error(error);
+      }
 
       userSettingModelResult.push({
         id: sptInstance.id,
         sptRootDirectory: sptInstance.sptRootDirectory,
         isActive: sptInstance.isActive,
         modCache: sptInstance.modCache,
-
-        sptCore: sptCoreJson ? JSON.parse(sptCoreJson) : null,
-        isValid: !!sptCoreJson,
+        sptVersion: sptVersion,
+        isValid: !!sptVersion,
         // isActive: sptInstance.isActive,
         // isLoading: sptInstance.isLoading,
         // isError: sptInstance.isError,
