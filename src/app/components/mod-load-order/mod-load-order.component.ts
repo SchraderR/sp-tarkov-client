@@ -20,43 +20,41 @@ export interface ModLoadOrder {
 export default class ModLoadOrderComponent implements OnInit {
   @ViewChild('modLoadOrderWarning', { static: true }) modLoadOrderWarning!: TemplateRef<unknown>;
 
-  #electronService = inject(ElectronService);
-  #userSettingsService = inject(UserSettingsService);
-  #ngZone = inject(NgZone);
-  #destroyRef = inject(DestroyRef);
-  #matDialog = inject(MatDialog);
+  private readonly electronService = inject(ElectronService);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly matDialog = inject(MatDialog);
 
-  wasModLoadOrderWarningReviewed = this.#userSettingsService.wasModLoadOrderWarningReviewed;
+  wasModLoadOrderWarningReviewed = this.userSettingsService.wasModLoadOrderWarningReviewed;
   modLoadOrderWarningDialog!: MatDialogRef<unknown, unknown>;
   modLoadOrder: ModLoadOrder = { order: [] };
 
   ngOnInit() {
-    if (!this.#userSettingsService.wasModLoadOrderWarningReviewed()) {
+    if (!this.userSettingsService.wasModLoadOrderWarningReviewed()) {
       this.openModLoadOrderDialog();
     }
 
-    const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+    const instancePath = this.userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
 
-    this.#electronService
+    this.electronService
       .sendEvent<string, string>('mod-load-order', instancePath)
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(modLoadOrder => this.#ngZone.run(() => (this.modLoadOrder = JSON.parse(modLoadOrder.args))));
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(modLoadOrder => this.ngZone.run(() => (this.modLoadOrder = JSON.parse(modLoadOrder.args))));
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    const instancePath =
-      this.#userSettingsService.getActiveInstance()?.sptRootDirectory ?? this.#userSettingsService.getActiveInstance()?.akiRootDirectory;
+    const instancePath = this.userSettingsService.getActiveInstance()?.sptRootDirectory;
     if (!instancePath) {
       return;
     }
 
     moveItemInArray(this.modLoadOrder.order, event.previousIndex, event.currentIndex);
 
-    this.#electronService
+    this.electronService
       .sendEvent<void, { instancePath: string; modLoadOrder: string[] }>('save-mod-load-order', {
         instancePath,
         modLoadOrder: this.modLoadOrder.order,
@@ -66,11 +64,11 @@ export default class ModLoadOrderComponent implements OnInit {
 
   closeModLoadOrderDialog() {
     this.modLoadOrderWarningDialog.close();
-    this.#userSettingsService.wasModLoadOrderWarningReviewed.update(() => true);
+    this.userSettingsService.wasModLoadOrderWarningReviewed.update(() => true);
   }
 
   private openModLoadOrderDialog() {
-    this.modLoadOrderWarningDialog = this.#matDialog.open(this.modLoadOrderWarning, {
+    this.modLoadOrderWarningDialog = this.matDialog.open(this.modLoadOrderWarning, {
       disableClose: true,
       width: '50%',
     });

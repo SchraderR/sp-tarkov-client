@@ -6,43 +6,43 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 
 @Component({
-    selector: 'app-tarkov-start',
-    templateUrl: './tarkov-start.component.html',
-    styleUrls: ['./tarkov-start.component.scss'],
-    imports: [MatButton]
+  selector: 'app-tarkov-start',
+  templateUrl: './tarkov-start.component.html',
+  styleUrls: ['./tarkov-start.component.scss'],
+  imports: [MatButton],
 })
 export class TarkovStartComponent implements OnInit {
-  #userSettingService = inject(UserSettingsService);
-  #electronService = inject(ElectronService);
-  #tarkovInstanceService = inject(TarkovInstanceService);
-  #ngZone = inject(NgZone);
-  #destroyRef = inject(DestroyRef);
+  private readonly userSettingService = inject(UserSettingsService);
+  private readonly electronService = inject(ElectronService);
+  private readonly tarkovInstanceService = inject(TarkovInstanceService);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
 
   private messagesCount = new Map<string, number>();
   private lastMessage = '';
 
-  serverOutput = this.#tarkovInstanceService.serverOutputSignal;
+  serverOutput = this.tarkovInstanceService.serverOutputSignal;
 
   ngOnInit(): void {
-    this.#electronService
+    this.electronService
       .getServerOutput()
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(outputLine => {
-        this.#ngZone.run(() => {
+        this.ngZone.run(() => {
           // a lot of magic ansi code replace
           // eslint-disable-next-line no-control-regex
           const cleanedOutputLine = outputLine.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
-          this.#tarkovInstanceService.addToServerOutput(cleanedOutputLine);
+          this.tarkovInstanceService.addToServerOutput(cleanedOutputLine);
         });
       });
   }
 
   startInstanceServer(): void {
-    const activeInstance = this.#userSettingService.getActiveInstance();
+    const activeInstance = this.userSettingService.getActiveInstance();
     if (!activeInstance) {
       return;
     }
 
-    this.#electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory ?? activeInstance.akiRootDirectory).subscribe();
+    this.electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory).subscribe();
   }
 }

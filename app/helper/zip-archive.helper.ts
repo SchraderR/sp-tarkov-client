@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { extract, extractFull, list } from 'node-7z';
-import { clientPluginModPath, serverModPath } from '../constants';
+import { clientPatcherModPath, clientPluginModPath, serverModPath, serverModPathWithoutRoot } from '../constants';
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 
 export class ZipArchiveHelper {
@@ -90,11 +90,44 @@ export class ZipArchiveHelper {
    * @param {string} sevenBinPath - The path of the 7zip binary.
    * @returns {Promise<boolean>} - A promise that resolves to true if the archive has files, false otherwise.
    */
-  isHappyPathArchive(archivePath: string, sevenBinPath: string): Promise<boolean> {
+  isHappyPathArchiveClientPlugin(archivePath: string, sevenBinPath: string): Promise<boolean> {
     let hasFiles = false;
 
     return new Promise((resolve, reject) => {
-      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientPluginModPath}/*`, `${clientPluginModPath}/*`, `${serverModPath}/*`] })
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientPluginModPath}/*`] })
+        .on('data', () => (hasFiles = true))
+        .on('end', () => resolve(hasFiles))
+        .on('error', error => reject(error));
+    });
+  }
+
+  isHappyPathArchiveServerMod(archivePath: string, sevenBinPath: string): Promise<boolean> {
+    let hasFiles = false;
+
+    return new Promise((resolve, reject) => {
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${serverModPath}/*`] })
+        .on('data', () => (hasFiles = true))
+        .on('end', () => resolve(hasFiles))
+        .on('error', error => reject(error));
+    });
+  }
+
+  isHappyPathArchiveServerModWithoutRoot(archivePath: string, sevenBinPath: string): Promise<boolean> {
+    let hasFiles = false;
+
+    return new Promise((resolve, reject) => {
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${serverModPathWithoutRoot}/*`] })
+        .on('data', () => (hasFiles = true))
+        .on('end', () => resolve(hasFiles))
+        .on('error', error => reject(error));
+    });
+  }
+
+  isHappyPathArchiveClientPatcherMod(archivePath: string, sevenBinPath: string): Promise<boolean> {
+    let hasFiles = false;
+
+    return new Promise((resolve, reject) => {
+      list(archivePath, { $bin: sevenBinPath, $cherryPick: [`${clientPatcherModPath}/*`] })
         .on('data', () => (hasFiles = true))
         .on('end', () => resolve(hasFiles))
         .on('error', error => reject(error));
@@ -157,7 +190,7 @@ export class ZipArchiveHelper {
     const fileName = path.basename(archivePath);
     const newFileName = fileName.replace(/\(\d+\)/g, '');
 
-    fs.copyFileSync(archivePath, path.join(args.sptInstancePath, clientPluginModPath, newFileName));
+    fs.copyFileSync(archivePath, path.join(args.instancePath, clientPluginModPath, newFileName));
 
     return true;
   }

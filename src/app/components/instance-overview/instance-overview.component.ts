@@ -16,10 +16,10 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-    selector: 'app-instance-overview',
-    templateUrl: './instance-overview.component.html',
-    styleUrl: './instance-overview.component.scss',
-    imports: [
+  selector: 'app-instance-overview',
+  templateUrl: './instance-overview.component.html',
+  styleUrl: './instance-overview.component.scss',
+  imports: [
     RouterLink,
     MatButtonModule,
     MatProgressSpinnerModule,
@@ -31,29 +31,29 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
     DialogModule,
     MatCard,
     MatCardActions,
-    MatCardHeader,
-    MatCardContent
-]
+    MatCardContent,
+  ],
 })
 export default class InstanceOverviewComponent implements OnInit {
   @ViewChild('instanceToggleModWarning', { static: true }) instanceToggleModWarning!: TemplateRef<unknown>;
 
-  #userSettingsService = inject(UserSettingsService);
-  #electronService = inject(ElectronService);
-  #matDialog = inject(MatDialog);
-  #ngZone = inject(NgZone);
-  #changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly electronService = inject(ElectronService);
+  private readonly matDialog = inject(MatDialog);
+  private readonly ngZone = inject(NgZone);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-  activeSptInstance = this.#userSettingsService.getActiveInstance();
-  isExperimentalFunctionActive = this.#userSettingsService.isExperimentalFunctionActive;
+  activeSptInstance = this.userSettingsService.getActiveInstanceComputed;
+  isExperimentalFunctionActive = this.userSettingsService.isExperimentalFunctionActive;
+  isLoading = this.userSettingsService.isLoading;
   isWorking = false;
   isToggleWarningButtonDisabled = true;
   counter = 5;
   toggleWarningDialogRef!: MatDialogRef<unknown, unknown>;
 
   ngOnInit() {
-    if (this.isExperimentalFunctionActive() && !this.#userSettingsService.wasInstanceOverviewReviewed()) {
-      this.toggleWarningDialogRef = this.#matDialog.open(this.instanceToggleModWarning, {
+    if (this.isExperimentalFunctionActive() && !this.userSettingsService.wasInstanceOverviewReviewed()) {
+      this.toggleWarningDialogRef = this.matDialog.open(this.instanceToggleModWarning, {
         disableClose: true,
         width: '50%',
       });
@@ -75,22 +75,23 @@ export default class InstanceOverviewComponent implements OnInit {
       modPath = modPath.split(mod.modOriginalName)[0];
     }
 
-    this.#electronService.openPath(modPath);
+    this.electronService.openPath(modPath);
   }
 
   setToggleWarningState() {
-    this.#userSettingsService.wasInstanceOverviewReviewed.set(true);
+    this.userSettingsService.wasInstanceOverviewReviewed.set(true);
     this.toggleWarningDialogRef.close(true);
   }
 
   toggleModState(mod: ModMeta, isServerMod = false) {
-    if (!this.activeSptInstance || this.isWorking) {
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance || this.isWorking) {
       return;
     }
 
     const toggleModState: ToggleModStateModel = {
       isServerMod: isServerMod,
-      sptInstancePath: this.activeSptInstance.sptRootDirectory ?? this.activeSptInstance.akiRootDirectory,
+      sptInstancePath: activeInstance.sptRootDirectory,
       modOriginalPath: mod.modOriginalPath,
       modOriginalName: mod.modOriginalName,
       isPrePatcherMod: mod.isPrePatcherMod ?? false,
@@ -99,12 +100,12 @@ export default class InstanceOverviewComponent implements OnInit {
 
     this.isWorking = true;
 
-    this.#electronService
+    this.electronService
       .sendEvent<{ path: string; name: string; isEnabled: boolean }, ToggleModStateModel>('toggle-mod-state', toggleModState)
       .subscribe(disabledMod => {
-        this.#ngZone.run(() => {
+        this.ngZone.run(() => {
           this.isWorking = false;
-          const activeInstance = this.#userSettingsService.getActiveInstance();
+          const activeInstance = this.userSettingsService.getActiveInstance();
           if (!activeInstance) {
             return;
           }
@@ -114,8 +115,8 @@ export default class InstanceOverviewComponent implements OnInit {
           mod.isEnabled = disabledMod.args.isEnabled;
           mod.subMods?.map(m => (m.modPath = disabledMod.args.path));
 
-          this.#userSettingsService.updateUserSetting();
-          this.#changeDetectorRef.detectChanges();
+          this.userSettingsService.updateUserSetting();
+          this.changeDetectorRef.detectChanges();
         });
       });
   }

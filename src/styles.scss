@@ -43,7 +43,7 @@ body {
 .github-info-panel {
   color: white;
   padding: 8px;
-  background: #666 !important;
+  background: var(--mat-sys-surface-container-high) !important;
 }
 
 .already-installed-icon-container {
@@ -132,13 +132,23 @@ mat-icon {
   &.card-badge {
     display: flex;
     position: absolute;
-    justify-content: center;
     bottom: 0;
     color: white;
     padding: 2px 4px;
     font-size: 12px;
     border-radius: 4px 4px 4px 0;
   }
+}
+
+.spt-mod-download {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  bottom: 0;
+  right: 0;
+  color: white;
+  padding: 2px 4px;
+  font-size: 12px;
 }
 
 .badge-version {
@@ -189,6 +199,15 @@ mat-icon {
     @media (prefers-color-scheme: dark) {
       background-color: #a16207;
       color: #fefce8;
+    }
+  }
+  &.violet {
+    background-color: #f5f3ff;
+    color: #6366f1;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #6366f1;
+      color: #f5f3ff;
     }
   }
 

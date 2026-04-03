@@ -1,11 +1,10 @@
 import { ipcMain } from 'electron';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import { getUserSettingProperty, setUserSettingProperty } from '../database/controller/user-setting.controller';
 
-export const handleTutorialEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('tutorial-setting', event => event.sender.send('tutorial-setting-completed', store.get('isTutorialDone')));
-  ipcMain.on('tutorial-toggle', (event, isTutorialDone: boolean) => {
-    store.set('isTutorialDone', isTutorialDone);
+export const handleTutorialEvents = () => {
+  ipcMain.on('tutorial-setting', async event => event.sender.send('tutorial-setting-completed', await getUserSettingProperty('isTutorialDone')));
+  ipcMain.on('tutorial-toggle', async (event, isTutorialDone: boolean) => {
+    await setUserSettingProperty('isTutorialDone', isTutorialDone);
     event.sender.send('tutorial-toggle-completed');
   });
 };

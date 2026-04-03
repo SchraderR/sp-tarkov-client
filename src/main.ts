@@ -1,7 +1,7 @@
-import { enableProdMode, importProvidersFrom, isDevMode, inject, provideAppInitializer } from '@angular/core';
+import { enableProdMode, importProvidersFrom, isDevMode, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { appRoutes } from './app/app.routing';
@@ -11,6 +11,7 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
 import { forkJoin } from 'rxjs';
+import { authInterceptor } from './app/core/interceptor/auth.interceptor';
 
 if (environment.production) {
   enableProdMode();
@@ -18,7 +19,8 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideHttpClient(withInterceptorsFromDi()),
+    provideZoneChangeDetection(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(appRoutes, withComponentInputBinding()),
     importProvidersFrom(JoyrideModule.forRoot()),
     provideAnimations(),
@@ -32,13 +34,8 @@ bootstrapApplication(AppComponent, {
       loader: TranslocoHttpLoader,
     }),
     provideAppInitializer(() => {
-        const initializerFn = (configurationServiceFactory)(inject(ConfigurationService));
-        return initializerFn();
-      }),
+      const configurationService = inject(ConfigurationService);
+      return forkJoin([configurationService.getCurrentConfiguration(), configurationService.getSptVersion(), configurationService.getCurrentTags()]);
+    }),
   ],
 }).catch(err => console.error(err));
-
-function configurationServiceFactory(configurationService: ConfigurationService) {
-  return () =>
-    forkJoin([configurationService.getCurrentConfiguration(), configurationService.getSptVersion(), configurationService.getCurrentTags()]);
-}

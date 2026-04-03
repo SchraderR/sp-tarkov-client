@@ -1,14 +1,16 @@
 import { ipcMain } from 'electron';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
 import * as path from 'path';
-import { existsSync, readdir, stat } from 'fs-extra';
 import * as log from 'electron-log';
+import { existsSync, readdir, stat } from 'fs-extra';
+import { getUserSettingProperty , setUserSettingProperty } from '../database/controller/user-setting.controller';
 
-export const handleTempDownloadDirectoryEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('keep-temp-dir-setting', event => event.sender.send('keep-temp-dir-setting-completed', store.get('keepTempDownloadDirectory')));
-  ipcMain.on('keep-temp-dir-setting-toggle', (event, keepTempDownloadDirectory: boolean) => {
-    store.set('keepTempDownloadDirectory', keepTempDownloadDirectory);
+export const handleTempDownloadDirectoryEvents = () => {
+  ipcMain.on('keep-temp-dir-setting', async event =>
+    event.sender.send('keep-temp-dir-setting-completed', await getUserSettingProperty('keepTempDownloadDirectory'))
+  );
+
+  ipcMain.on('keep-temp-dir-setting-toggle', async (event, keepTempDownloadDirectory: boolean) => {
+    await setUserSettingProperty('keepTempDownloadDirectory', keepTempDownloadDirectory);
     event.sender.send('keep-temp-dir-setting-toggle-completed');
   });
 

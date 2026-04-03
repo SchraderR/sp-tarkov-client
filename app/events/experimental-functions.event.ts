@@ -1,11 +1,13 @@
 import { ipcMain } from 'electron';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../../shared/models/user-setting.model';
+import { getUserSettingProperty, setUserSettingProperty } from '../database/controller/user-setting.controller';
 
-export const handleExperimentalFunctionsEvents = (store: Store<UserSettingStoreModel>) => {
-  ipcMain.on('exp-function-setting', event => event.sender.send('exp-function-setting-completed', store.get('isExperimentalFunctionsActive')));
-  ipcMain.on('exp-function-toggle', (event, isExperimentalFunctionsActive: boolean) => {
-    store.set('isExperimentalFunctionsActive', isExperimentalFunctionsActive);
+export const handleExperimentalFunctionsEvents = () => {
+  ipcMain.on('exp-function-setting', async event =>
+    event.sender.send('exp-function-setting-completed', await getUserSettingProperty('isExperimentalFunctionsActive'))
+  );
+
+  ipcMain.on('exp-function-toggle', async (event, isExperimentalFunctionsActive: boolean) => {
+    await setUserSettingProperty('isExperimentalFunctionsActive', isExperimentalFunctionsActive);
     event.sender.send('exp-function-toggle-completed');
   });
 };

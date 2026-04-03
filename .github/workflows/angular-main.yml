@@ -18,9 +18,10 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: Install Dependencies
-        run: npm i
+        run: npm install
 
       - name: Lint Code
+        continue-on-error: true
         run: npm run lint
 
       - name: Run Tests

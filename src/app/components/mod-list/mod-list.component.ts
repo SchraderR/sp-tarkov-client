@@ -17,60 +17,69 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ModDependencyCardComponent } from '../mod-dependency-card/mod-dependency-card.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ModCacheModel } from '../../../../shared/models/mod-cache.model';
+import { UserSettingsService } from '../../core/services/user-settings.service';
 
 @Component({
-    selector: 'app-mod-list',
-    templateUrl: './mod-list.component.html',
-    styleUrl: './mod-list.component.scss',
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        MatCardModule,
-        MatIconModule,
-        MatTooltipModule,
-        ModCardComponent,
-        JoyrideModule,
-        MatSlideToggleModule,
-        ReactiveFormsModule,
-        ModDependencyCardComponent,
-        MatProgressSpinner,
-    ],
-    animations: [fadeInFadeOutAnimation]
+  selector: 'app-mod-list',
+  templateUrl: './mod-list.component.html',
+  styleUrl: './mod-list.component.scss',
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    ModCardComponent,
+    JoyrideModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    ModDependencyCardComponent,
+    MatProgressSpinner,
+  ],
+  animations: [fadeInFadeOutAnimation],
 })
 export default class ModListComponent implements OnInit {
-  #modListService = inject(ModListService);
-  #downloadService = inject(DownloadService);
-  #electronService = inject(ElectronService);
-  #ngZone = inject(NgZone);
-  #changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly modListService = inject(ModListService);
+  private readonly downloadService = inject(DownloadService);
+  private readonly electronService = inject(ElectronService);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly ngZone = inject(NgZone);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-  modListSignal = this.#modListService.modListSignal;
+  modListSignal = this.modListService.modListSignal;
   isModNotCompleted = computed(() => this.modListSignal().some(m => !m.installProgress?.completed));
   isModCompleted = computed(() => this.modListSignal().some(m => m.installProgress?.completed));
   isSomeModDependencyLoading = computed(() => this.modListSignal().some(m => m.isDependenciesLoading));
 
   emote = '';
-  isDownloadingAndInstalling$ = this.#downloadService.isDownloadAndInstallInProgress;
+  isDownloadingAndInstalling$ = this.downloadService.isDownloadAndInstallInProgress;
 
   constructor() {
-    this.#downloadService.downloadProgressEvent
+    this.downloadService.downloadProgressEvent
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.#ngZone.run(() => this.#changeDetectorRef.markForCheck()));
+      .subscribe(() => this.ngZone.run(() => this.changeDetectorRef.markForCheck()));
   }
 
   ngOnInit() {
     this.selectRandomEmote();
   }
 
-  downloadAndInstallAll = () => this.#downloadService.downloadAndInstallAll();
+  downloadAndInstallAll = () => this.downloadService.downloadAndInstallAll();
 
   async removeMod(mod: Mod) {
-    this.#modListService.removeMod(mod.name);
-    await firstValueFrom(this.#electronService.sendEvent('remove-mod-list-cache', mod.name));
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      console.error('No active instance found');
+      return;
+    }
+    const modCache: ModCacheModel = { instanceId: activeInstance.id, modId: mod.id };
+    this.modListService.removeMod(mod.name);
+    await firstValueFrom(this.electronService.sendEvent('remove-mod-list-cache', modCache));
   }
 
   removeCompletedMods() {
-    this.#modListService.removeCompletedMods();
+    this.modListService.removeCompletedMods();
   }
 
   private selectRandomEmote() {

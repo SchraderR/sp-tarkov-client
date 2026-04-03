@@ -3,10 +3,12 @@ name: Pre-Release Electron Application
 on:
   workflow_dispatch:
   push:
-    branches: [testing]
+    tags:
+      - 'v*-beta.*'
 
 jobs:
-  release:
+  pre-release:
+    if: github.event.base_ref == 'refs/heads/testing'
     runs-on: windows-latest
     steps:
       - name: Check out
@@ -19,10 +21,23 @@ jobs:
 
       - name: Release Electron
         uses: Yan-Jobs/action-electron-builder@v1.7.0
+        env:
+          EP_PRE_RELEASE: true
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           build_script_name: "build:prod"
-          args: |
-            --publish=always
-            --releaseType=prerelease
+          args: --publish=always
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Create Archive
+        run: |
+          Compress-Archive -Path release/*.exe -DestinationPath sp-eft-manager-${{ github.ref_name }}.zip
+
+      - name: Upload Archive to Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+           files: sp-eft-manager-${{ github.ref_name }}.zip
+           prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

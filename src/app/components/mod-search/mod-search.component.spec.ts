@@ -10,9 +10,9 @@ describe('ModSearchComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [NoopAnimationsModule, ModSearchComponent],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+      imports: [NoopAnimationsModule, ModSearchComponent],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ModSearchComponent);
     component = fixture.componentInstance;

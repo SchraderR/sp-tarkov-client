@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SP-EFT Manager Auth Key Setup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 480px;
+      width: 100%;
+    }
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .icon svg {
+      width: 30px;
+      height: 30px;
+      fill: white;
+    }
+
+    h1 {
+      color: #1a237e;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .description {
+      color: #546e7a;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .info-box {
+      background: #fff3e0;
+      border-left: 4px solid #f57c00;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      border-radius: 4px;
+    }
+
+    .info-box p {
+      color: #e65100;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .info-box strong {
+      color: #bf360c;
+    }
+
+    .info-box ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    .info-box li {
+      color: #e65100;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 4px 0;
+    }
+
+    .security-note {
+      background: #e3f2fd;
+      border-left: 4px solid #1976d2;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      border-radius: 4px;
+    }
+
+    .security-note p {
+      color: #1565c0;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .security-note strong {
+      color: #0d47a1;
+    }
+
+    .input-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      color: #37474f;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      padding-right: 100px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: monospace;
+      transition: all 0.3s;
+      background-color: #fafafa;
+    }
+
+    input[type="password"]:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: #1976d2;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    }
+
+    input[type="password"].error, input[type="text"].error {
+      border-color: #d32f2f;
+    }
+
+    input[type="password"]::placeholder, input[type="text"]::placeholder {
+      color: #9e9e9e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .toggle-visibility {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #616161;
+      transition: all 0.2s;
+    }
+
+    .toggle-visibility:hover {
+      background: #eeeeee;
+      border-color: #bdbdbd;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      font-size: 12px;
+      margin-top: 8px;
+      min-height: 16px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+      color: white;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+      box-shadow: 0 8px 16px rgba(25, 118, 210, 0.3);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .cancel-btn {
+      background: #ffffff;
+      color: #546e7a;
+      border: 2px solid #e0e0e0;
+    }
+
+    .cancel-btn:hover:not(:disabled) {
+      background: #f5f5f5;
+      border-color: #bdbdbd;
+    }
+
+    .info-text {
+      color: #78909c;
+      font-size: 11px;
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+
+    .spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .loading .spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Subtle animation for focus */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4);
+      }
+      100% {
+        box-shadow: 0 0 0 8px rgba(25, 118, 210, 0);
+      }
+    }
+
+    input:focus {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+    </svg>
+  </div>
+
+  <h1>Authentication Required</h1>
+
+  <p class="description">
+    A Forge user account is mandatory to use this application.
+    Enter your API key to securely connect to the application endpoints.
+    Your key will be encrypted and stored locally on this device.
+  </p>
+
+  <div class="info-box">
+    <p>
+      <strong>How to create your API token:</strong>
+    </p>
+    <ul>
+      <li>Navigate to <strong>Forge Homepage</strong></li>
+      <li>Go to <strong>Profile</strong></li>
+      <li>Click on <strong>API Token</strong></li>
+      <li>Generate a new token with read-only permissions</li>
+    </ul>
+  </div>
+
+  <div class="security-note">
+    <p>
+      <strong>Important:</strong> Your API key must have <strong>read-only permissions</strong>.
+      Keys with create, update or delete privileges will be automatically rejected for security reasons.
+    </p>
+  </div>
+
+  <div class="input-group">
+    <label for="authToken">API Key</label>
+    <div class="input-wrapper">
+      <input
+        type="password"
+        id="authToken"
+        placeholder="Enter your API key..."
+        autofocus
+      />
+      <button class="toggle-visibility" onclick="toggleVisibility()">
+        Show
+      </button>
+    </div>
+    <div class="error-message" id="errorMessage"></div>
+  </div>
+
+  <div class="button-group">
+    <button class="cancel-btn" onclick="handleCancel()">
+      Cancel
+    </button>
+    <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+      Authenticate
+      <span class="spinner"></span>
+    </button>
+  </div>
+
+  <p class="info-text">
+    Your API key will be validated to ensure it has the correct permissions before being stored.
+  </p>
+</div>
+
+<script>
+  let isPasswordVisible = false;
+  let isSubmitting = false;
+
+  // Toggle password visibility
+  function toggleVisibility() {
+    const input = document.getElementById('authToken');
+    const button = document.querySelector('.toggle-visibility');
+
+    if (isPasswordVisible) {
+      input.type = 'password';
+      button.textContent = 'Show';
+      isPasswordVisible = false;
+    } else {
+      input.type = 'text';
+      button.textContent = 'Hide';
+      isPasswordVisible = true;
+    }
+  }
+
+  // Show error message
+  function showError(message) {
+    const errorElement = document.getElementById('errorMessage');
+    const input = document.getElementById('authToken');
+
+    errorElement.textContent = message;
+    errorElement.classList.add('show');
+    input.classList.add('error');
+  }
+
+  // Clear error message
+  function clearError() {
+    const errorElement = document.getElementById('errorMessage');
+    const input = document.getElementById('authToken');
+
+    errorElement.classList.remove('show');
+    input.classList.remove('error');
+  }
+
+  // Handle form submission
+  async function handleSubmit() {
+    if (isSubmitting) return;
+
+    const token = document.getElementById('authToken').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
+
+    clearError();
+
+    // Validate input
+    if (!token) {
+      showError('Please enter an API key');
+      return;
+    }
+
+    if (token.length < 10) {
+      showError('API key is too short (minimum 10 characters required)');
+      return;
+    }
+
+    // Show loading state
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+
+    try {
+      // Send token to main process for validation
+      if (window.electronAPI && window.electronAPI.validateAndSaveToken) {
+        const result = await window.electronAPI.validateAndSaveToken(token);
+
+        if (result.success) {
+          // Token is valid with READ-only permissions
+          if (window.electronAPI.closeAuthWindow) {
+            window.electronAPI.closeAuthWindow();
+          }
+        } else {
+          // Token validation failed
+          if (result.error === 'INVALID_PERMISSIONS') {
+            const detectedPerms = result.permissions ? result.permissions.join(', ') : 'unknown';
+            showError(`Invalid permissions detected: [${detectedPerms}]. Only "read" permission is allowed. Please create a new API key with read-only access.`);
+          } else if (result.error === 'INVALID_TOKEN') {
+            showError('Invalid API key. Please check your input and try again.');
+          } else if (result.error === 'NETWORK_ERROR') {
+            showError('Network error. Please check your internet connection and try again.');
+          } else {
+            showError('An error occurred. Please try again.');
+          }
+        }
+      } else {
+        // Fallback for testing in browser
+        console.log('Token submitted:', token);
+        alert('Token would be validated: ' + token);
+      }
+    } catch (error) {
+      showError('An unexpected error occurred. Please try again.');
+      console.error('Error:', error);
+    } finally {
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+    }
+  }
+
+  // Handle cancel action
+  function handleCancel() {
+    if (window?.electronAPI?.quitApp) {
+      window.electronAPI.quitApp();
+    } else {
+      // Fallback for testing in browser
+      console.log('App would quit');
+      if (confirm('The application cannot run without an API key. Are you sure you want to exit?')) {
+        window.close();
+      }
+    }
+  }
+
+  document.getElementById('authToken').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter' && !isSubmitting) {
+      handleSubmit();
+    }
+  });
+
+  document.getElementById('authToken').addEventListener('input', function() {
+    clearError();
+  });
+
+  window.addEventListener('load', () => document.getElementById('authToken').focus());
+</script>
+</body>
+</html>

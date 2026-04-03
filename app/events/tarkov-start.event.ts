@@ -1,11 +1,9 @@
 import { ipcMain } from 'electron';
+import { spawn } from 'node:child_process';
 import * as path from 'path';
 import * as child from 'child_process';
-import { spawn } from 'node:child_process';
 import * as log from 'electron-log';
-import { existsSync } from 'fs-extra';
 
-const exeNameAki = 'Aki.Server.exe';
 const exeNameSpt = 'SPT.Server.exe';
 
 export const handleTarkovStartEvent = () => {
@@ -13,10 +11,7 @@ export const handleTarkovStartEvent = () => {
     let child: child.ChildProcess;
 
     try {
-      let filePath = path.join(sptInstancePath, exeNameAki);
-      if (!existsSync(filePath)) {
-        filePath = path.join(sptInstancePath, exeNameSpt);
-      }
+      let filePath = path.join(sptInstancePath, exeNameSpt);
 
       child = spawn(filePath, [], {
         cwd: sptInstancePath,

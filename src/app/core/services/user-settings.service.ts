@@ -1,6 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { computed , Injectable, signal } from '@angular/core';
 import { Theme, UserSettingModel } from '../../../../shared/models/user-setting.model';
-import { SptCore } from '../../../../shared/models/spt-core.model';
 
 @Injectable({
   providedIn: 'root',
@@ -8,14 +7,16 @@ import { SptCore } from '../../../../shared/models/spt-core.model';
 export class UserSettingsService {
   private userSetting = signal<UserSettingModel[]>([]);
   readonly userSettingSignal = this.userSetting.asReadonly();
+
   currentTheme = signal<Theme | null>(null);
-  isExperimentalFunctionActive = signal<boolean>(false);
-  keepTempDownloadDirectory = signal<boolean>(false);
-  checkInstalledMod = signal<boolean>(false);
+  isExperimentalFunctionActive = signal(false);
+  keepTempDownloadDirectory = signal(false);
+  checkInstalledMod = signal(false);
   keepTempDownloadDirectorySize = signal<{ size: number; text: string }>({ text: '', size: 0 });
   isTutorialDone = signal<boolean | null>(null);
-  wasInstanceOverviewReviewed = signal<boolean>(false);
-  wasModLoadOrderWarningReviewed = signal<boolean>(false);
+  wasInstanceOverviewReviewed = signal(false);
+  wasModLoadOrderWarningReviewed = signal(false);
+  isLoading = signal(false);
 
   addUserSetting(settingModel: UserSettingModel) {
     if (this.userSetting().some(userSetting => userSetting.sptRootDirectory === settingModel.sptRootDirectory)) {
@@ -33,10 +34,12 @@ export class UserSettingsService {
     this.isTutorialDone.update(() => state);
   }
 
-  removeUserSetting(akiRootDirectory: string) {
-    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== akiRootDirectory)]);
+  // TODO CHECK REFACTORING
+  removeUserSetting(rootDirectory: string) {
+    this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== rootDirectory)]);
   }
 
+  getActiveInstanceComputed = computed(() => this.userSetting().find(setting => setting.isActive));
   getActiveInstance(): UserSettingModel | undefined {
     return this.userSetting().find(setting => setting.isActive);
   }
@@ -45,14 +48,12 @@ export class UserSettingsService {
     if (!this.userSettingSignal().length) {
       this.userSetting.set([
         {
+          id: 0,
           sptRootDirectory: 'C://TutorialPath/SPT',
           serverMods: [],
           clientMods: [],
           isActive: false,
-          isPowerShellIssue: false,
-          sptCore: {
-            sptVersion: '4.0.0',
-          } as unknown as SptCore,
+          sptVersion: '6.0.0',
           isLoading: false,
           isError: false,
           isValid: true,
