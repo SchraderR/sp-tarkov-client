@@ -27,8 +27,9 @@
             </div>
           }
 
-          <div class="font-small spt-mod-download" [matTooltip]="`${mod.downloads} downloads`">
-            {{ mod.downloads }} <mat-icon>download</mat-icon>
+          @let formatedDownloadNumber = Intl.NumberFormat('en-en').format(mod.downloads);
+          <div class="font-small spt-mod-download" [matTooltip]="`${formatedDownloadNumber} downloads`">
+            {{ formatedDownloadNumber }} <mat-icon>download</mat-icon>
           </div>
         </div>
         <div class="mod-list-container">

@@ -181,9 +181,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   private loadData(pageNumber = 0) {
     this.loading = true;
     const config = this.configurationService.configSignal();
-
-    let basePath = '';
-
     // CHECK WHEN TAGS ARE IMPLEMENTED
     // if (this.tags()) {
     //   const akiTag = this.sptTagsSignal()?.find(t => t.innerText === this.sptTagFormField.value);
@@ -201,9 +198,8 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     this.accumulatedModList = [];
     this.fetchModSubscription?.unsubscribe();
     this.fetchModSubscription = this.forgeApiService
-      .getMods(this.sortTypeFormField.value, this.sortOrderFormField.value, (this.paginator()?.pageIndex ?? 0) + 1)
+      .getMods(this.sortTypeFormField.value, this.sortOrderFormField.value, this.sptVersionFormField.value, (this.paginator()?.pageIndex ?? 0) + 1)
       .subscribe(forgeModResult => {
-        let filteredMods = 0;
         this.accumulatedModList = Array.from(forgeModResult.data)
           .map(mod => ({ ...mod }) as Mod)
           .map(e => {
@@ -289,4 +285,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
     return this.sptTagsSignal()!.filter(option => option.innerText.toLowerCase().includes(filterValue));
   }
+
+  protected readonly Intl = Intl;
 }

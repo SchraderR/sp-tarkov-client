@@ -116,7 +116,7 @@ export class ForgeApiService {
     return this.httpClient.get<BaseApi<ForgeUser>>(`${environment.forgeBasePath}/auth/user`);
   }
 
-  getMods(sort: GenericModListSortType, sortOrder: GenericModListSortOrder, page: number) {
+  getMods(sort: GenericModListSortType, sortOrder: GenericModListSortOrder, sptVersion: SptVersion | null, page: number) {
     const options = {
       params: new HttpParams().set('include', 'versions,source_code_links').set('page', page).set('per_page', 12),
     };
@@ -125,6 +125,10 @@ export class ForgeApiService {
       options.params = options.params.append('sort', `${sortOrder === 'DESC' ? '-' : ''}${sort}`);
     } else {
       options.params = options.params.append('filter[featured]', true);
+    }
+
+    if (sptVersion) {
+      options.params = options.params.append('filter[spt_version]', sptVersion.version);
     }
 
     return this.httpClient.get<PaginatedBaseApi<ForgeMod[]>>(`${environment.forgeBasePath}/mods`, options);
