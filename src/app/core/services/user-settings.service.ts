@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { computed , Injectable, signal } from '@angular/core';
 import { Theme, UserSettingModel } from '../../../../shared/models/user-setting.model';
 
 @Injectable({
@@ -9,13 +9,14 @@ export class UserSettingsService {
   readonly userSettingSignal = this.userSetting.asReadonly();
 
   currentTheme = signal<Theme | null>(null);
-  isExperimentalFunctionActive = signal<boolean>(false);
-  keepTempDownloadDirectory = signal<boolean>(false);
-  checkInstalledMod = signal<boolean>(false);
+  isExperimentalFunctionActive = signal(false);
+  keepTempDownloadDirectory = signal(false);
+  checkInstalledMod = signal(false);
   keepTempDownloadDirectorySize = signal<{ size: number; text: string }>({ text: '', size: 0 });
   isTutorialDone = signal<boolean | null>(null);
-  wasInstanceOverviewReviewed = signal<boolean>(false);
-  wasModLoadOrderWarningReviewed = signal<boolean>(false);
+  wasInstanceOverviewReviewed = signal(false);
+  wasModLoadOrderWarningReviewed = signal(false);
+  isLoading = signal(false);
 
   addUserSetting(settingModel: UserSettingModel) {
     if (this.userSetting().some(userSetting => userSetting.sptRootDirectory === settingModel.sptRootDirectory)) {
@@ -38,6 +39,7 @@ export class UserSettingsService {
     this.userSetting.update(() => [...this.userSetting().filter(m => m.sptRootDirectory !== rootDirectory)]);
   }
 
+  getActiveInstanceComputed = computed(() => this.userSetting().find(setting => setting.isActive));
   getActiveInstance(): UserSettingModel | undefined {
     return this.userSetting().find(setting => setting.isActive);
   }

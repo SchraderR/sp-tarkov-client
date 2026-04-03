@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { catchError, concatAll, filter, firstValueFrom, forkJoin, of, switchMap } from 'rxjs';
+import { catchError, concatAll, filter , finalize , forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -29,7 +29,6 @@ import { SnackbarTutorialHintComponent } from './components/snackbar-tutorial-hi
 import { MatCardModule } from '@angular/material/card';
 import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.component';
 import { DownloadService } from './core/services/download.service';
-import { Mod } from './core/models/mod';
 import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
 import { ForgeApiService } from './core/services/forge-api.service';
@@ -66,7 +65,6 @@ export class AppComponent {
   private readonly electronService = inject(ElectronService);
   private readonly userSettingService = inject(UserSettingsService);
   private readonly downloadService = inject(DownloadService);
-  private readonly forgeApiService = inject(ForgeApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly modListService = inject(ModListService);
   private readonly joyrideService = inject(JoyrideService);
@@ -77,6 +75,7 @@ export class AppComponent {
 
   readonly config = environment;
   readonly version = packageJson.version;
+  isLoading = false;
   isExpanded = false;
   isTarkovInstanceRunExpanded = false;
   isExperimentalFunctionActive = this.userSettingService.isExperimentalFunctionActive;
@@ -133,11 +132,13 @@ export class AppComponent {
   }
 
   private getCurrentPersonalSettings() {
+    this.userSettingService.isLoading.set(true);
     this.electronService
       .sendEvent<UserSettingModel[]>('user-instances')
       .pipe(
         switchMap(res => res && this.getServerMods(res.args)),
         concatAll(),
+        finalize(() => this.userSettingService.isLoading.set(false)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(value => {
