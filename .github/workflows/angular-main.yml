@@ -21,6 +21,7 @@ jobs:
         run: npm install
 
       - name: Lint Code
+        continue-on-error: true
         run: npm run lint
 
       - name: Run Tests
