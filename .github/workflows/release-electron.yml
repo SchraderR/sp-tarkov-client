@@ -3,6 +3,7 @@ name: Release Electron Application
 on:
   workflow_dispatch:
   push:
+    branches: [master]
     tags:
       - 'v*'
       - '!v*-beta.*'
