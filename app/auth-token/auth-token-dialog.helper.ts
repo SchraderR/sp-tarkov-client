@@ -75,8 +75,8 @@ async function validateApiPermissions(token: string): Promise<{ isValid: boolean
 async function promptForApiKey(): Promise<void> {
   return new Promise<void>(async (resolve, reject) => {
     const inputWindow = new BrowserWindow({
-      width: 500,
-      height: 750,
+      width: 550,
+      height: 850,
       resizable: true,
       autoHideMenuBar: true,
       frame: true,
