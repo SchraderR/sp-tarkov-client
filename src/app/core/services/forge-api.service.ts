@@ -118,12 +118,14 @@ export class ForgeApiService {
 
   getMods(sort: GenericModListSortType, sortOrder: GenericModListSortOrder, page: number) {
     const options = {
-      params: new HttpParams()
-        .set('sort', `${sortOrder === 'DESC' ? '-' : ''}${sort}`)
-        .set('page', page)
-        .set('include', 'versions,source_code_links')
-        .set('per_page', 12),
+      params: new HttpParams().set('include', 'versions,source_code_links').set('page', page).set('per_page', 12),
     };
+
+    if (sort !== 'featured') {
+      options.params = options.params.append('sort', `${sortOrder === 'DESC' ? '-' : ''}${sort}`);
+    } else {
+      options.params = options.params.append('filter[featured]', true);
+    }
 
     return this.httpClient.get<PaginatedBaseApi<ForgeMod[]>>(`${environment.forgeBasePath}/mods`, options);
   }

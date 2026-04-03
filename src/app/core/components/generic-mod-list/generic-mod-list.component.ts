@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AsyncPipe , DatePipe , NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ElectronService } from '../../services/electron.service';
 import { ModListService } from '../../services/mod-list.service';
@@ -83,9 +83,10 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   filteredOptions: Observable<SptTag[]> | undefined;
 
   accumulatedModList: Mod[] = [];
-  pageSize = 0;
+  pageSize = 1;
   pageLength = 0;
   pageNumber = 0;
+  total = 0;
   loading = false;
   isDownloadAndInstallInProgress = this.downloadService.isDownloadAndInstallInProgress;
 
@@ -219,6 +220,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
         this.pageNumber = forgeModResult.meta.current_page;
         this.pageSize = forgeModResult.meta.per_page; // this.accumulatedModList.length;
         this.pageLength = forgeModResult.meta.last_page;
+        this.total = forgeModResult.meta.total;
         this.loading = false;
       });
 

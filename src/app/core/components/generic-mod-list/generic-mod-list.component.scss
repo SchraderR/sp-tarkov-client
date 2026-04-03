@@ -1,21 +1,20 @@
 @use '@angular/material' as mat;
 $toolbarSize: 60px;
 
-.mod-list {
-  display: flex;
-  overflow: auto;
-  gap: 16px;
-  flex-direction: row;
-  flex-wrap: wrap;
-  height: calc(100% - ($toolbarSize + 8px)); // toolbar size and some padding sizes
-}
-
 ::ng-deep.select-form-field {
   @include mat.form-field-density(-5);
 }
 
+.mod-list {
+  display: grid;
+  overflow: auto;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  height: calc(100% - ($toolbarSize + 8px));
+}
+
 mat-card {
-  flex: 0 0 calc(33.333% - 16px);
   max-height: 144px;
 
   mat-card-content {

@@ -104,8 +104,7 @@
     <ng-container *ngTemplateOutlet="sptVersionForm"/>
   }
 
-  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="pageLength"
-                 [pageSize]="12"/>
+  <mat-paginator class="floating-paginator" [showFirstLastButtons]="true" [hidePageSize]="true" [length]="total" [pageSize]="pageSize"/>
 </mat-toolbar>
 
 <ng-template #sortForm>
