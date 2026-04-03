@@ -3,12 +3,12 @@ name: Pre-Release Electron Application
 on:
   workflow_dispatch:
   push:
-    branches: [testing]
     tags:
       - 'v*-beta.*'
 
 jobs:
   pre-release:
+    if: github.event.base_ref == 'refs/heads/testing'
     runs-on: windows-latest
     steps:
       - name: Check out

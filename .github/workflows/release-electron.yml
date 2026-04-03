@@ -3,13 +3,13 @@ name: Release Electron Application
 on:
   workflow_dispatch:
   push:
-    branches: [master]
     tags:
       - 'v*'
       - '!v*-beta.*'
 
 jobs:
   release:
+    if: github.event.base_ref == 'refs/heads/master'
     runs-on: windows-latest
     steps:
       - name: Check out
