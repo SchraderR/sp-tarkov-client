@@ -129,7 +129,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       throw new Error('Active instance not found');
     }
 
-    this.modListService.addMod(mod);
+    await this.modListService.addMod(mod.id);
     const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
     await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCache));
   }

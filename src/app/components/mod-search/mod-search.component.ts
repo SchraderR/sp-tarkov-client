@@ -90,12 +90,15 @@ export class ModSearchComponent {
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      throw new Error('Active instance not found');
+    }
     event.stopPropagation();
 
-    const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
-
-    this.modListService.addMod(mod);
-    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCacheItem));
+    await this.modListService.addMod(mod.id);
+    const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
+    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCache));
   }
 
   async removeModFromModList(event: MouseEvent, mod: Mod) {
