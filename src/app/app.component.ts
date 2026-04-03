@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ModSearchComponent } from './components/mod-search/mod-search.component';
 import { ModListService } from './core/services/mod-list.service';
 import { MatBadgeModule } from '@angular/material/badge';
-import { catchError, concatAll, filter , finalize , forkJoin, of, switchMap } from 'rxjs';
+import { catchError, concatAll, filter, finalize, forkJoin, of, switchMap } from 'rxjs';
 import { sidenavAnimation } from './sidenavAnimation';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -120,7 +120,6 @@ export class AppComponent {
 
   toggleDrawer() {
     this.isExpanded = false;
-    void this.matSideNav.toggle();
   }
 
   openExternal = (url: string) => void this.electronService.openExternal(url);
@@ -231,12 +230,8 @@ export class AppComponent {
             // maybe save basic informations, show them and start deching detail informations and override cached informations
             // update infformation only after X TIME (so its not fetching all the time)
             // should override cached information
-
-
-
             // TODO CHECK because its called multiple times and spamming requests
             // const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modId));
-
             // const mod = { ...modDetail.data } as unknown as Mod;
             // this.modListService.addMod(mod);
           });

@@ -173,7 +173,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   private filterCoreMods(mod: Mod) {
-    return !this.configurationService.configSignal()?.restrictedMods?.includes(mod.name);
+    return this.configurationService.configSignal()?.restrictedMods?.includes(mod.name);
   }
 
   private loadData(pageNumber = 0) {
@@ -201,9 +201,18 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     this.fetchModSubscription = this.forgeApiService
       .getMods(this.sortTypeFormField.value, this.sortOrderFormField.value, (this.paginator()?.pageIndex ?? 0) + 1)
       .subscribe(forgeModResult => {
+        let filteredMods = 0;
         this.accumulatedModList = Array.from(forgeModResult.data)
           .map(mod => ({ ...mod }) as Mod)
-          .filter(e => this.filterCoreMods(e))
+          .filter(e => {
+            const isRestricted = this.filterCoreMods(e);
+            if (isRestricted) {
+              filteredMods += 1;
+              return false;
+            }
+
+            return true;
+          })
           .map(e => {
             if (!config) {
               return e;
@@ -218,7 +227,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.pageNumber = forgeModResult.meta.current_page;
-        this.pageSize = forgeModResult.meta.per_page; // this.accumulatedModList.length;
+        this.pageSize = forgeModResult.meta.per_page - filteredMods;
         this.pageLength = forgeModResult.meta.last_page;
         this.total = forgeModResult.meta.total;
         this.loading = false;
