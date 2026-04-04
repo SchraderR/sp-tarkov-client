@@ -8,6 +8,9 @@ on:
 jobs:
   virustotal:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v4
