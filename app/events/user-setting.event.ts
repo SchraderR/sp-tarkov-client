@@ -4,7 +4,7 @@ import * as log from 'electron-log';
 import { ipcMain } from 'electron';
 import { InstanceDto } from '../../shared/models/user-setting.model';
 import { sptServerMetadataPath } from '../constants';
-import { findInstanceById, getAllInstances, removeInstance , setInstanceActive } from '../database/controller/instance.controller';
+import { findInstanceById, getAllInstances, removeInstance, setInstanceActive } from '../database/controller/instance.controller';
 import { getVersion } from '../helper/powershell.helper';
 
 export const handleUserSettingStoreEvents = () => {
@@ -30,9 +30,10 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
   for (const sptInstance of sptInstances) {
     try {
       let sptVersion = '';
+      let errorMessage = '';
       if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath))) {
-        log.error(`${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not available.`);
-        return;
+        log.error(`Failed fetching spt version from user setting. ${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not available.`);
+        errorMessage = `${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not found.`;
       }
 
       try {
@@ -48,6 +49,7 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
         modCache: sptInstance.modCache,
         sptVersion: sptVersion,
         isValid: !!sptVersion,
+        errorMessage: errorMessage,
         // isActive: sptInstance.isActive,
         // isLoading: sptInstance.isLoading,
         // isError: sptInstance.isError,

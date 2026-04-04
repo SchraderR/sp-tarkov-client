@@ -23,7 +23,6 @@ import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autoc
 import { MatInput } from '@angular/material/input';
 import { SptTag, SptVersion } from '../../../../../shared/models/spt-core.model';
 import { IsAlreadyStartedDirective } from '../../directives/is-already-started.directive';
-import { CheckModDependencyDirective } from '../../directives/check-mod-dependency.directive';
 import { ForgeApiService } from '../../services/forge-api.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
@@ -54,7 +53,6 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatInput,
     MatAutocompleteTrigger,
     IsAlreadyStartedDirective,
-    CheckModDependencyDirective,
     MatButtonToggleGroup,
     MatButtonToggle,
     NgOptimizedImage,
@@ -131,7 +129,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       throw new Error('Active instance not found');
     }
 
-    this.modListService.addMod(mod);
+    await this.modListService.addMod(mod.id);
     const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
     await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCache));
   }

@@ -4,6 +4,7 @@ import { InstanceEntity } from '../../app/database/entity/Instance';
 export interface InstanceDto extends InstanceEntity {
   isValid: boolean;
   sptVersion?: string;
+  errorMessage?: string;
 }
 
 export interface UpdateModMeta {
@@ -50,6 +51,7 @@ export interface SptInstance {
   isActive: boolean;
   isLoading: boolean;
   isError: boolean;
+  errorMessage?: string;
   // TODO CHECK REMOVED isPowerShellIssue: boolean;
   clientMods: ModMeta[];
   serverMods: ModMeta[];

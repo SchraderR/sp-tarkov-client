@@ -226,6 +226,8 @@ export class AppComponent {
       this.electronService.sendEvent<number[], number>('mod-list-cache', activeInstance.id).subscribe(value =>
         this.ngZone.run(() => {
           value.args.forEach(async modId => {
+            await this.modListService.addMod(modId);
+
             // TODO Refactor cache mod informations
             // maybe save basic informations, show them and start deching detail informations and override cached informations
             // update infformation only after X TIME (so its not fetching all the time)

@@ -150,13 +150,14 @@ export default class PersonalSettingComponent {
             userSetting.clientMods = result.clientMods.args;
             userSetting.serverMods = result.serverMods.args;
             userSetting.isError = result.userSetting.isError;
+            userSetting.errorMessage = result.userSetting.errorMessage;
             userSetting.isLoading = false;
           });
         }),
         catchError((error: { message: string }) => {
           this.ngZone.run(() => {
             this.matSnackBar.open(error.message, '', {
-              duration: 3000,
+              duration: 5000,
               verticalPosition: 'bottom',
               horizontalPosition: 'center',
             });
@@ -191,7 +192,7 @@ export default class PersonalSettingComponent {
 
   removeAuthKey() {
     // TODO Add confirmation dialog
-    this.electronService.sendEvent("remove-auth-key").subscribe()
+    this.electronService.sendEvent('remove-auth-key').subscribe();
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {

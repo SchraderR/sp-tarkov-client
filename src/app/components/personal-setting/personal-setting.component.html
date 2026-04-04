@@ -31,7 +31,7 @@
                   matListItemIcon
                   color="warn"
                   class="warning"
-                  matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once."
+                  [matTooltip]="settingModel.errorMessage ?? 'Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.'"
                 >
                   warning
                 </mat-icon>
@@ -54,7 +54,7 @@
     </mat-card-content>
 
     <mat-card-footer>
-      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">Add SPT Instance</button>
+      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">Add instance</button>
     </mat-card-footer>
   </mat-card>
 

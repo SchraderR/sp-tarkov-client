@@ -28,7 +28,12 @@ export const handleOpenDirectoryEvent = () => {
 
           let sptVersion = '';
           if (!fs.existsSync(path.join(selectedPath, sptServerMetadataPath))) {
-            log.error(`${path.join(selectedPath, sptServerMetadataPath)} not available.`);
+            log.error(
+              `Error: Selected directory (${selectedPath}); Dll-Path (${sptServerMetadataPath}); ${path.join(selectedPath, sptServerMetadataPath)} not found.`
+            );
+            event.sender.send('open-directory-error', {
+              message: `Error: ${path.join(selectedPath, sptServerMetadataPath)} not found. Please make sure to open the root SPT directory.`,
+            });
             return;
           }
 
