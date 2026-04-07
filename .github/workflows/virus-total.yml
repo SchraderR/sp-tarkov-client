@@ -26,3 +26,4 @@ jobs:
           request_rate: 4
           files: |
             *.exe
+            *.zip
