@@ -4,7 +4,7 @@ import * as log from 'electron-log';
 import { ipcMain } from 'electron';
 import { InstanceDto } from '../../shared/models/user-setting.model';
 import { sptServerMetadataPath } from '../constants';
-import { findInstanceById, getAllInstances, removeInstance , setInstanceActive } from '../database/controller/instance.controller';
+import { findInstanceById, getAllInstances, removeInstance, setInstanceActive } from '../database/controller/instance.controller';
 import { getVersion } from '../helper/powershell.helper';
 
 export const handleUserSettingStoreEvents = () => {
@@ -32,7 +32,6 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
       let sptVersion = '';
       if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath))) {
         log.error(`${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not available.`);
-        return;
       }
 
       try {
