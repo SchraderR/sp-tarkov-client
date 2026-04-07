@@ -12,6 +12,11 @@ jobs:
       contents: write
 
     steps:
+      - name: release-downloader
+        uses: robinraju/release-downloader@v1.9
+        with:
+          latest: true
+
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v4
         with:
