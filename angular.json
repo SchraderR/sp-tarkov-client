@@ -40,6 +40,10 @@
               "node_modules/font-awesome/css/font-awesome.css"
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "rxjs",
+              "semver"
+            ],
             "customWebpackConfig": {
               "path": "./angular.webpack.js",
               "replaceDuplicatePlugins": true

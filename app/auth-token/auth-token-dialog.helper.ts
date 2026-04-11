@@ -86,8 +86,6 @@ async function promptForApiKey(): Promise<void> {
       center: true,
       title: 'SP-EFT Manager Auth Key Setup',
       webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
         preload: path.join(__dirname, 'preload.js'),
       },
     });
