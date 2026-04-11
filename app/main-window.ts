@@ -23,8 +23,6 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       titleBarStyle: 'hidden',
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
-        nodeIntegration: false,
-        allowRunningInsecureContent: isServe,
       },
     });
     mainWindowState.manage(browserWindow);
