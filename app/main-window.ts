@@ -22,7 +22,6 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       icon: 'app/assets/icon.png',
       titleBarStyle: 'hidden',
       webPreferences: {
-        webSecurity: false,
         nodeIntegration: true,
         allowRunningInsecureContent: isServe,
         contextIsolation: false,
@@ -30,24 +29,15 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
     });
     mainWindowState.manage(browserWindow);
 
-    // const NOTIFICATION_TITLE = 'Basic Notification';
-    // const NOTIFICATION_BODY = 'Notification from the Main process';
-    // new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
-
-    // browserWindow.setMenu(null);
-    // browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-    //   callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-    // });
-    //
-    // browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    //   callback({
-    //     responseHeaders: {
-    //       'Access-Control-Allow-Origin': ['*'],
-    //       'Access-Control-Allow-Headers': ['*'],
-    //       ...details.responseHeaders,
-    //     },
-    //   });
-    // });
+    browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'access-control-allow-origin': ['*'],
+          'access-control-allow-headers': ['*'],
+        },
+      });
+    });
 
     const appPath = app.getPath('userData');
     const appInstancePath = path.join(appPath, 'instances');
