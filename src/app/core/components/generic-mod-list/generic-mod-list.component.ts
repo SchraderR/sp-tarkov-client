@@ -148,7 +148,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   }
 
   openExternal(modFileUrl: string) {
-    void this.electronService.shell.openExternal(modFileUrl);
+    void this.electronService.openExternal(modFileUrl);
   }
 
   getLastUpdateText(lastUpdate: Date | undefined): string {

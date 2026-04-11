@@ -22,22 +22,12 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       icon: 'app/assets/icon.png',
       titleBarStyle: 'hidden',
       webPreferences: {
-        nodeIntegration: true,
+        preload: path.join(__dirname, 'preload.js'),
+        nodeIntegration: false,
         allowRunningInsecureContent: isServe,
-        contextIsolation: false,
       },
     });
     mainWindowState.manage(browserWindow);
-
-    browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          ...details.responseHeaders,
-          'access-control-allow-origin': ['*'],
-          'access-control-allow-headers': ['*'],
-        },
-      });
-    });
 
     const appPath = app.getPath('userData');
     const appInstancePath = path.join(appPath, 'instances');
