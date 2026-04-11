@@ -1,6 +1,6 @@
 {
   "name": "sp-tarkov-client",
-  "version": "0.4.2",
+  "version": "0.4.5",
   "description": "SP-EFT Manager",
   "author": {
     "name": "Schrader",
@@ -74,7 +74,7 @@
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "auto-changelog": "*",
-    "electron": "30.5.1",
+    "electron": "41.2.0",
     "electron-debug": "3.2.0",
     "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^9.35.0",

@@ -87,7 +87,7 @@ export const handleClientModsEvent = () => {
             modPath: directoryDll[0].path,
             subMods: await Promise.all(
               directoryDll.map(async m => {
-                const subModPath = path.join(directoryDll[0].path, m.name);
+                const subModPath = path.join(directoryDll[0].parentPath, m.name);
                 return {
                   version: await getVersion(subModPath),
                   modPath: directoryDll[0].path,

@@ -69,8 +69,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
         pathIndex = '../dist/index.html';
       }
 
-      const url = new URL(path.join('file:', __dirname, pathIndex));
-      void browserWindow.loadURL(url.href);
+      void browserWindow.loadFile(path.join(__dirname, pathIndex));
     }
     browserWindow.on('closed', () => (browserWindow = null));
 

@@ -1,5 +1,4 @@
-﻿import { SptTag, SptVersion } from './spt-core.model';
-import { InstanceEntity } from '../../app/database/entity/Instance';
+﻿import { InstanceEntity } from '../../app/database/entity/Instance';
 
 export interface InstanceDto extends InstanceEntity {
   isValid: boolean;
@@ -29,20 +28,6 @@ export interface ModCache {
   teaser: string;
 }
 
-export interface UserSettingStoreModel {
-  modMetaData: UpdateModMeta[];
-  sptInstances: SptInstance[];
-  theme: Theme;
-  isTutorialDone: boolean;
-  isExperimentalFunctionsActive: boolean;
-  isCheckInstalledActive: boolean;
-  sptVersions: SptVersion[];
-  sptTags: SptTag[];
-  modCache: number[];
-  useIndexedMods: boolean;
-  keepTempDownloadDirectory: boolean;
-  isMigrated: boolean;
-}
 
 export interface SptInstance {
   sptRootDirectory: string;
