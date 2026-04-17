@@ -3,7 +3,8 @@
   "cli": {
     "schematicCollections": [
       "@angular-eslint/schematics"
-    ]
+    ],
+    "analytics": false
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -40,6 +41,10 @@
               "node_modules/font-awesome/css/font-awesome.css"
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "rxjs",
+              "semver"
+            ],
             "customWebpackConfig": {
               "path": "./angular.webpack.js",
               "replaceDuplicatePlugins": true

@@ -191,7 +191,7 @@ export default class PersonalSettingComponent {
 
   removeAuthKey() {
     // TODO Add confirmation dialog
-    this.electronService.sendEvent("remove-auth-key").subscribe()
+    this.electronService.sendEvent('remove-auth-key').subscribe();
   }
 
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {

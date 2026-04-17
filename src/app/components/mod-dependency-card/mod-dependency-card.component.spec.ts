@@ -12,7 +12,7 @@ describe('ModDependencyCardComponent', () => {
 
     fixture = TestBed.createComponent(ModDependencyCardComponent);
     component = fixture.componentInstance;
-    component.mod = {
+    const mockMod = {
       fileUrl: '',
       isDependenciesLoading: false,
       isInvalid: false,
@@ -23,6 +23,7 @@ describe('ModDependencyCardComponent', () => {
       name: '',
       image: '',
     };
+    fixture.componentRef.setInput('mod', mockMod);
     fixture.detectChanges();
   });
 
