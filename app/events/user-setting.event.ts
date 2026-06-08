@@ -29,17 +29,19 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
   const userSettingModelResult: InstanceDto[] = [];
   for (const sptInstance of sptInstances) {
     try {
-      let sptVersion = '';
+      const metadataPath = path.join(sptInstance.sptRootDirectory, sptServerMetadataPath);
+      let sptVersion: string | null = null;
       let errorMessage = '';
-      if (!fs.existsSync(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath))) {
-        log.error(`Failed fetching spt version from user setting. ${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not available.`);
-        errorMessage = `${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not found.`;
-      }
 
-      try {
-        sptVersion = await getVersion(path.join(sptInstance.sptRootDirectory, sptServerMetadataPath));
-      } catch (error) {
-        log.error(error);
+      if (!fs.existsSync(metadataPath)) {
+        log.error(`SPT metadata not found: "${metadataPath}"`);
+        errorMessage = `${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not found.`;
+      } else {
+        try {
+          sptVersion = await getVersion(metadataPath);
+        } catch (error) {
+          log.error(error);
+        }
       }
 
       userSettingModelResult.push({
