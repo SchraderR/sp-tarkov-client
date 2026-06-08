@@ -11,12 +11,13 @@ export const handleTarkovStartEvent = () => {
     let child: child.ChildProcess;
 
     try {
-      let filePath = path.join(sptInstancePath, exeNameSpt);
+      const sptFolder = path.join(sptInstancePath, 'SPT');
 
-      child = spawn(filePath, [], {
-        cwd: sptInstancePath,
-        detached: false, // run the child process in the background as a service
-        windowsHide: true, // hide the console window on Windows
+      child = spawn(path.join(sptFolder, exeNameSpt), [], {
+        cwd: sptFolder,
+        env: { ...process.env, DISABLE_VIRTUAL_TERMINAL: '1' },
+        detached: false,
+        windowsHide: true,
       });
 
       child.stdout?.on('data', data => event.sender.send('server-output', data.toString()));
