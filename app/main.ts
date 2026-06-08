@@ -1,10 +1,8 @@
 import 'reflect-metadata';
-import * as Store from 'electron-store';
-import { UserSettingStoreModel } from '../shared/models/user-setting.model';
 import { mainApplicationStart } from './main-application-start';
 import { autoUpdater } from 'electron-updater';
 import * as log from 'electron-log';
-import { initializeDatabaseAndMigration } from './database/helper/initialize.helper';
+import { initializeDatabase } from './database/helper/initialize.helper';
 import { registerEventHandlers } from './helper/event-handler.helper';
 import { app } from 'electron';
 import { hasAuthToken, registerAuthTokenHeaderInterceptor } from './auth-token/auth-token.helper';
@@ -13,13 +11,8 @@ import { ensureUserSettings } from './database/controller/user-setting.controlle
 
 log.initialize();
 const isServe = process.argv.slice(1).some(val => val === '--serve');
-const store = new Store<UserSettingStoreModel>();
-const isMigrated = store.get('isMigrated');
-if (!isMigrated) {
-  store.set('isMigrated', false);
-}
 
-void initializeDatabaseAndMigration(store);
+void initializeDatabase();
 
 app.whenReady().then(async () => {
   await ensureUserSettings();

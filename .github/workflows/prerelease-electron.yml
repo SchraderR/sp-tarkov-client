@@ -10,6 +10,9 @@ jobs:
   pre-release:
     if: github.event.base_ref == 'refs/heads/testing'
     runs-on: windows-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Check out
         uses: actions/checkout@v4

@@ -87,10 +87,10 @@ export const handleClientModsEvent = () => {
             modPath: directoryDll[0].path,
             subMods: await Promise.all(
               directoryDll.map(async m => {
-                const subModPath = path.join(directoryDll[0].path, m.name);
+                const subModPath = path.join(directoryDll[0].parentPath, m.name);
                 return {
                   version: await getVersion(subModPath),
-                  modPath: directoryDll[0].path,
+                  modPath: directoryDll[0].parentPath,
                   name: m.name.split('.dll')[0],
                 };
               })
@@ -129,7 +129,7 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
 
       for (const mod of disabledClientMods) {
         const filePath = path.join(instanceClientDisabledModPath, mod.name);
-        let version = '';
+        let version: string | null = '';
 
         if (mod.isFile()) {
           version = await getVersion(filePath);
@@ -168,7 +168,7 @@ function checkForDisabledClientMods(data: any[], sptInstancePath: string): Promi
 
       for (const mod of disabledPrePatcherMods) {
         const filePath = path.join(instancePrePatcherDisabledModPath, mod.name);
-        let version = '';
+        let version: string | null = '';
 
         if (mod.isFile()) {
           version = await getVersion(filePath);

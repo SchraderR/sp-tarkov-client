@@ -18,6 +18,7 @@ import { toggleModStateEvent } from '../events/toggle-mod-state.event';
 import { handleModPageEvents } from '../events/mod-page.event';
 import { handleTempDownloadDirectoryEvents } from '../events/temp-download-directory.event';
 import { handleAuthTokenEvent } from '../events/auth-token.event';
+import { handleShellEvents } from '../events/shell.event';
 import * as log from 'electron-log';
 
 export function registerEventHandlers(isServe: boolean): void {
@@ -42,6 +43,7 @@ export function registerEventHandlers(isServe: boolean): void {
     handleModPageEvents();
     handleTempDownloadDirectoryEvents();
     handleAuthTokenEvent();
+    handleShellEvents();
     log.info('IPC event handlers registered');
   } catch (e) {
     log.error('Error registering event handlers', e);

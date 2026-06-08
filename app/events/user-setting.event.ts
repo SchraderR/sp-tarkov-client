@@ -47,7 +47,7 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
         sptRootDirectory: sptInstance.sptRootDirectory,
         isActive: sptInstance.isActive,
         modCache: sptInstance.modCache,
-        sptVersion: sptVersion,
+        sptVersion: sptVersion ?? '',
         isValid: !!sptVersion,
         errorMessage: errorMessage,
         // isActive: sptInstance.isActive,

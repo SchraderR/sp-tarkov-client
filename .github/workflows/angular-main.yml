@@ -6,6 +6,8 @@ jobs:
   build:
     name: Angular Build
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Setup Google Chrome

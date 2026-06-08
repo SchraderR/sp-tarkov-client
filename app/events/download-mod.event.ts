@@ -26,7 +26,7 @@ export const handleDownloadModEvent = () => {
         return;
       }
 
-      if (downloadModel.modFileUrl.includes('docs.google.com') || downloadModel.modFileUrl.includes('dropbox')) {
+      if (hasHost(downloadModel.modFileUrl, 'docs.google.com') || hasHost(downloadModel.modFileUrl, 'dropbox.com')) {
         browser = await launch({
           headless: true,
           executablePath: `${app.getPath('home')}/.local-chromium/chrome/win64-127.0.6533.88/chrome-win64/chrome.exe`,
@@ -38,7 +38,7 @@ export const handleDownloadModEvent = () => {
         }
       }
 
-      if (downloadModel.modFileUrl.includes('mega.nz')) {
+      if (hasHost(downloadModel.modFileUrl, 'mega.nz')) {
         const file = File.fromURL(downloadModel.modFileUrl);
         await file.loadAttributes();
 
@@ -70,9 +70,9 @@ export const handleDownloadModEvent = () => {
       }
 
       if (
-        downloadModel.modFileUrl.startsWith('dev.sp-tarkov.com') ||
-        downloadModel.modFileUrl.startsWith('hub.sp-tarkov.com/files/download') ||
-        downloadModel.modFileUrl.startsWith('sp-tarkov.com/mod')
+        hasHost(downloadModel.modFileUrl, 'dev.sp-tarkov.com') ||
+        hasHostAndPath(downloadModel.modFileUrl, 'hub.sp-tarkov.com', '/files/download') ||
+        hasHostAndPath(downloadModel.modFileUrl, 'sp-tarkov.com', '/mod')
       ) {
         await handleDirectDownload(event, ankiTempDownloadDir, downloadModel);
         return;
@@ -92,6 +92,24 @@ export const handleDownloadModEvent = () => {
     }
   });
 };
+
+function hasHost(url: string, host: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    return hostname === host || hostname.endsWith(`.${host}`);
+  } catch {
+    return false;
+  }
+}
+
+function hasHostAndPath(url: string, host: string, pathPrefix: string): boolean {
+  try {
+    const { hostname, pathname } = new URL(url);
+    return (hostname === host || hostname.endsWith(`.${host}`)) && pathname.startsWith(pathPrefix);
+  } catch {
+    return false;
+  }
+}
 
 async function handleDirectDownload(event: Electron.IpcMainEvent, ankiTempDownloadDir: string, downloadModel: DownloadModel) {
   const file = createWriteStream(path.join(ankiTempDownloadDir, `test.zip`));

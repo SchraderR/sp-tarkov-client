@@ -8,7 +8,15 @@ on:
 jobs:
   virustotal:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
+      - name: release-downloader
+        uses: robinraju/release-downloader@v1.9
+        with:
+          latest: true
+
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v4
         with:
@@ -18,3 +26,4 @@ jobs:
           request_rate: 4
           files: |
             *.exe
+            *.zip

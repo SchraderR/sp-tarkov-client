@@ -22,32 +22,10 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
       icon: 'app/assets/icon.png',
       titleBarStyle: 'hidden',
       webPreferences: {
-        webSecurity: false,
-        nodeIntegration: true,
-        allowRunningInsecureContent: isServe,
-        contextIsolation: false,
+        preload: path.join(__dirname, 'preload.js'),
       },
     });
     mainWindowState.manage(browserWindow);
-
-    // const NOTIFICATION_TITLE = 'Basic Notification';
-    // const NOTIFICATION_BODY = 'Notification from the Main process';
-    // new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
-
-    // browserWindow.setMenu(null);
-    // browserWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-    //   callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-    // });
-    //
-    // browserWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    //   callback({
-    //     responseHeaders: {
-    //       'Access-Control-Allow-Origin': ['*'],
-    //       'Access-Control-Allow-Headers': ['*'],
-    //       ...details.responseHeaders,
-    //     },
-    //   });
-    // });
 
     const appPath = app.getPath('userData');
     const appInstancePath = path.join(appPath, 'instances');
@@ -69,8 +47,7 @@ export const createMainApiManagementWindow = (isServe: boolean): void => {
         pathIndex = '../dist/index.html';
       }
 
-      const url = new URL(path.join('file:', __dirname, pathIndex));
-      void browserWindow.loadURL(url.href);
+      void browserWindow.loadFile(path.join(__dirname, pathIndex));
     }
     browserWindow.on('closed', () => (browserWindow = null));
 
