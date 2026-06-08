@@ -29,7 +29,7 @@ import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
 import { ModCacheModel } from '../../../../../shared/models/mod-cache.model';
 import { MatDivider } from '@angular/material/list';
 
-export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at';
+export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
 
 @Component({

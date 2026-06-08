@@ -102,20 +102,23 @@
 </mat-toolbar>
 
 <ng-template #sortForm>
-  <mat-button-toggle-group hideSingleSelectionIndicator [formControl]="sortOrderFormField" [value]="sortTypeFormField">
-    <mat-button-toggle value="DESC" matTooltip="Descending">
-      <mat-icon>south</mat-icon>
-    </mat-button-toggle>
-    <mat-button-toggle value="ASC" matTooltip="Ascending">
-      <mat-icon>north</mat-icon>
-    </mat-button-toggle>
-  </mat-button-toggle-group>
+  @if(sortTypeFormField.value !== 'featured') {
+    <mat-button-toggle-group hideSingleSelectionIndicator [formControl]="sortOrderFormField" [value]="sortTypeFormField">
+      <mat-button-toggle value="DESC" matTooltip="Descending">
+        <mat-icon>south</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle value="ASC" matTooltip="Ascending">
+        <mat-icon>north</mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  }
 
   <mat-form-field class="select-form-field" color="accent" appearance="outline" subscriptSizing="dynamic">
     <mat-label>Mod Type</mat-label>
     <mat-select [formControl]="sortTypeFormField" [value]="sortTypeFormField">
       <mat-option value="featured">Featured</mat-option>
       <mat-divider style="margin: 8px"></mat-divider>
+      <mat-option value="downloads">Downloads</mat-option>
       <mat-option value="name">Name</mat-option>
       <mat-option value="updated_at">Updated</mat-option>
       <mat-option value="created_at">Created</mat-option>
