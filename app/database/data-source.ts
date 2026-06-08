@@ -6,7 +6,7 @@ import { UserSettingEntity } from './entity/UserSetting';
 
 const appPath = app.getPath('userData');
 export const AppDataSource = new DataSource({
-  type: 'sqlite',
+  type: 'better-sqlite3',
   database: `${appPath}\\database.sqlite`,
   synchronize: true,
   logging: false,

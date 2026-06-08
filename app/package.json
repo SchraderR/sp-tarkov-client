@@ -32,7 +32,6 @@
     "node-powershell": "^5.0.1",
     "puppeteer": "22.15.0",
     "reflect-metadata": "^0.2.2",
-    "sqlite3": "5.1.6",
     "ts-node": "^10.9.2",
     "typeorm": "0.3.27",
     "util": "^0.12.5"

@@ -11,7 +11,7 @@
       }
       <img class="image-shadow" [ngSrc]="mod().thumbnail" height="120" width="120" alt="">
 
-      @let latestCompatibleModSptVersion = mod()?.versions?.[0]?.spt_version_constraint | semverSptVersion;
+      @let latestCompatibleModSptVersion = mod().versions?.[0]?.spt_version_constraint | semverSptVersion;
       @if (latestCompatibleModSptVersion) {
         <div [class]="'badge-version ' + latestCompatibleModSptVersion.color_class" class="font-small image-spt-version card-badge">
           {{ latestCompatibleModSptVersion.version }}
