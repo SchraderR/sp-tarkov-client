@@ -16,7 +16,8 @@
   | 'theme-toggle'
   | 'tutorial-setting'
   | 'tutorial-toggle'
-  | 'tarkov-start'
+  | 'server-start'
+  | 'server-stop'
   | 'mod-load-order'
   | 'mod-load-order-save'
   | 'exp-function-setting'
@@ -40,7 +41,7 @@
   ;
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';
-export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed';
+export type applicationTarkovInstanceOutputEventNames = 'server-output' | 'server-output-completed' | 'server-exit';
 
 export enum ApplicationElectronFileError {
   downloadError,

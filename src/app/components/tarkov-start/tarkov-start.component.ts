@@ -1,48 +1,68 @@
-import { Component, DestroyRef, inject, NgZone, OnInit } from '@angular/core';
-import { UserSettingsService } from '../../core/services/user-settings.service';
-import { ElectronService } from '../../core/services/electron.service';
+import { afterRenderEffect, Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { MatIconButton, MatMiniFabButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 import { TarkovInstanceService } from '../../core/services/tarkov-instance.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatButton } from '@angular/material/button';
+import { UserSettingsService } from '../../core/services/user-settings.service';
+import { AnsiToHtmlPipe } from '../../core/pipes/ansi-to-html.pipe';
 
 @Component({
   selector: 'app-tarkov-start',
   templateUrl: './tarkov-start.component.html',
   styleUrls: ['./tarkov-start.component.scss'],
-  imports: [MatButton],
+  imports: [MatIconButton, MatMiniFabButton, MatIcon, MatTooltip, AnsiToHtmlPipe],
 })
-export class TarkovStartComponent implements OnInit {
-  private readonly userSettingService = inject(UserSettingsService);
-  private readonly electronService = inject(ElectronService);
+export class TarkovStartComponent {
   private readonly tarkovInstanceService = inject(TarkovInstanceService);
-  private readonly ngZone = inject(NgZone);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly userSettingService = inject(UserSettingsService);
 
-  private messagesCount = new Map<string, number>();
-  private lastMessage = '';
+  readonly serverOutput = this.tarkovInstanceService.serverOutputSignal;
+  readonly isServerRunning = this.tarkovInstanceService.isServerRunning;
 
-  serverOutput = this.tarkovInstanceService.serverOutputSignal;
+  readonly autoScroll = signal(true);
 
-  ngOnInit(): void {
-    this.electronService
-      .getServerOutput()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(outputLine => {
-        this.ngZone.run(() => {
-          // a lot of magic ansi code replace
-          // eslint-disable-next-line no-control-regex
-          const cleanedOutputLine = outputLine.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
-          this.tarkovInstanceService.addToServerOutput(cleanedOutputLine);
-        });
-      });
+  private readonly activeInstance = this.userSettingService.getActiveInstanceComputed;
+  readonly hasActiveInstance = computed(() => !!this.activeInstance());
+  readonly activeInstancePath = computed(() => this.activeInstance()?.sptRootDirectory ?? '');
+  readonly activeInstanceName = computed(() => {
+    const path = this.activeInstancePath();
+    return path.split(/[\\/]/).filter(Boolean).pop() ?? path;
+  });
+
+  private readonly consoleBody = viewChild<ElementRef<HTMLElement>>('consoleBody');
+
+  constructor() {
+    afterRenderEffect(() => {
+      this.serverOutput();
+      if (this.autoScroll()) {
+        this.scrollToBottom();
+      }
+    });
   }
 
-  startInstanceServer(): void {
-    const activeInstance = this.userSettingService.getActiveInstance();
-    if (!activeInstance) {
+  start(): void {
+    this.autoScroll.set(true);
+    this.tarkovInstanceService.startServer();
+  }
+
+  stop(): void {
+    this.tarkovInstanceService.stopServer();
+  }
+
+  scrollToBottom(): void {
+    const element = this.consoleBody()?.nativeElement;
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }
+
+  onScroll(): void {
+    const element = this.consoleBody()?.nativeElement;
+    if (!element) {
       return;
     }
 
-    this.electronService.sendEvent<void, string>('tarkov-start', activeInstance.sptRootDirectory).subscribe();
+    const distanceFromBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+    this.autoScroll.set(distanceFromBottom < 24);
   }
 }
