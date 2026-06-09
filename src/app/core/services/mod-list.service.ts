@@ -1,37 +1,27 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { InstallProgress, Mod } from '../models/mod';
-import { FileHelper } from '../helper/file-helper';
-import { ConfigurationService } from './configuration.service';
-import { catchError, firstValueFrom, forkJoin, map, of, switchMap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ElectronService } from './electron.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { HtmlHelper } from '../helper/html-helper';
-import { ForgeModVersion } from './forge-api.service';
+import { ForgeApiService, ForgeModVersion } from './forge-api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ModListService {
-  readonly #configurationService = inject(ConfigurationService);
-  readonly #electronService = inject(ElectronService);
-  readonly #httpClient = inject(HttpClient);
+  readonly electronService = inject(ElectronService);
+  readonly forgeApiService = inject(ForgeApiService);
 
   private modList = signal<Mod[]>([]);
   private useIndexedMods = signal<boolean>(false);
   readonly modListSignal = this.modList.asReadonly();
-  readonly useIndexedModsSignal = this.useIndexedMods.asReadonly();
 
-  setUseIndexedMods(value: boolean) {
-    this.useIndexedMods.set(value);
-  }
-
-  addMod(mod: Mod) {
-    if (this.modList().some(m => m.name === mod.name)) {
+  async addMod(modId: number) {
+    if (this.modList().some(m => m.hub_id === modId || m.id === modId)) {
       return;
     }
 
-    this.modList.update(modItems => [...modItems, { ...mod, installProgress: this.initialInstallProgress() }]);
+    const modDetail = await firstValueFrom(this.forgeApiService.getModDetail(modId));
+    this.modList.update(modItems => [...modItems, { ...(modDetail.data as unknown as Mod), installProgress: this.initialInstallProgress() }]);
 
     // const modDependenciesIds = this.getModDependenciesIds(mod);
     // if (modDependenciesIds.length > 0) {

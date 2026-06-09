@@ -31,9 +31,11 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
     try {
       const metadataPath = path.join(sptInstance.sptRootDirectory, sptServerMetadataPath);
       let sptVersion: string | null = null;
+      let errorMessage = '';
 
       if (!fs.existsSync(metadataPath)) {
         log.error(`SPT metadata not found: "${metadataPath}"`);
+        errorMessage = `${path.join(sptInstance.sptRootDirectory, sptServerMetadataPath)} not found.`;
       } else {
         try {
           sptVersion = await getVersion(metadataPath);
@@ -49,6 +51,7 @@ async function getAllInstancesEvent(event: Electron.IpcMainEvent) {
         modCache: sptInstance.modCache,
         sptVersion: sptVersion ?? '',
         isValid: !!sptVersion,
+        errorMessage: errorMessage,
         // isActive: sptInstance.isActive,
         // isLoading: sptInstance.isLoading,
         // isError: sptInstance.isError,

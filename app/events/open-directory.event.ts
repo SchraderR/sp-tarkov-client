@@ -26,7 +26,7 @@ export const handleOpenDirectoryEvent = () => {
             return;
           }
 
-          let sptVersion = '';
+          let sptVersion: string | null = null;
           if (!fs.existsSync(path.join(selectedPath, sptServerMetadataPath))) {
             log.error(`${path.join(selectedPath, sptServerMetadataPath)} not available.`);
             event.sender.send('open-directory-error', {
@@ -38,7 +38,6 @@ export const handleOpenDirectoryEvent = () => {
           try {
             sptVersion = await getVersion(path.join(selectedPath, sptServerMetadataPath));
           } catch (error) {
-            log.error(error);
             event.sender.send('open-directory-error', {
               message: `Unable to fetch with PowerShell the current spt version from ${path.join(selectedPath, sptServerMetadataPath)}`,
             });

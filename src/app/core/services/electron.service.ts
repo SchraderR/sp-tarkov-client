@@ -86,6 +86,13 @@ export class ElectronService {
     });
   }
 
+  getServerExit(): Observable<number> {
+    return new Observable(observer => {
+      const handler = (_: unknown, ...rest: unknown[]) => observer.next(rest[0] as number);
+      this.electronApi.on('server-exit', handler);
+    });
+  }
+
   getGithubRateLimitInformation(): Observable<GithubRateLimit> {
     return new Observable(observer => {
       const handler = (_: unknown, ...rest: unknown[]) => {

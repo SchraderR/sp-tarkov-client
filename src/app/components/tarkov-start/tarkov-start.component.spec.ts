@@ -14,6 +14,7 @@ describe('TarkovStartComponent', () => {
       providers: [
         mockProvider(ElectronService, {
           getServerOutput: () => EMPTY,
+          getServerExit: () => EMPTY,
         }),
       ],
     }).compileComponents();
