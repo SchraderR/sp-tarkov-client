@@ -189,11 +189,6 @@ export default class PersonalSettingComponent {
     });
   }
 
-  removeAuthKey() {
-    // TODO Add confirmation dialog
-    this.electronService.sendEvent('remove-auth-key').subscribe();
-  }
-
   private handleDirectoryPathError(error: DirectoryError, userSettingModel: UserSettingModel) {
     userSettingModel.isError = true;
     const errorMessage = `Instance: ${userSettingModel.sptRootDirectory}\nServer/Client Paths not found.\nMake sure you started the SPT-Server at least one time.`;

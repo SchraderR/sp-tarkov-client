@@ -1,7 +1,7 @@
 import { enableProdMode, importProvidersFrom, isDevMode, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
-import { HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { appRoutes } from './app/app.routing';
@@ -11,7 +11,6 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 import { ConfigurationService } from './app/core/services/configuration.service';
 import { forkJoin } from 'rxjs';
-import { authInterceptor } from './app/core/interceptor/auth.interceptor';
 
 if (environment.production) {
   enableProdMode();
@@ -20,7 +19,7 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(),
     provideRouter(appRoutes, withComponentInputBinding()),
     importProvidersFrom(JoyrideModule.forRoot()),
     provideAnimations(),
