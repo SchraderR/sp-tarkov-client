@@ -3,8 +3,6 @@ import { getDataSource } from '../data-source';
 import { UserSettingEntity } from '../entity/UserSetting';
 import { IsNull, Not } from 'typeorm';
 
-const SENSITIVE_PROPERTIES: Set<keyof Omit<UserSettingEntity, 'id'>> = new Set(['authKey']);
-
 export async function ensureUserSettings(): Promise<UserSettingEntity | null> {
   try {
     const dataSource = await getDataSource();
@@ -55,11 +53,7 @@ export async function setUserSettingProperty<K extends keyof Omit<UserSettingEnt
 
     await dataSource.manager.update(UserSettingEntity, { id: settings.id }, { [property]: value });
 
-    if (SENSITIVE_PROPERTIES.has(property)) {
-      log.info(`User setting property ${String(property)} updated (sensitive data hidden)`);
-    } else {
-      log.info(`User setting property ${String(property)} updated; Old value: ${settings[property]}, New value: ${value}`);
-    }
+    log.info(`User setting property ${String(property)} updated; Old value: ${settings[property]}, New value: ${value}`);
     return true;
   } catch (error) {
     log.error(`Error setting user setting property ${String(property)}:`, error);
@@ -76,7 +70,6 @@ async function createInitialUserSettings(): Promise<UserSettingEntity | null> {
       isTutorialDone: false,
       isExperimentalFunctionsActive: false,
       keepTempDownloadDirectory: false,
-      authKey: null,
     });
 
     const savedSettings = await dataSource.manager.save(UserSettingEntity, initialSettings);
