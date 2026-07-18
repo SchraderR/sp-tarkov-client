@@ -12,7 +12,6 @@ export class ModListService {
   readonly forgeApiService = inject(ForgeApiService);
 
   private modList = signal<Mod[]>([]);
-  private useIndexedMods = signal<boolean>(false);
   readonly modListSignal = this.modList.asReadonly();
 
   async addMod(modId: number) {

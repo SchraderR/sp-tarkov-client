@@ -129,7 +129,7 @@ export class ForgeApiService {
   }
 
   getModDetail(modId: number) {
-    const options = { params: new HttpParams().set('include', 'versions') };
+    const options = { params: new HttpParams().set('include', 'versions,source_code_links') };
 
     return this.httpClient.get<BaseApi<ForgeModDetail>>(`${environment.forgeBasePath}/mod/${modId}`, options);
   }

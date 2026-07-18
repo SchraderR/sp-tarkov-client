@@ -67,14 +67,15 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   readonly paginator = viewChild(MatPaginator);
   readonly tags = input<boolean>();
 
-  private forgeApiService = inject(ForgeApiService);
+  private readonly forgeApiService = inject(ForgeApiService);
+  private readonly electronService = inject(ElectronService);
+  private readonly modListService = inject(ModListService);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly downloadService = inject(DownloadService);
+  private readonly configurationService = inject(ConfigurationService);
 
-  private electronService = inject(ElectronService);
-  private modListService = inject(ModListService);
-  private userSettingsService = inject(UserSettingsService);
-  private destroyRef = inject(DestroyRef);
-  private downloadService = inject(DownloadService);
-  private configurationService = inject(ConfigurationService);
+  protected readonly Intl = Intl;
 
   sptVersionFormField = new FormControl<SptVersion | null>(null);
   sortTypeFormField = new FormControl<GenericModListSortType>('featured', { nonNullable: true });
@@ -94,33 +95,31 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   sptTagsSignal = this.configurationService.tagsSignal;
 
   ngOnInit() {
-    this.sortTypeFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData(this.pageNumber));
-    this.sortOrderFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData(this.pageNumber));
+    this.sortTypeFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData());
+    this.sortOrderFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData());
 
-    this.sptVersionFormField.valueChanges
-      .pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadData(this.pageNumber));
+    this.sptVersionFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData());
 
     this.filteredOptions = this.sptTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
       map(value => this.filterTags(value || '')),
-      tap(() => this.loadData(this.pageNumber))
+      tap(() => this.loadData())
     );
 
-    this.loadData(this.pageNumber);
+    this.loadData();
   }
 
   ngAfterViewInit() {
     this.paginator()
       ?.page.pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
-      .subscribe((event: PageEvent) => this.loadData(event.pageIndex));
+      .subscribe((event: PageEvent) => this.loadData());
   }
 
   isActiveSptInstanceAvailable = () => !!this.userSettingsService.getActiveInstance();
 
   refresh() {
-    this.loadData(this.pageNumber);
+    this.loadData();
   }
 
   async addModToModList(mod: Mod) {
@@ -149,34 +148,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     void this.electronService.openExternal(modFileUrl);
   }
 
-  getLastUpdateText(lastUpdate: Date | undefined): string {
-    if (!lastUpdate) {
-      return 'Unknown';
-    }
-
-    const now: Date = new Date();
-    const diff: number = now.getTime() - lastUpdate.getTime();
-    const seconds: number = Math.floor(diff / 1000);
-    const minutes: number = Math.floor(seconds / 60);
-    const hours: number = Math.floor(minutes / 60);
-    const days: number = Math.floor(hours / 24);
-
-    if (days > 0) {
-      return days === 1 ? 'Yesterday, ' + lastUpdate.toLocaleTimeString() : `${days} days ago`;
-    } else if (hours > 0) {
-      return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
-    } else if (minutes > 0) {
-      return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
-    } else {
-      return 'Just now';
-    }
-  }
-
-  private filterCoreMods(mod: Mod) {
-    return this.configurationService.configSignal()?.restrictedMods?.includes(mod.name);
-  }
-
-  private loadData(pageNumber = 0) {
+  private loadData() {
     this.loading = true;
     const config = this.configurationService.configSignal();
     // CHECK WHEN TAGS ARE IMPLEMENTED
@@ -283,6 +255,4 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
     return this.sptTagsSignal()!.filter(option => option.innerText.toLowerCase().includes(filterValue));
   }
-
-  protected readonly Intl = Intl;
 }
