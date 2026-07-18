@@ -31,7 +31,7 @@
                   matListItemIcon
                   color="warn"
                   class="warning"
-                  matTooltip="Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once."
+                  [matTooltip]="settingModel.errorMessage ?? 'Error while accessing local Server/Client Paths. Make sure you started the SPT-Server at least once.'"
                 >
                   warning
                 </mat-icon>
@@ -54,7 +54,7 @@
     </mat-card-content>
 
     <mat-card-footer>
-      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">Add SPT Instance</button>
+      <button mat-flat-button class="instance-button footer" color="accent" (click)="getRootEftSpDirectory()">Add instance</button>
     </mat-card-footer>
   </mat-card>
 
@@ -85,10 +85,6 @@
         -->
         <mat-slide-toggle [formControl]="keepTempDownloadDirectory" (change)="toggleKeepTempDirectory($event)">
           Keep download directory <span style="font-size: small; color: gray">~{{ currentTempDirectorySize().text }}</span>
-        </mat-slide-toggle>
-
-        <mat-slide-toggle [formControl]="checkInstalledMod" (change)="toggleCheckInstalledMod($event)">
-          Check mod installation <span style="font-size: small; color: gray">(toggle this off will allow you install already installed mods)</span>
         </mat-slide-toggle>
 
         <div style="display: flex; gap: 8px">
@@ -122,7 +118,7 @@
   <span>
     First, you will need to add an instance.
     <p>
-      To do this, navigate through the file dialog and point it to the root directory that contains both your SPT Server and SPT Launcher. This
+       To do this, navigate through the file dialog and point it to the root directory that contains your BepInEx and EscapeFromTarkov_Data directory. This
       process will help the system to recognize these elements and work accordingly.
     </p>
 

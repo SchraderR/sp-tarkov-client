@@ -1,11 +1,38 @@
-<div style="display: flex; flex-direction: column; width: 100%;">
-  <div style="padding: 8px;">
-    <button mat-flat-button color="accent" (click)="startInstanceServer()">Start server</button>
+<div class="console">
+  <div class="console-header">
+    <div class="console-title">
+      <div class="title-text">
+        <span class="title">Server</span>
+        @if (activeInstanceName()) {
+          <span class="subtitle" [title]="activeInstancePath()">{{ activeInstanceName() }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="console-actions">
+      @if (isServerRunning()) {
+        <button mat-icon-button class="action-stop" matTooltip="Stop server" (click)="stop()">
+          <mat-icon>stop</mat-icon>
+        </button>
+      } @else {
+        <button mat-icon-button class="action-start" matTooltip="Start server" [disabled]="!hasActiveInstance()" (click)="start()">
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+      }
+    </div>
   </div>
 
-  <div style="display: flex; flex-direction: column; overflow: auto; height: 100%; padding: 8px;">
-    @for (line of serverOutput(); track $index; ) {
-      <div>{{ line }}</div>
+  <div #consoleBody class="console-body" (scroll)="onScroll()">
+    @for (line of serverOutput(); track $index) {
+      <div class="console-line" [innerHTML]="line | ansiToHtml"></div>
+    } @empty {
+      <div class="console-empty">No output yet</div>
     }
   </div>
+
+  @if (!autoScroll()) {
+    <button mat-mini-fab class="scroll-bottom" matTooltip="Jump to latest" (click)="autoScroll.set(true); scrollToBottom()">
+      <mat-icon>arrow_downward</mat-icon>
+    </button>
+  }
 </div>

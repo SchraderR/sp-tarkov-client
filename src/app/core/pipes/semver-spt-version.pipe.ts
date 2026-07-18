@@ -8,7 +8,7 @@ import { ConfigurationService } from '../services/configuration.service';
 export class SemverSptVersionPipe implements PipeTransform {
   private configurationService = inject(ConfigurationService);
 
-  transform(modSptVersionConstraint?: string): any {
+  transform(modSptVersionConstraint?: string) {
     if (!modSptVersionConstraint) {
       return null;
     }

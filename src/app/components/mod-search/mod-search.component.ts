@@ -16,7 +16,6 @@ import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ElectronService } from '../../core/services/electron.service';
 import { DownloadService } from '../../core/services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { ModCache } from '../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 import { ForgeApiService } from '../../core/services/forge-api.service';
 import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';
@@ -90,12 +89,15 @@ export class ModSearchComponent {
   openExternal = (licenseUrl: string) => void this.electronService.openExternal(licenseUrl);
 
   async addModToModList(event: Event, mod: Mod) {
+    const activeInstance = this.userSettingsService.getActiveInstance();
+    if (!activeInstance) {
+      throw new Error('Active instance not found');
+    }
     event.stopPropagation();
 
-    const modCacheItem: ModCache = { modId: mod.id, name: mod.name, thumbnail: mod.thumbnail, teaser: mod.teaser };
-
-    this.modListService.addMod(mod);
-    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCacheItem));
+    await this.modListService.addMod(mod.id);
+    const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
+    await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCache));
   }
 
   async removeModFromModList(event: MouseEvent, mod: Mod) {

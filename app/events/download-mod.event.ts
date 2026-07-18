@@ -9,6 +9,7 @@ import * as log from 'electron-log';
 import { File } from 'megajs';
 import { createWriteStream, renameSync, writeFileSync } from 'node:fs';
 import { existsSync, mkdirSync } from 'fs-extra';
+import { getTempDownloadDirectory } from '../helper/temp-directory.helper';
 
 const DOWNLOAD_TIMEOUT = 60000;
 export const handleDownloadModEvent = () => {
@@ -16,9 +17,9 @@ export const handleDownloadModEvent = () => {
 
   ipcMain.on('download-mod', async (event, downloadModel: DownloadModel) => {
     try {
-      const ankiTempDownloadDir = path.join(downloadModel.sptInstancePath, '_temp');
+      const ankiTempDownloadDir = getTempDownloadDirectory();
       if (!existsSync(ankiTempDownloadDir)) {
-        mkdirSync(ankiTempDownloadDir);
+        mkdirSync(ankiTempDownloadDir, { recursive: true });
       }
 
       if (!downloadModel.modFileUrl) {

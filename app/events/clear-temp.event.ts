@@ -1,15 +1,16 @@
-﻿import { ipcMain } from 'electron';
-import * as path from 'path';
+import { ipcMain } from 'electron';
 import * as fs from 'fs';
+import { getTempDownloadDirectory } from '../helper/temp-directory.helper';
 
 export const handleClearTemporaryDirectoryEvent = () => {
-  ipcMain.on('clear-temp', (event, instancePath: string) => {
-    const tempDownloadDir = path.join(instancePath, '_temp');
+  ipcMain.on('clear-temp', event => {
+    const tempDownloadDir = getTempDownloadDirectory();
     if (!fs.existsSync(tempDownloadDir)) {
+      event.sender.send('clear-temp-completed');
       return;
     }
 
-    fs.rmdirSync(tempDownloadDir, { recursive: true });
+    fs.rmSync(tempDownloadDir, { recursive: true, force: true });
 
     event.sender.send('clear-temp-completed');
   });

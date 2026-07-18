@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, input, Input, OnInit, output, Output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +31,7 @@ export interface ModLicenseInformation {
     MatTooltipModule,
     MatIconModule,
     MatRippleModule,
-    SemverSptVersionPipe
+    SemverSptVersionPipe,
   ],
   animations: [fadeInFadeOutAnimation],
 })

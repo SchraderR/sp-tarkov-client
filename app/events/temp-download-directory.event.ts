@@ -1,8 +1,9 @@
-import { ipcMain } from 'electron';
+import { ipcMain, shell } from 'electron';
 import * as path from 'path';
 import * as log from 'electron-log';
 import { existsSync, readdir, stat } from 'fs-extra';
 import { getUserSettingProperty , setUserSettingProperty } from '../database/controller/user-setting.controller';
+import { getTempDownloadDirectory } from '../helper/temp-directory.helper';
 
 export const handleTempDownloadDirectoryEvents = () => {
   ipcMain.on('keep-temp-dir-setting', async event =>
@@ -14,8 +15,8 @@ export const handleTempDownloadDirectoryEvents = () => {
     event.sender.send('keep-temp-dir-setting-toggle-completed');
   });
 
-  ipcMain.on('temp-dir-size', async (event, instancePath: string) => {
-    const tempDownloadDir = path.join(instancePath, '_temp');
+  ipcMain.on('temp-dir-size', async event => {
+    const tempDownloadDir = getTempDownloadDirectory();
     if (!existsSync(tempDownloadDir)) {
       event.sender.send('temp-dir-size-completed', 0);
       return;
@@ -28,6 +29,14 @@ export const handleTempDownloadDirectoryEvents = () => {
       log.error(error);
       event.sender.send('temp-dir-size-completed', 0);
     }
+  });
+
+  ipcMain.on('open-temp-dir', async event => {
+    const tempDownloadDir = getTempDownloadDirectory();
+    if (existsSync(tempDownloadDir)) {
+      await shell.openPath(tempDownloadDir);
+    }
+    event.sender.send('open-temp-dir-completed');
   });
 };
 

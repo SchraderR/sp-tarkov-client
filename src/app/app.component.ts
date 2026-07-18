@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, effect, inject, linkedSignal, NgZone, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, effect, inject, linkedSignal, NgZone, signal, ViewChild } from '@angular/core';
 import { environment } from '../environments/environment';
 import packageJson from '../../package.json';
 import { Router, RouterModule } from '@angular/router';
@@ -31,7 +31,6 @@ import { TarkovStartComponent } from './components/tarkov-start/tarkov-start.com
 import { DownloadService } from './core/services/download.service';
 import { DirectoryError } from './core/models/directory-error';
 import { FileHelper } from './core/helper/file-helper';
-import { ForgeApiService } from './core/services/forge-api.service';
 
 @Component({
   selector: 'app-root',
@@ -75,10 +74,13 @@ export class AppComponent {
 
   readonly config = environment;
   readonly version = packageJson.version;
-  isLoading = false;
   isExpanded = false;
   isTarkovInstanceRunExpanded = false;
   isExperimentalFunctionActive = this.userSettingService.isExperimentalFunctionActive;
+
+  readonly tarkovDrawerWidth = signal(350);
+  private static readonly TARKOV_DRAWER_MIN_WIDTH = 250;
+  private static readonly TARKOV_DRAWER_MAX_WIDTH = 900;
 
   @ViewChild(MatSidenav, { static: true }) matSideNav!: MatSidenav;
 
@@ -128,6 +130,35 @@ export class AppComponent {
 
   openTarkovStartDrawer(): void {
     this.isTarkovInstanceRunExpanded = !this.isTarkovInstanceRunExpanded;
+  }
+
+  startTarkovDrawerResize(event: MouseEvent): void {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = this.tarkovDrawerWidth();
+
+    const previousCursor = document.body.style.cursor;
+    const previousUserSelect = document.body.style.userSelect;
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+
+    this.ngZone.runOutsideAngular(() => {
+      const onMove = (moveEvent: MouseEvent) => {
+        const delta = startX - moveEvent.clientX;
+        const newWidth = Math.min(AppComponent.TARKOV_DRAWER_MAX_WIDTH, Math.max(AppComponent.TARKOV_DRAWER_MIN_WIDTH, startWidth + delta));
+        this.ngZone.run(() => this.tarkovDrawerWidth.set(newWidth));
+      };
+
+      const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.body.style.cursor = previousCursor;
+        document.body.style.userSelect = previousUserSelect;
+      };
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
   }
 
   private getCurrentPersonalSettings() {
@@ -216,7 +247,7 @@ export class AppComponent {
   // loaded its will be fetched with mod/details and populated infos
   private getCachedModList = linkedSignal({
     source: this.userSettingService.userSettingSignal,
-    computation: (newOptions, previous) => {
+    computation: () => {
       const activeInstance = this.userSettingService.getActiveInstance();
       if (!activeInstance) {
         console.warn('No active instance in linked signal');
@@ -226,6 +257,8 @@ export class AppComponent {
       this.electronService.sendEvent<number[], number>('mod-list-cache', activeInstance.id).subscribe(value =>
         this.ngZone.run(() => {
           value.args.forEach(async modId => {
+            await this.modListService.addMod(modId);
+
             // TODO Refactor cache mod informations
             // maybe save basic informations, show them and start deching detail informations and override cached informations
             // update infformation only after X TIME (so its not fetching all the time)
@@ -300,7 +333,7 @@ export class AppComponent {
       return;
     }
 
-    this.electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory).subscribe(value =>
+    this.electronService.sendEvent<number, string>('temp-dir-size').subscribe(value =>
       this.ngZone.run(() => {
         this.userSettingService.keepTempDownloadDirectorySize.set({
           size: value.args,

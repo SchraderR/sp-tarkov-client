@@ -9,7 +9,7 @@ import { handleWindowEvents } from '../events/window.event';
 import { handleClearTemporaryDirectoryEvent } from '../events/clear-temp.event';
 import { handleThemeEvents } from '../events/theme.event';
 import { handleTutorialEvents } from '../events/tutorial.event';
-import { handleTarkovStartEvent } from '../events/tarkov-start.event';
+import { handleTarkovServerEvents } from '../events/tarkov-server.event';
 import { handleExperimentalFunctionsEvents } from '../events/experimental-functions.event';
 import { handleModLoadOrderEvents } from '../events/mod-load-order.event';
 import { handleUpdateModEvents } from '../events/update-mod.event';
@@ -33,7 +33,7 @@ export function registerEventHandlers(isServe: boolean): void {
     handleClearTemporaryDirectoryEvent();
     handleThemeEvents();
     handleTutorialEvents();
-    handleTarkovStartEvent();
+    handleTarkovServerEvents();
     handleExperimentalFunctionsEvents();
     handleModLoadOrderEvents();
     handleUpdateModEvents();

@@ -5,10 +5,8 @@
   </div>
   <div class="flex justify-center align-center full-width">
     <app-mod-search class="no-drag" style="width: 60%" />
-    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep"
-      [stepContent]="joyRideStepDownloadButtonContent">
-      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false"
-        matBadgeColor="accent">
+    <button class="no-drag" mat-icon-button routerLink="mod-list" style="margin-left: 16px" joyrideStep="downloadStep" [stepContent]="joyRideStepDownloadButtonContent">
+      <mat-icon class="font-weight-400" aria-hidden="false" [matBadge]="modListSignal().length" matBadgeOverlap="false" matBadgeColor="accent">
         download
       </mat-icon>
     </button>
@@ -118,10 +116,13 @@
   </mat-sidenav-content>
 
   @if (isExperimentalFunctionActive() && isTarkovInstanceRunExpanded) {
-    <mat-sidenav position="end" mode="side" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
-      @if (isTarkovInstanceRunExpanded) {
-        <app-tarkov-start />
-      }
+    <mat-sidenav class="tarkov-output-drawer" position="end" mode="side" [style.width.px]="tarkovDrawerWidth()" [opened]="isTarkovInstanceRunExpanded && isExperimentalFunctionActive()">
+      <div class="tarkov-drawer-content">
+        <div class="tarkov-drawer-resize-handle" (mousedown)="startTarkovDrawerResize($event)"></div>
+        @if (isTarkovInstanceRunExpanded) {
+          <app-tarkov-start/>
+        }
+      </div>
     </mat-sidenav>
   }
 </mat-sidenav-container>
@@ -135,22 +136,22 @@
       <br>
         <img ngSrc="assets/images/mod-install-icon.png" height="159" width="420" alt="Mod Install Icon">
       </span>
-    </ng-template>
+</ng-template>
 
-    <ng-template #joyRideStepDownloadButtonContent>
-      <h4>Download List:</h4>
-      <span>
+<ng-template #joyRideStepDownloadButtonContent>
+  <h4>Download List:</h4>
+  <span>
         Here, you can see how many mods are currently in the download list and can be downloaded to your instance.
       </span>
-    </ng-template>
+</ng-template>
 
-    <ng-template #joyRideStepDownloadOverviewContent>
-      <h4>Download Overview</h4>
-      <span>
+<ng-template #joyRideStepDownloadOverviewContent>
+  <h4>Download Overview</h4>
+  <span>
         All selected mods appear in the list<br>
         Hover over mods for options: remove, review license or visit mod's page<br>
         <p></p>
         Begin the download and installation process by clicking "Download / Install"-Button<br>
         Additional mods can be added to the queue even during an active download<br>
       </span>
-    </ng-template>
+</ng-template>

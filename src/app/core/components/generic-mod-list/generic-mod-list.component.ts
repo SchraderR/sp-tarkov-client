@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, input, viewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, input, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,7 @@ import { UserSettingsService } from '../../services/user-settings.service';
 import { Mod } from '../../models/mod';
 import { IsAlreadyInstalledDirective } from '../../directives/is-already-installed.directive';
 import { environment } from '../../../../environments/environment';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { debounceTime, firstValueFrom, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,14 +23,13 @@ import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autoc
 import { MatInput } from '@angular/material/input';
 import { SptTag, SptVersion } from '../../../../../shared/models/spt-core.model';
 import { IsAlreadyStartedDirective } from '../../directives/is-already-started.directive';
-import { CheckModDependencyDirective } from '../../directives/check-mod-dependency.directive';
 import { ForgeApiService } from '../../services/forge-api.service';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { SemverSptVersionPipe } from '../../pipes/semver-spt-version.pipe';
 import { ModCacheModel } from '../../../../../shared/models/mod-cache.model';
 import { MatDivider } from '@angular/material/list';
 
-export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at';
+export type GenericModListSortType = 'name' | 'featured' | 'created_at' | 'updated_at' | 'published_at' | 'downloads';
 export type GenericModListSortOrder = 'ASC' | 'DESC';
 
 @Component({
@@ -54,7 +53,6 @@ export type GenericModListSortOrder = 'ASC' | 'DESC';
     MatInput,
     MatAutocompleteTrigger,
     IsAlreadyStartedDirective,
-    CheckModDependencyDirective,
     MatButtonToggleGroup,
     MatButtonToggle,
     NgOptimizedImage,
@@ -69,14 +67,15 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   readonly paginator = viewChild(MatPaginator);
   readonly tags = input<boolean>();
 
-  private forgeApiService = inject(ForgeApiService);
+  private readonly forgeApiService = inject(ForgeApiService);
+  private readonly electronService = inject(ElectronService);
+  private readonly modListService = inject(ModListService);
+  private readonly userSettingsService = inject(UserSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly downloadService = inject(DownloadService);
+  private readonly configurationService = inject(ConfigurationService);
 
-  private electronService = inject(ElectronService);
-  private modListService = inject(ModListService);
-  private userSettingsService = inject(UserSettingsService);
-  private destroyRef = inject(DestroyRef);
-  private downloadService = inject(DownloadService);
-  private configurationService = inject(ConfigurationService);
+  protected readonly Intl = Intl;
 
   sptVersionFormField = new FormControl<SptVersion | null>(null);
   sortTypeFormField = new FormControl<GenericModListSortType>('featured', { nonNullable: true });
@@ -96,33 +95,31 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   sptTagsSignal = this.configurationService.tagsSignal;
 
   ngOnInit() {
-    this.sortTypeFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData(this.pageNumber));
-    this.sortOrderFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData(this.pageNumber));
+    this.sortTypeFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData());
+    this.sortOrderFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData());
 
-    this.sptVersionFormField.valueChanges
-      .pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadData(this.pageNumber));
+    this.sptVersionFormField.valueChanges.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadData());
 
     this.filteredOptions = this.sptTagFormField.valueChanges.pipe(
       startWith(''),
       debounceTime(500),
       map(value => this.filterTags(value || '')),
-      tap(() => this.loadData(this.pageNumber))
+      tap(() => this.loadData())
     );
 
-    this.loadData(this.pageNumber);
+    this.loadData();
   }
 
   ngAfterViewInit() {
     this.paginator()
       ?.page.pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
-      .subscribe((event: PageEvent) => this.loadData(event.pageIndex));
+      .subscribe(() => this.loadData());
   }
 
   isActiveSptInstanceAvailable = () => !!this.userSettingsService.getActiveInstance();
 
   refresh() {
-    this.loadData(this.pageNumber);
+    this.loadData();
   }
 
   async addModToModList(mod: Mod) {
@@ -131,7 +128,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
       throw new Error('Active instance not found');
     }
 
-    this.modListService.addMod(mod);
+    await this.modListService.addMod(mod.id);
     const modCache: ModCacheModel = { modId: mod.id, instanceId: activeInstance.id };
     await firstValueFrom(this.electronService.sendEvent('add-mod-list-cache', modCache));
   }
@@ -151,34 +148,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
     void this.electronService.openExternal(modFileUrl);
   }
 
-  getLastUpdateText(lastUpdate: Date | undefined): string {
-    if (!lastUpdate) {
-      return 'Unknown';
-    }
-
-    const now: Date = new Date();
-    const diff: number = now.getTime() - lastUpdate.getTime();
-    const seconds: number = Math.floor(diff / 1000);
-    const minutes: number = Math.floor(seconds / 60);
-    const hours: number = Math.floor(minutes / 60);
-    const days: number = Math.floor(hours / 24);
-
-    if (days > 0) {
-      return days === 1 ? 'Yesterday, ' + lastUpdate.toLocaleTimeString() : `${days} days ago`;
-    } else if (hours > 0) {
-      return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
-    } else if (minutes > 0) {
-      return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
-    } else {
-      return 'Just now';
-    }
-  }
-
-  private filterCoreMods(mod: Mod) {
-    return this.configurationService.configSignal()?.restrictedMods?.includes(mod.name);
-  }
-
-  private loadData(pageNumber = 0) {
+  private loadData() {
     this.loading = true;
     const config = this.configurationService.configSignal();
     // CHECK WHEN TAGS ARE IMPLEMENTED
@@ -205,10 +175,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
           .map(e => {
             if (!config) {
               return e;
-            }
-
-            if (!environment.ignoreRemoteConfig) {
-              e.notSupported = !!config.notSupported.find(f => f === e.id || f === e.hub_id);
             }
 
             return e;
@@ -285,6 +251,4 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
 
     return this.sptTagsSignal()!.filter(option => option.innerText.toLowerCase().includes(filterValue));
   }
-
-  protected readonly Intl = Intl;
 }

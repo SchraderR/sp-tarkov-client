@@ -21,7 +21,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DirectoryError } from '../../core/models/directory-error';
 import { FileHelper } from '../../core/helper/file-helper';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-personal-setting',
@@ -85,25 +84,15 @@ export default class PersonalSettingComponent {
   }
 
   openTemporaryDownloadDirectory() {
-    const activeInstance = this.userSettingSignal().find(i => i.isActive);
-    if (!activeInstance) {
-      return;
-    }
-
     if (this.currentTempDirectorySize().size > 0) {
-      this.electronService.openPath(`${activeInstance.sptRootDirectory}/_temp`);
+      this.electronService.sendEvent('open-temp-dir').subscribe();
     }
   }
 
   clearTemporaryDownloadDirectory() {
-    const activeInstance = this.userSettingSignal().find(i => i.isActive);
-    if (!activeInstance) {
-      return;
-    }
-
     this.electronService
-      .sendEvent('clear-temp', activeInstance.sptRootDirectory)
-      .pipe(switchMap(() => this.electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)))
+      .sendEvent('clear-temp')
+      .pipe(switchMap(() => this.electronService.sendEvent<number, string>('temp-dir-size')))
       .subscribe(value => {
         this.ngZone.run(() => {
           this.userSettingsService.keepTempDownloadDirectorySize.set({
@@ -150,13 +139,14 @@ export default class PersonalSettingComponent {
             userSetting.clientMods = result.clientMods.args;
             userSetting.serverMods = result.serverMods.args;
             userSetting.isError = result.userSetting.isError;
+            userSetting.errorMessage = result.userSetting.errorMessage;
             userSetting.isLoading = false;
           });
         }),
         catchError((error: { message: string }) => {
           this.ngZone.run(() => {
             this.matSnackBar.open(error.message, '', {
-              duration: 3000,
+              duration: 5000,
               verticalPosition: 'bottom',
               horizontalPosition: 'center',
             });
