@@ -43,16 +43,6 @@ export interface ForgeHealth {
   message: string;
 }
 
-export interface ForgeUser {
-  id: number;
-  name: string;
-  email: string;
-  email_verified_at: string; // '2025-04-02T20:44:38.000000Z';
-  profile_photo_url: string; // 'https://example.com/path/to/profile.jpg';
-  cover_photo_url: string; // 'https://example.com/path/to/cover.jpg';
-  created_at: string; // '2025-04-01T10:00:00.000000Z';
-}
-
 export interface ForgeMod {
   id: number;
   hub_id: number | null;
@@ -110,10 +100,6 @@ export class ForgeApiService {
     const options = { params: new HttpParams().set('sort', '-version').set('per_page', 50) };
 
     return this.httpClient.get<BaseApi<SptVersion[]>>(`${environment.forgeBasePath}/spt/versions`, options);
-  }
-
-  getUserInformation() {
-    return this.httpClient.get<BaseApi<ForgeUser>>(`${environment.forgeBasePath}/auth/user`);
   }
 
   getMods(sort: GenericModListSortType, sortOrder: GenericModListSortOrder, sptVersion: SptVersion | null, page: number) {

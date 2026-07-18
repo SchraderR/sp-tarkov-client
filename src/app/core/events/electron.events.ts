@@ -37,7 +37,6 @@
   | 'check-installed-toggle'
   | 'check-installed-setting'
   | 'process-download-link'
-  | 'remove-auth-key'
   ;
 
 export type applicationElectronFileProgressEventNames = 'download-mod-progress' | 'download-mod-direct' | 'download-mod-direct-completed';

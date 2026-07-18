@@ -7,5 +7,4 @@ export class UserSettingEntity {
   @Column() isTutorialDone!: boolean;
   @Column() isExperimentalFunctionsActive!: boolean;
   @Column() keepTempDownloadDirectory!: boolean;
-  @Column({ type: 'text', nullable: true }) authKey?: string | null;
 }
