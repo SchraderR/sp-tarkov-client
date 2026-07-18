@@ -177,10 +177,6 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
               return e;
             }
 
-            if (!environment.ignoreRemoteConfig) {
-              e.notSupported = !!config.notSupported.find(f => f === e.id || f === e.hub_id);
-            }
-
             return e;
           });
 
