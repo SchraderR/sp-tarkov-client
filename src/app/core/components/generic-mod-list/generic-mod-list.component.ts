@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, input, viewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, input, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,7 @@ import { UserSettingsService } from '../../services/user-settings.service';
 import { Mod } from '../../models/mod';
 import { IsAlreadyInstalledDirective } from '../../directives/is-already-installed.directive';
 import { environment } from '../../../../environments/environment';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { debounceTime, firstValueFrom, map, Observable, startWith, Subscription, tap } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
@@ -113,7 +113,7 @@ export default class GenericModListComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.paginator()
       ?.page.pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
-      .subscribe((event: PageEvent) => this.loadData());
+      .subscribe(() => this.loadData());
   }
 
   isActiveSptInstanceAvailable = () => !!this.userSettingsService.getActiveInstance();

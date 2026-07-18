@@ -16,7 +16,6 @@ import { UserSettingsService } from '../../core/services/user-settings.service';
 import { ElectronService } from '../../core/services/electron.service';
 import { DownloadService } from '../../core/services/download.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { ModCache } from '../../../../shared/models/user-setting.model';
 import { IsAlreadyStartedDirective } from '../../core/directives/is-already-started.directive';
 import { ForgeApiService } from '../../core/services/forge-api.service';
 import { SemverSptVersionPipe } from '../../core/pipes/semver-spt-version.pipe';

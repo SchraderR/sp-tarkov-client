@@ -247,7 +247,7 @@ export class AppComponent {
   // loaded its will be fetched with mod/details and populated infos
   private getCachedModList = linkedSignal({
     source: this.userSettingService.userSettingSignal,
-    computation: (newOptions, previous) => {
+    computation: () => {
       const activeInstance = this.userSettingService.getActiveInstance();
       if (!activeInstance) {
         console.warn('No active instance in linked signal');

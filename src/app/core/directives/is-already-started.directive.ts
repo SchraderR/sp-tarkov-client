@@ -1,4 +1,4 @@
-import { computed, Directive, inject, input, Input } from '@angular/core';
+import { computed, Directive, inject, input } from '@angular/core';
 import { ModListService } from '../services/mod-list.service';
 import { Mod } from '../models/mod';
 
