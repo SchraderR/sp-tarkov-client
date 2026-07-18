@@ -5,10 +5,11 @@ import { clientPatcherModPath, clientPluginModPath, serverModPath, serverModPath
 import { FileUnzipEvent } from '../../shared/models/unzip.model';
 import * as log from 'electron-log';
 import { ZipArchiveHelper } from '../helper/zip-archive.helper';
+import { getTempDownloadDirectory } from '../helper/temp-directory.helper';
 
 export const handleFileUnzipEvent = (isServe: boolean) => {
   ipcMain.on('file-unzip', async (event, args: FileUnzipEvent) => {
-    const ankiTempDownloadDir = path.join(args.instancePath, '_temp');
+    const ankiTempDownloadDir = getTempDownloadDirectory();
     const archivePath = args.filePath;
 
     if (!fs.existsSync(ankiTempDownloadDir)) {

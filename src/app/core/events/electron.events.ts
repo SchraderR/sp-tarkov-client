@@ -33,6 +33,7 @@
   | 'keep-temp-dir-setting'
   | 'keep-temp-dir-setting-toggle'
   | 'temp-dir-size'
+  | 'open-temp-dir'
   | 'save-mod-load-order'
   | 'check-installed-toggle'
   | 'check-installed-setting'

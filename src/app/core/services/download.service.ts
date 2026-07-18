@@ -86,7 +86,7 @@ export class DownloadService {
     }
 
     if (!this.keepTemporaryDownloadDirectory()) {
-      await firstValueFrom(this.electronService.sendEvent('clear-temp', activeInstance.sptRootDirectory));
+      await firstValueFrom(this.electronService.sendEvent('clear-temp'));
     }
 
     this.isDownloadAndInstallInProgress.next(false);

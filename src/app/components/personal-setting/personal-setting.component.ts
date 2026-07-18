@@ -85,25 +85,15 @@ export default class PersonalSettingComponent {
   }
 
   openTemporaryDownloadDirectory() {
-    const activeInstance = this.userSettingSignal().find(i => i.isActive);
-    if (!activeInstance) {
-      return;
-    }
-
     if (this.currentTempDirectorySize().size > 0) {
-      this.electronService.openPath(`${activeInstance.sptRootDirectory}/_temp`);
+      this.electronService.sendEvent('open-temp-dir').subscribe();
     }
   }
 
   clearTemporaryDownloadDirectory() {
-    const activeInstance = this.userSettingSignal().find(i => i.isActive);
-    if (!activeInstance) {
-      return;
-    }
-
     this.electronService
-      .sendEvent('clear-temp', activeInstance.sptRootDirectory)
-      .pipe(switchMap(() => this.electronService.sendEvent<number, string>('temp-dir-size', activeInstance.sptRootDirectory)))
+      .sendEvent('clear-temp')
+      .pipe(switchMap(() => this.electronService.sendEvent<number, string>('temp-dir-size')))
       .subscribe(value => {
         this.ngZone.run(() => {
           this.userSettingsService.keepTempDownloadDirectorySize.set({
