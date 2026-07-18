@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { UserSettingsService } from '../../core/services/user-settings.service';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,11 +9,15 @@ import { ElectronService } from '../../core/services/electron.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ModMeta } from '../../../../shared/models/user-setting.model';
-import { NgPipesModule } from 'ngx-pipes';
 import { ToggleModStateModel } from '../../../../shared/models/toggle-mod-state.model';
 import { DialogModule } from '@angular/cdk/dialog';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader } from '@angular/material/card';
+import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+
+interface InstanceMod {
+  mod: ModMeta;
+  isServerMod: boolean;
+}
 
 @Component({
   selector: 'app-instance-overview',
@@ -27,7 +31,6 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
     MatIconModule,
     MatExpansionModule,
     MatSlideToggleModule,
-    NgPipesModule,
     DialogModule,
     MatCard,
     MatCardActions,
@@ -44,6 +47,17 @@ export default class InstanceOverviewComponent implements OnInit {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   activeSptInstance = this.userSettingsService.getActiveInstanceComputed;
+  mods = computed<InstanceMod[]>(() => {
+    const instance = this.activeSptInstance();
+    if (!instance) {
+      return [];
+    }
+
+    const serverMods = (instance.serverMods ?? []).map(mod => ({ mod, isServerMod: true }));
+    const clientMods = (instance.clientMods ?? []).map(mod => ({ mod, isServerMod: false }));
+
+    return [...serverMods, ...clientMods].sort((a, b) => a.mod.name.localeCompare(b.mod.name));
+  });
   isExperimentalFunctionActive = this.userSettingsService.isExperimentalFunctionActive;
   isLoading = this.userSettingsService.isLoading;
   isWorking = false;
